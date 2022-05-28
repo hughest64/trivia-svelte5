@@ -1,0 +1,15 @@
+.DS_Store
+node_modules
+/build
+/.svelte-kit
+/package
+.env
+.env.*
+!.env.example
+
+# python
+__pycache__/
+# built static files from Django
+staticfiles
+migrations/
+db.sqlite3
