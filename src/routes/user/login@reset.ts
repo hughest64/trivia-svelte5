@@ -1,3 +1,8 @@
+// TODO:
+// get request that will parse the headers for a csrf token
+// we'll need to store that somewhere so that it can be passed
+// back in as a header on the fetch post
+
 export async function post({ request }) {
     const form = await request.formData()
     const response = await fetch(

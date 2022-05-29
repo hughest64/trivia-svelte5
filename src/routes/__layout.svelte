@@ -10,7 +10,8 @@
                 status: 200
             }
         }
-
+        // TODO: this may need to be a post, or add a custom X-Username header
+        // see https://www.django-rest-framework.org/api-guide/authentication/#custom-authentication
         const response = await fetch(
             // TODO: store the host portion of the url in env
             // if dev use localhost, if prod use ...

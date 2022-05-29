@@ -4,14 +4,29 @@ from django.contrib.auth import authenticate, get_user_model, login, logout
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
-from rest_framework.exceptions import AuthenticationFailed
+# from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.renderers import JSONRenderer
+# from rest_framework.permissions import IsAuthenticated
 
 from .serializers import UserSerializer
 
-import json
 
 User = get_user_model()
+
+# TODO:
+# sounds like a custom auth class is the way to go since
+# we won't be able to validate via the standard django session as the
+# contexts won't line up and we'll always have an Anonymous User here
+# so maybe it should be a post call with username in the body?
+# otherwise a custom authentication API with X-Username header or some such
+# svelte-kit might play nice here with .locals
+# see https://www.django-rest-framework.org/api-guide/authentication/#custom-authentication
+# csrf is another thing, a get request to /user/login should use @ensure-csrf
+# svelte-kit will need to parse that from the header and store it to pass 
+# back in the post headers
+# see https://stackoverflow.com/questions/29749046/test-csrf-verification-with-django-rest-framework
+# for some ideas doing this with DRF
+
 
 class LoginView(APIView):
 
@@ -34,9 +49,13 @@ class LoginView(APIView):
 
 
 class UserView(APIView):
-    renderer_classes = [JSONRenderer]
+    # renderer_classes = [JSONRenderer]
 
     def get(self, request):
+        # print(request.user)
+        todd = User.objects.get(username="todd")
+        print("todd is auth?", todd.is_authenticated)
+
         if not request.user.is_authenticated:
             return Response(
                 data={"message": "Not Logged In"}, status=status.HTTP_401_UNAUTHORIZED)
