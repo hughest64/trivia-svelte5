@@ -3,8 +3,19 @@
     let username: string;
     let password: string;
 
-    const validateUser = () => {
-
+    const validateUser = async() => {
+        const response = await fetch(
+            'http://localhost:8000/user/login/',
+            {
+                method: 'POST',
+                headers: {'content-type': 'application/json'},
+                body: JSON.stringify({ username, password })
+            }
+        )
+        if (response.ok) {
+            // set store values for user
+        }
+        console.log(response)
     }
 </script>
 

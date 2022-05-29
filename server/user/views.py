@@ -1,5 +1,5 @@
 from multiprocessing import AuthenticationError
-from django.contrib.auth import authenticate, get_user_model, logout
+from django.contrib.auth import authenticate, get_user_model, login, logout
 
 from rest_framework.response import Response
 from rest_framework import status
@@ -18,10 +18,14 @@ class LoginView(APIView):
     def post(self, request):
         username = request.data.get('username')
         password = request.data.get('password')
-
+        
         user = authenticate(username=username, password=password)
         if user is None:
-            raise AuthenticationFailed("Incorrect Username or Password")
+            return Response(
+                { "message": "Username or Password is Incorrecgt"},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+        login(request, user)
 
         serializer = UserSerializer(user)
 
