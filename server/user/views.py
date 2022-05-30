@@ -1,43 +1,51 @@
-from django.shortcuts import render
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth import authenticate
+from multiprocessing import AuthenticationError
+from django.contrib.auth import authenticate, get_user_model, logout
+
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.views import APIView
+from rest_framework.exceptions import AuthenticationFailed
+from rest_framework.renderers import JSONRenderer
+
+from .serializers import UserSerializer
 
 import json
 
-# TODO:
-# - we don't actually want csrf exempt,
-#   DRF is probably a better solution for auth
-# 
-@csrf_exempt
-def index(request):
-    if request.user.is_authenticated:
-      return JsonResponse({
-          "username": request.user.username,
-          "isStaff": request.user.is_staff
-      })
+User = get_user_model()
 
-    return JsonResponse({"error": "not authorized"})
+class LoginView(APIView):
 
+    def post(self, request):
+        username = request.data.get('username')
+        password = request.data.get('password')
 
-@csrf_exempt
-def login_user(request):
-    if request.method == "POST":
-        body = json.loads(request.body)
-        user = authenticate(
-            username=body.get("username"), 
-            password=body.get("password")
-        )
-    if user:
-        return JsonResponse({
-          "username": request.user.username,
-          "isStaff": request.user.is_staff
-      })
+        user = authenticate(username=username, password=password)
+        if user is None:
+            raise AuthenticationFailed("Incorrect Username or Password")
 
-    return JsonResponse({"error": "not authorized"})
+        serializer = UserSerializer(user)
+
+        return Response(serializer.data)
 
 
-# @csrf_exempt
-def logout_user(request):
-    # call logout with request.user
-    return JsonResponse({ "user": "logged out"})
+class UserView(APIView):
+    renderer_classes = [JSONRenderer]
+
+    def get(self, request):
+        if not request.user.is_authenticated:
+            return Response(
+                data={"message": "Not Logged In"}, status=status.HTTP_401_UNAUTHORIZED)
+
+        user = User.objects.filter(username=request.user.username).first()
+        serializer = UserSerializer(user)
+        print(serializer.data)
+
+        return Response(data=serializer.data, content_type="application/json")
+
+
+class LogoutView(APIView):
+    
+    def post(self, request):
+        logout(request.user)
+
+        return Response({"message": "success"})

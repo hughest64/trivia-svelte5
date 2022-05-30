@@ -1,32 +1,45 @@
 <script context="module">
-    // use load function to make a fetch call to Django
-    // return user details, if not logged in redirect
-    // to /login, otherwise set user info in session store
-    // probably and eventually team data
+    import { browser } from '$app/env';
+
     // @ts-ignore - TODO how to type the SvelteKit fetch api in typescript?
-    // export async function load({ fetch }) {
-    //     // we could load the session and only make this call if the username is
-    //     // not populated (i.e. page load or if we explicilty unset if for some reason)
-    //     const response = await fetch(
-    //         'http://localhost:8000/user/test'
-    //     )
-    //     console.log(response)
-    //     if (response.ok) {
-    //         const data = await response.json()
-    //         return {
-    //             props: {
-    //                 data
-    //             }
-    //         }
-    //     }
-    // }
+    export async function load({ fetch, session }) {
+        // TODO: will this validate proplery in Django if we login from here first? (i.e. origin is :3000)
+        // run the user request server side
+        if (browser) {
+            return {
+                status: 200
+            }
+        }
+
+        const response = await fetch(
+            // TODO: store the host portion of the url in env
+            // if dev use localhost, if prod use ...
+            'http://localhost:8000/user/'
+        )
+
+        if (response.ok) {
+                const data = await response.json()
+                session.data = data
+
+            return {
+                status: 200
+            }
+        } else {
+            // not logged in.
+            return {
+                redirect: '/user/login',
+                status: 302
+            }
+        }
+    }
 </script>
 <script lang="ts">
     import '$lib/styles.css'
     import Footer from '$lib/Footer.svelte'
+    import { session } from '$app/stores';
 
-    export let data: unknown;
-    $: console.log(data)
+    $: console.log('session', $session)
+    
 </script>
 
 <main>
