@@ -22,9 +22,10 @@ class LoginView(APIView):
         user = authenticate(username=username, password=password)
         if user is None:
             return Response(
-                { "message": "Username or Password is Incorrecgt"},
+                { "message": "Username or Password is Incorrect"},
                 status=status.HTTP_401_UNAUTHORIZED
             )
+        print(user.is_authenticated)
         login(request, user)
 
         serializer = UserSerializer(user)
