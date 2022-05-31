@@ -1,5 +1,7 @@
 from multiprocessing import AuthenticationError
 from django.contrib.auth import authenticate, get_user_model, login, logout
+from django.views.decorators.csrf import ensure_csrf_cookie, csrf_protect
+from django.utils.decorators import method_decorator
 
 from rest_framework.response import Response
 from rest_framework import status
@@ -30,9 +32,16 @@ User = get_user_model()
 
 class LoginView(APIView):
 
+    # provide a csrf token for allowed/csrf_trusted origins
+    @method_decorator(ensure_csrf_cookie)
+    def get(self, request):
+        return Response()
+
+    @method_decorator(csrf_protect)
     def post(self, request):
         username = request.data.get('username')
         password = request.data.get('password')
+        print(request.META.get('HTTP_X_CSRFTOKEN'))
         
         user = authenticate(username=username, password=password)
         if user is None:
