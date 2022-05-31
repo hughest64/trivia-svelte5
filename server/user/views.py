@@ -21,13 +21,9 @@ User = get_user_model()
 # contexts won't line up and we'll always have an Anonymous User here
 # so maybe it should be a post call with username in the body?
 # otherwise a custom authentication API with X-Username header or some such
+# ^^^ or, can we set a session cookie? not sure that will work or how? ^^^
 # svelte-kit might play nice here with .locals
 # see https://www.django-rest-framework.org/api-guide/authentication/#custom-authentication
-# csrf is another thing, a get request to /user/login should use @ensure-csrf
-# svelte-kit will need to parse that from the header and store it to pass 
-# back in the post headers
-# see https://stackoverflow.com/questions/29749046/test-csrf-verification-with-django-rest-framework
-# for some ideas doing this with DRF
 
 
 class LoginView(APIView):
@@ -61,9 +57,6 @@ class UserView(APIView):
     # renderer_classes = [JSONRenderer]
 
     def get(self, request):
-        # print(request.user)
-        todd = User.objects.get(username="todd")
-        print("todd is auth?", todd.is_authenticated)
 
         if not request.user.is_authenticated:
             return Response(
@@ -72,7 +65,7 @@ class UserView(APIView):
         user = User.objects.filter(username=request.user.username).first()
         serializer = UserSerializer(user)
         print(serializer.data)
-
+        # TODO: can we set a session cookie?
         return Response(data=serializer.data, content_type="application/json")
 
 
