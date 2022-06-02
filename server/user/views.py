@@ -2,12 +2,13 @@ from multiprocessing import AuthenticationError
 from django.contrib.auth import authenticate, get_user_model, login, logout
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_protect
 from django.utils.decorators import method_decorator
+from django.http import JsonResponse
 
-from rest_framework.response import Response
+from rest_framework import Response
 from rest_framework import status
 from rest_framework.views import APIView
 # from rest_framework.exceptions import AuthenticationFailed
-from rest_framework.renderers import JSONRenderer
+# from rest_framework.renderers import JSONRenderer
 # from rest_framework.permissions import IsAuthenticated
 
 from .serializers import UserSerializer
@@ -31,7 +32,7 @@ class LoginView(APIView):
     # provide a csrf token for allowed/csrf_trusted origins
     @method_decorator(ensure_csrf_cookie)
     def get(self, request):
-        return Response()
+        return JsonResponse()
 
     @method_decorator(csrf_protect)
     def post(self, request):
@@ -41,7 +42,7 @@ class LoginView(APIView):
         
         user = authenticate(username=username, password=password)
         if user is None:
-            return Response(
+            return JsonResponse(
                 { "message": "Username or Password is Incorrect"},
                 status=status.HTTP_401_UNAUTHORIZED
             )
@@ -50,7 +51,7 @@ class LoginView(APIView):
 
         serializer = UserSerializer(user)
 
-        return Response(serializer.data)
+        return JsonResponse(serializer.data)
 
 
 class UserView(APIView):
@@ -59,14 +60,13 @@ class UserView(APIView):
     def get(self, request):
 
         if not request.user.is_authenticated:
-            return Response(
+            return JsonResponse(
                 data={"message": "Not Logged In"}, status=status.HTTP_401_UNAUTHORIZED)
 
-        user = User.objects.filter(username=request.user.username).first()
-        serializer = UserSerializer(user)
+        serializer = UserSerializer(request.user)
         print(serializer.data)
         # TODO: can we set a session cookie?
-        return Response(data=serializer.data, content_type="application/json")
+        return JsonResponse(data=serializer.data, content_type="application/json")
 
 
 class LogoutView(APIView):
@@ -74,4 +74,4 @@ class LogoutView(APIView):
     def post(self, request):
         logout(request.user)
 
-        return Response({"message": "success"})
+        return JsonResponse({"message": "success"})
