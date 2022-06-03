@@ -1,82 +1,86 @@
-from multiprocessing import AuthenticationError
-from django.contrib.auth import authenticate, get_user_model, login, logout
-from django.views.decorators.csrf import ensure_csrf_cookie, csrf_protect
-from django.utils.decorators import method_decorator
-from django.http import JsonResponse
+from django.contrib.auth.models import User
+from django.http import request
+import datetime
 
+from django.shortcuts import render
 from rest_framework.response import Response
-from rest_framework import status
 from rest_framework.views import APIView
-# from rest_framework.exceptions import AuthenticationFailed
-# from rest_framework.renderers import JSONRenderer
-# from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import AuthenticationFailed
+import jwt
 
 from .serializers import UserSerializer
 
 
-User = get_user_model()
+class RegisterView(APIView):
 
-# TODO:
-# sounds like a custom auth class is the way to go since
-# we won't be able to validate via the standard django session as the
-# contexts won't line up and we'll always have an Anonymous User here
-# so maybe it should be a post call with username in the body?
-# otherwise a custom authentication API with X-Username header or some such
-# ^^^ or, can we set a session cookie? not sure that will work or how? ^^^
-# svelte-kit might play nice here with .locals
-# see https://www.django-rest-framework.org/api-guide/authentication/#custom-authentication
+    def post(self, request):
+        serializer = UserSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        serializer.save()
+
+        return Response(serializer.data)
 
 
 class LoginView(APIView):
 
-    # provide a csrf token for allowed/csrf_trusted origins
-    @method_decorator(ensure_csrf_cookie)
-    def get(self, request):
-        return Response()
-
-    @method_decorator(csrf_protect)
+    # TODO: handle login with username OR email address,
     def post(self, request):
         username = request.data.get('username')
         password = request.data.get('password')
-        print(request.META.get('HTTP_X_CSRFTOKEN'))
-        
-        user = authenticate(username=username, password=password)
-        print(user or "no user")
-        # if user is None:
-        #     return JsonResponse(
-        #         { "message": "Username or Password is Incorrect"},
-        #         status=status.HTTP_401_UNAUTHORIZED
-        #     )
-        # print(user.is_authenticated)
-        login(request, user)
-        print(request.COOKIES)
 
+        # This is ok as we've required username to be unique in UserSerializer
+        user = User.objects.filter(username=username).first()
+
+        if user is None:
+            raise AuthenticationFailed("No User Found!")
+
+        if not user.check_password(password):
+            raise AuthenticationFailed('Bad Password')
+
+        serializer = UserSerializer(user)
+
+        payload = {
+            'id': user.id,
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=120),
+            'iat': datetime.datetime.utcnow()
+        }
+
+        token = jwt.encode(payload, 'setasecretasanenvvariable', algorithm='HS256')
+
+        response =  Response()
+        response.data = serializer.data
+        response.set_cookie(key='jwt', value=token, httponly=True)
+
+        return response
+
+    
+class UserView(APIView):
+
+    def get(self, request):
+        token = request.COOKIES.get('jwt')
+
+        if not token:
+            raise AuthenticationFailed('You need to log in!')
+
+        try:
+            payload = jwt.decode(token, 'setasecretasanenvvariable', algorithms=['HS256'])
+        except jwt.ExpiredSignatureError:
+            raise AuthenticationFailed('You need to log in!')
+
+        user = User.objects.get(id=payload['id'])
         serializer = UserSerializer(user)
 
         return Response(serializer.data)
 
 
-class UserView(APIView):
-    # renderer_classes = [JSONRenderer]
-
-    def get(self, request):
-        print(request.COOKIES)
-        print(request.user or "no user")
-        print(request.session.keys())
-
-        # if not request.user.is_authenticated:
-        #     return JsonResponse(
-        #         data={"message": "Not Logged In"}, status=status.HTTP_401_UNAUTHORIZED)
-
-        serializer = UserSerializer(request.user)
-        print(serializer.data)
-
-        return JsonResponse(data=serializer.data, content_type="application/json")
-
-
 class LogoutView(APIView):
-    
-    def post(self, request):
-        logout(request.user)
 
-        return JsonResponse({"message": "success"})
+    def post(self, request):
+        response = Response()
+        response.delete_cookie('jwt')
+        response.data = {
+            "message": "success"
+        }
+
+        return response
