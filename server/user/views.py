@@ -4,7 +4,7 @@ from django.views.decorators.csrf import ensure_csrf_cookie, csrf_protect
 from django.utils.decorators import method_decorator
 from django.http import JsonResponse
 
-from rest_framework import Response
+from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 # from rest_framework.exceptions import AuthenticationFailed
@@ -32,7 +32,7 @@ class LoginView(APIView):
     # provide a csrf token for allowed/csrf_trusted origins
     @method_decorator(ensure_csrf_cookie)
     def get(self, request):
-        return JsonResponse()
+        return Response()
 
     @method_decorator(csrf_protect)
     def post(self, request):
@@ -41,31 +41,36 @@ class LoginView(APIView):
         print(request.META.get('HTTP_X_CSRFTOKEN'))
         
         user = authenticate(username=username, password=password)
-        if user is None:
-            return JsonResponse(
-                { "message": "Username or Password is Incorrect"},
-                status=status.HTTP_401_UNAUTHORIZED
-            )
-        print(user.is_authenticated)
+        print(user or "no user")
+        # if user is None:
+        #     return JsonResponse(
+        #         { "message": "Username or Password is Incorrect"},
+        #         status=status.HTTP_401_UNAUTHORIZED
+        #     )
+        # print(user.is_authenticated)
         login(request, user)
+        print(request.COOKIES)
 
         serializer = UserSerializer(user)
 
-        return JsonResponse(serializer.data)
+        return Response(serializer.data)
 
 
 class UserView(APIView):
     # renderer_classes = [JSONRenderer]
 
     def get(self, request):
+        print(request.COOKIES)
+        print(request.user or "no user")
+        print(request.session.keys())
 
-        if not request.user.is_authenticated:
-            return JsonResponse(
-                data={"message": "Not Logged In"}, status=status.HTTP_401_UNAUTHORIZED)
+        # if not request.user.is_authenticated:
+        #     return JsonResponse(
+        #         data={"message": "Not Logged In"}, status=status.HTTP_401_UNAUTHORIZED)
 
         serializer = UserSerializer(request.user)
         print(serializer.data)
-        # TODO: can we set a session cookie?
+
         return JsonResponse(data=serializer.data, content_type="application/json")
 
 
