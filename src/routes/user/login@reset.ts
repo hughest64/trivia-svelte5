@@ -7,8 +7,9 @@ export const get: RequestHandler = async({ request }) => {
         'http://localhost:8000/user/login/',
         {
             headers: {
-                accept: 'application/json'
-            }
+                accept: 'application/json',
+            },
+            // credentials: 'include'
         }
     )
     if (response.ok) {
@@ -50,10 +51,10 @@ export const post: RequestHandler = async(event) => {
         }
     )
     return {
-        // status: 200
-        status: 303,
-        headers: {
-            location: '/'
-        },
+        status: 200
+        // status: 303,
+        // headers: {
+        //     location: '/'
+        // },
     }
 }

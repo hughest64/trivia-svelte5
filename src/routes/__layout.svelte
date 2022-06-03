@@ -18,20 +18,21 @@
             'http://localhost:8000/user/'
         )
 
-        if (response.ok) {
-                const data = await response.json()
-                session.data = data
+        // if (response.ok) {
+        //         const data = await response.json()
+        //         session.data = data
 
-            return {
-                status: 200
-            }
-        } else {
-            // not logged in.
-            return {
-                redirect: '/user/login',
-                status: 302
-            }
-        }
+        //     return {
+        //         status: 200
+        //     }
+        // } else {
+        //     // not logged in.
+        //     return {
+        //         redirect: '/user/login',
+        //         status: 302
+        //     }
+        // }
+        return { status: 200 }
     }
 </script>
 <script lang="ts">
