@@ -33,6 +33,7 @@ class LoginView(APIView):
         return Response()
 
     # TODO: handle login with username OR email address,
+    @method_decorator(csrf_protect)
     def post(self, request):
         username = request.data.get('username')
         password = request.data.get('password')
@@ -64,7 +65,7 @@ class LoginView(APIView):
         return response
 
 
-# TODO: custome authentication class that does all of this
+# TODO: custom authentication class that does all of this
 class UserView(APIView):
 
     @method_decorator(csrf_protect)

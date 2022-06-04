@@ -1,40 +1,36 @@
-<!-- <script context="module" lang="ts">
+<script context="module" lang="ts">
     import { browser } from '$app/env';
     import * as cookie from 'cookie';
 
     // @ts-ignore
-    export async function load({ fetch }) {
-        if (!browser) return { status: 200 }
+    export async function load({ fetch, session }) {
+        if (browser) return { status: 200 }
         const response = await fetch(
             'http://localhost:8000/user/login/',
             { credentials: 'include' }
         )
 
-        let csrftoken: string;
         if (response.ok) {
-            try {
-                csrftoken = cookie.parse(
-                    <string>response.headers.get('set-cookie')
-                )?.csrftoken || ''
-            } catch {}
+            const cookies = response.headers.get('set-cookie')
+            const csrftoken = cookies && cookie.parse(cookies)?.csrftoken || ''
+            session['csrftoken'] = csrftoken
 
-        }
-        return {
-            status: 200,
-            props: {
-                csrftoken
+            return {
+                status: 200,
             }
         }
 
     }
-</script> -->
+</script>
 <script lang="ts">
     import { goto } from '$app/navigation'
+    import { session } from '$app/stores'
 
     let errorMessage: string;
     let username: string;
     let password: string;
-    // export let csrftoken: string;
+    // @ts-ignore
+    $: csrftoken = $session['csrftoken']
     // $: console.log(csrftoken)
 
     const validateUser = async() => {
@@ -42,7 +38,11 @@
             'http://localhost:8000/user/login/',
             {
                 method: 'POST',
-                headers: {'content-type': 'application/json'},
+                headers: {
+                    'content-type': 'application/json',
+                    'Cookie': `csrftoken=${csrftoken}`,
+                    'X-CSRFToken': csrftoken,
+                },
                 body: JSON.stringify({ username, password }),
                 credentials: 'include'
             }
@@ -50,18 +50,16 @@
         if (response.ok) {
             goto('/')
         } else {
+            // TODO: we need to handle this better, it's not always bad password or username
             errorMessage = "Bad Username or Password"
         }
-        console.log(response)
     }
 </script>
 
 <h1>Login Why Doncha'</h1>
 
 <form on:submit|preventDefault={validateUser}>
-<!-- <form action="/user/login" method="post" name="login"> -->
     {#if errorMessage}<h3>{errorMessage}</h3>{/if}
-    <!-- <input type="hidden" id="csrftoken" name="csrftoken" value={csrftoken}> -->
     <label for="username">Username:</label>
     <input type="text" id="username" name="username" bind:value={username}>
 
