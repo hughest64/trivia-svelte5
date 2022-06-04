@@ -12,6 +12,8 @@ import jwt
 
 from .serializers import UserSerializer
 
+from .authentication import JwtAuthentication
+
 User = get_user_model()
 
 
@@ -52,6 +54,7 @@ class LoginView(APIView):
 
         payload = {
             'id': user.id,
+            # TODO: set time delta in settings as JWT_TTL (in minutes)
             'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=120),
             'iat': datetime.datetime.utcnow()
         }
@@ -65,24 +68,12 @@ class LoginView(APIView):
         return response
 
 
-# TODO: custom authentication class that does all of this
 class UserView(APIView):
+    authentication_classes = [JwtAuthentication]
 
     @method_decorator(csrf_protect)
     def get(self, request):
-        token = request.COOKIES.get('jwt')
-
-        if not token:
-            raise AuthenticationFailed('You need to log in!')
-
-        try:
-            # TODO: make an actual token variable
-            payload = jwt.decode(token, 'setasecretasanenvvariable', algorithms=['HS256'])
-        except jwt.ExpiredSignatureError:
-            raise AuthenticationFailed('You need to log in!')
-
-        user = User.objects.get(id=payload['id'])
-        serializer = UserSerializer(user)
+        serializer = UserSerializer(request.user)
 
         return JsonResponse(serializer.data)
 
