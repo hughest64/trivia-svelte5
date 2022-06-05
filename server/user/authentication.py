@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from rest_framework import authentication
 from rest_framework.exceptions import AuthenticationFailed
@@ -17,7 +18,7 @@ class JwtAuthentication(authentication.BaseAuthentication):
             # TODO: make an actual token variable
             payload = jwt.decode(
                 token,
-                'setasecretasanenvvariable',
+                settings.JWT_TOKEN_SECRET,
                 algorithms=['HS256']
             )
         except jwt.ExpiredSignatureError:

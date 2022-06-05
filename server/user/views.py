@@ -1,5 +1,6 @@
 import datetime
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
@@ -55,12 +56,12 @@ class LoginView(APIView):
         payload = {
             'id': user.id,
             # TODO: set time delta in settings as JWT_TTL (in minutes)
-            'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=120),
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=settings.JWT_TOKEN_TTL),
             'iat': datetime.datetime.utcnow()
         }
 
         # TODO: make an actual token variable
-        token = jwt.encode(payload, 'setasecretasanenvvariable', algorithm='HS256')
+        token = jwt.encode(payload, settings.JWT_TOKEN_SECRET, algorithm='HS256')
 
         response =  JsonResponse(serializer.data)
         response.set_cookie(key='jwt', value=token, httponly=True)

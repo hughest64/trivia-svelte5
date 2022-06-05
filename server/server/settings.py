@@ -143,3 +143,11 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 
 CORS_ALLOW_CREDENTIALS = True
+
+# jswt settings
+
+# token expiration in minutes
+JWT_TOKEN_TTL = 24 * 60 # 24 hrs
+
+# use an env variable for prod
+JWT_TOKEN_SECRET = SECRET_KEY
