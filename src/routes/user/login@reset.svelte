@@ -3,7 +3,7 @@
     import * as cookie from 'cookie';
 
     // @ts-ignore
-    export async function load({ fetch, session }) {
+    export async function load({ fetch, session, url }) {
         if (browser) return { status: 200 }
         const response = await fetch(
             'http://localhost:8000/user/login/',
