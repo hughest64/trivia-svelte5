@@ -3,7 +3,7 @@
     import * as cookie from 'cookie';
 
     // @ts-ignore
-    export async function load({ fetch, session, url }) {
+    export async function load({ fetch, session }) {
         if (browser) return { status: 200 }
         const response = await fetch(
             'http://localhost:8000/user/login/',
@@ -15,9 +15,9 @@
             const csrftoken = cookies && cookie.parse(cookies)?.csrftoken || ''
             session['csrftoken'] = csrftoken
 
-            return {
-                status: 200,
-            }
+        }
+        return {
+            status: 200,
         }
 
     }
@@ -48,6 +48,8 @@
             }
         )
         if (response.ok) {
+            const data = await response.json()
+            session.set({ data })
             goto('/')
         } else {
             // TODO: we need to handle this better, it's not always bad password or username

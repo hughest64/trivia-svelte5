@@ -20,7 +20,8 @@
             session.data = data
 
             return {
-                status: 200
+                // status: 200,
+                stuff: data,
             }
         } else {
             // not logged in.
@@ -37,7 +38,7 @@
     import Footer from '$lib/Footer.svelte'
     import { session } from '$app/stores';
 
-    $: console.log('session', $session)
+    $: console.log('session from layout', $session)
     
 </script>
 

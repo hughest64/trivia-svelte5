@@ -42,10 +42,10 @@ class LoginView(APIView):
         try:
             user = User.objects.get(Q(username=username) | Q(email=username))
         except User.DoesNotExist:
-            raise AuthenticationFailed("Username or Password is Invalid")
+            raise AuthenticationFailed("Invalid Username or Password")
 
         if not user.check_password(password):
-            raise AuthenticationFailed('Username or Password is Invalid')
+            raise AuthenticationFailed('Invalid Username or Password')
 
         serializer = UserSerializer(user)
 
@@ -55,7 +55,6 @@ class LoginView(APIView):
             'iat': datetime.datetime.utcnow()
         }
 
-        # TODO: make an actual token variable
         token = jwt.encode(payload, settings.JWT_TOKEN_SECRET, algorithm='HS256')
 
         response =  JsonResponse(serializer.data)
