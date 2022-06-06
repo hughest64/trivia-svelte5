@@ -2,18 +2,18 @@ import datetime
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.db.models import Q
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_protect
 
+import jwt
+from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.exceptions import AuthenticationFailed
-import jwt
-
-from .serializers import UserSerializer
 
 from .authentication import JwtAuthentication
+from .serializers import UserSerializer
 
 User = get_user_model()
 
@@ -23,7 +23,6 @@ class RegisterView(APIView):
     def post(self, request):
         serializer = UserSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-
         serializer.save()
 
         return Response(serializer.data)
@@ -35,27 +34,23 @@ class LoginView(APIView):
     def get(self, request):
         return Response()
 
-    # TODO: handle login with username OR email address,
     @method_decorator(csrf_protect)
     def post(self, request):
         username = request.data.get('username')
         password = request.data.get('password')
 
-        # This is ok as we've required username to be unique in UserSerializer
-        # but we should probably use the authenticate method?
-        user = User.objects.filter(username=username).first()
-
-        if user is None:
-            raise AuthenticationFailed("No User Found!")
+        try:
+            user = User.objects.get(Q(username=username) | Q(email=username))
+        except User.DoesNotExist:
+            raise AuthenticationFailed("Username or Password is Invalid")
 
         if not user.check_password(password):
-            raise AuthenticationFailed('Bad Password')
+            raise AuthenticationFailed('Username or Password is Invalid')
 
         serializer = UserSerializer(user)
 
         payload = {
             'id': user.id,
-            # TODO: set time delta in settings as JWT_TTL (in minutes)
             'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=settings.JWT_TOKEN_TTL),
             'iat': datetime.datetime.utcnow()
         }
