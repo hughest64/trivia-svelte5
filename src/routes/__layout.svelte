@@ -1,8 +1,8 @@
-<script context="module">
+<script context="module" lang="ts">
     import { browser } from '$app/env';
+    import type { Load } from '@sveltejs/kit';
 
-    // @ts-ignore - TODO how to type the SvelteKit fetch api in typescript?
-    export async function load({ fetch, session }) {
+    export const load: Load = async ({ fetch, session }) => {
         if (browser) {
             return {
                 status: 200
