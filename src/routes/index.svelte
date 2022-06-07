@@ -1,13 +1,19 @@
 
 <script context="module" lang="ts">
     import { browser } from '$app/env'
-    //@ts-ignore
-    export async function load({ session }) {
+    import { get } from 'svelte/store';
+    import { userdata } from '../stores/user';
+    // import type { UserData } from '../stores/user';
+    import type { Load } from '@sveltejs/kit';
+
+    export const load: Load = async() => {
         // running on the server doesn't update the csrf token properly
-        if (!browser) {
-            return { status: 200 }
-        }
-        const userData = session.data
+        // if (browser) {
+        //     return { status: 200 }
+        // }
+        const userData = get(userdata);
+        console.log(userData)
+        // const userData = $userdata.username
         const isStaff = userData?.is_staff
 
         return {

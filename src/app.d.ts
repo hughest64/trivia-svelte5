@@ -6,7 +6,7 @@ declare namespace App {
 	// interface Locals {}
 	// interface Platform {}
 	interface Session {
-		data: unknown // TODO: you know what you did
+		csrftoken?: string;
 	}
 	// interface Stuff {}
 }

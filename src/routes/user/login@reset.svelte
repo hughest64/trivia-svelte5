@@ -1,9 +1,11 @@
 <script context="module" lang="ts">
     import { browser } from '$app/env';
+    import { userdata } from '../../stores/user';
+    import type { UserData } from '../../stores/user';
     import * as cookie from 'cookie';
+    import type { Load } from '@sveltejs/kit';
 
-    // @ts-ignore
-    export async function load({ fetch, session }) {
+    export const load: Load = async({ fetch, session }) => {
         if (browser) return { status: 200 }
         const response = await fetch(
             'http://localhost:8000/user/login/',
@@ -13,7 +15,7 @@
         if (response.ok) {
             const cookies = response.headers.get('set-cookie')
             const csrftoken = cookies && cookie.parse(cookies)?.csrftoken || ''
-            session['csrftoken'] = csrftoken
+            session.csrftoken = csrftoken
 
         }
         return {
@@ -29,9 +31,8 @@
     let errorMessage: string;
     let username: string;
     let password: string;
-    // @ts-ignore
-    $: csrftoken = $session['csrftoken']
-    // $: console.log(csrftoken)
+
+    $: csrftoken = $session.csrftoken || ''
 
     const validateUser = async() => {
         const response = await fetch(
@@ -48,9 +49,11 @@
             }
         )
         if (response.ok) {
-            const data = await response.json()
-            session.set({ data })
+            const data = await <UserData>response.json()
+            userdata.set(data)
+            // TODO: we need to be able to handle different routing options
             goto('/')
+
         } else {
             // TODO: we need to handle this better, it's not always bad password or username
             errorMessage = "Bad Username or Password"

@@ -1,12 +1,12 @@
 <script context="module" lang="ts">
     import { browser } from '$app/env';
+    import { userdata } from '../stores/user';
+    import type { UserData } from '../stores/user';
     import type { Load } from '@sveltejs/kit';
 
-    export const load: Load = async ({ fetch, session }) => {
+    export const load: Load = async ({ fetch }) => {
         if (browser) {
-            return {
-                status: 200
-            }
+            return { status: 200 }
         }
         const response = await fetch(
             // TODO: store the host portion of the url in env
@@ -16,13 +16,10 @@
         )
 
         if (response.ok) {
-            const data = await response.json()
-            session.data = data
+            const data = (await <UserData>response.json()) || {}
+            userdata.update(d => ({ ...data }))
 
-            return {
-                // status: 200,
-                stuff: data,
-            }
+            return { status: 200 }
         } else {
             // not logged in.
             return {
@@ -30,15 +27,14 @@
                 status: 302
             }
         }
-        // return { status: 200 }
     }
 </script>
 <script lang="ts">
     import '$lib/styles.css'
     import Footer from '$lib/Footer.svelte'
-    import { session } from '$app/stores';
+    // import { userdata } from '../stores/user';
 
-    $: console.log('session from layout', $session)
+    // $: console.log('userdata from layout', $userdata)
     
 </script>
 
