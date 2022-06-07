@@ -32,8 +32,6 @@
     let username: string;
     let password: string;
 
-    $: csrftoken = $session.csrftoken || ''
-
     const validateUser = async() => {
         const response = await fetch(
             'http://localhost:8000/user/login/',
@@ -41,8 +39,8 @@
                 method: 'POST',
                 headers: {
                     'content-type': 'application/json',
-                    'Cookie': `csrftoken=${csrftoken}`,
-                    'X-CSRFToken': csrftoken,
+                    'Cookie': `csrftoken=${$session.csrftoken}`,
+                    'X-CSRFToken': $session.csrftoken,
                 },
                 body: JSON.stringify({ username, password }),
                 credentials: 'include'

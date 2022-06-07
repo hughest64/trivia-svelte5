@@ -5,9 +5,8 @@
     import type { Load } from '@sveltejs/kit';
 
     export const load: Load = async ({ fetch }) => {
-        if (browser) {
-            return { status: 200 }
-        }
+        if (browser) return { status: 200 }
+
         const response = await fetch(
             // TODO: store the host portion of the url in env
             // if dev use localhost, if prod use ...
@@ -32,10 +31,6 @@
 <script lang="ts">
     import '$lib/styles.css'
     import Footer from '$lib/Footer.svelte'
-    // import { userdata } from '../stores/user';
-
-    // $: console.log('userdata from layout', $userdata)
-    
 </script>
 
 <main>
