@@ -7,9 +7,10 @@
     import type { Load } from '@sveltejs/kit';
 
     export const load: Load = async({ fetch }) => {
+        // use this technique to not needlessly make two server requests
         if (!browser) return { status: 200 }
 
-        // don't proceed if no user name (actually, id)
+        // TODO: don't proceed if no user name (actually, id)
         const username = get(userdata).username
 
         const response = await fetch(
@@ -17,7 +18,9 @@
             'http://localhost:8000/team/',
             { credentials: 'include' }
         )
-        if (response.ok) {
+        // some weird issue with data format coming from DRF when
+        // we run this server side
+        if (response.ok && browser) {
             const data = await <UserTeam[]>response.json()
             userteams.set([...data])
         }
