@@ -1,20 +1,10 @@
-
-<script context="module" lang="ts">
-    // import { browser } from '$app/env'
-    import { get } from 'svelte/store';
+<script>
+    import { onMount } from 'svelte'
+    import { goto } from '$app/navigation';
     import { userdata } from '../stores/user';
-    
-    import type { Load } from '@sveltejs/kit';
 
-    export const load: Load = async() => {
-        const userData = get(userdata);
-        const isStaff = userData?.is_staff
-
-        return {
-            // TODO: we may need to handle having no user data here as well
-            // (redirect to '/user/login')
-            redirect: isStaff ? '/host-or-play': '/team-select',
-            status: 302
-        }
-    }
+    onMount(async () => {
+        // TODO: if no user data at all, go to login, but I don't think that will occur
+        $userdata.is_staff ? goto('/host-or-play') : goto('/team-select')
+    })
 </script>

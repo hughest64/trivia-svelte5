@@ -10,6 +10,7 @@ from rest_framework.authentication import SessionAuthentication
 from user.authentication import JwtAuthentication
 from .models import Team
 from .serializers import TeamSerializer
+from user.serializers import UserSerializer
 
 # TODO: dev data only, replace once models are in place
 with open(settings.BASE_DIR.parent / 'data' / 'teams.json', 'r') as f:
@@ -17,10 +18,18 @@ with open(settings.BASE_DIR.parent / 'data' / 'teams.json', 'r') as f:
 team_classes = [Team(**data) for data in team_data]
 
 
-class TeamsView(APIView):
+class UserTeamsView(APIView):
     authentication_classes = [SessionAuthentication, JwtAuthentication]
 
     def get(self, request):
-        serializer = TeamSerializer(team_classes, many=True)
+        # TODO: eventually teams will be a relation on the user model
+        # so we'll be able to fetch all of this in a single serializer
+        teamSerializer = TeamSerializer(team_classes, many=True)
+        userSerializer = UserSerializer(request.user)
 
-        return Response(serializer.data)
+        return Response(
+            {
+                "user_data": userSerializer.data,
+                "user_teams": teamSerializer.data,
+            }
+        )

@@ -1,22 +1,28 @@
 <script context="module" lang="ts">
     import { browser } from '$app/env';
-    import { userdata } from '../stores/user';
-    import type { UserData } from '../stores/user';
+    import { userdata, userteams } from '../stores/user';
+    // import type { UserData, UserTeam } from '../stores/user';
     import type { Load } from '@sveltejs/kit';
 
     export const load: Load = async ({ fetch }) => {
-        if (browser) return { status: 200 }
+        if (!browser) return { status: 200 }
 
         const response = await fetch(
             // TODO: store the host portion of the url in env
             // if dev use localhost, if prod use ...
-            'http://localhost:8000/user/',
-            { credentials: 'include' }
+            'http://localhost:8000/userteams/',
+            {
+                headers: {
+                    accept: 'application/json'
+                },
+                credentials: 'include'
+            }
         )
 
         if (response.ok) {
-            const data = (await <UserData>response.json()) || {}
-            userdata.update(d => ({ ...data }))
+            const { user_teams, user_data} = (await response.json()) || {}
+            userdata.set({ ...user_data })
+            userteams.set([...user_teams])
 
             return { status: 200 }
         } else {
@@ -28,6 +34,7 @@
         }
     }
 </script>
+
 <script lang="ts">
     import '$lib/styles.css'
     import Footer from '$lib/Footer.svelte'

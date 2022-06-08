@@ -17,7 +17,7 @@ export interface TeamMember {
     username: string;
 }
 export interface UserTeam {
-    id: string | number;
+    team_id: string | number;
     team_name: string;
     // TODO: we've updated this to password when it's visible, but the field is still join_code
     join_code: string;
@@ -30,5 +30,5 @@ export const useractiveteam = derived(
     ([$userdata, $userteams]) => {
         // TODO: we could probably even get this to set in session storage
         // we could also pass set as the second arg and set this value in the userdata
-        return $userteams.find((team) => team.id === $userdata.active_team_id) || ''
+        return $userteams.find((team) => team.team_id === $userdata.active_team_id) || ''
 })

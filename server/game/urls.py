@@ -3,5 +3,5 @@ from . import views
 
 
 urlpatterns = [
-    path("", views.TeamsView.as_view()),
+    path("userteams/", views.UserTeamsView.as_view()),
 ]
