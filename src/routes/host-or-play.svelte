@@ -1,7 +1,3 @@
-<script>
-
-</script>
-
 <div class="container">
     <h2>Would You Like to Host or Play?</h2>
     <a href="/event-select">Host</a>
