@@ -29,6 +29,5 @@ export const useractiveteam = derived(
     [userdata, userteams],
     ([$userdata, $userteams]) => {
         // TODO: we could probably even get this to set in session storage
-        // we could also pass set as the second arg and set this value in the userdata
         return $userteams.find((team) => team.team_id === $userdata.active_team_id) || ''
 })

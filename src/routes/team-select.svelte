@@ -14,7 +14,7 @@
 
 {#if !!$userteams }
     <form class="container" on:submit|preventDefault={handleTeamSelectSubmit}>
-        <h2>Select A Team</h2>
+        <h2>{$userdata.username} Select A Team</h2>
         <select bind:value={selected}>
             {#each $userteams as team (team.team_id)}
                 <option value={team}>{team.team_name}</option>
