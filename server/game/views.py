@@ -1,7 +1,6 @@
 import json
 
 from django.conf import settings
-# from django.http import JsonResponse
 
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -18,7 +17,7 @@ with open(settings.BASE_DIR.parent / 'data' / 'teams.json', 'r') as f:
     team_data = json.load(f)
 team_classes = [Team(**data) for data in team_data]
 
-with open(settings.BASE_DIR.parent / 'data' / 'event_select_data.json', 'r') as f2:
+with open(settings.BASE_DIR.parent / 'data' / 'event_setup_data.json', 'r') as f2:
     event_select_data = json.load(f2)
 
 location_classes = [Location(**data) for data in event_select_data.get("locations", [])]

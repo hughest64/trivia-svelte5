@@ -3,7 +3,6 @@ import datetime
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db.models import Q
-from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_protect
 
@@ -57,7 +56,7 @@ class LoginView(APIView):
 
         token = jwt.encode(payload, settings.JWT_TOKEN_SECRET, algorithm='HS256')
 
-        response =  JsonResponse(serializer.data)
+        response =  Response(serializer.data)
         response.set_cookie(key='jwt', value=token, httponly=True)
 
         return response
@@ -70,7 +69,7 @@ class UserView(APIView):
     def get(self, request):
         serializer = UserSerializer(request.user)
 
-        return JsonResponse(serializer.data)
+        return Response(serializer.data)
 
 
 class LogoutView(APIView):

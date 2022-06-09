@@ -9,7 +9,10 @@
         if (browser) return { status: 200 }
         const response = await fetch(
             'http://localhost:8000/user/login/',
-            { credentials: 'include' }
+            {
+                credentials: 'include',
+                headers: { accept: 'application/json' }
+            }
         )
 
         if (response.ok) {
