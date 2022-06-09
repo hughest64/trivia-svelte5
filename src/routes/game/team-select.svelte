@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { userdata, userteams, type UserTeam } from '../stores/user';
+    import { userdata, userteams, type UserTeam } from '../../stores/user';
 
     let selected: UserTeam
     $: console.log(selected)

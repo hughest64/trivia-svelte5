@@ -1,20 +1,23 @@
 <script>
     import { onMount } from 'svelte'
     import { goto } from '$app/navigation';
-    import { userdata } from '../stores/user'
+    import { userdata } from '../../stores/user'
+  
+    // $: console.log('path', redirPath)
+    $: console.log('ud', $userdata)
 
-    onMount(async() => {
-        !$userdata.is_staff && goto('/team-select')
-    })
+    // onMount(async() => {
+    //     !$userdata.is_staff && goto('/game/team-select')
+    // })
 </script>
 
-{#if $userdata.is_staff}
+<!-- {#if $userdata.is_staff} -->
     <div class="container">
         <h2>Would You Like to Host or Play?</h2>
-        <a href="/event-setup">Host</a>
-        <a href="/team-select">Play</a>
+        <a href="/host/event-setup">Host</a>
+        <a href="/game/team-select">Play</a>
     </div>
-{/if}
+<!-- {/if} -->
 
 <style>
     .container {

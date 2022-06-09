@@ -62,7 +62,7 @@
     }
 </script>
 
-<h1>Login Why Doncha'</h1>
+<h1>Welcome!</h1>
 
 <form on:submit|preventDefault={validateUser}>
     {#if errorMessage}<h3>{errorMessage}</h3>{/if}
