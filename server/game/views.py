@@ -6,6 +6,7 @@ from django.conf import settings
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.authentication import SessionAuthentication
+from rest_framework.permissions import IsAdminUser
 
 from user.authentication import JwtAuthentication
 from .models import Team, Location, Game
@@ -43,6 +44,7 @@ class UserTeamsView(APIView):
 
 class EventSetupView(APIView):
     authentication_classes = [SessionAuthentication, JwtAuthentication]
+    permission_classes = [IsAdminUser]
     # TODO: is staff permission class
 
     def get(self, request):

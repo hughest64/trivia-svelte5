@@ -1,9 +1,6 @@
 <script context="module" lang="ts">
     import { browser } from '$app/env'
     import type { Load } from '@sveltejs/kit';
-    // NOTE: we shouldn't need these, as we can use a permissions class django side
-    // import { get } from 'svelte/store'
-    // import { userdata } from '../stores/user'
     import type { GameSelectData, LocationSelectData, HostSelectData } from '$lib/types'
     
     export const load: Load = async({ fetch }) => {
@@ -18,18 +15,24 @@
                 }
             }
         ) 
-        let data: HostSelectData = {};
         if (response.ok) {
-            data = await response.json()
+            const data = await <HostSelectData>response.json()
+
+            return {
+                status: 200,
+                props: data ? {
+                    gameSelectData: data.game_select_data,
+                    locationSelectData: data.location_select_data
+                } : {}
+            }
+        }
+        // TODO: actually check for a 4xx code
+        // not a staff user
+        return {
+            redirect: '/team-select',
+            status: 302
         }
 
-        return {
-            status: 200,
-            props: data ? {
-                gameSelectData: data.game_select_data,
-                locationSelectData: data.location_select_data
-            } : {}
-        }
     }
 </script>
 
