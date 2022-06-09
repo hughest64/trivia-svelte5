@@ -11,7 +11,7 @@
 {#if $userdata.is_staff}
     <div class="container">
         <h2>Would You Like to Host or Play?</h2>
-        <a href="/event-select">Host</a>
+        <a href="/event-setup">Host</a>
         <a href="/team-select">Play</a>
     </div>
 {/if}

@@ -41,7 +41,7 @@ class UserTeamsView(APIView):
         )
 
 
-class EventSelectView(APIView):
+class EventSetupView(APIView):
     authentication_classes = [SessionAuthentication, JwtAuthentication]
     # TODO: is staff permission class
 
@@ -52,6 +52,6 @@ class EventSelectView(APIView):
         return Response(
             {
                 "location_select_data": locationSerializer.data,
-                "event_select_data": gameSerializer.data
+                "game_select_data": gameSerializer.data
             }
         )

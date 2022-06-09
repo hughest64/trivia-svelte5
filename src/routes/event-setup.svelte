@@ -4,13 +4,13 @@
     // NOTE: we shouldn't need these, as we can use a permissions class django side
     // import { get } from 'svelte/store'
     // import { userdata } from '../stores/user'
-    import type { EventSelectData, LocationSelectData, HostSelectData } from '../stores/eventselect'
+    import type { GameSelectData, LocationSelectData, HostSelectData } from '$lib/types'
     
     export const load: Load = async({ fetch }) => {
         if (!browser) return { status: 200 }
 
         const response = await fetch(
-            'http://localhost:8000/eventdata',
+            'http://localhost:8000/eventsetup',
             {
                 credentials: 'include',
                 headers: {
@@ -26,7 +26,7 @@
         return {
             status: 200,
             props: data ? {
-                eventSelectData: data.event_select_data,
+                gameSelectData: data.game_select_data,
                 locationSelectData: data.location_select_data
             } : {}
         }
@@ -34,11 +34,11 @@
 </script>
 
 <script lang="ts">
-    export let eventSelectData: EventSelectData
+    export let gameSelectData: GameSelectData
     export let locationSelectData: LocationSelectData
 
-    $: console.log(eventSelectData)
+    $: console.log(gameSelectData)
     $: console.log(locationSelectData)
 
 </script>
-<h1>Event Select</h1>
+<h1>Event Setup</h1>
