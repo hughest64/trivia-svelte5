@@ -22,12 +22,7 @@
 			userteams.set([...user_teams]);
 
 			return {
-				// status: 302,
-                // redirect: '/host/host-or-play',
 				status: 200,
-				props: {
-					redirectPath: user_data.is_staff ? '/host/host-or-play' : '/game/team-select'
-				}
 			};
 		}
 
@@ -38,8 +33,27 @@
 	};
 </script>
 
-<script>
-	import { goto } from '$app/navigation';
-	export let redirectPath = '';
-	redirectPath && goto(redirectPath);
+<script lang="ts">
+	import { afterNavigate, goto } from '$app/navigation';
+	import HostChoice from '$lib/HostChoice.svelte';
+	import TeamSelect from '$lib/TeamSelect.svelte';
+
+	let hostchoice = 'choose' // or 'play' or 'host'
+	$: hostchoice === 'host' && goto('/host/event-setup')
+	$: hostchoice === 'play' && window.history.pushState({}, '', '/')
+	
+	const handlepopstate = (event: PopStateEvent) => {
+		console.log(hostchoice)
+		if (hostchoice === 'play') hostchoice = 'choose'
+	}
+		// TODO: onMount goto /user/login if no user data ?
+
 </script>
+
+<svelte:window on:popstate={handlepopstate} />
+
+{#if ($userdata.username && !$userdata.is_staff) || hostchoice === 'play'}
+	<TeamSelect />
+{:else}
+	<HostChoice bind:hostchoice/>
+{/if}
