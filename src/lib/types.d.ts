@@ -1,6 +1,6 @@
 export interface LocationSelectData {
     location_id: string | number;
-    locaiotn_name: string;
+    location_name: string;
 }
 
 export interface GameSelectData {

@@ -1,8 +1,8 @@
 <script context="module" lang="ts">
+    import * as cookie from 'cookie';
     import { browser } from '$app/env';
     import { userdata } from '../../stores/user';
     import type { UserData } from '../../stores/user';
-    import * as cookie from 'cookie';
     import type { Load } from '@sveltejs/kit';
 
     export const load: Load = async({ fetch, session }) => {
@@ -19,11 +19,9 @@
             const cookies = response.headers.get('set-cookie')
             const csrftoken = cookies && cookie.parse(cookies)?.csrftoken || ''
             session.csrftoken = csrftoken
+        }
 
-        }
-        return {
-            status: 200,
-        }
+        return { status: 200 }
 
     }
 </script>
