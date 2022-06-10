@@ -22,7 +22,7 @@
 			userteams.set([...user_teams]);
 
 			return {
-				status: 200,
+				status: 200
 			};
 		}
 
@@ -34,20 +34,40 @@
 </script>
 
 <script lang="ts">
-	import { afterNavigate, goto } from '$app/navigation';
+	import { goto } from '$app/navigation';
 	import HostChoice from '$lib/HostChoice.svelte';
 	import TeamSelect from '$lib/TeamSelect.svelte';
 
-	let hostchoice = 'choose' // or 'play' or 'host'
-	$: hostchoice === 'host' && goto('/host/event-setup')
-	$: hostchoice === 'play' && window.history.pushState({}, '', '/')
-	
-	const handlepopstate = (event: PopStateEvent) => {
-		console.log(hostchoice)
-		if (hostchoice === 'play') hostchoice = 'choose'
-	}
-		// TODO: onMount goto /user/login if no user data ?
+	let hostchoice = 'choose'; // or 'play' or 'host'
 
+	const handleChoiceClick = (event: MouseEvent) => {
+		const target = <HTMLButtonElement>event.target;
+		const id = target.id;
+		if (id === 'host') {
+			goto('/host/event-setup');
+		}
+		if (id === 'play') {
+			hostchoice = 'play';
+			goto('/');
+		}
+	};
+
+	let historyIndex = 0;
+	const handlepopstate = (event: PopStateEvent) => {
+		const eventIndex = event.state['sveltekit:index'] || 0
+
+		// back
+		if (historyIndex === 0 || eventIndex < historyIndex) {
+			hostchoice = 'choose'
+
+		// forward
+		} else if (historyIndex !== 0 && eventIndex > historyIndex) {
+			hostchoice = 'play'
+		}
+		historyIndex = eventIndex
+	};
+
+	// TODO: onMount goto /user/login if no user data ?
 </script>
 
 <svelte:window on:popstate={handlepopstate} />
@@ -55,5 +75,5 @@
 {#if ($userdata.username && !$userdata.is_staff) || hostchoice === 'play'}
 	<TeamSelect />
 {:else}
-	<HostChoice bind:hostchoice/>
+	<HostChoice on:click={handleChoiceClick} />
 {/if}

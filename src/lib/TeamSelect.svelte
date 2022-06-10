@@ -2,7 +2,7 @@
     import { userdata, userteams, type UserTeam } from '../stores/user';
 
     let selected: UserTeam
-    $: console.log(selected)
+    // $: console.log(selected)
 
     const handleTeamSelectSubmit = () => {
         // post to the api and if resp.ok, goto gameselct (or next=/some/place)

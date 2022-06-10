@@ -29,7 +29,7 @@
         // TODO: actually check for a 4xx code
         // not a staff user
         return {
-            redirect: '/game/team-select',
+            redirect: '/',
             status: 302
         }
 
