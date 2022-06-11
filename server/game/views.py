@@ -41,6 +41,22 @@ class UserTeamsView(APIView):
         )
 
 
+
+class TeamSelectView(APIView):
+    authentication_classes = [SessionAuthentication, JwtAuthentication]
+
+    def post(self, request):
+        print(request.data)
+        serializer = TeamSerializer(data=request.data)
+        # TODO: we shouldn't have any invalid data here, but handle it in case
+        # what we are really after is to set an active team for the user in the db
+        # so maybe it will be a UserSerializer instance?
+        serializer.is_valid()
+        print(serializer.data)
+
+        return Response({"msg": "ok"})
+
+
 class EventSetupView(APIView):
     authentication_classes = [SessionAuthentication, JwtAuthentication]
     permission_classes = [IsAdminUser]
