@@ -3,7 +3,7 @@
 	import { userdata, userteams } from '../stores/user';
 	import type { Load } from '@sveltejs/kit';
 
-	export const load: Load = async ({ fetch, session }) => {
+	export const load: Load = async ({ fetch }) => {
 		if (!browser) return { status: 200 };
 
 		const response = await fetch(

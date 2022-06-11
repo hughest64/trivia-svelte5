@@ -1,10 +1,23 @@
 <script lang="ts">
+    import { goto } from '$app/navigation'
+
     export let joincode: string;
 
-    const handleJoinGame = () => {
+    const handleJoinGame = async () => {
         console.log('you are submitting joincode', joincode)
         // post to the api to verify the code is good
+        const response = await fetch (
+            'http:localhost:8000/event/',
+            {
+                // method: 'POST',
+                credentials: 'include',
+                body: JSON.stringify({ joincode })
+            }
+        )
         // if resp.ok, set event data in a store and goto /game/[joincode]
+        if (response.ok) {
+            goto(`/game/${joincode}`) 
+        }
         // else notify user of bad code
     }
 

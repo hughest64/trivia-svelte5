@@ -72,3 +72,14 @@ class EventSetupView(APIView):
                 "game_select_data": gameSerializer.data
             }
         )
+
+
+class EventView(APIView):
+    authentication_classes = [SessionAuthentication, JwtAuthentication]
+
+    def get(self, request):
+        print(request.data)
+        # use the join code to look up event data
+        # raise if it's a bad join code
+
+        return Response()
