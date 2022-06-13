@@ -77,8 +77,7 @@ class EventSetupView(APIView):
 class EventView(APIView):
     authentication_classes = [SessionAuthentication, JwtAuthentication]
 
-    def get(self, request):
-        print(request.data)
+    def get(self, request, joincode=None):
         # use the join code to look up event data
         # raise if it's a bad join code
 

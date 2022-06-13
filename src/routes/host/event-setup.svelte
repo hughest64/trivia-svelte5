@@ -37,14 +37,31 @@
 </script>
 
 <script lang="ts">
+    import { goto } from '$app/navigation'
+
     export let gameSelectData: GameSelectData[]
     export let locationSelectData: LocationSelectData[]
 
     let selectLocation: LocationSelectData
     let selectedGame: GameSelectData
 
-    const handleEventSubmit = () => {
+    const handleEventSubmit = async () => {
         console.log(`Starting Event at ${selectLocation.location_name} with game ${selectedGame.game_title}`)
+        const response = await fetch (
+            'http://localhost:8000/eventsetup',
+            {
+                method: 'POST',
+                credentials: 'include',
+                headers: { asccept: 'application/json'},
+                body: JSON.stringify({
+                    location_id: selectLocation.location_id,
+                    game_id: selectedGame.game_id
+                })
+            }
+        )
+        if (response.ok) {
+            // goto host/
+        }
     }
 
 </script>

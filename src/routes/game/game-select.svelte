@@ -3,18 +3,15 @@
 
     export let joincode: string;
 
-    const handleJoinGame = async () => {
-        console.log('you are submitting joincode', joincode)
-        // post to the api to verify the code is good
+    const handleJoinEvent = async () => {
         const response = await fetch (
-            'http:localhost:8000/event/',
+            `http://localhost:8000/event/${joincode}/`,
             {
-                // method: 'POST',
                 credentials: 'include',
-                body: JSON.stringify({ joincode })
+                headers: { accept: 'application/json' },
             }
         )
-        // if resp.ok, set event data in a store and goto /game/[joincode]
+
         if (response.ok) {
             goto(`/game/${joincode}`) 
         }
@@ -25,10 +22,10 @@
 
 <h1>Game Select</h1>
 
-<form class="container" on:click|preventDefault={handleJoinGame}>
+<form class="container" on:submit|preventDefault={handleJoinEvent}>
     <h2>Enter Game Code</h2>
     <input type="text" bind:value={joincode}>
-    <input type="submit">
+    <input type="submit" value="Join The Event">
 </form>
 
 <style>
