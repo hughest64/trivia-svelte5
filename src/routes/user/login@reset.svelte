@@ -1,8 +1,7 @@
 <script context="module" lang="ts">
     import * as cookie from 'cookie';
     import { browser } from '$app/env';
-    import { userdata } from '../../stores/user';
-    import type { UserData } from '../../stores/user';
+    import { userdata, type UserData } from '../../stores/user';
     import type { Load } from '@sveltejs/kit';
 
     export const load: Load = async({ fetch, session }) => {
