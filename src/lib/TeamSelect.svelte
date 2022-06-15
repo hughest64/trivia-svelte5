@@ -9,16 +9,17 @@
 		console.log('you have chosen to play with', selected.team_name);
 		// update current team if different that what is in the store (post to the api)
 		// goto /game/game-selct (join?)
-		const response = await fetch('http://localhost:8000/teamselect/', {
-			method: 'POST',
-			credentials: 'include',
-			headers: {
-				'content-type': 'application/json'
-			},
-			// TODO: we might acutally just send a team id
-			// to have the server set active team id for the user
-			body: JSON.stringify(selected)
-		});
+		const response = await fetch(
+			'http://localhost:8000/teamselect/',
+			{
+				method: 'POST',
+				credentials: 'include',
+				headers: {'content-type': 'application/json' },
+				// TODO: we might acutally just send a team id
+				// to have the server set active team id for the user
+				body: JSON.stringify(selected)
+			}
+		);
 		if (response.ok) {
             // TODO: update active team in the store?
             goto('/game/game-select')
