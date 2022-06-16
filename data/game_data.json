@@ -8,6 +8,8 @@
 			"title": "General Knowledge",
 			"round_description": "",
 			"round_number": 1,
+			"locked": false,
+			"scored": false,
 			"questions": [
 				{
 					"id": 4283,
@@ -56,6 +58,8 @@
 			"title": "Stay Cool",
 			"round_description": "Get into these five cool questions.",
 			"round_number": 2,
+			"locked": false,
+			"scored": false,
 			"questions": [
 				{
 					"id": 4288,
@@ -104,6 +108,8 @@
 			"title": "Where Do You Pronounce It Like That?",
 			"round_description": "I'll describe two homographs--words that are spelled the same but pronounced differently. At least one of them will be a place name. You write down the word.",
 			"round_number": 3,
+			"locked": false,
+			"scored": false,
 			"questions": [
 				{
 					"id": 4293,
@@ -152,6 +158,8 @@
 			"title": "Alphabetical Initials",
 			"round_description": "Name the person/character/thing.",
 			"round_number": 4,
+			"locked": false,
+			"scored": false,
 			"questions": [
 				{
 					"id": 4298,
@@ -240,6 +248,8 @@
 			"title": "The Rainbow Flag",
 			"round_description": "Happy Pride Month! Here are five questions about the iconic Pride Flag.",
 			"round_number": 5,
+			"locked": false,
+			"scored": false,
 			"questions": [
 				{
 					"id": 4308,
@@ -288,6 +298,8 @@
 			"title": "It’s Independence Day Somewhere",
 			"round_description": "I’ll name a country other than the United States that celebrates an Independence Day. You tell me which colonial power they gained independence from.",
 			"round_number": 6,
+			"locked": false,
+			"scored": false,
 			"questions": [
 				{
 					"id": 4313,
@@ -336,6 +348,8 @@
 			"title": "General Knowledge",
 			"round_description": "",
 			"round_number": 7,
+			"locked": false,
+			"scored": false,
 			"questions": [
 				{
 					"id": 4318,
@@ -384,6 +398,8 @@
 			"title": "Retro Vibes",
 			"round_description": "Clips from five songs that have gone viral on TikTok recently, despite being more than 10 years old.",
 			"round_number": 8,
+			"locked": false,
+			"scored": false,
 			"questions": [
 				{
 					"id": 4323,
