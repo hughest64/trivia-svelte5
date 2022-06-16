@@ -2,6 +2,21 @@
 	"id": 233,
 	"title": "20220606 - A - Sound",
 	"description": null,
+	"game_control": [
+		{
+			"round_number": 1,
+			"locked": false,
+			"scored": false
+		}
+	],
+	"question_control": [
+		{
+			"round_number": 1,
+			"question_number": 1,
+			"question_revealed": false,
+			"answer_revealed": false
+		}
+	],
 	"rounds": [
 		{
 			"id": 1010,
