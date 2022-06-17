@@ -22,6 +22,9 @@ with open(settings.BASE_DIR.parent / 'data' / 'event_setup_data.json', 'r') as f
 location_classes = [Location(**data) for data in event_select_data.get("locations", [])]
 game_classes = [Game(**data) for data in event_select_data.get("games", [])]
 
+with open(settings.BASE_DIR.parent / 'data' / 'game_data_merged.json', 'r') as event_file:
+    event_data = json.load(event_file)
+
 # TODO: classes
 class UserTeamsView(APIView):
     authentication_classes = [SessionAuthentication, JwtAuthentication]
@@ -85,6 +88,7 @@ class EventView(APIView):
     def get(self, request, joincode=None):
         """fetch a specific event from the joincode parsed from the url"""
         # use the join code to look up event data
+        event_data["join_code"] = joincode
         # raise if it's a bad join code
 
-        return Response()
+        return Response(event_data)
