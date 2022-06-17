@@ -1,5 +1,6 @@
 <script lang="ts">
     import { goto } from '$app/navigation'
+    import { eventData, type EventData } from '../../stores/event'
 
     export let joincode: string;
 
@@ -13,11 +14,12 @@
         )
 
         if (response.ok) {
+            const data = await <EventData>response.json()
+            data && eventData.set(data)
             goto(`/game/${joincode}`) 
         }
         // else notify user of bad code
     }
-
 </script>
 
 <h1>Game Select</h1>
