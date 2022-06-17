@@ -1,7 +1,44 @@
 import { writable } from "svelte/store";
+import type { Writable } from 'svelte/store'
 /**
  * Store contianing event related data
  */
+
+export interface EventQuestion {
+    id: string | number;
+    text: string;
+    answer: string;
+    question_number: number;
+    question_type: string;
+    question_url: string;
+    question_displayed: boolean;
+    answer_displayed: boolean;
+}
+
+export interface EventRound {
+    id: string | number;
+    title: string;
+    description: string;
+    round_number: number;
+    locked: boolean;
+    scored: boolean;
+    questions: EventQuestion[];
+}
+
+export interface EventData {
+    event_id: string | number;
+    game_id: string | number;
+    game_title: string;
+    location: string;
+    join_code: string | number;
+    reveal_answers: boolean;
+    current_round: string | number;
+    current_question: string | number;
+    round: EventRound[];
+}
+
+export const eventData: Writable<EventData> = writable();
+
 
 /** Web socket payload from get_event_data in the current version
 {
