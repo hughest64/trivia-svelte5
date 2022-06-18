@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { userdata, userteams, type UserTeam } from '../stores/user';
+	import { userdata, userteams, type UserTeam } from '$stores/user';
 
 	let selected: UserTeam;
 

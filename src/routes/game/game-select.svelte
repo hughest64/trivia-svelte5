@@ -1,6 +1,6 @@
 <script lang="ts">
     import { goto } from '$app/navigation'
-    import { eventData, type EventData } from '../../stores/event'
+    import { eventData, type EventData } from '$stores/event'
 
     export let joincode: string;
 
@@ -14,8 +14,8 @@
         )
 
         if (response.ok) {
-            const data = await <EventData>response.json()
-            data && eventData.set(data)
+            const data = await response.json()
+            data && eventData.set(data?.event_data)
             goto(`/game/${joincode}`) 
         }
         // else notify user of bad code

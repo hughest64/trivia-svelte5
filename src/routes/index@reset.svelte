@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
 	import { browser } from '$app/env';
-	import { userdata, userteams } from '../stores/user';
+	import { userdata, userteams } from '$stores/user';
 	import type { Load } from '@sveltejs/kit';
 
 	export const load: Load = async ({ fetch }) => {

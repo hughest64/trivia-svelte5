@@ -19,7 +19,7 @@ export interface EventRound {
     id: string | number;
     title: string;
     description: string;
-    round_number: number;
+    round_number: string | number;
     locked: boolean;
     scored: boolean;
     questions: EventQuestion[];
@@ -34,7 +34,7 @@ export interface EventData {
     reveal_answers: boolean;
     current_round: string | number;
     current_question: string | number;
-    round: EventRound[];
+    rounds: EventRound[];
 }
 
 export const eventData: Writable<EventData> = writable();

@@ -91,4 +91,4 @@ class EventView(APIView):
         event_data["join_code"] = joincode
         # raise if it's a bad join code
 
-        return Response(event_data)
+        return Response({"event_data": event_data})
