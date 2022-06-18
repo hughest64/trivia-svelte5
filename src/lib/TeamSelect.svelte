@@ -22,7 +22,7 @@
 		);
 		if (response.ok) {
             // TODO: update active team in the store?
-            goto('/game/game-select')
+            goto('/game/join')
         }
         // TODO: handle not ok
 	};

@@ -5,7 +5,6 @@
 
     const handleQuestionSelect = (event: MouseEvent) => {
         const target = <HTMLButtonElement>event.target
-        console.log('question', target.id)
         currentQuestionNumber.set(Number(target.id))
 
     }

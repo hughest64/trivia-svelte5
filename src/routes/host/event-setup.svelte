@@ -48,11 +48,13 @@
     const handleEventSubmit = async () => {
         console.log(`Starting Event at ${selectLocation.location_name} with game ${selectedGame.game_title}`)
         const response = await fetch (
-            'http://localhost:8000/eventsetup',
+            'http://localhost:8000/eventsetup/',
             {
                 method: 'POST',
                 credentials: 'include',
-                headers: { asccept: 'application/json'},
+                headers: {
+                    accept: 'application/json'
+                },
                 body: JSON.stringify({
                     location_id: selectLocation.location_id,
                     game_id: selectedGame.game_id

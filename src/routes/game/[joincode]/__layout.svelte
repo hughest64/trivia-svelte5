@@ -23,7 +23,7 @@
 				data = await response.json() as EventData;
 			} else if (response.status === 404) {
 				// TODO:
-				// redirect to /game-select with a not found message?
+				// redirect to /join with a not found message?
 			} else if (response.status === 403) {
 				return {
 					// TODO: query string ?next=/game/${params.joincode}
