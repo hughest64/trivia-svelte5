@@ -1,17 +1,42 @@
 <script lang="ts">
-    import type { EventRound } from '$stores/event'
+    import { currentRound, currentQuestion, currentQuestionNumber } from '$stores/event';
 
-    export let roundData: EventRound;
-    export let currentQuestion: string | number;
-    $: console.log('at round component', currentQuestion)
+    $: questionNumbers = $currentRound?.questions.map(q => q.question_number)
 
-    // TODO: we'll pull the question from the round data via a currentQuestionIndex store value
-    $: question = roundData?.questions[0] //.find(q => q.question_number === currentQuestion)
+    const handleQuestionSelect = (event: MouseEvent) => {
+        const target = <HTMLButtonElement>event.target
+        console.log('question', target.id)
+        currentQuestionNumber.set(Number(target.id))
+
+    }
 </script>
 
-{#if roundData}
+{#if $currentRound}
+<div class="container">
+    {#each questionNumbers as num }
+    <button id={String(num)} on:click={handleQuestionSelect}>{num}</button>
+    {/each}
+</div>
 <div>
-    <h3>R {roundData.round_number} Q {question?.question_number}</h3>
-    <p>{question?.text}</p>
+    <h3>R {$currentRound.round_number} Q {$currentQuestion.question_number}</h3>
+    <p>{$currentQuestion.text}</p>
 </div>
 {/if}
+
+<style>
+    .container {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        gap: 1em;
+        margin-top: 1.5rem;
+    }
+    button {
+        padding: .5em .75em;
+        font-size: 16px;
+        font-weight: bold;
+        border: none;
+        background-color: inherit;
+        cursor: pointer;
+    }
+</style>

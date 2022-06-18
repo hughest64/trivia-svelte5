@@ -1,11 +1,18 @@
 <script lang="ts">
-    export let roundNumbers: (string | number)[] = []
+    import { currentRoundNumber, currentQuestionNumber, roundNumbers } from '$stores/event'
+
+    const handleRoundSelect = (event: MouseEvent) => {
+        const target = <HTMLButtonElement>event.target
+        currentRoundNumber.set(Number(target.id))
+        // always reset the question when changing rounds
+        currentQuestionNumber.set(1)
+    }
     
 </script>
 
 <div class="container">
-    {#each roundNumbers as num}
-        <button>{num}</button>
+    {#each $roundNumbers as num}
+        <button id="{String(num)}" on:click={handleRoundSelect}>{num}</button>
     {/each}
 </div>
 
@@ -15,8 +22,6 @@
         flex-direction: row;
         justify-content: space-between;
         gap: 1em;
-        /* max-width: 30rem; */
-        /* margin: 5rem auto 0; */
     }
     button {
         padding: .5em .75em;

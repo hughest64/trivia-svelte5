@@ -1,5 +1,5 @@
-import { writable } from "svelte/store";
-import type { Writable } from 'svelte/store'
+import { writable, derived } from "svelte/store";
+import type { Readable, Writable } from 'svelte/store'
 /**
  * Store contianing event related data
  */
@@ -19,7 +19,7 @@ export interface EventRound {
     id: string | number;
     title: string;
     description: string;
-    round_number: string | number;
+    round_number: number;
     locked: boolean;
     scored: boolean;
     questions: EventQuestion[];
@@ -32,12 +32,37 @@ export interface EventData {
     location: string;
     join_code: string | number;
     reveal_answers: boolean;
-    current_round: string | number;
-    current_question: string | number;
+    current_round_number: number;
+    current_question_number: number;
     rounds: EventRound[];
 }
 
-export const eventData: Writable<EventData> = writable();
+export const eventData: Writable<EventData> = writable(); // TODO: I don't think this is getting used
+export const eventRounds: Writable<EventRound[]> = writable()
+export const roundNumbers: Writable<number[]> = writable()
+
+export const currentRoundNumber: Writable<number> = writable()
+export const currentQuestionNumber: Writable<number> = writable()
+
+export const currentRound: Readable<EventRound> = derived(
+    [eventRounds, currentRoundNumber],
+    ([$eventRounds, $currentRoundNumber]) => {
+        const index =  $eventRounds?.findIndex(
+            round => round.round_number === $currentRoundNumber
+        ) || 0
+        return $eventRounds[index]
+    }
+)
+
+export const currentQuestion: Readable<EventQuestion> = derived(
+    [currentRound, currentQuestionNumber],
+    ([$currentRound, $currentQuestionNumber]) => {
+        const index =  $currentRound?.questions.findIndex(
+            q => q.question_number === $currentQuestionNumber
+        ) || 0
+        return $currentRound?.questions[index]
+    }
+)
 
 
 /** Web socket payload from get_event_data in the current version
