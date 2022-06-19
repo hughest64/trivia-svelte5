@@ -9,12 +9,13 @@
 	} from '$stores/event';
 	import type { EventData } from '$stores/event';
 	import type { Load } from '@sveltejs/kit';
+	const apiHost = import.meta.env.VITE_API_HOST
 
 	// conditonally fetch event data if the event store is empty
 	export const load: Load = async ({ fetch, params }) => {
 		let data = get(eventData);
 		if (!data) {
-			const response = await fetch(`http://localhost:8000/event/${params.joincode}/`, {
+			const response = await fetch(`${apiHost}/event/${params.joincode}/`, {
 				credentials: 'include',
 				headers: { accept: 'application/json' }
 			});

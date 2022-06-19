@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { userdata, userteams, type UserTeam } from '$stores/user';
+	const apiHost = import.meta.env.VITE_API_HOST
 
 	let selected: UserTeam;
 
@@ -10,7 +11,7 @@
 		// update current team if different that what is in the store (post to the api)
 		// goto /game/game-selct (join?)
 		const response = await fetch(
-			'http://localhost:8000/teamselect/',
+			`${apiHost}/teamselect/`,
 			{
 				method: 'POST',
 				credentials: 'include',

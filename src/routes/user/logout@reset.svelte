@@ -1,9 +1,10 @@
 <script lang="ts">
     import { onMount } from 'svelte'
+    const apiHost = import.meta.env.VITE_API_HOST
 
     onMount (async () => {
         await fetch(
-            'http://localhost:8000/user/logout/',
+            `${apiHost}/user/logout/`,
             {
                 method: "POST",
                 credentials: 'include'

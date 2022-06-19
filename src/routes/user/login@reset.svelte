@@ -3,11 +3,12 @@
     import { browser } from '$app/env';
     import { userdata, type UserData } from '$stores/user';
     import type { Load } from '@sveltejs/kit';
+    const apiHost = import.meta.env.VITE_API_HOST
 
     export const load: Load = async({ fetch, session }) => {
         if (browser) return { status: 200 }
         const response = await fetch(
-            'http://localhost:8000/user/login/',
+            `${apiHost}/user/login/`,
             {
                 credentials: 'include',
                 headers: { accept: 'application/json' }
@@ -34,7 +35,7 @@
 
     const validateUser = async() => {
         const response = await fetch(
-            'http://localhost:8000/user/login/',
+            `${apiHost}/user/login/`,
             {
                 method: 'POST',
                 headers: {

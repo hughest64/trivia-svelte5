@@ -1,12 +1,13 @@
 <script lang="ts">
     import { goto } from '$app/navigation'
     import { eventData } from '$stores/event'
+    const apiHost = import.meta.env.VITE_API_HOST
 
     export let joincode: string;
 
     const handleJoinEvent = async () => {
         const response = await fetch (
-            `http://localhost:8000/event/${joincode}/`,
+            `${apiHost}/event/${joincode}/`,
             {
                 credentials: 'include',
                 headers: { accept: 'application/json' },
