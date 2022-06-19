@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	console.log($page);
 
 	const joinCode = $page.params?.joincode;
 	$: routeId = <string>$page.routeId?.split('/')[0];
@@ -17,7 +16,7 @@
 		{#if routeId === 'game' && isEventRoute}
 			<li><a href={`/game/${joinCode}/megaround`}>Megaround</a></li>
 		{/if}
-        <!-- TODO: this should opent the menu component not log out directly -->
+        <!-- TODO: this should open the menu component not log out directly -->
 		<li><a href="/user/logout">Logout</a></li>
 	</ul>
 </nav>

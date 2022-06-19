@@ -40,9 +40,10 @@ export interface EventData {
 // this store is used as a temporary container of data from /game/join
 // it then gets split up to the other stores in the game __layout
 export const eventData: Writable<EventData> = writable();
-export const eventRounds: Writable<EventRound[]> = writable()
+
 export const roundNumbers: Writable<number[]> = writable()
 
+export const eventRounds: Writable<EventRound[]> = writable()
 export const currentRoundNumber: Writable<number> = writable()
 export const currentQuestionNumber: Writable<number> = writable()
 

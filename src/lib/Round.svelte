@@ -10,17 +10,17 @@
     }
 </script>
 
-{#if $currentRound}
+<!-- {#if $currentRound} -->
 <div class="container">
     {#each questionNumbers as num }
-    <button id={String(num)} on:click={handleQuestionSelect}>{num}</button>
+        <button id={String(num)} on:click={handleQuestionSelect}>{num}</button>
     {/each}
 </div>
 <div>
     <h3>R {$currentRound.round_number} Q {$currentQuestion.question_number}</h3>
     <p>{$currentQuestion.text}</p>
 </div>
-{/if}
+<!-- {/if} -->
 
 <style>
     .container {
