@@ -1,5 +1,5 @@
 import { derived, writable } from "svelte/store";
-import type { Writable } from "svelte/store"
+import type { Readable, Writable } from "svelte/store"
 
 // TODO: teams as part of UserData
 
@@ -24,9 +24,8 @@ export interface UserTeam {
 }
 export const userteams: Writable<UserTeam[]> = writable([]);
 
-export const useractiveteam = derived(
+export const useractiveteam: Readable<UserTeam | undefined> = derived(
     [userdata, userteams],
     ([$userdata, $userteams]) => {
-        // TODO: we could probably even get this to set in session storage
-        return $userteams.find((team) => team.team_id === $userdata.active_team_id) || ''
+        return $userteams.find((team) => team.team_id === $userdata.active_team_id)
 })

@@ -11,6 +11,9 @@
 	import type { Load } from '@sveltejs/kit';
 	const apiHost = import.meta.env.VITE_API_HOST;
 
+	// TODO: handle direct navigation, the event endpoint should return userdata
+	// and we should make sure that a user has an active team
+
 	// conditonally fetch event data if the event store is empty
 	export const load: Load = async ({ fetch, params }) => {
 		let data = get(eventData);

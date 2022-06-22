@@ -1,3 +1,6 @@
+<script context="module">
+    // TODO: if no $userdtata, poll api/user, etc
+</script>
 <script lang="ts">
     import { goto } from '$app/navigation'
     import { eventData } from '$stores/event'

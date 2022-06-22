@@ -2,4 +2,10 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from .models import User
 
-admin.site.register(User, UserAdmin)
+class TriviaUserAdmin(UserAdmin):
+    fieldsets = (
+        ("User Info", {"fields": ('active_team_id',)}),
+    ) + UserAdmin.fieldsets
+
+
+admin.site.register(User, TriviaUserAdmin)

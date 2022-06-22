@@ -7,8 +7,6 @@
 		// if (!browser) return { status: 200 };
 
 		const response = await fetch(
-			// TODO: store the host portion of the url in env
-			// if dev use localhost, if prod use ...
 			`${apiHost}/userteams/`,
 			{
 				headers: { accept: 'application/json' },
@@ -18,8 +16,8 @@
 
 		if (response.ok) {
 			const { user_teams, user_data } = (await response.json()) || {};
-			userdata.set({ ...user_data });
-			userteams.set([...user_teams]);
+			userdata.set(user_data);
+			userteams.set(user_teams);
 
 			return {
 				status: 200
@@ -72,7 +70,7 @@
 
 <svelte:window on:popstate={handlepopstate} />
 
-{#if ($userdata.username && !$userdata.is_staff) || hostchoice === 'play'}
+{#if ($userdata?.username && !$userdata?.is_staff) || hostchoice === 'play'}
 	<TeamSelect />
 {:else}
 	<HostChoice on:click={handleChoiceClick} />

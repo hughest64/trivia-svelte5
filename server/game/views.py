@@ -1,6 +1,8 @@
 import json
 
 from django.conf import settings
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import ensure_csrf_cookie, csrf_protect
 
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -46,16 +48,25 @@ class UserTeamsView(APIView):
 class TeamSelectView(APIView):
     authentication_classes = [SessionAuthentication, JwtAuthentication]
 
+    # TODO client side needs to send the csrf token for this
+    # @method_decorator(csrf_protect)
     def post(self, request):
         print(request.data)
-        serializer = TeamSerializer(data=request.data)
-        # TODO: we shouldn't have any invalid data here, but handle it in case
-        # what we are really after is to set an active team for the user in the db
-        # so maybe it will be a UserSerializer instance?
-        serializer.is_valid()
-        print(serializer.data)
+        team_id = request.data.get("team_id")
+        if team_id:
+            user = request.user
+            # TODO: maybe don't lookup with user? we do allow "guests" on a team
+            # (i.e send someone a join code to join the team)
+            # requested_team = Team.models.filter(id=team_id, user=request.user)
+            # if requested_team.exists():
+            user.active_team_id = team_id
+            user.save()
+            #   set the team on the user and save()
 
-        return Response({"msg": "ok"})
+            # else:
+                # send a bad response
+
+        return Response({"active_team_id": team_id})
 
 
 class EventSetupView(APIView):

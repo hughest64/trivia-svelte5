@@ -1,30 +1,36 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { userdata, userteams, type UserTeam } from '$stores/user';
+	import { userdata, userteams, useractiveteam, type UserTeam } from '$stores/user';
 	const apiHost = import.meta.env.VITE_API_HOST
 
-	let selected: UserTeam;
+	// TODO: add create a team and join by code (team password)
+	// TODO: handle when there are no teams (probably just hide the select)
+	let selected: UserTeam = $useractiveteam || $userteams[0]; 
 
 	const handleTeamSelectSubmit = async () => {
-		// post to the api and if resp.ok, goto gameselct (or next=/some/place)
 		console.log('you have chosen to play with', selected.team_name);
-		// update current team if different that what is in the store (post to the api)
-		// goto /game/game-selct (join?)
-		const response = await fetch(
-			`${apiHost}/teamselect/`,
-			{
-				method: 'POST',
-				credentials: 'include',
-				headers: {'content-type': 'application/json' },
-				// TODO: we might acutally just send a team id
-				// to have the server set active team id for the user
-				body: JSON.stringify(selected)
+
+		if (selected.team_id === $userdata.active_team_id) {
+			goto('/game/join')
+
+		} else {
+			// TODO: this should send the csrf token (hopefully it's in the session store!)
+			// for csrf validation
+			const response = await fetch(
+				`${apiHost}/teamselect/`,
+				{
+					method: 'POST',
+					credentials: 'include',
+					headers: {'content-type': 'application/json' },
+					body: JSON.stringify({ team_id: selected.team_id })
+				}
+			);
+			if (response.ok) {
+				const active_team_id = await response.json()
+				userdata.update(data => ({ ...data, ...active_team_id }))
+				goto('/game/join')
 			}
-		);
-		if (response.ok) {
-            // TODO: update active team in the store?
-            goto('/game/join')
-        }
+		}
         // TODO: handle not ok
 	};
 </script>
@@ -32,7 +38,7 @@
 <h1>Team Select</h1>
 
 <form class="container" on:submit|preventDefault={handleTeamSelectSubmit}>
-	<h2>{$userdata.username} Select A Team</h2>
+	<h2>{$userdata?.username} Select A Team</h2>
 	<select bind:value={selected}>
 		{#each $userteams as team (team.team_id)}
 			<option value={team}>{team.team_name}</option>
