@@ -1,12 +1,14 @@
 <script lang="ts">
     import { page } from '$app/stores'
-    import { eventRounds, activeRoundNumber } from '$stores/event'
+    import { eventRounds, activeRoundNumber, activeQuestionNumber } from '$stores/event'
     import RoundHeader from '$lib/RoundHeader.svelte';
     import Round from "$lib/Round.svelte"
 
     export let initialRoundNumber: number;
     $: initialRoundNumber && activeRoundNumber.set(Number(initialRoundNumber))
-    // TODO: same treatment as above with activeQuestionNumber
+
+    export let initialQuestionNumber: number;
+    $: initialQuestionNumber && activeQuestionNumber.set(Number(initialQuestionNumber))
 
     const joincode = $page.params.joincode
 

@@ -1,19 +1,14 @@
+/**
+ * Store containing event related data
+ */
 import { writable, derived } from "svelte/store";
 import type { Readable, Writable } from 'svelte/store'
 import type { EventData, EventRound, EventQuestion } from "$lib/types";
 
-/**
- * Store containing event related data
- */
-
-
-
 // this store is used as a temporary container of data from /game/join
 // it then gets split up to the other stores in the game __layout
 export const eventData: Writable<EventData> = writable()
-
 export const roundNumbers: Writable<number[]> = writable()
-
 export const eventRounds: Writable<EventRound[]> = writable()
 
 // comes from the database and represents current game progress
@@ -24,8 +19,7 @@ export const currentQuestionNumber: Writable<number> = writable()
 export const activeRoundNumber: Writable<number> = writable()
 export const activeQuestionNumber: Writable<number> = writable()
 
-// TODO: change the activeRound
-export const currentRound: Readable<EventRound> = derived(
+export const activeRound: Readable<EventRound> = derived(
     [eventRounds, activeRoundNumber],
     ([$eventRounds, $activeRoundNumber]) => {
         const index = $eventRounds?.findIndex(
@@ -36,13 +30,13 @@ export const currentRound: Readable<EventRound> = derived(
 )
 
 // TODO: change the activeQuestion
-export const currentQuestion: Readable<EventQuestion> = derived(
-    [currentRound, currentQuestionNumber],
-    ([$currentRound, $currentQuestionNumber]) => {
-        const index = $currentRound?.questions.findIndex(
-            q => q.question_number === $currentQuestionNumber
+export const activeQuestion: Readable<EventQuestion> = derived(
+    [activeRound, activeQuestionNumber],
+    ([$activeRound, $activeQuestionNumber]) => {
+        const index = $activeRound?.questions.findIndex(
+            q => q.question_number === $activeQuestionNumber
         ) || 0
-        return $currentRound?.questions[index]
+        return $activeRound?.questions[index]
     }
 )
 
