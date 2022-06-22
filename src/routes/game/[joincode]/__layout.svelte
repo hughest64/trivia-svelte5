@@ -7,7 +7,7 @@
 		eventRounds,
 		roundNumbers
 	} from '$stores/event';
-	import type { EventData } from '$stores/event';
+	import type { EventData } from '$lib/types';
 	import type { Load } from '@sveltejs/kit';
 	const apiHost = import.meta.env.VITE_API_HOST;
 
