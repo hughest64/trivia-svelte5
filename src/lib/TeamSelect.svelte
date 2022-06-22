@@ -8,8 +8,6 @@
 	let selected: UserTeam = $useractiveteam || $userteams[0]; 
 
 	const handleTeamSelectSubmit = async () => {
-		console.log('you have chosen to play with', selected.team_name);
-
 		if (selected.team_id === $userdata.active_team_id) {
 			goto('/game/join')
 

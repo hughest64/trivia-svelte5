@@ -51,7 +51,6 @@ class TeamSelectView(APIView):
     # TODO client side needs to send the csrf token for this
     # @method_decorator(csrf_protect)
     def post(self, request):
-        print(request.data)
         team_id = request.data.get("team_id")
         if team_id:
             user = request.user
