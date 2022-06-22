@@ -1,8 +1,12 @@
 <script lang="ts">
     import { page } from '$app/stores'
-    import { eventRounds } from '$stores/event'
+    import { eventRounds, activeRoundNumber } from '$stores/event'
     import RoundHeader from '$lib/RoundHeader.svelte';
     import Round from "$lib/Round.svelte"
+
+    export let initialRoundNumber: number;
+    $: initialRoundNumber && activeRoundNumber.set(Number(initialRoundNumber))
+    // TODO: same treatment as above with activeQuestionNumber
 
     const joincode = $page.params.joincode
 

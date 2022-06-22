@@ -9,7 +9,7 @@
 	} from '$stores/event';
 	import type { EventData } from '$stores/event';
 	import type { Load } from '@sveltejs/kit';
-	const apiHost = import.meta.env.VITE_API_HOST
+	const apiHost = import.meta.env.VITE_API_HOST;
 
 	// conditonally fetch event data if the event store is empty
 	export const load: Load = async ({ fetch, params }) => {
@@ -21,7 +21,7 @@
 			});
 
 			if (response.status === 200) {
-				data = await response.json() as EventData;
+				data = (await response.json()) as EventData;
 			} else if (response.status === 404) {
 				// TODO:
 				// redirect to /join with a not found message?
@@ -46,6 +46,7 @@
 
 <script lang="ts">
 	// create socket connection here?
+	// then close the client in an onDestroy?
 </script>
 
 <slot />

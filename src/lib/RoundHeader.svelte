@@ -1,11 +1,23 @@
 <script lang="ts">
-    import { currentRoundNumber, currentQuestionNumber, roundNumbers } from '$stores/event'
+    import { page } from '$app/stores'
+    import { activeRoundNumber, currentRoundNumber, currentQuestionNumber, roundNumbers } from '$stores/event'
+  
+    const joinCode = $page.params?.joincode;
 
-    const handleRoundSelect = (event: MouseEvent) => {
+    const handleRoundSelect = async (event: MouseEvent) => {
         const target = <HTMLButtonElement>event.target
         currentRoundNumber.set(Number(target.id))
+        activeRoundNumber.set(Number(target.id))
         // always reset the question when changing rounds
         currentQuestionNumber.set(1)
+        // post to the game endpoint to set active round and question in a cookie
+        await fetch(`/game/${joinCode}`, {
+            method: 'POST',
+            body: JSON.stringify({
+                initialRoundNumber: target.id,
+                initialQuestionNumber: 1
+            })
+        })
     }
     
 </script>

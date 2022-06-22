@@ -1,5 +1,4 @@
 <script context="module" lang="ts">
-	import { browser } from '$app/env';
 	import { userdata, userteams } from '$stores/user';
 	import type { Load } from '@sveltejs/kit';
 	const apiHost = import.meta.env.VITE_API_HOST
