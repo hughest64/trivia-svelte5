@@ -17,7 +17,7 @@
 			<li><a href={`/game/${joinCode}/megaround`}>Megaround</a></li>
 		{/if}
         <!-- TODO: this should open the menu component not log out directly -->
-		<li><a href="/user/logout">Logout</a></li>
+		<li><a rel="external" href="/user/logout">Logout</a></li>
 	</ul>
 </nav>
 

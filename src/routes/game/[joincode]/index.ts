@@ -9,8 +9,8 @@ export const get: RequestHandler = async ({ params, request }) => {
     const eventKey = `event-${params.joincode}`;
     const eventCookie = cookies[eventKey]
     const body = {
-        initialRoundNumber: getStore(currentRoundNumber),
-        initialQuestionNumber: getStore(currentQuestionNumber)
+        initialRoundNumber: getStore(currentRoundNumber) || 1,
+        initialQuestionNumber: getStore(currentQuestionNumber) || 1
     }
     eventCookie && Object.assign(body, JSON.parse(eventCookie))
     

@@ -9,8 +9,8 @@ export interface GameSelectData {
 }
 
 export interface HostSelectData {
-    game_select_data?: GameSelectData[];
-    location_select_data?: LocationSelectData[];
+    game_select_data: GameSelectData[];
+    location_select_data: LocationSelectData[];
 }
 
 export interface EventQuestion {
