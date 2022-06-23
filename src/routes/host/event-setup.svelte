@@ -3,6 +3,11 @@
     import type { Load } from '@sveltejs/kit';
     import type { GameSelectData, LocationSelectData, HostSelectData } from '$lib/types'
     const apiHost = import.meta.env.VITE_API_HOST
+
+    // TODO: 
+    // should this be in a get function in an endpoint file?
+    // handle direct navigation
+    // hanlde non-staff users (redirect)
     
     export const load: Load = async({ fetch }) => {
         // if (browser) return { status: 200 }
@@ -48,6 +53,7 @@
 
     const handleEventSubmit = async () => {
         console.log(`Starting Event at ${selectLocation.location_name} with game ${selectedGame.game_title}`)
+        // TODO: just post to /event?
         const response = await fetch (
             `${apiHost}/eventsetup/`,
             {
@@ -63,6 +69,7 @@
             }
         )
         if (response.ok) {
+            // TODO set event data store
             // goto host/
         }
     }
