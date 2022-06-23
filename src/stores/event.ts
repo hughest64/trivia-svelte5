@@ -16,7 +16,7 @@ export const currentRoundNumber: Writable<number> = writable()
 export const currentQuestionNumber: Writable<number> = writable()
 
 // usually comes from a cookie and represents what a user is viewing
-export const activeRoundNumber: Writable<number> = writable()
+export const activeRoundNumber: Writable<number> = writable(1) // TODO remove the default!!!
 export const activeQuestionNumber: Writable<number> = writable()
 
 export const activeRound: Readable<EventRound> = derived(

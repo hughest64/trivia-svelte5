@@ -37,6 +37,7 @@
 			}
 		}
 		if (data) {
+			eventData.set(data)
 			roundNumbers.set(data.rounds.map((round) => round.round_number));
 			currentRoundNumber.set(data.current_round_number);
 			currentQuestionNumber.set(data.current_question_number);

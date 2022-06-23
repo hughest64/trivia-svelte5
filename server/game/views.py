@@ -1,4 +1,5 @@
 import json
+import random
 
 from django.conf import settings
 from django.utils.decorators import method_decorator
@@ -88,8 +89,9 @@ class EventSetupView(APIView):
         """ create a new event or fetch an existing one with a specified game/location combo"""
         # validate the data
         # get or create
+        event_data["join_code"] = random.randint(1000, 9999)
         # serialize
-        return Response()
+        return Response(event_data)
 
 
 class EventView(APIView):

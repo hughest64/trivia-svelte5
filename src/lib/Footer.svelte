@@ -15,6 +15,8 @@
 		{/if}
 		{#if routeId === 'game' && isEventRoute}
 			<li><a href={`/game/${joinCode}/megaround`}>Megaround</a></li>
+		{:else if routeId === 'host'}
+			<li><a href={`/host/${joinCode}/score`}>Scoring</a></li>
 		{/if}
         <!-- TODO: this should open the menu component not log out directly -->
 		<li><a rel="external" href="/user/logout">Logout</a></li>

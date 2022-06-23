@@ -44,16 +44,16 @@
 
 <script lang="ts">
     import { goto } from '$app/navigation'
+    import { eventData } from '$stores/event'
 
     export let gameSelectData: GameSelectData[]
     export let locationSelectData: LocationSelectData[]
 
-    let selectLocation: LocationSelectData
+    let selectLocation: LocationSelectData // TODO: set to the host's "home" location
     let selectedGame: GameSelectData
 
     const handleEventSubmit = async () => {
-        console.log(`Starting Event at ${selectLocation.location_name} with game ${selectedGame.game_title}`)
-        // TODO: just post to /event?
+
         const response = await fetch (
             `${apiHost}/eventsetup/`,
             {
@@ -69,8 +69,10 @@
             }
         )
         if (response.ok) {
-            // TODO set event data store
-            // goto host/
+            const data = await response.json()
+            const joincode = data.join_code
+            data && eventData.set(data)
+            goto(`/host/${joincode}`)
         }
     }
 
