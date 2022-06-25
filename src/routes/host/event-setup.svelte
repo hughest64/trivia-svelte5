@@ -10,7 +10,6 @@
     // hanlde non-staff users (redirect)
     
     export const load: Load = async({ fetch }) => {
-        // if (browser) return { status: 200 }
 
         const response = await fetch(
             `${apiHost}/eventsetup/`,
