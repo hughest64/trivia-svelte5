@@ -1,6 +1,6 @@
 from django.db import models
 
-# TODO: convert models to actual Djanog models!
+# TODO: convert models to actual Django models!
 
 class Team:
     def __init__(self, team_id, team_name, join_code, team_members=list):

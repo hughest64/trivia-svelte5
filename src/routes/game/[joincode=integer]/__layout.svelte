@@ -1,4 +1,5 @@
 <script context="module" lang="ts">
+	import { checkStatusCode, externalFetchConfig } from '$lib/utils';
 	import { get } from 'svelte/store';
 	import {
 		eventData,
@@ -11,32 +12,22 @@
 	import type { Load } from '@sveltejs/kit';
 	const apiHost = import.meta.env.VITE_API_HOST;
 
-	// TODO: handle direct navigation, the event endpoint should return userdata
-	// and we should make sure that a user has an active team
-
-	// conditonally fetch event data if the event store is empty
-	export const load: Load = async ({ fetch, params }) => {
+	export const load: Load = async ({ fetch, url, params }) => {
+		// TODO: check some other data, as we should deprecate eventData
 		let data = get(eventData);
 		if (!data) {
-			const response = await fetch(`${apiHost}/event/${params.joincode}/`, {
-				credentials: 'include',
-				headers: { accept: 'application/json' }
-			});
+			const fetchConfig = externalFetchConfig("GET")
+            const response = await fetch(`${apiHost}/event/${params.joincode}/`, fetchConfig);
 
-			if (response.status === 200) {
+			if (response.ok) {
 				data = (await response.json()) as EventData;
-			} else if (response.status === 404) {
-				// TODO:
-				// redirect to /join with a not found message?
-			} else if (response.status === 403) {
-				return {
-					// TODO: query string ?next=/game/${params.joincode}
-					redirect: '/user/login',
-					status: 302
-				};
+			} else {
+				return checkStatusCode(response, url.pathname)
 			}
 		}
 		if (data) {
+			// TODO: we shouldn't need to set eventData
+			// TODO: first check for an active team, if none, redirect to /
 			eventData.set(data)
 			roundNumbers.set(data.rounds.map((round) => round.round_number));
 			currentRoundNumber.set(data.current_round_number);
@@ -49,8 +40,15 @@
 </script>
 
 <script lang="ts">
+	import { page } from '$app/stores'
+	const joincode = $page.params.joincode
+
 	// create socket connection here?
 	// then close the client in an onDestroy?
 </script>
+
+<svelte:head>
+	<title>Trivia Mafia Event {joincode}</title>
+</svelte:head>
 
 <slot />

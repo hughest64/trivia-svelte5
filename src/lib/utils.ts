@@ -1,5 +1,9 @@
-import type { RequestHandlerOutput } from '@sveltejs/kit';
+import type { LoadOutput, RequestHandlerOutput } from '@sveltejs/kit';
 import * as cookie from 'cookie'
+
+// TODO: doc strings for all!
+
+const cookieMaxAge = import.meta.env.VITE_COOKIE_MAX_AGE
 
 export const getEventCookie = (params: Record<string, string>, request: Request): string => {
     const cookies = cookie.parse(request.headers.get('cookie') || '');
@@ -23,8 +27,49 @@ export const setEventCookie = async (
             'set-cookie': cookie.serialize(eventKey, JSON.stringify(data), {
                 path: '/',
                 httpOnly: true,
-                maxAge: 60 * 60 * 24 // 24 hrs
+                maxAge: cookieMaxAge
             })
         }
     }
+}
+
+export const externalFetchConfig = (method: string, data?: Record<string, unknown>): RequestInit => {
+    return {
+		method,
+        credentials: 'include',
+		headers: {
+			'content-type': 'application/json',
+            accept: 'application/json'
+		},
+		body: data && JSON.stringify(data)
+	}
+}
+
+export const checkStatusCode = (response: Response, next?: string|null): LoadOutput => {
+    let output: LoadOutput
+
+    switch (response.status) {
+        case(500):
+            output = { status: 500 }
+            break
+        case(404):
+            output = { status: 404 }
+            break
+        case(401):
+            output = { status: 302, redirect: '/' }
+            break
+        case(403):
+            output = { status: 302, redirect: '/user/login' }
+            break
+        case(200):
+        default:
+            output = { status: 200 }
+            break
+
+    }
+    if(next && output?.redirect) {
+         output.redirect += `?next=${next}`
+    }
+    
+    return output
 }

@@ -1,33 +1,26 @@
 <script context="module" lang="ts">
+	import { checkStatusCode, externalFetchConfig } from '$lib/utils';
+	import { get } from 'svelte/store';
 	import { userdata, userteams } from '$stores/user';
 	import type { Load } from '@sveltejs/kit';
 	const apiHost = import.meta.env.VITE_API_HOST
 
-	export const load: Load = async ({ fetch }) => {
-		// if (!browser) return { status: 200 };
-
-		const response = await fetch(
-			`${apiHost}/userteams/`,
-			{
-				headers: { accept: 'application/json' },
-				credentials: 'include'
+	export const load: Load = async () => {
+		const data = get(userdata)
+		if (!data) {
+			const fetchConfig = externalFetchConfig("GET")
+			const response = await fetch(`${apiHost}/userteams/`, fetchConfig);
+	
+			if (response.ok) {
+				const { user_teams, user_data } = (await response.json()) || {};
+				userdata.set(user_data);
+				userteams.set(user_teams);
+	
+			} else {
+				return checkStatusCode(response)
 			}
-		);
-
-		if (response.ok) {
-			const { user_teams, user_data } = (await response.json()) || {};
-			userdata.set(user_data);
-			userteams.set(user_teams);
-
-			return {
-				status: 200
-			};
 		}
-
-		return {
-			redirect: '/user/login',
-			status: 302
-		};
+		return { status: 200 };
 	};
 </script>
 
@@ -64,8 +57,6 @@
 		}
 		historyIndex = eventIndex
 	};
-
-	// TODO: onMount goto /user/login if no user data ?
 </script>
 
 <svelte:window on:popstate={handlepopstate} />

@@ -11,11 +11,11 @@
 	import type { Load } from '@sveltejs/kit';
 	const apiHost = import.meta.env.VITE_API_HOST;
 
-	// TODO: handle direct navigation, the event endpoint should return userdata
-	// and we should make sure that a user has an active team -  will we get a 401 if we set up staff permission?
+	// TODO: convert
 
 	// conditonally fetch event data if the event store is empty
 	export const load: Load = async ({ fetch, params }) => {
+		// TODO: deprecate eventData, check other data
 		let data = get(eventData);
 		if (!data) {
 			const response = await fetch(`${apiHost}/event/${params.joincode}/`, {

@@ -31,10 +31,9 @@
                 }
             }
         }
-        // TODO: actually check for a 4xx code
-        // not a staff user
+        const route = response.status === 401 ? '/' : '/user/login'
         return {
-            redirect: '/',
+            redirect: route,
             status: 302
         }
 
