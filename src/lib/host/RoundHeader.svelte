@@ -10,13 +10,13 @@
         // always reset the question when changing rounds
         activeQuestionNumber.set(1)
         // post to the game endpoint to set active round and question in a cookie
-        // await fetch(`/game/${joinCode}`, {
-        //     method: 'POST',
-        //     body: JSON.stringify({
-        //         initialRoundNumber: target.id,
-        //         initialQuestionNumber: 1
-        //     })
-        // })
+        await fetch(`/host/${joinCode}`, {
+            method: 'POST',
+            body: JSON.stringify({
+                initialRoundNumber: target.id,
+                initialQuestionNumber: 1
+            })
+        })
     }
     
 </script>

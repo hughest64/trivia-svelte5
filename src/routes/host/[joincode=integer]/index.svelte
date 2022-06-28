@@ -1,14 +1,11 @@
-<!--
-    TODO: 
-    - add an endpoint file for handling active round/question like game index
-    - create a host version of round numbers
-    - create a host version of round
- -->
  <script lang="ts">
     import { page } from '$app/stores'
     import { eventRounds, activeRoundNumber, activeQuestionNumber } from '$stores/event'
     import RoundHeader from '$lib/host/RoundHeader.svelte';
     import Round from '$lib/host/Round.svelte'
+
+    export let initialRoundNumber: number;
+    $: initialRoundNumber && activeRoundNumber.set(Number(initialRoundNumber))
 
     const joincode = $page.params.joincode
  </script>
