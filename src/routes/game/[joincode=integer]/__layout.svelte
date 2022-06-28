@@ -1,5 +1,5 @@
 <script context="module" lang="ts">
-	import { checkStatusCode, externalFetchConfig } from '$lib/utils';
+	import { checkStatusCode, getFetchConfig } from '$lib/utils';
 	import { get } from 'svelte/store';
 	import {
 		eventData,
@@ -16,7 +16,7 @@
 		// TODO: check some other data, as we should deprecate eventData
 		let data = get(eventData);
 		if (!data) {
-			const fetchConfig = externalFetchConfig("GET")
+			const fetchConfig = getFetchConfig("GET")
             const response = await fetch(`${apiHost}/event/${params.joincode}/`, fetchConfig);
 
 			if (response.ok) {
@@ -27,7 +27,6 @@
 		}
 		if (data) {
 			// TODO: we shouldn't need to set eventData
-			// TODO: first check for an active team, if none, redirect to /
 			eventData.set(data)
 			roundNumbers.set(data.rounds.map((round) => round.round_number));
 			currentRoundNumber.set(data.current_round_number);

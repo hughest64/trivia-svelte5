@@ -1,5 +1,5 @@
 <script context="module" lang="ts">
-	import { checkStatusCode, externalFetchConfig } from '$lib/utils';
+	import { checkStatusCode, getFetchConfig } from '$lib/utils';
 	import { get } from 'svelte/store';
 	import { userdata } from '$stores/user';
 	import type { Load } from '@sveltejs/kit';
@@ -9,7 +9,7 @@
         const data = get(userdata);
         
 		if (!data) {
-            const fetchConfig = externalFetchConfig("GET")
+            const fetchConfig = getFetchConfig("GET")
             const response = await fetch(`${apiHost}/userteams/`, fetchConfig);
             
 			if (response.ok) {
@@ -19,7 +19,7 @@
                 return checkStatusCode(response, url.pathname);
             }
 		}
-		// TODO: check for an active team, if none, redirect to /
+
         return { status: 200 };
 	};
 </script>
@@ -33,7 +33,7 @@
 
 	const handleJoinEvent = async () => {
 		// TODO: should we post here? It's likely we'll be creating leaderboard entries here
-		const fetchConfig = externalFetchConfig("GET")
+		const fetchConfig = getFetchConfig("GET")
 		const response = await fetch(`${apiHost}/event/${joincode}/`, fetchConfig);
 
 		if (response.ok) {

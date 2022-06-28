@@ -33,7 +33,7 @@ export const setEventCookie = async (
     }
 }
 
-export const externalFetchConfig = (method: string, data?: Record<string, unknown>): RequestInit => {
+export const getFetchConfig = (method: string, data?: Record<string, unknown>): RequestInit => {
     return {
 		method,
         credentials: 'include',
@@ -67,7 +67,7 @@ export const checkStatusCode = (response: Response, next?: string|null): LoadOut
             break
 
     }
-    if(next && output?.redirect) {
+    if (next && output?.redirect && response.status !== 401) {
          output.redirect += `?next=${next}`
     }
     

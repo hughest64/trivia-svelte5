@@ -1,25 +1,13 @@
 <script context="module" lang="ts">
-    import { browser } from '$app/env'
+    import { checkStatusCode, getFetchConfig } from '$lib/utils';
     import type { Load } from '@sveltejs/kit';
     import type { GameSelectData, LocationSelectData, HostSelectData } from '$lib/types'
     const apiHost = import.meta.env.VITE_API_HOST
-
-    // TODO: 
-    // should this be in a get function in an endpoint file?
-    // handle direct navigation
-    // hanlde non-staff users (redirect)
     
     export const load: Load = async({ fetch }) => {
+        const fetchConfig = getFetchConfig("GET")
+        const response = await fetch(`${apiHost}/eventsetup/`, fetchConfig) 
 
-        const response = await fetch(
-            `${apiHost}/eventsetup/`,
-            {
-                credentials: 'include',
-                headers: {
-                    accept: 'application/json'
-                }
-            }
-        ) 
         if (response.ok) {
             const data = await <HostSelectData>response.json()
 
@@ -31,11 +19,8 @@
                 }
             }
         }
-        const route = response.status === 401 ? '/' : '/user/login'
-        return {
-            redirect: route,
-            status: 302
-        }
+        // TODO: verify 401 handles properly (redirect to /)
+        return checkStatusCode(response)
 
     }
 </script>
@@ -51,24 +36,15 @@
     let selectedGame: GameSelectData
 
     const handleEventSubmit = async () => {
-
-        const response = await fetch (
-            `${apiHost}/eventsetup/`,
-            {
-                method: 'POST',
-                credentials: 'include',
-                headers: {
-                    accept: 'application/json'
-                },
-                body: JSON.stringify({
+        const fetchConfig = getFetchConfig('POST', {
                     location_id: selectLocation.location_id,
                     game_id: selectedGame.game_id
                 })
-            }
-        )
+        const response = await fetch (`${apiHost}/eventsetup/`, fetchConfig)
         if (response.ok) {
             const data = await response.json()
             const joincode = data.join_code
+            // TODO: set the pieces of store, deprecate eventData
             data && eventData.set(data)
             goto(`/host/${joincode}`)
         }

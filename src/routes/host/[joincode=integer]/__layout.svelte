@@ -1,4 +1,5 @@
  <script context="module" lang="ts">
+	import { checkStatusCode, getFetchConfig } from '$lib/utils';
 	import { get } from 'svelte/store';
 	import {
 		eventData,
@@ -11,29 +12,17 @@
 	import type { Load } from '@sveltejs/kit';
 	const apiHost = import.meta.env.VITE_API_HOST;
 
-	// TODO: convert
-
-	// conditonally fetch event data if the event store is empty
 	export const load: Load = async ({ fetch, params }) => {
 		// TODO: deprecate eventData, check other data
 		let data = get(eventData);
 		if (!data) {
-			const response = await fetch(`${apiHost}/event/${params.joincode}/`, {
-				credentials: 'include',
-				headers: { accept: 'application/json' }
-			});
+			const fetchConfig = getFetchConfig("GET")
+			const response = await fetch(`${apiHost}/event/${params.joincode}/`, fetchConfig);
 
-			if (response.status === 200) {
-				data = (await response.json()) as EventData;
-			} else if (response.status === 404) {
-				// TODO:
-				// redirect to /join with a not found message?
-			} else if (response.status === 403) {
-				return {
-					// TODO: query string ?next=/host/${params.joincode}
-					redirect: '/user/login',
-					status: 302
-				};
+			if (response.ok) {
+				data = await <EventData>response.json();
+			} else {
+				return checkStatusCode(response)
 			}
 		}
 		if (data) {

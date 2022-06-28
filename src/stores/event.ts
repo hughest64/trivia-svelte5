@@ -29,7 +29,6 @@ export const activeRound: Readable<EventRound> = derived(
     }
 )
 
-// TODO: change the activeQuestion
 export const activeQuestion: Readable<EventQuestion> = derived(
     [activeRound, activeQuestionNumber],
     ([$activeRound, $activeQuestionNumber]) => {

@@ -1,5 +1,5 @@
 <script context="module" lang="ts">
-	import { checkStatusCode, externalFetchConfig } from '$lib/utils';
+	import { checkStatusCode, getFetchConfig } from '$lib/utils';
 	import { get } from 'svelte/store';
 	import { userdata, userteams } from '$stores/user';
 	import type { Load } from '@sveltejs/kit';
@@ -8,7 +8,7 @@
 	export const load: Load = async () => {
 		const data = get(userdata)
 		if (!data) {
-			const fetchConfig = externalFetchConfig("GET")
+			const fetchConfig = getFetchConfig("GET")
 			const response = await fetch(`${apiHost}/userteams/`, fetchConfig);
 	
 			if (response.ok) {
