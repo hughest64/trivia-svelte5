@@ -33,6 +33,7 @@ export const setEventCookie = async (
     }
 }
 
+// TODO: hanlde additional headers
 export const getFetchConfig = (method: string, data?: Record<string, unknown>): RequestInit => {
     return {
 		method,

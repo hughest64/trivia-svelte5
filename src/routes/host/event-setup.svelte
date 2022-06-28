@@ -31,15 +31,18 @@
 
     export let gameSelectData: GameSelectData[]
     export let locationSelectData: LocationSelectData[]
+    export let message: string;
 
     let selectLocation: LocationSelectData // TODO: set to the host's "home" location
     let selectedGame: GameSelectData
 
+    // TODO: csrf validation
     const handleEventSubmit = async () => {
         const fetchConfig = getFetchConfig('POST', {
-                    location_id: selectLocation.location_id,
-                    game_id: selectedGame.game_id
-                })
+            location_id: selectLocation.location_id,
+            game_id: selectedGame.game_id
+        })
+
         const response = await fetch (`${apiHost}/eventsetup/`, fetchConfig)
         if (response.ok) {
             const data = await response.json()
@@ -47,6 +50,9 @@
             // TODO: set the pieces of store, deprecate eventData
             data && eventData.set(data)
             goto(`/host/${joincode}`)
+
+        } else {
+            message = 'Oops! Something went wrong!'
         }
     }
 
@@ -55,6 +61,8 @@
 
 <form class="container" on:submit|preventDefault={handleEventSubmit}>
     <h2>Locations</h2>
+    {#if message}<p class="error">{message}</p>{/if}
+	<!-- TODO: on:focus, clear the message -->
     <select bind:value={selectLocation}>
         {#each locationSelectData as location (location.location_id)}
             <option value={location}>{location.location_name}</option>
