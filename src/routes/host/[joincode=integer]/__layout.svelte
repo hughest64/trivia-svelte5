@@ -7,7 +7,6 @@
 	const apiHost = import.meta.env.VITE_API_HOST;
 
 	export const load: Load = async ({ fetch, params }) => {
-		// TODO: deprecate eventData, check other data
 
 		if (!get(eventDataLoaded)) {
 			const fetchConfig = getFetchConfig("GET")
