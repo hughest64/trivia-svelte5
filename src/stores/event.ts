@@ -5,9 +5,9 @@ import { writable, derived } from "svelte/store";
 import type { Readable, Writable } from 'svelte/store'
 import type { EventData, EventRound, EventQuestion } from "$lib/types";
 
-// this store is used as a temporary container of data from /game/join
-// it then gets split up to the other stores in the game __layout
-export const eventData: Writable<EventData> = writable()
+// boolean that is set when the event stores are populated
+export const eventDataLoaded: Writable<boolean> = writable(false)
+
 export const roundNumbers: Writable<number[]> = writable()
 export const eventRounds: Writable<EventRound[]> = writable()
 
@@ -44,6 +44,7 @@ export const setEventStores = (data: EventData) => {
     currentRoundNumber.set(data.current_round_number);
     currentQuestionNumber.set(data.current_question_number);
     eventRounds.set(data.rounds);
+    eventDataLoaded.set(true);
 }
 
 

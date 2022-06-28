@@ -26,7 +26,7 @@
 
 <script lang="ts">
     import { goto } from '$app/navigation';
-	import { eventData } from '$stores/event';
+	import { eventDataLoaded, setEventStores } from '$stores/event';
 
 	export let joincode: string;
 	export let message: string;
@@ -38,8 +38,7 @@
 
 		if (response.ok) {
 			const data = await response.json();
-			// TODO: set the event pieces rather than eventData
-			data && eventData.set(data);
+			data &&	setEventStores(data)
 			goto(`/game/${joincode}`);
 
 		} else if (response.status === 404) {

@@ -27,7 +27,7 @@
 
 <script lang="ts">
     import { goto } from '$app/navigation'
-    import { eventData } from '$stores/event'
+    import { setEventStores } from '$stores/event'
 
     export let gameSelectData: GameSelectData[]
     export let locationSelectData: LocationSelectData[]
@@ -47,8 +47,7 @@
         if (response.ok) {
             const data = await response.json()
             const joincode = data.join_code
-            // TODO: set the pieces of store, deprecate eventData
-            data && eventData.set(data)
+            data && setEventStores(data)
             goto(`/host/${joincode}`)
 
         } else {
