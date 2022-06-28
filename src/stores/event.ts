@@ -39,6 +39,13 @@ export const activeQuestion: Readable<EventQuestion> = derived(
     }
 )
 
+export const setEventStores = (data: EventData) => {
+    roundNumbers.set(data.rounds.map((round) => round.round_number));
+    currentRoundNumber.set(data.current_round_number);
+    currentQuestionNumber.set(data.current_question_number);
+    eventRounds.set(data.rounds);
+}
+
 
 /** Web socket payload from get_event_data in the current version
 {
