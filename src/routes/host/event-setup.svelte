@@ -1,10 +1,15 @@
 <script context="module" lang="ts">
     import { checkStatusCode, getFetchConfig } from '$lib/utils';
+    import { get } from 'svelte/store';
+    import { userdata } from '$stores/user';
     import type { Load } from '@sveltejs/kit';
     import type { GameSelectData, LocationSelectData, HostSelectData } from '$lib/types'
     const apiHost = import.meta.env.VITE_API_HOST
     
     export const load: Load = async({ fetch }) => {
+        if (!get(userdata).is_staff) {
+			return { redirect: '/',	status: 302 }
+		}
         const fetchConfig = getFetchConfig("GET")
         const response = await fetch(`${apiHost}/eventsetup/`, fetchConfig) 
 
@@ -19,7 +24,6 @@
                 }
             }
         }
-        // TODO: verify 401 handles properly (redirect to /)
         return checkStatusCode(response)
 
     }

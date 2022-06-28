@@ -9,6 +9,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import IsAdminUser
+from rest_framework.exceptions import PermissionDenied
+from rest_framework.status import HTTP_401_UNAUTHORIZED
 
 from user.authentication import JwtAuthentication
 from user.serializers import UserSerializer
@@ -70,11 +72,18 @@ class TeamSelectView(APIView):
 
 
 class EventSetupView(APIView):
-    authentication_classes = [SessionAuthentication, JwtAuthentication]
-    permission_classes = [IsAdminUser]
+    # TODO: how to handle jwt and session auth?
+    authentication_classes = [JwtAuthentication]
+    # authentication_classes = [SessionAuthentication, JwtAuthentication]
+    # permission_classes = [IsAdminUser]
 
     def get(self, request):
         """ get this weeks games and a list of locations """
+        # TODO: customer permission class?
+        user = request.user
+        if (user.is_authenticated and not user.is_staff):
+            raise PermissionDenied(code=HTTP_401_UNAUTHORIZED)
+
         locationSerializer = LocationSerializer(location_classes, many=True)
         gameSerializer = GameSerializer(game_classes, many=True)
 
@@ -87,6 +96,10 @@ class EventSetupView(APIView):
 
     def post(self, request):
         """ create a new event or fetch an existing one with a specified game/location combo"""
+        user = request.user
+        if (user.is_authenticated and not user.is_staff):
+            raise PermissionDenied(code=HTTP_401_UNAUTHORIZED)
+        # self.check_permissions(request)
         # validate the data
         # get or create
         event_data["join_code"] = random.randint(1000, 9999)

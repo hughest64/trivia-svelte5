@@ -49,9 +49,12 @@
         )
         if (response.ok) {
             const data = await <UserData>response.json()
+            console.log(data)
             userdata.set(data)
             // TODO: we need to be able to handle different routing options
-            goto('/')
+            // TODO: revert back to goto once the login view returns team data
+            window.open('/', '_self')
+            // goto('/')
 
         } else {
             // TODO: we need to handle this better, it's not always bad password or username
