@@ -55,26 +55,39 @@
 	};
 </script>
 
-<h1>Welcome!</h1>
+<svelte:head><title>Trivia Mafia | Login</title></svelte:head>
 
-<form on:submit|preventDefault={validateUser}>
+<h1>Login</h1>
+
+<button class="button button-red">login with Github</button>
+<button class="button button-red">login with Google</button>
+
+<h2>-or-</h2>
+
+<form class="login-form" on:submit|preventDefault={validateUser}>
 	{#if errorMessage}<h3>{errorMessage}</h3>{/if}
-	<label for="username">Username:</label>
-	<input type="text" id="username" name="username" bind:value={username} />
+	<div class="input-element">
+		<input type="text" id="username" name="username" bind:value={username} />
+		<label for="username">Username or Email</label>
+	</div>
 
-	<label for="password">Password:</label>
-	<input type="password" id="password" name="password" bind:value={password} />
+	<div class="input-element">
+		<input class="input-element" type="password" id="password" name="password" bind:value={password} />
+		<label for="password">Password:</label>
+	</div>
 
-	<input type="submit" value="Log In!" />
+	<!-- <a href="/user/forgot">Click Here to Reset your Password</a> -->
+	<input class="button button-red" type="submit" value="Submit" />
 </form>
 
+<h1>Sign Up</h1>
+
+<button class="button button-white">Create Account</button>
+
 <style>
-	form {
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		gap: 0.75em;
-		max-width: 20rem;
-		margin: 5rem auto 0;
+	h1, h2 {
+		margin: .5em 0;
 	}
 </style>
+
+

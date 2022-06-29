@@ -7,7 +7,7 @@
 	// TODO: add create a team and join by code (team password)
 	// TODO: handle when there are no teams (probably just hide the select)
 	let selected: UserTeam = $useractiveteam || $userteams[0];
-	export let message: string;
+	let message: string;
 
 	const handleTeamSelectSubmit = async () => {
 		if (selected.team_id === $userdata.active_team_id) {

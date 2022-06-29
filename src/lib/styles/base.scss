@@ -1,0 +1,137 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,700;1,400;1,700&display=swap");
+* {
+    font-family: "Montserrat", sans-serif;
+}
+
+:root {
+    --color-red: #dc0926;
+    --color-white: #fff;
+    --color-black: #000;
+}
+
+
+/* ------------------- */
+/* Reset               */
+/* ------------------- */
+
+/* https://piccalil.li/blog/a-modern-css-reset/ */
+
+/* Box sizing */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+/* Reset margins */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+    margin: 0;
+}
+
+h1 {
+    font-size: 39px;
+    font-weight: bold;
+}
+h2 {
+    font-size: 31px;
+    font-weight: bold;
+}
+h3 {
+    font-size: 25px;
+    font-weight: normal;
+}
+h4 {
+    font-size: 21px;
+    font-weight: bold;
+}
+h5 {
+    font-size: 21px;
+    font-weight: normal;
+}
+h6 {
+    font-size: 18px;
+    font-weight: bold;
+}
+p {
+    font-size: 18px;
+    font-weight: normal;
+}
+p.hint {
+    font-size: 14px;
+    font-weight: normal;
+}
+
+
+
+/* Set core root defaults */
+html:focus-within {
+    scroll-behavior: smooth;
+}
+
+/* Remove list styles on ul, ol elements with a list role, which suggests default styling will be removed */
+/* NOTE: svelte throws a linter warning when specifiying role=list on a ul, so skipping it here */
+ul,
+ol[role='list'] {
+    padding-inline-start: 0;
+    list-style: none;
+}
+
+/* A elements that don't have a class get default styles */
+a:not([class]) {
+    text-decoration-skip-ink: auto;
+}
+
+/* make images easier to work with */
+img,
+picutre {
+    max-width: 100%;
+    display: block;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+/* ------------------- */
+/* Elements            */
+/* ------------------- */
+
+main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100vw;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    width: 30em;
+    max-width: calc(100% - 2em);
+    margin: 0 auto;
+    .button {
+        max-width: 100%;
+        &:active {
+            max-width: 100%;
+        }
+    }
+}
