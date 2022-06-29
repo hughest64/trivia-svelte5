@@ -1,8 +1,8 @@
 <script lang="ts">
     import { page } from '$app/stores'
     import { eventRounds, activeRoundNumber, activeQuestionNumber } from '$stores/event'
-    import RoundHeader from '$lib/RoundHeader.svelte';
-    import Round from "$lib/Round.svelte"
+    import RoundHeader from '$lib/game/RoundHeader.svelte';
+    import Round from "$lib/game/Round.svelte"
 
     export let initialRoundNumber: number;
     $: initialRoundNumber && activeRoundNumber.set(Number(initialRoundNumber))
