@@ -7,7 +7,7 @@
     const apiHost = import.meta.env.VITE_API_HOST
     
     export const load: Load = async({ fetch }) => {
-        if (!get(userdata).is_staff) {
+        if (!get(userdata)?.is_staff) {
 			return { redirect: '/',	status: 302 }
 		}
         const fetchConfig = getFetchConfig("GET")

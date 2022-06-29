@@ -7,7 +7,7 @@
 	const apiHost = import.meta.env.VITE_API_HOST;
 
 	export const load: Load = async ({ fetch, session }) => {
-		if (browser) return { status: 200 }; // TODO: do we still need the broswer check?
+		if (browser) return { status: 200 };
 		
         const fetchConfig = getFetchConfig('GET');
 		const response = await fetch(`${apiHost}/user/login/`, fetchConfig);
@@ -28,7 +28,7 @@
 
     $: next = $page.url.searchParams.get('next') || '/'
 
-	let errorMessage: string;
+	export let errorMessage: string;
 	let username: string;
 	let password: string;
 
