@@ -1,5 +1,5 @@
-import type { LoadOutput, RequestHandlerOutput } from '@sveltejs/kit';
 import * as cookie from 'cookie'
+import type { LoadOutput, RequestHandlerOutput } from '@sveltejs/kit';
 
 // TODO: doc strings for all!
 
@@ -33,20 +33,33 @@ export const setEventCookie = async (
     }
 }
 
-// TODO: hanlde additional headers
-export const getFetchConfig = (method: string, data?: Record<string, unknown>): RequestInit => {
+export const setCsrfHeaders = (csrfToken: string): Record<string, string> => {
+    return {
+        Cookie: `csrftoken=${csrfToken}`,
+        'X-CSRFToken': csrfToken
+    }
+}
+
+export const getFetchConfig = (
+    method: string,
+    data?: Record<string, unknown>,
+    headers?: Record<string, unknown>,
+): RequestInit => {
+    const requestHeaders: Record<string, unknown> = {
+        'content-type': 'application/json',
+        accept: 'application/json'
+    }
+    headers && Object.assign(requestHeaders, headers)
+
     return {
 		method,
         credentials: 'include',
-		headers: {
-			'content-type': 'application/json',
-            accept: 'application/json'
-		},
+		headers: <HeadersInit>requestHeaders,
 		body: data && JSON.stringify(data)
 	}
 }
 
-export const checkStatusCode = (response: Response, next?: string|null): LoadOutput => {
+export const checkStatusCode = (response: Response, next?: string): LoadOutput => {
     let output: LoadOutput
 
     switch (response.status) {
