@@ -30,9 +30,10 @@
 </script>
 
 <h1>Team Select</h1>
+<button class="button button-red">Create a New Team</button>
 
 <form class="container" on:submit|preventDefault={handleTeamSelectSubmit}>
-	<h2>{$userdata?.username} Select A Team</h2>
+	<h1 class="existing-team">Or Play with an Existing Team</h1>
 	{#if message}<p class="error">{message}</p>{/if}
 	<!-- TODO: on:focus, clear the message -->
 	<select bind:value={selected}>
@@ -40,16 +41,22 @@
 			<option value={team}>{team.team_name}</option>
 		{/each}
 	</select>
-	<input type="submit" value="Choose This Team" />
+	<input class="button button-red" type="submit" value="Choose This Team" />
 </form>
+<button class="button button-black">Enter Team Password</button>
 
 <style>
-	.container {
+	form {
 		display: flex;
 		flex-direction: column;
-		justify-content: center;
-		gap: 0.75em;
-		max-width: 30rem;
-		margin: 5rem auto 0;
+		align-items: center;
+	}
+	.existing-team {
+		width: 110%;
+		text-align: center;
+		/* margin-left: -.45em; */
+	}
+	h1 {
+		margin: .5em 0;
 	}
 </style>
