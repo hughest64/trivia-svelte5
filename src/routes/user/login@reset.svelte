@@ -72,11 +72,11 @@
 	</div>
 
 	<div class="input-element">
-		<input class="input-element" type="password" id="password" name="password" bind:value={password} />
-		<label for="password">Password:</label>
+		<input type="password" id="password" name="password" bind:value={password} />
+		<label for="password">Password</label>
 	</div>
 
-	<!-- <a href="/user/forgot">Click Here to Reset your Password</a> -->
+	<a href="/user/forgot">Click Here to Reset your Password</a>
 	<input class="button button-red" type="submit" value="Submit" />
 </form>
 

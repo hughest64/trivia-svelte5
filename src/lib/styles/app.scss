@@ -34,6 +34,37 @@
 }
 
 .input-element {
+    input {
+        border: 4px solid #413f43;
+        &:valid {
+            background: white;
+            + label {
+                background-color: #413f43;
+                color: white;
+            }
+        }
+        &:focus {
+            border: 4px solid #413f43;
+            + label {
+                background-color: #413f43;
+                color: white;
+            }
+        }
+        &[type="submit"] {
+            background-color: white;
+            border: 4px solid #413f43;
+            color: #413f43;
+        }
+        &:disabled {
+            background-color: #cacaca;
+        }
+    }
+    label {
+        color: black;
+    }
+}
+
+.input-element {
     position: relative;
     overflow: hidden;
     text-align: initial;
@@ -41,7 +72,8 @@
     //   max-width: 100%;
     margin: 1em 0;
     input {
-        width: calc(100% - 1.5em);
+        // width: calc(100% - 1.5em);
+        width: 100%;
         position: relative;
         background: none;
         top: 0;
@@ -58,7 +90,7 @@
                 text-transform: uppercase;
                 top: 100%;
                 margin-top: -17px;
-                width: calc(100% - 10px);
+                // width: calc(100% - 10px);
             }
         }
         &[type="submit"] {

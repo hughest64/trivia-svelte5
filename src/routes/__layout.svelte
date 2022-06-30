@@ -1,5 +1,5 @@
 <script lang="ts">
-    import '$lib/styles.css'
+    import '$lib/styles/app.scss'
     import Footer from '$lib/Footer.svelte'
 </script>
 
@@ -7,6 +7,6 @@
     <slot />
 </main>
 
-<footer>
+<!-- <footer>
     <Footer />
-</footer>
+</footer> -->

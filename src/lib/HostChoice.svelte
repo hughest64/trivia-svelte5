@@ -1,16 +1,20 @@
-<div class="container">
-    <h2>Would You Like to Host or Play?</h2>
-    <button id="host" on:click>Host</button>
-    <button id="play" on:click>Play</button>
-</div>
+<script lang="ts">
+    import { userdata } from '$stores/user'
+    $: username = $userdata.username || ''
+</script>
+
+<h1>Greetings {username}</h1>
+<h3>Do you want to:</h3>
+<button class="button button-red" id="host" on:click>Host A Game</button>
+<button class="button button-black" id="play" on:click>Play Trivia</button>
+<small>To view the recent changes in the application, click Here.</small>
 
 <style>
-    .container {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        gap: .75em;
-        max-width: 30rem;
-        margin: 5rem auto 0;
+    h1, h3 {
+		margin: .75em 0;
+	}
+    small {
+        padding: 0 .5em;
+        font-size: 12px;
     }
 </style>
