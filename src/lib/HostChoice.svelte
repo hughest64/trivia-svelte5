@@ -3,6 +3,8 @@
     $: username = $userdata.username || ''
 </script>
 
+<svelte:head><title>Trivia Mafia | Host Choice</title></svelte:head>
+
 <h1>Greetings {username}</h1>
 <h3>Do you want to:</h3>
 <button class="button button-red" id="host" on:click>Host A Game</button>

@@ -60,33 +60,46 @@
     }
 
 </script>
-<h1>Choose an Event</h1>
 
-<form class="container" on:submit|preventDefault={handleEventSubmit}>
-    <h2>Locations</h2>
+<svelte:head><title>Trivia Mafia | Event Setup</title></svelte:head>
+
+<h1>Choose a Trivia Event</h1>
+
+<form on:submit|preventDefault={handleEventSubmit}>
     {#if message}<p class="error">{message}</p>{/if}
 	<!-- TODO: on:focus, clear the message -->
-    <select bind:value={selectLocation}>
-        {#each locationSelectData as location (location.location_id)}
-            <option value={location}>{location.location_name}</option>
-        {/each}
-    </select>
-    <h2>Games</h2>
-    <select bind:value={selectedGame}>
+    
+    <label class="select-label" for="game-select">Choose your Game</label>
+    <select class="select" name="game-select" id="game-select" bind:value={selectedGame}>
         {#each gameSelectData as game (game.game_id)}
             <option value={game}>{game.game_title}</option>
         {/each}
     </select>
-    <input type="submit" name="submit" id="submit" value="Begin Event">
+
+    <label for="loaction-select" class="select-label">Choose your Venue</label>
+    <select class="select" name="location-select" id="location-select" bind:value={selectLocation}>
+        {#each locationSelectData as location (location.location_id)}
+            <option value={location}>{location.location_name}</option>
+        {/each}
+    </select>
+
+    <input class="button button-red" type="submit" name="submit" id="submit" value="Begin Event">
 </form>
 
 <style>
-    .container {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        gap: .75em;
-        max-width: 30rem;
-        margin: 5rem auto 0;
-    }
+    form {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+	}
+    h1 {
+		margin: 1em 0;
+	}
+	select {
+		margin-bottom: 2em;
+	}
+	.select-label {
+		margin-top: 1em;
+        width: 100%;
+	}
 </style>

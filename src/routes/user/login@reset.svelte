@@ -64,7 +64,7 @@
 
 <h2>-or-</h2>
 
-<form class="login-form" on:submit|preventDefault={validateUser}>
+<form on:submit|preventDefault={validateUser}>
 	{#if errorMessage}<h3>{errorMessage}</h3>{/if}
 	<div class="input-element">
 		<input type="text" id="username" name="username" bind:value={username} />

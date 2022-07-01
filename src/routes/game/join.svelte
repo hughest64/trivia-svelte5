@@ -1,7 +1,7 @@
 <script context="module" lang="ts">
 	import { checkStatusCode, getFetchConfig } from '$lib/utils';
 	import { get } from 'svelte/store';
-	import { userdata } from '$stores/user';
+	import { userdata, useractiveteam } from '$stores/user';
 	import type { Load } from '@sveltejs/kit';
 	const apiHost = import.meta.env.VITE_API_HOST;
     
@@ -47,23 +47,24 @@
 	};
 </script>
 
-<h1>Game Select</h1>
+<h1>Enter Game Code</h1>
 
-<form class="container" on:submit|preventDefault={handleJoinEvent}>
-	<h2>Enter Game Code</h2>
+<p>Thanks for Playing with team {$useractiveteam?.team_name}! Enter the game code from your host to get started.</p>
+
+<form on:submit|preventDefault={handleJoinEvent}>
 	{#if message}<p class="error">{message}</p>{/if}
 	<!-- TODO: on:focus, clear the message -->
-	<input type="text" bind:value={joincode} />
-	<input type="submit" value="Join The Event" />
+	<div class="input-element">
+		<input type="text" placeholder="Enter Code" bind:value={joincode} />
+	</div>
+	<input class="button button-red" type="submit" value="Join Game!" />
 </form>
 
 <style>
-	.container {
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		gap: 0.75em;
-		max-width: 30rem;
-		margin: 5rem auto 0;
+	h1 {
+		margin: 1em;
+	}
+	p {
+		margin: 0 1em 1em;
 	}
 </style>
