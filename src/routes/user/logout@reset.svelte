@@ -6,6 +6,6 @@
     onMount( async () => {
         const fetchConfig = getFetchConfig("POST")
         await fetch(`${apiHost}/user/logout/`, fetchConfig)
-        window.open('/user/login', '_self')
+        window.open('/welcome', '_self')
     })
 </script>

@@ -73,7 +73,7 @@ export const checkStatusCode = (response: Response, next?: string): LoadOutput =
             output = { status: 302, redirect: '/' }
             break
         case(403):
-            output = { status: 302, redirect: '/user/login' }
+            output = { status: 302, redirect: '/welcome' }
             break
         case(200):
         default:
