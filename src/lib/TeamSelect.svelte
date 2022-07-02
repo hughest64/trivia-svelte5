@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { checkStatusCode, getFetchConfig } from '$lib/utils';
+	import { getFetchConfig } from '$lib/utils';
 	import { goto } from '$app/navigation';
 	import { userdata, useractiveteam, type UserTeam } from '$stores/user';
 	const apiHost = import.meta.env.VITE_API_HOST;
@@ -14,8 +14,6 @@
 		if (selected.id === $userdata.active_team_id) {
 			goto('/game/join');
 		} else {
-			// TODO: this should send the csrf token (hopefully it's in the session store!)
-			// for csrf validation
 			const fetchConfig = getFetchConfig('POST', { team_id: selected.id })
 			const response = await fetch(`${apiHost}/teamselect/`, fetchConfig);
 
@@ -24,7 +22,7 @@
 				userdata.update((data) => ({ ...data, ...active_team_id }));
 				goto('/game/join');
 			} else {
-				message = 'Oop! Something went wrong!'
+				message = 'Oop! Something went wrong! Please try again.'
 			}
 		}
 	};

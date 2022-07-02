@@ -10,7 +10,7 @@ from rest_framework.views import APIView
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import IsAdminUser
 from rest_framework.exceptions import PermissionDenied
-from rest_framework.status import HTTP_401_UNAUTHORIZED
+from rest_framework.status import HTTP_401_UNAUTHORIZED, HTTP_200_OK, HTTP_404_NOT_FOUND
 
 from user.authentication import JwtAuthentication
 from user.serializers import UserSerializer
@@ -32,46 +32,41 @@ with open(
 class TeamSelectView(APIView):
     authentication_classes = [SessionAuthentication, JwtAuthentication]
 
-    # TODO client side needs to send the csrf token for this
-    # @method_decorator(csrf_protect)
     def post(self, request):
         team_id = request.data.get("team_id")
+        status = HTTP_200_OK
         if team_id:
             user = request.user
-            # TODO: maybe don't lookup with user? we do allow "guests" on a team
-            # (i.e send someone a join code to join the team)
-            # requested_team = Team.models.filter(id=team_id, user=request.user)
-            # if requested_team.exists():
-            user.active_team_id = team_id
-            user.save()
-            #   set the team on the user and save()
+            requested_team = Team.objects.filter(id=team_id)
+            if requested_team.exists():
+                user.active_team_id = requested_team.first().id
+                user.save()
 
-            # else:
-            # send a bad response
+            else:
+                status = HTTP_404_NOT_FOUND
 
-        return Response({"active_team_id": team_id})
+        return Response({"active_team_id": team_id}, status=status)
 
 
 class EventSetupView(APIView):
-    # TODO: how to handle jwt and session auth?
-    authentication_classes = [JwtAuthentication]
-    # authentication_classes = [SessionAuthentication, JwtAuthentication]
-    # permission_classes = [IsAdminUser]
+    authentication_classes = [SessionAuthentication, JwtAuthentication]
+    permission_classes = [IsAdminUser]
 
     def get(self, request):
         """get this weeks games and a list of locations"""
-        # TODO: customer permission class?
         user = request.user
         if user.is_authenticated and not user.is_staff:
             raise PermissionDenied(code=HTTP_401_UNAUTHORIZED)
 
         locationSerializer = LocationSerializer(location_classes, many=True)
         gameSerializer = GameSerializer(game_classes, many=True)
+        userSerializer = UserSerializer(user)
 
         return Response(
             {
                 "location_select_data": locationSerializer.data,
                 "game_select_data": gameSerializer.data,
+                "user_data": userSerializer.data
             }
         )
 

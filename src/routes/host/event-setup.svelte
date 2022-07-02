@@ -1,20 +1,18 @@
 <script context="module" lang="ts">
     import { checkStatusCode, getFetchConfig } from '$lib/utils';
-    import { get } from 'svelte/store';
     import { userdata } from '$stores/user';
     import type { Load } from '@sveltejs/kit';
-    import type { GameSelectData, LocationSelectData, HostSelectData } from '$lib/types'
+    import type { GameSelectData, LocationSelectData } from '$lib/types'
     const apiHost = import.meta.env.VITE_API_HOST
     
     export const load: Load = async({ fetch }) => {
-        if (!get(userdata)?.is_staff) {
-			return { redirect: '/',	status: 302 }
-		}
+
         const fetchConfig = getFetchConfig("GET")
         const response = await fetch(`${apiHost}/eventsetup/`, fetchConfig) 
 
         if (response.ok) {
-            const data = await <HostSelectData>response.json()
+            const data = await response.json()
+            data && userdata.set(data.user_data);
 
             return {
                 status: 200,
@@ -55,7 +53,7 @@
             goto(`/host/${joincode}`)
 
         } else {
-            message = 'Oops! Something went wrong!'
+            message = 'Oops! Something went wrong! Please try again.'
         }
     }
 
