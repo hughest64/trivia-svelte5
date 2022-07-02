@@ -30,10 +30,10 @@
 	}
 	ul {
 		display: flex;
-		justify-content: space-evenly;
+		justify-content: flex-end;
 		margin: 0;
 		padding: 1em;
-		list-style: None;
+		/* list-style: None; */
 	}
 	li {
 		padding: 0;

@@ -1,12 +1,18 @@
 <script context="module" lang="ts">
-    import { checkStatusCode, getFetchConfig } from '$lib/utils';
+    import { browser } from '$app/env';
+
     import { userdata } from '$stores/user';
+    import { checkStatusCode, getFetchConfig } from '$lib/utils';
+
     import type { Load } from '@sveltejs/kit';
     import type { GameSelectData, LocationSelectData } from '$lib/types'
+
     const apiHost = import.meta.env.VITE_API_HOST
     
     export const load: Load = async({ fetch }) => {
-
+        if (!browser) {
+            return { status: 200}
+        }
         const fetchConfig = getFetchConfig("GET")
         const response = await fetch(`${apiHost}/eventsetup/`, fetchConfig) 
 
