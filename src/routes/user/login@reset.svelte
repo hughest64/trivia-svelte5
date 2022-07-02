@@ -41,8 +41,6 @@
 
 		const response = await fetch(`${apiHost}/user/login/`, fetchConfig);
 
-		console.log(response);
-
 		if (response.ok) {
 			const data: UserData = await response.json();
 			userdata.set(data);

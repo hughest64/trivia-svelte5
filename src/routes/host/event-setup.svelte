@@ -10,9 +10,9 @@
     const apiHost = import.meta.env.VITE_API_HOST
     
     export const load: Load = async({ fetch }) => {
-        if (!browser) {
-            return { status: 200}
-        }
+        // if (!browser) {
+        //     return { status: 200}
+        // }
         const fetchConfig = getFetchConfig("GET")
         const response = await fetch(`${apiHost}/eventsetup/`, fetchConfig) 
 

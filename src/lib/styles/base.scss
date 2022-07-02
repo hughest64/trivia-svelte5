@@ -117,8 +117,6 @@ main {
     align-items: center;
     width: 100%;
     flex: 1 0 auto;
-    // height: 100vh;
-    min-height: 100%;
 }
 
 form {
@@ -131,4 +129,11 @@ form {
             max-width: 100%;
         }
     }
+}
+
+footer {
+    position: sticky;
+    bottom: 0;
+    width: 100%;
+    background-color: var(--color-white);
 }

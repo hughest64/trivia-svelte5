@@ -93,3 +93,20 @@ class EventView(APIView):
         # raise if it's a bad join code
 
         return Response(event_data)
+
+
+class EventHostView(APIView):
+    authentication_classes = [SessionAuthentication, JwtAuthentication]
+    permission_classes = [IsAdminUser]
+
+    def get(self, request, joincode=None):
+        """fetch a specific event from the joincode parsed from the url"""
+        user = request.user
+        if user.is_authenticated and not user.is_staff:
+            raise PermissionDenied(code=HTTP_401_UNAUTHORIZED)
+
+        # use the join code to look up event data
+        event_data["join_code"] = joincode
+        # raise if it's a bad join code
+
+        return Response(event_data)

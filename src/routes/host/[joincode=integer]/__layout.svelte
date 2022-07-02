@@ -8,12 +8,13 @@
 	const apiHost = import.meta.env.VITE_API_HOST;
 
 	export const load: Load = async ({ fetch, params }) => {
-		if (!get(userdata)?.is_staff) {
+		const user = get(userdata)
+		if (user && !user.is_staff) {
 			return { redirect: '/',	status: 302 }
 		}
 		if (!get(eventDataLoaded)) {
 			const fetchConfig = getFetchConfig("GET")
-			const response = await fetch(`${apiHost}/event/${params.joincode}/`, fetchConfig);
+			const response = await fetch(`${apiHost}/host-event/${params.joincode}/`, fetchConfig);
 
 			if (response.ok) {
 				const data = await <EventData>response.json();

@@ -12,21 +12,14 @@
 </footer>
 
 <style lang="scss">
-	footer {
-		position: sticky;
-		bottom: 0;
-		width: 100%;
-		background-color: var(--color-white);
-	}
-
     :global(body) {
-			min-height: 100%;
-			margin: 0;
-            
-		}
-    :global(.content) {
-        display: flex;
+		min-height: 100%;
+		margin: 0;
+		:first-child {
+			display: flex;
 			flex-direction: column;
-            min-height: 100vh;
-    }
+			min-height: 100vh;
+		}
+		
+	}
 </style>
