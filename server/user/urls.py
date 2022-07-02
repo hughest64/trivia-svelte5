@@ -6,4 +6,5 @@ urlpatterns = [
     path("", views.UserView.as_view()),
     re_path(r"login/?$", views.LoginView.as_view()),
     re_path(r"logout/?$", views.LogoutView.as_view()),
+    re_path(r"guest/?$", views.GuestView.as_view()),
 ]

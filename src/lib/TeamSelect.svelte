@@ -33,11 +33,14 @@
 <svelte:head><title>TriviaMafia | Team Select</title></svelte:head>
 
 <h1>Create a New Team</h1>
+
 <button 
 	class="button button-red"
 	class:disabled={!hidecreateteam}
 	on:click={() => hidecreateteam = !hidecreateteam}
->Create a New Team</button>
+>
+	Create a New Team
+</button>
 
 <form class:hidecreateteam>
 	<h3>Enter Your Team Name</h3>
@@ -64,7 +67,10 @@
 	class="button button-black"
 	class:disabled={!hideteampassword}
 	on:click={() => hideteampassword = !hideteampassword}
->Enter Team Password</button>
+>
+	Enter Team Password
+</button>
+
 <form class:hideteampassword>
 	<div class="input-element">
 		<input type="text" placeholder="Team Password" />
@@ -87,7 +93,7 @@
 		align-self: center;
 	}
 	h1, h3 {
-		margin: .5em 0;
+		margin: .5em;
 	}
 	select {
 		margin-bottom: 1em;

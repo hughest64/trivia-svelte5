@@ -14,6 +14,8 @@ from rest_framework.views import APIView
 from .authentication import JwtAuthentication
 from .serializers import UserSerializer
 
+from . import utils
+
 User = get_user_model()
 
 
@@ -25,6 +27,30 @@ class RegisterView(APIView):
         serializer.save()
 
         return Response(serializer.data)
+
+
+class GuestView(APIView):
+    # authentication_classes = [JwtAuthentication]
+
+    def post(self, request):
+        valid_token = True
+        jwt = request.COOKIES.get('jwt')
+        user = utils.decode_token(jwt)
+
+        # TODO: create a user
+        if user.is_anonymous:
+            user = User.objects.get(username="guest")
+            valid_token = False
+
+        serializer = UserSerializer(user)
+        response =  Response(serializer.data)
+
+        # TODO: should we "refresh" the token if it is valid?
+        if not valid_token:
+            token = utils.create_token(user.id)
+            response.set_cookie(key='jwt', value=token, httponly=True)
+
+        return response
 
 
 class LoginView(APIView):
@@ -48,15 +74,9 @@ class LoginView(APIView):
 
         serializer = UserSerializer(user)
 
-        payload = {
-            'id': user.id,
-            'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=settings.JWT_TOKEN_TTL),
-            'iat': datetime.datetime.utcnow()
-        }
+        token = utils.create_token(user.id)
 
-        token = jwt.encode(payload, settings.JWT_TOKEN_SECRET, algorithm='HS256')
-
-        response =  Response(serializer.data)
+        response = Response(serializer.data)
         response.set_cookie(key='jwt', value=token, httponly=True)
 
         return response

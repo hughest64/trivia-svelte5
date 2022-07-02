@@ -1,4 +1,5 @@
 <script context="module" lang="ts">
+	import { browser } from '$app/env';
 	import { checkStatusCode, getFetchConfig } from '$lib/utils';
 	import { get } from 'svelte/store';
 	import { userdata, userteams } from '$stores/user';
@@ -7,6 +8,7 @@
 
 	export const load: Load = async () => {
 		const data = get(userdata)
+		// if (!data && browser) {
 		if (!data) {
 			const fetchConfig = getFetchConfig("GET")
 			const response = await fetch(`${apiHost}/userteams/`, fetchConfig);

@@ -41,13 +41,15 @@
 
 		const response = await fetch(`${apiHost}/user/login/`, fetchConfig);
 
+		console.log(response);
+
 		if (response.ok) {
 			const data: UserData = await response.json();
 			userdata.set(data);
 			// TODO: revert back to goto once the login view returns team data
             // for now we need to do this so that the module script at / will run
-			window.open(next, '_self');
-			// goto(next)
+			// window.open(next, '_self');
+			goto(next)
 		} else {
 			// TODO: we need to handle this better, it's not always bad password or username
 			errorMessage = 'Bad Username or Password';

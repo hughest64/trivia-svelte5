@@ -1,6 +1,6 @@
 <script lang="ts">
     import { userdata } from '$stores/user'
-    $: username = $userdata.username || ''
+    $: username = $userdata?.username || ''
 </script>
 
 <svelte:head><title>Trivia Mafia | Host Choice</title></svelte:head>
