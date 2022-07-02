@@ -23,7 +23,15 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ["id", "username", "email", "password", "is_staff", "active_team_id", "teams"]
+        fields = [
+            "id",
+            "username",
+            "email",
+            "password",
+            "is_staff",
+            "active_team_id",
+            "teams",
+        ]
 
         # never return the password
         extra_kwargs = {

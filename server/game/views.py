@@ -18,16 +18,18 @@ from .models import Team, Location, Game
 from .serializers import TeamSerializer, LocationSerializer, GameSerializer
 
 # TODO: dev data only, replace once models are in place
-with open(settings.BASE_DIR.parent / 'data' / 'teams.json', 'r') as f:
+with open(settings.BASE_DIR.parent / "data" / "teams.json", "r") as f:
     team_data = json.load(f)
 team_classes = [Team(**data) for data in team_data]
 
-with open(settings.BASE_DIR.parent / 'data' / 'event_setup_data.json', 'r') as f2:
+with open(settings.BASE_DIR.parent / "data" / "event_setup_data.json", "r") as f2:
     event_select_data = json.load(f2)
 location_classes = [Location(**data) for data in event_select_data.get("locations", [])]
 game_classes = [Game(**data) for data in event_select_data.get("games", [])]
 
-with open(settings.BASE_DIR.parent / 'data' / 'game_data_merged.json', 'r') as event_file:
+with open(
+    settings.BASE_DIR.parent / "data" / "game_data_merged.json", "r"
+) as event_file:
     event_data = json.load(event_file)
 
 # TODO: classes
@@ -66,7 +68,7 @@ class TeamSelectView(APIView):
             #   set the team on the user and save()
 
             # else:
-                # send a bad response
+            # send a bad response
 
         return Response({"active_team_id": team_id})
 
@@ -78,10 +80,10 @@ class EventSetupView(APIView):
     # permission_classes = [IsAdminUser]
 
     def get(self, request):
-        """ get this weeks games and a list of locations """
+        """get this weeks games and a list of locations"""
         # TODO: customer permission class?
         user = request.user
-        if (user.is_authenticated and not user.is_staff):
+        if user.is_authenticated and not user.is_staff:
             raise PermissionDenied(code=HTTP_401_UNAUTHORIZED)
 
         locationSerializer = LocationSerializer(location_classes, many=True)
@@ -90,14 +92,14 @@ class EventSetupView(APIView):
         return Response(
             {
                 "location_select_data": locationSerializer.data,
-                "game_select_data": gameSerializer.data
+                "game_select_data": gameSerializer.data,
             }
         )
 
     def post(self, request):
-        """ create a new event or fetch an existing one with a specified game/location combo"""
+        """create a new event or fetch an existing one with a specified game/location combo"""
         user = request.user
-        if (user.is_authenticated and not user.is_staff):
+        if user.is_authenticated and not user.is_staff:
             raise PermissionDenied(code=HTTP_401_UNAUTHORIZED)
         # self.check_permissions(request)
         # validate the data

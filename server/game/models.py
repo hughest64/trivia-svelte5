@@ -2,6 +2,7 @@ from django.db import models
 
 # TODO: convert models to actual Django models!
 
+
 class Team(models.Model):
     # TODO: add this
     # created_at = models.DateTimeField(auto_now_add=True)

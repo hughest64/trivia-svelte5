@@ -1,4 +1,4 @@
-from rest_framework  import serializers
+from rest_framework import serializers
 from .models import Team
 
 
@@ -9,7 +9,7 @@ class TeamSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Team
-        fields = '__all__'
+        fields = "__all__"
 
 
 # TODO, ModelSerialzer
@@ -20,4 +20,4 @@ class LocationSerializer(serializers.Serializer):
 
 class GameSerializer(serializers.Serializer):
     game_id = serializers.IntegerField()
-    game_title= serializers.CharField(max_length=200)
+    game_title = serializers.CharField(max_length=200)

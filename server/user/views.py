@@ -15,7 +15,6 @@ User = get_user_model()
 
 
 class RegisterView(APIView):
-
     def post(self, request):
         serializer = UserSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -29,7 +28,7 @@ class GuestView(APIView):
 
     def post(self, request):
         valid_token = True
-        jwt = request.COOKIES.get('jwt')
+        jwt = request.COOKIES.get("jwt")
         user = utils.decode_token(jwt)
 
         # TODO: create a user
@@ -38,26 +37,25 @@ class GuestView(APIView):
             valid_token = False
 
         serializer = UserSerializer(user)
-        response =  Response(serializer.data)
+        response = Response(serializer.data)
 
         # TODO: should we "refresh" the token if it is valid?
         if not valid_token:
             token = utils.create_token(user.id)
-            response.set_cookie(key='jwt', value=token, httponly=True)
+            response.set_cookie(key="jwt", value=token, httponly=True)
 
         return response
 
 
 class LoginView(APIView):
-
     @method_decorator(ensure_csrf_cookie)
     def get(self, request):
         return Response()
 
     @method_decorator(csrf_protect)
     def post(self, request):
-        username = request.data.get('username')
-        password = request.data.get('password')
+        username = request.data.get("username")
+        password = request.data.get("password")
 
         try:
             user = User.objects.get(Q(username=username) | Q(email=username))
@@ -65,14 +63,14 @@ class LoginView(APIView):
             raise AuthenticationFailed("Invalid Username or Password")
 
         if not user.check_password(password):
-            raise AuthenticationFailed('Invalid Username or Password')
+            raise AuthenticationFailed("Invalid Username or Password")
 
         serializer = UserSerializer(user)
 
         token = utils.create_token(user.id)
 
         response = Response(serializer.data)
-        response.set_cookie(key='jwt', value=token, httponly=True)
+        response.set_cookie(key="jwt", value=token, httponly=True)
 
         return response
 
@@ -88,13 +86,10 @@ class UserView(APIView):
 
 
 class LogoutView(APIView):
-
     def post(self, request):
         response = Response()
-        response.delete_cookie('jwt')
-        response.delete_cookie('csrftoken')
-        response.data = {
-            "message": "success"
-        }
+        response.delete_cookie("jwt")
+        response.delete_cookie("csrftoken")
+        response.data = {"message": "success"}
 
         return response
