@@ -2,7 +2,7 @@
 	import { browser } from '$app/env';
 	import { checkStatusCode, getFetchConfig } from '$lib/utils';
 	import { get } from 'svelte/store';
-	import { userdata, userteams } from '$stores/user';
+	import { userdata } from '$stores/user';
 	import type { Load } from '@sveltejs/kit';
 	const apiHost = import.meta.env.VITE_API_HOST
 
@@ -11,12 +11,11 @@
 		// if (!data && browser) {
 		if (!data) {
 			const fetchConfig = getFetchConfig("GET")
-			const response = await fetch(`${apiHost}/userteams/`, fetchConfig);
+			const response = await fetch(`${apiHost}/user/`, fetchConfig);
 	
 			if (response.ok) {
-				const { user_teams, user_data } = (await response.json()) || {};
-				userdata.set(user_data);
-				userteams.set(user_teams);
+				const user_data = (await response.json());
+				user_data && userdata.set(user_data);
 	
 			} else {
 				return checkStatusCode(response)

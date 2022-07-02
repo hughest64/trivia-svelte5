@@ -10,7 +10,7 @@
         
 		if (!data) {
             const fetchConfig = getFetchConfig("GET")
-            const response = await fetch(`${apiHost}/userteams/`, fetchConfig);
+            const response = await fetch(`${apiHost}/user/`, fetchConfig);
             
 			if (response.ok) {
                 userdata.set(await response.json());
@@ -49,7 +49,7 @@
 
 <h1>Enter Game Code</h1>
 
-<p>Thanks for Playing with team {$useractiveteam?.team_name}! Enter the game code from your host to get started.</p>
+<p>Thanks for Playing with team {$useractiveteam?.name}! Enter the game code from your host to get started.</p>
 
 <form on:submit|preventDefault={handleJoinEvent}>
 	{#if message}<p class="error">{message}</p>{/if}

@@ -9,7 +9,7 @@ class TeamSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Team
-        fields = "__all__"
+        exclude = ["created_at"]
 
 
 # TODO, ModelSerialzer

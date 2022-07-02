@@ -4,6 +4,8 @@
     import { userdata } from '$stores/user';
     import { getFetchConfig } from '$lib/utils'
 
+    $: console.log($userdata)
+
     const apiHost = import.meta.env.VITE_API_HOST
 
     const handleGuestClick = async(event: MouseEvent) => {

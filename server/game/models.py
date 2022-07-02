@@ -4,13 +4,10 @@ from django.db import models
 
 
 class Team(models.Model):
-    # TODO: add this
-    # created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
     name = models.CharField(max_length=200)
     password = models.CharField(max_length=200, unique=True)
-    members = models.ManyToManyField(
-        "user.User", related_query_name="teams", related_name="members"
-    )
+    members = models.ManyToManyField( "user.User", related_name="teams" )
 
     def __str__(self):
         return self.name

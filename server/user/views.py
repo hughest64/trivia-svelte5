@@ -24,7 +24,6 @@ class RegisterView(APIView):
 
 
 class GuestView(APIView):
-    # authentication_classes = [JwtAuthentication]
 
     def post(self, request):
         valid_token = True
@@ -78,7 +77,7 @@ class LoginView(APIView):
 class UserView(APIView):
     authentication_classes = [JwtAuthentication]
 
-    @method_decorator(csrf_protect)
+    # @method_decorator(csrf_protect)
     def get(self, request):
         serializer = UserSerializer(request.user)
 

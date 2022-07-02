@@ -3,7 +3,6 @@ from . import views
 
 
 urlpatterns = [
-    path("userteams/", views.UserTeamsView.as_view()),
     path("eventsetup/", views.EventSetupView.as_view()),
     path("event/<int:joincode>/", views.EventView.as_view()),
     path("teamselect/", views.TeamSelectView.as_view())
