@@ -1,19 +1,14 @@
-import datetime
-
-from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db.models import Q
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_protect
 
-import jwt
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .authentication import JwtAuthentication
 from .serializers import UserSerializer
-
 from . import utils
 
 User = get_user_model()

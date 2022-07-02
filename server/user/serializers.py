@@ -2,6 +2,8 @@ from rest_framework import serializers
 from rest_framework import validators
 from django.contrib.auth import get_user_model
 
+from game.serializers import TeamSerializer
+
 User = get_user_model()
 
 
@@ -17,9 +19,11 @@ class UserSerializer(serializers.ModelSerializer):
         ],
     )
 
+    teams = TeamSerializer(many=True, read_only=True)
+
     class Meta:
         model = User
-        fields = ["id", "username", "email", "password", "is_staff", "active_team_id"]
+        fields = ["id", "username", "email", "password", "is_staff", "active_team_id", "teams"]
 
         # never return the password
         extra_kwargs = {
