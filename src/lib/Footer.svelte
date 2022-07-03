@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { browser } from '$app/env';
 	import { page } from '$app/stores';
 	import QuizIcon from '$lib/icons/QuizIcon.svelte';
 	import ChatIcon from './icons/ChatIcon.svelte';
@@ -13,50 +14,59 @@
 		['game', 'host'].indexOf(routeId) > -1 &&
 		$page.routeId !== 'game/join' &&
 		$page.routeId !== 'host/event-setup';
+
+	$: isActive = (id: string) => {
+		if (!browser) return false;
+		const link  = <HTMLAnchorElement>document.querySelector(id)?.firstChild
+		const linkHref = link?.href
+
+		return linkHref === $page.url.href
+	}
+	
 </script>
 
 <nav>
-	<ul class:justify-nav={!isEventRoute}>
+	<ul id="nav-links" class:justify-nav={!isEventRoute}>
 		{#if isEventRoute}
-			<li>
+			<li id="quiz" class:active={isActive("#quiz")}>
 				<a href={`/${routeId}/${joinCode}`}>
 					<div>
-						<QuizIcon />
+						<QuizIcon class="svg"/>
 						<p>Quiz</p>
 					</div>
 				</a>
 			</li>
-			<li>
+			<li id="leaderboard" class:active={isActive('#leaderboard')}>
 				<a href={`/${routeId}/${joinCode}/leaderboard`}>
 					<div>
-						<LeaderboardIcon />
+						<LeaderboardIcon class="svg"/>
 						<p>Leaderboard</p>
 					</div>
 				</a>
 			</li>
-			<li>
+			<li id="chat" class:active={isActive('#chat')}>
 				<a href={`/${routeId}/${joinCode}/chat`}>
 					<div>
-						<ChatIcon />
+						<ChatIcon class="svg"/>
 						<p>Chat</p>
 					</div>
 				</a>
 			</li>
 		{/if}
 		{#if routeId === 'game' && isEventRoute}
-			<li>
+			<li id="megaround" class:active={isActive("#megaround")}>
 				<a href={`/game/${joinCode}/megaround`}>
 					<div>
-						<MegaroundIcon />
+						<MegaroundIcon class="svg"/>
 						<p>Megaround</p>
 					</div>
 				</a>
 			</li>
 		{:else if routeId === 'host' && isEventRoute}
-			<li>
+			<li id="score" class:active={isActive("#score")}>
 				<a href={`/host/${joinCode}/score`}>
 					<div>
-						<ScoringIcon />
+						<ScoringIcon class="svg"/>
 						<p>Scoring</p>
 					</div>
 				</a>
@@ -66,7 +76,7 @@
 		<li>
 			<a rel="external" href="/user/logout">
 				<div>
-					<MenuIcon />
+					<MenuIcon class="svg"/>
 					<p>Logout</p>
 				</div>
 			</a>
@@ -80,17 +90,16 @@
 	}
 	ul {
 		display: flex;
-		justify-content: space-between;
+		justify-content: space-around;
 		align-items: center;
 		margin: 0 auto;
 		max-width: calc(100% - 2em);
 	}
 	li {
 		padding: 0;
-		margin: 0;
+		margin: .25em 0;
 	}
 	li > a {
-		// padding: 0.5em;
 		text-decoration: none;
 	}
 	div {
@@ -109,14 +118,14 @@
 	a:focus {
 		text-decoration: none;
 	}
-	// svg {
-	// 	height: 2.5em;
-	// 	width: 2.5em;
-	// 	&:not(.no-color-change) path {
-	// 		fill: #413f43;
-	// 		stroke: #413f43;
-	// 	}
-	// }
+	:global(.svg path) {
+		fill: #413f43;
+		stroke: #413f43;
+		// &:not(.no-color-change) path {
+			// fill: #413f43;
+			// stroke: #413f43;
+		// }
+	}
 	p {
 		font-size: 10px;
 		margin: 5px 0;
@@ -125,5 +134,23 @@
 	.justify-nav {
 		justify-content: flex-end;
 		// margin: 0.5em;
+	}
+	.active {
+		div {
+			background-color: #413f43;
+		}
+		:global(.svg path) {
+			
+				fill: #fcfcfc;
+				stroke: #fcfcfc;
+		
+		}
+		// svg:not(.no-color-change) path {
+		// 	fill: #fcfcfc;
+		// 	stroke: #fcfcfc;
+		// }
+		p {
+			color: #fcfcfc;
+		}
 	}
 </style>
