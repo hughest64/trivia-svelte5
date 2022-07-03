@@ -8,8 +8,8 @@
 
 	export const load: Load = async () => {
 		const data = get(userdata)
-		// if (!data && browser) {
-		if (!data) {
+		if (!data && browser) {
+		// if (!data) {
 			const fetchConfig = getFetchConfig("GET")
 			const response = await fetch(`${apiHost}/user/`, fetchConfig);
 	

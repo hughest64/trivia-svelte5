@@ -13,7 +13,7 @@
 
 <style lang="scss">
     :global(body) {
-		min-height: 100%;
+		// height: 100vh;
 		margin: 0;
 		:first-child {
 			display: flex;
