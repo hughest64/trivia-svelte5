@@ -10,8 +10,6 @@
 
 	const joinCode = $page.params?.joincode;
 
-	$: console.log($currentRoundNumber);
-
 	const handleRoundSelect = async (event: MouseEvent) => {
 		const target = <HTMLButtonElement>event.target;
 		activeRoundNumber.set(Number(target.id));
