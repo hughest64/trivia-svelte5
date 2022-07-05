@@ -48,7 +48,7 @@
 	<input class="button button-white" type="submit" name="" id="" value="Submit" />
 </form>
 
-<h1 class="existing-team">Or Play with an Existing Team</h1>
+<h1>Or Play with an Existing Team</h1>
 
 {#if $userdata.teams.length > 0}
 <form on:submit|preventDefault={handleTeamSelectSubmit}>
@@ -87,11 +87,6 @@
 	}
 	.input-element {
 		width: 100%;
-	}
-	.existing-team {
-		width: 110%;
-		text-align: center;
-		align-self: center;
 	}
 	h1, h3 {
 		margin: .5em;

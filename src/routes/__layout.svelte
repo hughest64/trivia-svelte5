@@ -23,20 +23,15 @@
 
 <style lang="scss">
     :global(body) {
-		// height: 100vh;
 		margin: 0;
-		// :first-child {
-		// 	display: flex;
-		// 	flex-direction: column;
-		// 	height: 100%;
-		// }
-		
+		height: 100vh;		
 	}
 	div {
 		position: fixed;
         top: 0;
         height: calc(100% - 5.5em);
         width: 100%;
+		overflow: hidden;
         margin: 0;
         border-bottom-left-radius: 3em;
         border-bottom-right-radius: 3em;
