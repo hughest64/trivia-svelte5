@@ -72,14 +72,11 @@
 				</a>
 			</li>
 		{/if}
-		<!-- TODO: this should open the menu component not log out directly -->
 		<li>
-			<a rel="external" href="/user/logout">
-				<div>
-					<MenuIcon class="svg"/>
-					<p>Logout</p>
-				</div>
-			</a>
+			<div on:click>
+				<MenuIcon class="svg"/>
+				<p>Menu</p>
+			</div>
 		</li>
 	</ul>
 </nav>
