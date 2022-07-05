@@ -56,7 +56,8 @@
             const data = await response.json()
             const joincode = data.join_code
             data && setEventStores(data)
-            goto(`/host/${joincode}`)
+            // goto(`/host/${joincode}`)
+            window.open(`/host/${joincode}`, '_self')
 
         } else {
             message = 'Oops! Something went wrong! Please try again.'

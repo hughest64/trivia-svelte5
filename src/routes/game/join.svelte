@@ -39,7 +39,8 @@
 		if (response.ok) {
 			const data = await response.json();
 			data &&	setEventStores(data)
-			goto(`/game/${joincode}`);
+			// goto(`/game/${joincode}`);
+			window.open(`/game/${joincode}`, '_self')
 
 		} else if (response.status === 404) {
 			message = `Event with join code ${joincode} not found`

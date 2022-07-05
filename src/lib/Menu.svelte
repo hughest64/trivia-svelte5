@@ -10,7 +10,7 @@
     <li>Manage Team</li>
     <li>Trivia Mafia Administration</li>
     <li>Show Me the Tiebreakers</li>
-    <li>Submite App Feedback</li>
+    <li>Submit App Feedback</li>
     <li>Trivia Mafia Host Feedback</li>
     <li><a rel="external" href="/user/logout">Logout</a></li>
     <h4 on:click>X</h4>
@@ -26,7 +26,6 @@
         font-weight: bold;
     }
     li {
-        cursor: pointer;
         margin: 1em 0;
         &:last-of-type {
             flex-grow: 1;
