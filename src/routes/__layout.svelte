@@ -8,12 +8,13 @@
 </script>
 
 <main>
-	{#if displayMenu}
-	<span transition:fly="{{ y: -2000, duration: 1000 }}">
-		<Menu />
-	</span>
-	{/if}
+{#if displayMenu}
+	<div transition:fly="{{ y: -2000, duration: 800 }}">
+		<Menu on:click={() => displayMenu = false}/>
+	</div>
+{:else}
 	<slot />
+{/if}
 </main>
 
 <footer>
@@ -24,22 +25,21 @@
     :global(body) {
 		// height: 100vh;
 		margin: 0;
-		:first-child {
-			display: flex;
-			flex-direction: column;
-			min-height: 100vh;
-		}
+		// :first-child {
+		// 	display: flex;
+		// 	flex-direction: column;
+		// 	height: 100%;
+		// }
 		
 	}
-	span {
+	div {
 		position: fixed;
         top: 0;
-		
-        // height: 10%;
+        height: calc(100% - 5.5em);
         width: 100%;
         margin: 0;
-        border-bottom-left-radius: 5em;
-        border-bottom-right-radius: 5em;
-        background-color: grey;
+        border-bottom-left-radius: 3em;
+        border-bottom-right-radius: 3em;
+        background-color: #413f43;
 	}
 </style>
