@@ -31,7 +31,7 @@
 	{/each}
 </div>
 <div>
-	<h3>R {$activeRound.round_number} Q {$activeQuestion.question_number}</h3>
+	<h3>{$activeRound.round_number}.{$activeQuestion.question_number}</h3>
 	<p>{$activeQuestion.text}</p>
 </div>
 

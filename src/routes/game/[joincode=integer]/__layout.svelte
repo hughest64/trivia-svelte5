@@ -1,7 +1,7 @@
 <script context="module" lang="ts">
-	import { checkStatusCode, getFetchConfig } from '$lib/utils';
 	import { get } from 'svelte/store';
-	import {eventDataLoaded, setEventStores	} from '$stores/event';
+	import { checkStatusCode, getFetchConfig } from '$lib/utils';
+	import { eventDataLoaded, setEventStores } from '$stores/event';
 
 	import type { EventData } from '$lib/types';
 	import type { Load } from '@sveltejs/kit';

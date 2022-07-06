@@ -65,7 +65,7 @@
 				background-color: var(--color-red);
 			}
 			&.current {
-				border-color: #6fcf97;
+				border-color: var(--color-current);
 			}
 		}
 	}
