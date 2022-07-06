@@ -16,5 +16,5 @@
     <Round />
 {:else}
     <h3>Something Went Wrong!</h3>
-    <p>Please refresh the page to try and resovle the issue</p>
+    <p>Please refresh the page to try and resolve the issue</p>
 {/if}

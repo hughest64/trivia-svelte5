@@ -1,5 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores'
+	import Note from '$lib/Note.svelte';
 	import {
 		activeRound,
 		activeRoundNumber,
@@ -8,6 +9,7 @@
 	} from '$stores/event';
 
     const joinCode = $page.params?.joincode;
+	let currentResponse = ''
 
 	$: questionNumbers = $activeRound?.questions.map((q) => q.question_number);
 
@@ -25,30 +27,55 @@
 	};
 </script>
 
-<div class="container">
-	{#each questionNumbers as num}
-		<button id={String(num)} on:click={handleQuestionSelect}>{num}</button>
-	{/each}
-</div>
-<div>
-	<h3>{$activeRound.round_number}.{$activeQuestion.question_number}</h3>
-	<p>{$activeQuestion.text}</p>
+<div class="question-container flex-column">
+	<div class="question-selector">
+		{#each questionNumbers as num}
+			<button class="button-white" id={String(num)} on:click={handleQuestionSelect}>{num}</button>
+		{/each}
+	</div>
+	<div class="flex-column">
+		<h2>{$activeRound.round_number}.{$activeQuestion.question_number}</h2>
+		<p>{$activeQuestion.text}</p>
+		<form on:click|preventDefault>
+			<div class="input-element">
+				<input name="response" type="text" bind:value={currentResponse} />
+				<label for="response">Enter Answer</label>
+			</div>
+			<input class="button button-red" type="submt" value="Submit" />
+		</form>
+		<Note />
+		
+	</div>
 </div>
 
-<style>
-	.container {
+<style lang="scss">
+	.flex-column {
 		display: flex;
-		flex-direction: row;
-		justify-content: center;
-		gap: 1em;
-		margin-top: 1.5rem;
+		flex-direction: column;
+		align-items: center;
 	}
-	button {
-		padding: 0.5em 0.75em;
-		font-size: 16px;
-		font-weight: bold;
-		border: none;
-		background-color: inherit;
-		cursor: pointer;
+	.question-container {
+		border: 2px solid var(--color-black);
+		border-radius: .5em;
+		width: 50em;
+		max-width: 96vw;
+		margin: 1em;
+		padding: 1em;
+		box-shadow: 10px 0px 5px -5px rgb(0 0 0 / 80%);
+		& > * {
+			max-width: 100%;
+		}
 	}
+	.question-selector {
+		display: flex;
+		gap: .5em;
+		button {
+			font-weight: bold;
+			border: 2px solid var(--color-black);
+		}
+	}
+	h2 {
+		margin: .5em;
+	}
+
 </style>

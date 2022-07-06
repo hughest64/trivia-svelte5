@@ -37,4 +37,6 @@
 	<title>Trivia Mafia Event {joincode}</title>
 </svelte:head>
 
-<slot />
+<main>
+	<slot />
+</main>

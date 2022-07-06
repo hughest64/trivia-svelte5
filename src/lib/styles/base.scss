@@ -116,7 +116,7 @@ main {
     flex-direction: column;
     align-items: center;
     width: 100%;
-    // width: calc(100% - 2em);
+    // max-width: calc(100% - 2em);
     // flex: 1 0 auto;
 }
 
@@ -138,4 +138,5 @@ footer {
     width: 100%;
     flex-shrink: 0;
     background-color: var(--color-white);
+    z-index: 2;
 }

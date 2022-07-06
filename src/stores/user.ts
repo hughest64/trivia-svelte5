@@ -11,14 +11,14 @@ export interface UserData {
     user_home_locations?: string[]
 }
 
-export const userdata: Writable<UserData> = writable();
-
 export interface UserTeam {
     id: string | number;
     name: string;
     password: string;
     members?: string[];
 }
+
+export const userdata: Writable<UserData> = writable();
 
 export const useractiveteam: Readable<UserTeam | undefined> = derived(
     userdata,
