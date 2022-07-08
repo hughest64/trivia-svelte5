@@ -42,7 +42,10 @@
 		{#each roundQuestions as question (question.question_number)}
 			{#if question.question_number === $activeQuestionNumber}
 				<!-- out:fly={{x: xValue, duration: 600, opacity: 100}} -->
-				<div class="flex-column question" in:fly={{ x: xValue, duration: 600, opacity: 100 }}>
+				<div
+					class="flex-column question"
+					in:fly={{ x: xValue, duration: 600, opacity: 100 }}
+				>
 					<h2>{$activeRound.round_number}.{question.question_number}</h2>
 					<p>{question.text}</p>
 					<form on:click|preventDefault>
@@ -50,7 +53,7 @@
 							<input name="response" type="text" bind:value={currentResponse} />
 							<label for="response">Enter Answer</label>
 						</div>
-						<input class="button button-red" type="submt" value="Submit" />
+						<input class="button button-red" type="submit" value="Submit" />
 					</form>
 					<Note />
 				</div>
