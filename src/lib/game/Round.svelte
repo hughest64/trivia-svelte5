@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { fly } from 'svelte/transition';
     import { page } from '$app/stores'
 	import Note from '$lib/Note.svelte';
 	import {
@@ -12,10 +13,14 @@
 	let currentResponse = ''
 
 	$: questionNumbers = $activeRound?.questions.map((q) => q.question_number);
+	$: roundQuestions = $activeRound?.questions;
+	let xValue = 500;
 
 	const handleQuestionSelect = async (event: MouseEvent) => {
 		const target = <HTMLButtonElement>event.target;
-		activeQuestionNumber.set(Number(target.id));
+		const nextQuestionNumber = Number(target.id)
+		xValue = nextQuestionNumber < $activeQuestionNumber ? Math.abs(xValue) : Math.abs(xValue) * -1
+		activeQuestionNumber.set(nextQuestionNumber);
 		// post to the game endpoint to set active round and question in a cookie
 		await fetch(`/game/${joinCode}`, {
 			method: 'POST',
@@ -33,9 +38,16 @@
 			<button class="button-white" id={String(num)} on:click={handleQuestionSelect}>{num}</button>
 		{/each}
 	</div>
-	<div class="flex-column">
-		<h2>{$activeRound.round_number}.{$activeQuestion.question_number}</h2>
-		<p>{$activeQuestion.text}</p>
+	<div class="another-container">
+	{#each roundQuestions as question (question.question_number)}
+	{#if question.question_number === $activeQuestionNumber}
+	<!-- out:fly={{x: xValue, duration: 600, opacity: 100}} -->
+	<div
+		class="flex-column question"
+		in:fly={{x: xValue, duration: 600, opacity: 100}}
+	>
+		<h2>{$activeRound.round_number}.{question.question_number}</h2>
+		<p>{question.text}</p>
 		<form on:click|preventDefault>
 			<div class="input-element">
 				<input name="response" type="text" bind:value={currentResponse} />
@@ -46,15 +58,22 @@
 		<Note />
 		
 	</div>
+	{/if}
+	{/each}
+</div>
 </div>
 
 <style lang="scss">
+	.another-container {
+		display: flex;
+	}
 	.flex-column {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 	}
 	.question-container {
+		overflow-x: hidden;
 		border: 2px solid var(--color-black);
 		border-radius: .5em;
 		width: 50em;
