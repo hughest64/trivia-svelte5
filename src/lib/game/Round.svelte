@@ -1,16 +1,16 @@
 <script lang="ts">
 	import { fly } from 'svelte/transition';
-    import { page } from '$app/stores'
+	import { page } from '$app/stores';
 	import Note from '$lib/Note.svelte';
 	import {
 		activeRound,
 		activeRoundNumber,
-		activeQuestion,
+		// activeQuestion,
 		activeQuestionNumber
 	} from '$stores/event';
 
-    const joinCode = $page.params?.joincode;
-	let currentResponse = ''
+	const joinCode = $page.params?.joincode;
+	let currentResponse = '';
 
 	$: questionNumbers = $activeRound?.questions.map((q) => q.question_number);
 	$: roundQuestions = $activeRound?.questions;
@@ -18,8 +18,8 @@
 
 	const handleQuestionSelect = async (event: MouseEvent) => {
 		const target = <HTMLButtonElement>event.target;
-		const nextQuestionNumber = Number(target.id)
-		xValue = nextQuestionNumber < $activeQuestionNumber ? Math.abs(xValue) : Math.abs(xValue) * -1
+		const nextQuestionNumber = Number(target.id);
+		xValue = nextQuestionNumber < $activeQuestionNumber ? Math.abs(xValue) * -1 : Math.abs(xValue);
 		activeQuestionNumber.set(nextQuestionNumber);
 		// post to the game endpoint to set active round and question in a cookie
 		await fetch(`/game/${joinCode}`, {
@@ -39,28 +39,24 @@
 		{/each}
 	</div>
 	<div class="another-container">
-	{#each roundQuestions as question (question.question_number)}
-	{#if question.question_number === $activeQuestionNumber}
-	<!-- out:fly={{x: xValue, duration: 600, opacity: 100}} -->
-	<div
-		class="flex-column question"
-		in:fly={{x: xValue, duration: 600, opacity: 100}}
-	>
-		<h2>{$activeRound.round_number}.{question.question_number}</h2>
-		<p>{question.text}</p>
-		<form on:click|preventDefault>
-			<div class="input-element">
-				<input name="response" type="text" bind:value={currentResponse} />
-				<label for="response">Enter Answer</label>
-			</div>
-			<input class="button button-red" type="submt" value="Submit" />
-		</form>
-		<Note />
-		
+		{#each roundQuestions as question (question.question_number)}
+			{#if question.question_number === $activeQuestionNumber}
+				<!-- out:fly={{x: xValue, duration: 600, opacity: 100}} -->
+				<div class="flex-column question" in:fly={{ x: xValue, duration: 600, opacity: 100 }}>
+					<h2>{$activeRound.round_number}.{question.question_number}</h2>
+					<p>{question.text}</p>
+					<form on:click|preventDefault>
+						<div class="input-element">
+							<input name="response" type="text" bind:value={currentResponse} />
+							<label for="response">Enter Answer</label>
+						</div>
+						<input class="button button-red" type="submt" value="Submit" />
+					</form>
+					<Note />
+				</div>
+			{/if}
+		{/each}
 	</div>
-	{/if}
-	{/each}
-</div>
 </div>
 
 <style lang="scss">
@@ -75,7 +71,7 @@
 	.question-container {
 		overflow-x: hidden;
 		border: 2px solid var(--color-black);
-		border-radius: .5em;
+		border-radius: 0.5em;
 		width: 50em;
 		max-width: 96vw;
 		margin: 1em;
@@ -87,14 +83,13 @@
 	}
 	.question-selector {
 		display: flex;
-		gap: .5em;
+		gap: 0.5em;
 		button {
 			font-weight: bold;
 			border: 2px solid var(--color-black);
 		}
 	}
 	h2 {
-		margin: .5em;
+		margin: 0.5em;
 	}
-
 </style>
