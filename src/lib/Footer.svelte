@@ -22,7 +22,6 @@
 
 		return linkHref === $page.url.href
 	}
-	
 </script>
 
 <nav>

@@ -6,7 +6,7 @@
 	import {
 		activeRound,
 		activeRoundNumber,
-		// activeQuestion,
+		activeQuestion,
 		activeQuestionNumber
 	} from '$stores/event';
 
@@ -14,13 +14,12 @@
 	let currentResponse = ''; // TODO: this will actually tie to a response
 
 	$: questionNumbers = $activeRound?.questions.map((q) => q.question_number);
-	$: roundQuestions = $activeRound?.questions;
 
 	let swipeDirection = 'right' // or 'left'
 	$: swipeXValue = swipeDirection === 'right' ? 500 : -500
 
 	const handleQuestionSelect = async (event: MouseEvent | CustomEvent) => {
-		const target = <HTMLButtonElement | HTMLDivElement>event.target;
+		const target = <HTMLElement>event.target;
 		const eventDirection = event.detail?.direction
 		let nextQuestionNumber = $activeQuestionNumber
 
@@ -53,34 +52,32 @@
 			<button class="button-white" id={String(num)} on:click={handleQuestionSelect}>{num}</button>
 		{/each}
 	</div>
+	{#key $activeQuestionNumber}
 	<div class="question-container" use:swipeQuestion on:swipe={handleQuestionSelect}>
-		{#each roundQuestions as question (question.question_number)}
-			{#if question.question_number === $activeQuestionNumber}
-				<!-- out:fly={{x: swipeXValue * -1, duration: 600, opacity: 100, delay: 200}} -->
-				<div
-					class="flex-column question"
-					in:fly={{ x: swipeXValue, duration: 600, opacity: 100 }}
-				>
-					<h2>{$activeRound.round_number}.{question.question_number}</h2>
-					<p>{question.text}</p>
-					<form on:click|preventDefault>
-						<div class="input-element">
-							<input name="response" type="text" bind:value={currentResponse} />
-							<label for="response">Enter Answer</label>
-						</div>
-						<input class="button button-red" type="submit" value="Submit" />
-					</form>
-					<Note />
+		<div
+			class="flex-column question"
+			in:fly={{ x: swipeXValue, duration: 600, opacity: 100 }}
+		>
+			<h2>{$activeRound.round_number}.{$activeQuestion.question_number}</h2>
+			<p>{$activeQuestion.text}</p>
+			<form on:click|preventDefault>
+				<div class="input-element">
+					<input name="response" type="text" bind:value={currentResponse} />
+					<label for="response">Enter Answer</label>
 				</div>
-			{/if}
-		{/each}
+				<input class="button button-red" type="submit" value="Submit" />
+			</form>
+			<Note />
+		</div>
 	</div>
+	{/key}
 </div>
 
 <style lang="scss">
-	.question-container {
-		display: flex;
-	}
+	// .question-container {
+	// 	display: flex;
+	// 	flex-direction: row;
+	// }
 	.flex-column {
 		display: flex;
 		flex-direction: column;
@@ -91,7 +88,7 @@
 		border: 2px solid var(--color-black);
 		border-radius: 0.5em;
 		width: 50em;
-		// max-width: 96vw;
+		max-width: calc(100% - 2em);
 		margin: 1em;
 		padding: 1em;
 		box-shadow: 10px 0px 5px -5px rgb(0 0 0 / 80%);

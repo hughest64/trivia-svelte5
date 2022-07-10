@@ -50,6 +50,7 @@
 		flex-direction: row;
 		justify-content: space-between;
 		gap: 0.25em;
+		max-width: calc(100% - 2em);
 		button {
 			width: 3em;
 			height: 3em;
