@@ -13,14 +13,12 @@ export const swipeQuestion = (node: HTMLElement, threshold=30) => {
 
     const handleMousedown = (event: MouseEvent|TouchEvent) => {
         startPostion = (event as MouseEvent).clientX || (event as TouchEvent).touches[0].pageX;
-        console.log(startPostion);
     }
     const handleMouseup = (event: MouseEvent|TouchEvent) => {
         const target = <HTMLElement>event.target
 
         if (node.contains(target) && startPostion > -1) {
-            endPostion = (event as MouseEvent).clientX || (event as TouchEvent).touches[0].pageX;
-            console.log(endPostion);
+            endPostion = (event as MouseEvent).clientX || (event as TouchEvent).changedTouches[0].pageX;
 
             const direction = endPostion < startPostion ? 'right' : 'left'
             const shouldDispatch = Math.abs(startPostion - endPostion) > threshold
@@ -33,7 +31,6 @@ export const swipeQuestion = (node: HTMLElement, threshold=30) => {
     node.addEventListener('mouseup', handleMouseup);
 
     node.addEventListener('touchstart', handleMousedown);
-    // node.addEventListener('touchmove', (event) => event.preventDefault())
     node.addEventListener('touchend', handleMouseup);
 
     return {

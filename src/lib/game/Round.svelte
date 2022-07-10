@@ -11,7 +11,7 @@
 	} from '$stores/event';
 
 	const joinCode = $page.params?.joincode;
-	let currentResponse = '';
+	let currentResponse = ''; // TODO: this will actually tie to a response
 
 	$: questionNumbers = $activeRound?.questions.map((q) => q.question_number);
 	$: roundQuestions = $activeRound?.questions;
@@ -22,8 +22,8 @@
 	const handleQuestionSelect = async (event: MouseEvent | CustomEvent) => {
 		const target = <HTMLButtonElement | HTMLDivElement>event.target;
 		const eventDirection = event.detail?.direction
-
 		let nextQuestionNumber = $activeQuestionNumber
+
 		if (eventDirection === 'right') {
 			const lastQuestionNumber = Math.max(...questionNumbers)
 			nextQuestionNumber = Math.min(lastQuestionNumber, $activeQuestionNumber + 1)
@@ -91,7 +91,7 @@
 		border: 2px solid var(--color-black);
 		border-radius: 0.5em;
 		width: 50em;
-		max-width: 96vw;
+		// max-width: 96vw;
 		margin: 1em;
 		padding: 1em;
 		box-shadow: 10px 0px 5px -5px rgb(0 0 0 / 80%);
