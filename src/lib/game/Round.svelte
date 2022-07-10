@@ -2,6 +2,7 @@
 	import { fly } from 'svelte/transition';
 	import { page } from '$app/stores';
 	import Note from '$lib/Note.svelte';
+	import { swipeQuestion } from './swipe';
 	import {
 		activeRound,
 		activeRoundNumber,
@@ -14,37 +15,51 @@
 
 	$: questionNumbers = $activeRound?.questions.map((q) => q.question_number);
 	$: roundQuestions = $activeRound?.questions;
-	let xValue = 500;
 
-	const handleQuestionSelect = async (event: MouseEvent) => {
-		const target = <HTMLButtonElement>event.target;
-		const nextQuestionNumber = Number(target.id);
-		xValue = nextQuestionNumber < $activeQuestionNumber ? Math.abs(xValue) * -1 : Math.abs(xValue);
+	let swipeDirection = 'right' // or 'left'
+	$: swipeXValue = swipeDirection === 'right' ? 500 : -500
+
+	const handleQuestionSelect = async (event: MouseEvent | CustomEvent) => {
+		const target = <HTMLButtonElement | HTMLDivElement>event.target;
+		const eventDirection = event.detail?.direction
+
+		let nextQuestionNumber = $activeQuestionNumber
+		if (eventDirection === 'right') {
+			const lastQuestionNumber = Math.max(...questionNumbers)
+			nextQuestionNumber = Math.min(lastQuestionNumber, $activeQuestionNumber + 1)
+		} else if (eventDirection === 'left') {
+			nextQuestionNumber = Math.max(1, $activeQuestionNumber - 1)
+		} else if (!!target.id) {
+			nextQuestionNumber = Number(target.id);
+		}
+
+		swipeDirection = nextQuestionNumber < $activeQuestionNumber ? 'left' : 'right'
 		activeQuestionNumber.set(nextQuestionNumber);
+
 		// post to the game endpoint to set active round and question in a cookie
 		await fetch(`/game/${joinCode}`, {
 			method: 'POST',
 			body: JSON.stringify({
 				initialRoundNumber: $activeRoundNumber,
-				initialQuestionNumber: target.id
+				initialQuestionNumber: $activeQuestionNumber
 			})
 		});
 	};
 </script>
 
-<div class="question-container flex-column">
+<div class="question-box flex-column">
 	<div class="question-selector">
 		{#each questionNumbers as num}
 			<button class="button-white" id={String(num)} on:click={handleQuestionSelect}>{num}</button>
 		{/each}
 	</div>
-	<div class="another-container">
+	<div class="question-container" use:swipeQuestion on:swipe={handleQuestionSelect}>
 		{#each roundQuestions as question (question.question_number)}
 			{#if question.question_number === $activeQuestionNumber}
-				<!-- out:fly={{x: xValue, duration: 600, opacity: 100}} -->
+				<!-- out:fly={{x: swipeXValue * -1, duration: 600, opacity: 100, delay: 200}} -->
 				<div
 					class="flex-column question"
-					in:fly={{ x: xValue, duration: 600, opacity: 100 }}
+					in:fly={{ x: swipeXValue, duration: 600, opacity: 100 }}
 				>
 					<h2>{$activeRound.round_number}.{question.question_number}</h2>
 					<p>{question.text}</p>
@@ -63,7 +78,7 @@
 </div>
 
 <style lang="scss">
-	.another-container {
+	.question-container {
 		display: flex;
 	}
 	.flex-column {
@@ -71,7 +86,7 @@
 		flex-direction: column;
 		align-items: center;
 	}
-	.question-container {
+	.question-box {
 		overflow-x: hidden;
 		border: 2px solid var(--color-black);
 		border-radius: 0.5em;

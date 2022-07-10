@@ -10,3 +10,10 @@ declare namespace App {
 	}
 	// interface Stuff {}
 }
+
+declare namespace svelte.JSX {
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	interface HTMLAttributes<T> {
+        onswipe?: (event: CustomEvent) => Promise<void>
+	}
+}
