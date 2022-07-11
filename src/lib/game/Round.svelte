@@ -14,25 +14,25 @@
 	let currentResponse = ''; // TODO: this will actually tie to a response
 
 	$: questionNumbers = $activeRound?.questions.map((q) => q.question_number);
+	$: lastQuestionNumber = Math.max(...questionNumbers)
 
-	let swipeDirection = 'right' // or 'left'
-	$: swipeXValue = swipeDirection === 'right' ? 500 : -500
+	let swipeDirection = 'right'; // or 'left'
+	$: swipeXValue = swipeDirection === 'right' ? 500 : -500;
 
 	const handleQuestionSelect = async (event: MouseEvent | CustomEvent) => {
 		const target = <HTMLElement>event.target;
-		const eventDirection = event.detail?.direction
-		let nextQuestionNumber = $activeQuestionNumber
+		const eventDirection = event.detail?.direction;
+		let nextQuestionNumber = $activeQuestionNumber;
 
 		if (eventDirection === 'right') {
-			const lastQuestionNumber = Math.max(...questionNumbers)
-			nextQuestionNumber = Math.min(lastQuestionNumber, $activeQuestionNumber + 1)
+			nextQuestionNumber = Math.min(lastQuestionNumber, $activeQuestionNumber + 1);
 		} else if (eventDirection === 'left') {
-			nextQuestionNumber = Math.max(1, $activeQuestionNumber - 1)
+			nextQuestionNumber = Math.max(1, $activeQuestionNumber - 1);
 		} else if (!!target.id) {
 			nextQuestionNumber = Number(target.id);
 		}
 
-		swipeDirection = nextQuestionNumber < $activeQuestionNumber ? 'left' : 'right'
+		swipeDirection = nextQuestionNumber < $activeQuestionNumber ? 'left' : 'right';
 		activeQuestionNumber.set(nextQuestionNumber);
 
 		// post to the game endpoint to set active round and question in a cookie
@@ -52,15 +52,17 @@
 			<button class="button-white" id={String(num)} on:click={handleQuestionSelect}>{num}</button>
 		{/each}
 	</div>
+
 	{#key $activeQuestionNumber}
-	<div class="question-container" use:swipeQuestion on:swipe={handleQuestionSelect}>
 		<div
 			class="flex-column question"
 			in:fly={{ x: swipeXValue, duration: 600, opacity: 100 }}
+			use:swipeQuestion
+			on:swipe={handleQuestionSelect}
 		>
 			<h2>{$activeRound.round_number}.{$activeQuestion.question_number}</h2>
 			<p>{$activeQuestion.text}</p>
-			<form on:click|preventDefault>
+			<form on:submit|preventDefault>
 				<div class="input-element">
 					<input name="response" type="text" bind:value={currentResponse} />
 					<label for="response">Enter Answer</label>
@@ -69,15 +71,10 @@
 			</form>
 			<Note />
 		</div>
-	</div>
 	{/key}
 </div>
 
 <style lang="scss">
-	// .question-container {
-	// 	display: flex;
-	// 	flex-direction: row;
-	// }
 	.flex-column {
 		display: flex;
 		flex-direction: column;

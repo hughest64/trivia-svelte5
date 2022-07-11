@@ -3,7 +3,7 @@ import type { LoadOutput, RequestHandlerOutput } from '@sveltejs/kit';
 
 // TODO: doc strings for all!
 
-const cookieMaxAge = import.meta.env.VITE_COOKIE_MAX_AGE
+const cookieMaxAge = import.meta.env.VITE_COOKIE_MAX_AGE || 60 * 60 // 1 hour
 
 export const getEventCookie = (params: Record<string, string>, request: Request): string => {
     const cookies = cookie.parse(request.headers.get('cookie') || '');
