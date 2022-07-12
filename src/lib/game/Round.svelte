@@ -17,16 +17,16 @@
 	$: lastQuestionNumber = Math.max(...questionNumbers)
 
 	let swipeDirection = 'right'; // or 'left'
-	$: swipeXValue = swipeDirection === 'right' ? 500 : -500;
+	$: swipeXValue = swipeDirection === 'right' ? 1000 : -1000;
 
-	const handleQuestionSelect = async (event: MouseEvent | CustomEvent) => {
+	const handleQuestionSelect = async (event: MouseEvent|CustomEvent|KeyboardEvent) => {
 		const target = <HTMLElement>event.target;
 		const eventDirection = event.detail?.direction;
 		let nextQuestionNumber = $activeQuestionNumber;
 
-		if (eventDirection === 'right') {
+		if (eventDirection === 'right' || (event as KeyboardEvent).code === 'ArrowRight') {
 			nextQuestionNumber = Math.min(lastQuestionNumber, $activeQuestionNumber + 1);
-		} else if (eventDirection === 'left') {
+		} else if (eventDirection === 'left' || (event as KeyboardEvent).code === 'ArrowLeft') {
 			nextQuestionNumber = Math.max(1, $activeQuestionNumber - 1);
 		} else if (!!target.id) {
 			nextQuestionNumber = Number(target.id);
@@ -46,13 +46,16 @@
 	};
 </script>
 
+<svelte:window on:keyup={handleQuestionSelect} />
+
 <div class="question-box flex-column">
 	<div class="question-selector">
 		{#each questionNumbers as num}
 			<button class="button-white" id={String(num)} on:click={handleQuestionSelect}>{num}</button>
 		{/each}
 	</div>
-
+	<!-- TODO: remove if not using an each block -->
+	<div class="all-questions">
 	{#key $activeQuestionNumber}
 		<div
 			class="flex-column question"
@@ -72,9 +75,14 @@
 			<Note />
 		</div>
 	{/key}
+	</div>
 </div>
 
 <style lang="scss">
+	.all-questions {
+		display: flex;
+		flex-direction: row;
+	}
 	.flex-column {
 		display: flex;
 		flex-direction: column;
@@ -86,7 +94,7 @@
 		border-radius: 0.5em;
 		width: 50em;
 		max-width: calc(100% - 2em);
-		margin: 1em;
+		margin-top: 1em;
 		padding: 1em;
 		box-shadow: 10px 0px 5px -5px rgb(0 0 0 / 80%);
 		& > * {

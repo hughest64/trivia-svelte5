@@ -22,10 +22,10 @@
 </footer>
 
 <style lang="scss">
-    :global(body) {
-		margin: 0;
-		height: 100vh;		
-	}
+    // :global(body) {
+	// 	margin: 0;
+	// 	height: 100vh;
+	// }
 	div {
 		position: fixed;
         top: 0;

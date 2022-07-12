@@ -3,8 +3,10 @@
 	import { goto } from '$app/navigation';
 	import { userdata, useractiveteam, type UserTeam } from '$stores/user';
 	const apiHost = import.meta.env.VITE_API_HOST;
+
 	let hidecreateteam = true;
 	let hideteampassword = true;
+
 	// TODO: finish create a team and join by code (team password)
 	// TODO: handle when there are no teams (probably just hide the select)
 	let selected: UserTeam = $useractiveteam || $userdata?.teams[0];
@@ -13,6 +15,7 @@
 	const handleTeamSelectSubmit = async () => {
 		if (selected.id === $userdata.active_team_id) {
 			goto('/game/join');
+
 		} else {
 			const fetchConfig = getFetchConfig('POST', { team_id: selected.id })
 			const response = await fetch(`${apiHost}/teamselect/`, fetchConfig);
@@ -21,6 +24,7 @@
 				const active_team_id = await response.json();
 				userdata.update((data) => ({ ...data, ...active_team_id }));
 				goto('/game/join');
+
 			} else {
 				message = 'Oop! Something went wrong! Please try again.'
 			}
