@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { fade, fly, slide } from 'svelte/transition';
-	import { sineIn, sineInOut, sineOut } from 'svelte/easing'
+	import { sineIn, sineInOut, sineOut } from 'svelte/easing';
 	import { page } from '$app/stores';
 	import Note from '$lib/Note.svelte';
 	import { swipeQuestion } from './swipe';
@@ -15,22 +15,23 @@
 	let currentResponse = ''; // TODO: this will actually tie to a response
 
 	$: questionNumbers = $activeRound?.questions.map((q) => q.question_number);
-	$: lastQuestionNumber = Math.max(...questionNumbers)
+	$: lastQuestionNumber = Math.max(...questionNumbers);
 
 	let swipeDirection = 'right'; // or 'left'
 	$: swipeXValue = swipeDirection === 'right' ? 1000 : -4000;
 
-	const inSwipeDuration = 600
-	const outSwipeDuration = 350
+	const inSwipeDuration = 600;
+	$: outSwipeDuration = swipeDirection === 'right' ? 100 : 350;
 
-	const handleQuestionSelect = async (event: MouseEvent|CustomEvent|KeyboardEvent) => {
+	const handleQuestionSelect = async (event: MouseEvent | CustomEvent | KeyboardEvent) => {
 		const target = <HTMLElement>event.target;
 		const eventDirection = event.detail?.direction;
+		const keyCode = (event as KeyboardEvent).code;
 		let nextQuestionNumber = $activeQuestionNumber;
 
-		if (eventDirection === 'right' || (event as KeyboardEvent).code === 'ArrowRight') {
+		if (eventDirection === 'right' || keyCode === 'ArrowRight') {
 			nextQuestionNumber = Math.min(lastQuestionNumber, $activeQuestionNumber + 1);
-		} else if (eventDirection === 'left' || (event as KeyboardEvent).code === 'ArrowLeft') {
+		} else if (eventDirection === 'left' || keyCode === 'ArrowLeft') {
 			nextQuestionNumber = Math.max(1, $activeQuestionNumber - 1);
 		} else if (!!target.id) {
 			nextQuestionNumber = Number(target.id);
@@ -59,33 +60,34 @@
 		{/each}
 	</div>
 	<div class="all-questions">
-	{#key $activeQuestionNumber}
-		<div
-			class="flex-column"
-			in:fly={{ easing: sineInOut, opacity: 100, x: swipeXValue, duration: inSwipeDuration }}
-			out:fly={{ easing: sineInOut, opacity: 100, x: swipeXValue * -1, duration: outSwipeDuration }}
-			use:swipeQuestion
-			on:swipe={handleQuestionSelect}
-		>
-			<h2>{$activeRound.round_number}.{$activeQuestion.question_number}</h2>
-			<p>{$activeQuestion.text}</p>
-			<form on:submit|preventDefault>
-				<div class="input-element">
-					<input name="response" type="text" bind:value={currentResponse} />
-					<label for="response">Enter Answer</label>
-				</div>
-				<input class="button button-red" type="submit" value="Submit" />
-			</form>
-			<Note />
-		</div>
-	{/key}
+		{#key $activeQuestionNumber}
+			<div
+				class="flex-column question"
+				in:fly={{ easing: sineInOut, opacity: 100, x: swipeXValue, duration: inSwipeDuration }}
+				out:fly={{ easing: sineInOut, x: swipeXValue * -1, duration: outSwipeDuration }}
+				use:swipeQuestion
+				on:swipe={handleQuestionSelect}
+			>
+				<h2>{$activeRound.round_number}.{$activeQuestion.question_number}</h2>
+				<p class="question-text">{$activeQuestion.text}</p>
+				<form on:submit|preventDefault>
+					<div class="input-element">
+						<input name="response" type="text" bind:value={currentResponse} />
+						<label for="response">Enter Answer</label>
+					</div>
+					<input class="button button-red" type="submit" value="Submit" />
+				</form>
+				<Note />
+			</div>
+		{/key}
 	</div>
 </div>
 
 <style lang="scss">
 	.all-questions {
 		display: flex;
-		// flex-direction: row;
+		justify-content: center;
+		width: 100%;
 		& > * {
 			max-width: 100%;
 		}
@@ -107,6 +109,12 @@
 		& > * {
 			max-width: 100%;
 		}
+	}
+	.question {
+		width: 100%;
+	}
+	.question-text {
+		padding: 0 1em;
 	}
 	.question-selector {
 		display: flex;
