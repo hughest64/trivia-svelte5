@@ -24,6 +24,8 @@
 		display: inline-flex;
 		flex-direction: column;
         background-color: #f2f2f2;
+        max-width: calc(100% - 2em);
+        margin-bottom: 1em;
         form {
             margin: auto;
         }

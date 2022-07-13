@@ -6,7 +6,7 @@
  * @param {number} threshold distance in pixels from mouse down to mouse up required in order to fire the event
  * @returns {Object} object containing a destroy method which removes the event listeners from the node
  */
-export const swipeQuestion = (node: HTMLElement, threshold=30) => {
+export const swipeQuestion = (node: HTMLElement, threshold=10) => {
     let startPostion = -1;
     let endPostion = -1;
 

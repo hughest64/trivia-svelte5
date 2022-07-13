@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { fly } from 'svelte/transition';
+	import { fade, fly, slide } from 'svelte/transition';
+	import { sineIn, sineInOut, sineOut } from 'svelte/easing'
 	import { page } from '$app/stores';
 	import Note from '$lib/Note.svelte';
 	import { swipeQuestion } from './swipe';
@@ -17,7 +18,10 @@
 	$: lastQuestionNumber = Math.max(...questionNumbers)
 
 	let swipeDirection = 'right'; // or 'left'
-	$: swipeXValue = swipeDirection === 'right' ? 1000 : -1000;
+	$: swipeXValue = swipeDirection === 'right' ? 1000 : -4000;
+
+	const inSwipeDuration = 600
+	const outSwipeDuration = 350
 
 	const handleQuestionSelect = async (event: MouseEvent|CustomEvent|KeyboardEvent) => {
 		const target = <HTMLElement>event.target;
@@ -54,12 +58,12 @@
 			<button class="button-white" id={String(num)} on:click={handleQuestionSelect}>{num}</button>
 		{/each}
 	</div>
-	<!-- TODO: remove if not using an each block -->
 	<div class="all-questions">
 	{#key $activeQuestionNumber}
 		<div
-			class="flex-column question"
-			in:fly={{ x: swipeXValue, duration: 600, opacity: 100 }}
+			class="flex-column"
+			in:fly={{ easing: sineInOut, opacity: 100, x: swipeXValue, duration: inSwipeDuration }}
+			out:fly={{ easing: sineInOut, opacity: 100, x: swipeXValue * -1, duration: outSwipeDuration }}
 			use:swipeQuestion
 			on:swipe={handleQuestionSelect}
 		>
@@ -81,7 +85,10 @@
 <style lang="scss">
 	.all-questions {
 		display: flex;
-		flex-direction: row;
+		// flex-direction: row;
+		& > * {
+			max-width: 100%;
+		}
 	}
 	.flex-column {
 		display: flex;
@@ -95,7 +102,7 @@
 		width: 50em;
 		max-width: calc(100% - 2em);
 		margin-top: 1em;
-		padding: 1em;
+		padding-top: 1em;
 		box-shadow: 10px 0px 5px -5px rgb(0 0 0 / 80%);
 		& > * {
 			max-width: 100%;
