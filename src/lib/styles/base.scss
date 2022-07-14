@@ -139,3 +139,13 @@ p.hint {
     font-size: 14px;
     font-weight: normal;
 }
+
+/* ------------------- */
+/* Utility Classes     */
+/* ------------------- */
+
+.flex-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}

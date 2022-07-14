@@ -1,18 +1,16 @@
 <script lang="ts">
-	import { fade, fly, slide } from 'svelte/transition';
-	import { sineIn, sineInOut, sineOut } from 'svelte/easing';
+	import { fly } from 'svelte/transition';
+	import { sineInOut } from 'svelte/easing';
 	import { page } from '$app/stores';
-	import Note from '$lib/Note.svelte';
+	import Question from './Question.svelte';
 	import { swipeQuestion } from './swipe';
 	import {
 		activeRound,
 		activeRoundNumber,
-		activeQuestion,
 		activeQuestionNumber
 	} from '$stores/event';
 
 	const joinCode = $page.params?.joincode;
-	let currentResponse = ''; // TODO: this will actually tie to a response
 
 	$: questionNumbers = $activeRound?.questions.map((q) => q.question_number);
 	$: lastQuestionNumber = Math.max(...questionNumbers);
@@ -23,7 +21,7 @@
 	const inSwipeDuration = 600;
 	$: outSwipeDuration = swipeDirection === 'right' ? 100 : 350;
 
-	const handleQuestionSelect = async (event: MouseEvent | CustomEvent | KeyboardEvent) => {
+	const handleQuestionSelect = async (event: MouseEvent|CustomEvent|KeyboardEvent) => {
 		const target = <HTMLElement>event.target;
 		const eventDirection = event.detail?.direction;
 		const keyCode = (event as KeyboardEvent).code;
@@ -59,7 +57,8 @@
 			<button class="button-white" id={String(num)} on:click={handleQuestionSelect}>{num}</button>
 		{/each}
 	</div>
-	<div class="all-questions">
+	<!-- TODO: transition params in a config object like { left: {...}, right: {...} } -->
+	<div class="question-row">
 		{#key $activeQuestionNumber}
 			<div
 				class="flex-column question"
@@ -68,35 +67,13 @@
 				use:swipeQuestion
 				on:swipe={handleQuestionSelect}
 			>
-				<h2>{$activeRound.round_number}.{$activeQuestion.question_number}</h2>
-				<p class="question-text">{$activeQuestion.text}</p>
-				<form on:submit|preventDefault>
-					<div class="input-element">
-						<input name="response" type="text" bind:value={currentResponse} />
-						<label for="response">Enter Answer</label>
-					</div>
-					<input class="button button-red" type="submit" value="Submit" />
-				</form>
-				<Note />
+				<Question />
 			</div>
 		{/key}
 	</div>
 </div>
 
 <style lang="scss">
-	.all-questions {
-		display: flex;
-		justify-content: center;
-		width: 100%;
-		& > * {
-			max-width: 100%;
-		}
-	}
-	.flex-column {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-	}
 	.question-box {
 		overflow-x: hidden;
 		border: 2px solid var(--color-black);
@@ -110,11 +87,13 @@
 			max-width: 100%;
 		}
 	}
-	.question {
+	.question-row {
+		display: flex;
+		justify-content: center;
 		width: 100%;
-	}
-	.question-text {
-		padding: 0 1em;
+		& > * {
+			max-width: 100%;
+		}
 	}
 	.question-selector {
 		display: flex;
@@ -124,7 +103,7 @@
 			border: 2px solid var(--color-black);
 		}
 	}
-	h2 {
-		margin: 0.5em;
+	.question {
+		width: 100%;
 	}
 </style>
