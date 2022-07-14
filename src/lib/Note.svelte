@@ -4,12 +4,13 @@
 </script>
 
 <div class="notes-container flex-column">
-    <button
+    <div
         class="button disabled"
         on:click={() => hidden = !hidden}
     >
         Notes for {$activeRoundNumber}.{$activeQuestionNumber}
-    </button>
+    </div>
+
     <form class:hidden on:click|preventDefault>
         <div class="input-element">
             <input name="note" type="text" >
@@ -20,9 +21,6 @@
 
 <style lang="scss">
     .notes-container {
-		// width: 100%;
-		display: inline-flex;
-		flex-direction: column;
         background-color: #f2f2f2;
         max-width: calc(100% - 2em);
         margin-bottom: 1em;
@@ -32,6 +30,9 @@
 	}
     .disabled {
         background-color: inherit;
+        &:focus {
+            border: none;
+        }
     }
     .hidden {
         display: none;
