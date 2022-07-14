@@ -60,6 +60,7 @@
 	<!-- TODO: on:focus, clear the message -->
 	<label class="select-label" for="team-select">Choose A Team</label>
 	<select class="select" id="team-select" name="team-select" bind:value={selected}>
+		<!-- TODO: Team component to replicate the existing team select -->
 		{#each $userdata.teams as team (team.id)}
 			<option value={team}>{team.name}</option>
 		{/each}
