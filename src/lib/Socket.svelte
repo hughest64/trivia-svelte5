@@ -14,7 +14,6 @@
     let retries = 0
     
     const createSocket = () => {
-        // console.log('conntection attempt', retries)
         const webSocket = new WebSocket(socketUrl)
 
         webSocket.onopen = () => {
@@ -22,21 +21,25 @@
             retries = 0
             // console.log('connected')
         }
+        // webSocket.onerror = (e) => {
+        //     console.log(e)
+        // }
         webSocket.onclose = (event) => {  
-            // console.log('closing socket', event)
+            // console.log('closing socket')
             if (!event.wasClean && retries <= maxRetries) {
                 retries ++
                 setTimeout(createSocket, retryInterval)
+            } else {
+                // TODO: We could set a message letting the user know the connection died
+                clearTimeout(interval);
             }
         }
 
         socket.set(webSocket);
-        return webSocket
     }
 
     onMount(() => {
-        // console.log('mounting')
-        const webSocket = createSocket()
-        return !!webSocket && webSocket.close
+        createSocket()
+        return !!$socket && $socket.close
     })
 </script>

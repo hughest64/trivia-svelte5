@@ -30,6 +30,8 @@
 	import { page } from '$app/stores'
 
 	const joincode = $page.params.joincode
+
+
 </script>
 
 <svelte:head>
