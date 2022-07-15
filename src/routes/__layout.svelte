@@ -8,13 +8,13 @@
 </script>
 
 <main>
-{#if displayMenu}
-	<div transition:fly="{{ y: -2000, duration: 800 }}">
-		<Menu on:click={() => displayMenu = false}/>
-	</div>
-{:else}
+	{#if displayMenu}
+		<div transition:fly="{{ y: -2000, duration: 800 }}">
+			<Menu on:click={() => displayMenu = false}/>
+		</div>
+	{/if}
+
 	<slot />
-{/if}
 </main>
 
 <footer>

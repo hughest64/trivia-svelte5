@@ -26,15 +26,16 @@
 </script>
 
 <script lang="ts">
+	import Socket from '$lib/Socket.svelte'
 	import { page } from '$app/stores'
-	const joincode = $page.params.joincode
 
-	// create socket connection here?
-	// then close the client in an onDestroy?
+	const joincode = $page.params.joincode
 </script>
 
 <svelte:head>
 	<title>Trivia Mafia Event {joincode}</title>
 </svelte:head>
+
+<Socket />
 
 <slot />

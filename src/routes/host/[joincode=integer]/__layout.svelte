@@ -28,8 +28,9 @@
 </script>
 
 <script lang="ts">
-	// create socket connection here?
-	// then close the client in an onDestroy?
+	import Socket from '$lib/Socket.svelte'
 </script>
 
- <slot />
+<Socket />
+
+<slot />
