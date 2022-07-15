@@ -40,7 +40,7 @@ class JwtAuthentication(authentication.BaseAuthentication):
 def get_user(token):
     """
     Sync to async wrapper around the decode token function which returns an authenticated
-    authenticated user instance if the token is valid or an instance ot AnonymousUser if not.
+    authenticated user instance if the token is valid or an instance of AnonymousUser if not.
     """
     return decode_token(token)
 

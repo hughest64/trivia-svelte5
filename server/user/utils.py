@@ -30,13 +30,13 @@ def create_token(user_id):
 def decode_token(token):
     """Return a User object if passed a valid JWT or an instance of AnonymousUser otherwise"""
     if not token:
-        return AnonymousUser
+        return AnonymousUser()
 
     try:
         payload = jwt.decode(token, settings.JWT_TOKEN_SECRET, algorithms=["HS256"])
 
     except jwt.ExpiredSignatureError:
-        return AnonymousUser
+        return AnonymousUser()
 
     user = User.objects.filter(id=payload["id"]).first()
 

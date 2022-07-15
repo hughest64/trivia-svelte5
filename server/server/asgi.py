@@ -27,16 +27,6 @@ application = ProtocolTypeRouter(
                     )
                 ]
             )
-        ),
-
-        # bypass auth (use for debugging only, will not match things like game/1234/megaround)
-        # "websocket": URLRouter(
-        #     [
-        #         path(
-        #             "ws/<gametype:gametype>/<int:joincode>",
-        #             consumers.SocketConsumer.as_asgi(),
-        #         )
-        #     ]
-        # ),
+        )
     }
 )
