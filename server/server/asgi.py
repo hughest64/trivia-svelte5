@@ -7,10 +7,36 @@ For more information on this file, see
 https://docs.djangoproject.com/en/4.0/howto/deployment/asgi/
 """
 
-import os
+from channels.routing import ProtocolTypeRouter, URLRouter
 
 from django.core.asgi import get_asgi_application
+from django.urls import re_path
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'server.settings')
+from game import consumers
+from user.authentication import JwtAuthMiddlewareStack
 
-application = get_asgi_application()
+application = ProtocolTypeRouter(
+    {
+        "http": get_asgi_application(),
+        "websocket": JwtAuthMiddlewareStack(
+            URLRouter(
+                [
+                    re_path(
+                        r"ws/(?P<gametype>(game|host))/(?P<joincode>\d+)",
+                        consumers.SocketConsumer.as_asgi(),
+                    )
+                ]
+            )
+        ),
+
+        # bypass auth (use for debugging only, will not match things like game/1234/megaround)
+        # "websocket": URLRouter(
+        #     [
+        #         path(
+        #             "ws/<gametype:gametype>/<int:joincode>",
+        #             consumers.SocketConsumer.as_asgi(),
+        #         )
+        #     ]
+        # ),
+    }
+)

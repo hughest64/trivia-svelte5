@@ -27,6 +27,12 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['localhost', '10.0.0.135']
 
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+}
+
 AUTH_USER_MODEL = 'user.User'
 
 # Application definition
@@ -38,8 +44,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # packages
     'corsheaders',
     'rest_framework',
+    'channels',
+    # apps
     'user',
     'game',
 ]
@@ -74,6 +83,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'server.wsgi.application'
+ASGI_APPLICATION = 'server.asgi.application'
 
 
 # Database

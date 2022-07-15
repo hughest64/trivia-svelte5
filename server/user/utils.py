@@ -1,6 +1,7 @@
 # utils.py
 """ Helper functions for user views
 """
+# TODO: these should be part of authentication.py
 import datetime
 
 from django.conf import settings
@@ -39,4 +40,4 @@ def decode_token(token):
 
     user = User.objects.filter(id=payload["id"]).first()
 
-    return user or AnonymousUser
+    return user or AnonymousUser()
