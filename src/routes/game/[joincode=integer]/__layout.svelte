@@ -10,14 +10,14 @@
 
 	export const load: Load = async ({ fetch, url, params }) => {
 		if (!get(eventDataLoaded)) {
-			const fetchConfig = getFetchConfig("GET")
-            const response = await fetch(`${apiHost}/event/${params.joincode}/`, fetchConfig);
+			const fetchConfig = getFetchConfig('GET');
+			const response = await fetch(`${apiHost}/event/${params.joincode}/`, fetchConfig);
 
 			if (response.ok) {
 				const data = (await response.json()) as EventData;
-				data && setEventStores(data)
+				data && setEventStores(data);
 			} else {
-				return checkStatusCode(response, url.pathname)
+				return checkStatusCode(response, url.pathname);
 			}
 		}
 
@@ -26,12 +26,28 @@
 </script>
 
 <script lang="ts">
-	import Socket from '$lib/Socket.svelte'
-	import { page } from '$app/stores'
+	import Socket from '$lib/Socket.svelte';
+	import { page } from '$app/stores';
+	import { socket } from '$stores/socket';
+	import handlers from '$stores/gameMessageHandlers';
 
-	const joincode = $page.params.joincode
+	interface SocketMessage {
+		type: string;
+		message: Record<string, unknown>;
+	}
 
-
+	$: if (!!$socket) {
+		// console.log('adding message handler')
+		$socket.onmessage = (event) => {
+			const data: SocketMessage = JSON.parse(event.data);
+			try {
+				handlers[data.type](data.message);
+			} catch {
+				console.error(`message type ${data.type} does not have a handler function!`);
+			}
+		};
+	}
+	const joincode = $page.params.joincode;
 </script>
 
 <svelte:head>

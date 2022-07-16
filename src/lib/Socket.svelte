@@ -38,7 +38,7 @@
         socket.set(webSocket);
     }
 
-    onMount(() => {
+    onMount(async () => {
         createSocket()
         return !!$socket && $socket.close
     })
