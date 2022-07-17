@@ -4,7 +4,7 @@
 	import { response } from '$stores/response'
     import Note from '$lib/Note.svelte'
 
-	$: currentResponse = $response; // TODO: check for an actual response fgh
+	$: currentResponse = $response; // TODO: check for an actual response
 
 	const handleResponseSubmit = () => {
 		$socket.send(JSON.stringify({

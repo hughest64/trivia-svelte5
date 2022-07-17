@@ -12,7 +12,7 @@ import type { MessageHandler } from './types';
 const log_me = (data: unknown) => console.log(data);
 
 const handlers:MessageHandler = {
-    connected: () => undefined, //console.log('connected!'),
+    connected: () => console.log('connected!'), // undefined,
     update_response: (data) => updateResponse(data as string),
     log_me,
 }

@@ -1,38 +1,30 @@
-# create-svelte
+# TrivaMafia SvelteKit Concept
+A re-platformed re-conceived version of the trivia app intended to provide more flexibility, better scalability, easier implementation of new features, and better testing patterns.
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
+## Installation
+### SvelteKit
+- SvelteKit requires `node >= 16`, so make sure that is installed and active.
+- For convenience there is a `.nvmrc` file at the root which will automatically load the correct version in this directory. This is only useful if you are using Node Version Manager.
+- with node 16 active, run `npm i` to install the dependencies
 
-## Creating a project
+### Python
+- from the `server` directory run `pipenv install` to add the python dependencies
 
-If you're seeing this, you've probably already done this step. Congrats!
+### Environment Variables
+- create a `.env` file at the root and add the following variables which are requried for running the dev server
 
-```bash
-# create a new project in the current directory
-npm init svelte
+```python
+VITE_API_HOST = 'http://localhost:8000'
 
-# create a new project in my-app
-npm init svelte my-app
+VITE_WEBSOCKET_HOST = 'ws://localhost:8000'
 ```
 
-## Developing
+## Project Setup
+- TODO: (db migrations, add users, add teams, etc)
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+## Run the Dev Servers
+- python - with `pipenv` active from the `server` run `python manage.py runserver`
+- SvelteKit - from the root run `npm run dev`
 
-```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```bash
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+## Building for Production
+- TODO

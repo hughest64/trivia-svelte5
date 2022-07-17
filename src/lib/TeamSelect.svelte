@@ -8,25 +8,22 @@
 	let hideteampassword = true;
 
 	// TODO: finish create a team and join by code (team password)
-	// TODO: handle when there are no teams (probably just hide the select)
 	let selected: UserTeam = $useractiveteam || $userdata?.teams[0];
 	let message: string;
 
 	const handleTeamSelectSubmit = async () => {
 		if (selected.id === $userdata.active_team_id) {
 			goto('/game/join');
-
 		} else {
-			const fetchConfig = getFetchConfig('POST', { team_id: selected.id })
+			const fetchConfig = getFetchConfig('POST', { team_id: selected.id });
 			const response = await fetch(`${apiHost}/teamselect/`, fetchConfig);
 
 			if (response.ok) {
 				const active_team_id = await response.json();
 				userdata.update((data) => ({ ...data, ...active_team_id }));
 				goto('/game/join');
-
 			} else {
-				message = 'Oop! Something went wrong! Please try again.'
+				message = 'Oop! Something went wrong! Please try again.';
 			}
 		}
 	};
@@ -36,10 +33,10 @@
 
 <h1>Create a New Team</h1>
 
-<button 
+<button
 	class="button button-red"
 	class:disabled={!hidecreateteam}
-	on:click={() => hidecreateteam = !hidecreateteam}
+	on:click={() => (hidecreateteam = !hidecreateteam)}
 >
 	Create a New Team
 </button>
@@ -55,24 +52,24 @@
 <h1>Or Play with an Existing Team</h1>
 
 {#if $userdata.teams.length > 0}
-<form on:submit|preventDefault={handleTeamSelectSubmit}>
-	{#if message}<p class="error">{message}</p>{/if}
-	<!-- TODO: on:focus, clear the message -->
-	<label class="select-label" for="team-select">Choose A Team</label>
-	<select class="select" id="team-select" name="team-select" bind:value={selected}>
-		<!-- TODO: Team component to replicate the existing team select -->
-		{#each $userdata.teams as team (team.id)}
-			<option value={team}>{team.name}</option>
-		{/each}
-	</select>
-	<input class="button button-red" type="submit" value="Choose This Team" />
-</form>
+	<form on:submit|preventDefault={handleTeamSelectSubmit}>
+		{#if message}<p class="error">{message}</p>{/if}
+		<!-- TODO: on:focus, clear the message -->
+		<label class="select-label" for="team-select">Choose A Team</label>
+		<select class="select" id="team-select" name="team-select" bind:value={selected}>
+			<!-- TODO: Team component to replicate the existing team select -->
+			{#each $userdata.teams as team (team.id)}
+				<option value={team}>{team.name}</option>
+			{/each}
+		</select>
+		<input class="button button-red" type="submit" value="Choose This Team" />
+	</form>
 {/if}
 
 <button
 	class="button button-black"
 	class:disabled={!hideteampassword}
-	on:click={() => hideteampassword = !hideteampassword}
+	on:click={() => (hideteampassword = !hideteampassword)}
 >
 	Enter Team Password
 </button>
@@ -93,8 +90,9 @@
 	.input-element {
 		width: 100%;
 	}
-	h1, h3 {
-		margin: .5em;
+	h1,
+	h3 {
+		margin: 0.5em;
 	}
 	select {
 		margin-bottom: 1em;

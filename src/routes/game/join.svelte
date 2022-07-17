@@ -3,6 +3,7 @@
 	import { get } from 'svelte/store';
 	import { userdata, useractiveteam } from '$stores/user';
 	import type { Load } from '@sveltejs/kit';
+
 	const apiHost = import.meta.env.VITE_API_HOST;
     
 	export const load: Load = async ({ fetch, url }) => {
@@ -25,8 +26,7 @@
 </script>
 
 <script lang="ts">
-    import { goto } from '$app/navigation';
-	import { eventDataLoaded, setEventStores } from '$stores/event';
+	import { setEventStores } from '$stores/event';
 
 	export let joincode: string;
 	export let message: string;
@@ -39,7 +39,6 @@
 		if (response.ok) {
 			const data = await response.json();
 			data &&	setEventStores(data)
-			// goto(`/game/${joincode}`);
 			window.open(`/game/${joincode}`, '_self')
 
 		} else if (response.status === 404) {
