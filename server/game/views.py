@@ -5,17 +5,18 @@ from django.conf import settings
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_protect
 
-from rest_framework.response import Response
-from rest_framework.views import APIView
 from rest_framework.authentication import SessionAuthentication
-from rest_framework.permissions import IsAdminUser
 from rest_framework.exceptions import PermissionDenied
-from rest_framework.status import HTTP_401_UNAUTHORIZED, HTTP_200_OK, HTTP_404_NOT_FOUND
+from rest_framework.permissions import IsAdminUser
+from rest_framework.response import Response
+from rest_framework.status import HTTP_200_OK, HTTP_401_UNAUTHORIZED, HTTP_404_NOT_FOUND
+from rest_framework.views import APIView
 
 from user.authentication import JwtAuthentication
 from user.serializers import UserSerializer
+
 from .models import Team, Location, Game
-from .serializers import TeamSerializer, LocationSerializer, GameSerializer
+from .serializers import LocationSerializer, GameSerializer
 
 # TODO: dev data only, replace once models are in place
 with open(settings.BASE_DIR.parent / "data" / "event_setup_data.json", "r") as f2:

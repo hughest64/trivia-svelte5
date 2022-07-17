@@ -6,10 +6,10 @@
  */
 // import type { Writable } from 'svelte/store';
 import { updateResponse } from './response'
+import type { MessageHandler } from './types';
 
-export type MessageHandler = Record<string, (data?: unknown) => unknown>
-
-const log_me = (data: unknown) => console.log('log function', data);
+// convenience logging function
+const log_me = (data: unknown) => console.log(data);
 
 const handlers:MessageHandler = {
     connected: () => undefined, //console.log('connected!'),

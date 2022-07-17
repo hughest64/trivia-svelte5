@@ -30,11 +30,7 @@
 	import { page } from '$app/stores';
 	import { socket } from '$stores/socket';
 	import handlers from '$stores/gameMessageHandlers';
-
-	interface SocketMessage {
-		type: string;
-		message?: string|number|Record<string, unknown>;
-	}
+	import type { SocketMessage} from '$stores/types'
 
 	$: if (!!$socket) {
 		// console.log('adding message handler')

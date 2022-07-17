@@ -1,17 +1,56 @@
+import datetime
+
 from channels.db import database_sync_to_async
 from channels.sessions import CookieMiddleware
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import AnonymousUser
 
 from rest_framework import authentication
 from rest_framework.exceptions import AuthenticationFailed
 
-from .utils import decode_token
-
 import jwt
 
 User = get_user_model()
+
+
+def create_token(user_id):
+    """Create a jwt token from a user id"""
+    payload = {
+        "id": user_id,
+        "exp": datetime.datetime.utcnow()
+        + datetime.timedelta(minutes=settings.JWT_TOKEN_TTL),
+        "iat": datetime.datetime.utcnow(),
+    }
+
+    token = jwt.encode(payload, settings.JWT_TOKEN_SECRET, algorithm="HS256")
+
+    return token
+
+
+def decode_token(token):
+    """Return a User object if passed a valid JWT or an instance of AnonymousUser otherwise"""
+    if not token:
+        return AnonymousUser()
+
+    try:
+        payload = jwt.decode(token, settings.JWT_TOKEN_SECRET, algorithms=["HS256"])
+
+    except jwt.ExpiredSignatureError:
+        return AnonymousUser()
+
+    user = User.objects.filter(id=payload["id"]).first()
+
+    return user or AnonymousUser()
+
+
+@database_sync_to_async
+def get_user(token):
+    """
+    Sync to async wrapper around decode_token
+    """
+    return decode_token(token)
 
 
 class JwtAuthentication(authentication.BaseAuthentication):
@@ -24,8 +63,8 @@ class JwtAuthentication(authentication.BaseAuthentication):
             raise AuthenticationFailed("You need to log in!")
 
         try:
-            # TODO: make an actual token variable
             payload = jwt.decode(token, settings.JWT_TOKEN_SECRET, algorithms=["HS256"])
+
         except jwt.ExpiredSignatureError:
             raise AuthenticationFailed("You need to log in!")
 
@@ -36,20 +75,10 @@ class JwtAuthentication(authentication.BaseAuthentication):
         return (user, None)
 
 
-@database_sync_to_async
-def get_user(token):
-    """
-    Sync to async wrapper around the decode token function which returns an authenticated
-    authenticated user instance if the token is valid or an instance of AnonymousUser if not.
-    """
-    return decode_token(token)
-
-
 class JwtAuthMiddleware:
     """custom JWT authentication for Django Channels. Requires CookieMiddleware higher in the stack"""
 
     def __init__(self, app):
-        # Store the ASGI application we were passed
         self.app = app
 
     async def __call__(self, scope, receive, send):
