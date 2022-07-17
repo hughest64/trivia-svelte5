@@ -1,14 +1,24 @@
 <script lang="ts">
     import { activeRound, activeQuestion} from '$stores/event'
+	import { socket } from '$stores/socket'
+	import { response } from '$stores/response'
     import Note from '$lib/Note.svelte'
-	let currentResponse = ''; // TODO: check for an actual response
+
+	$: currentResponse = $response; // TODO: check for an actual response fgh
+
+	const handleResponseSubmit = () => {
+		$socket.send(JSON.stringify({
+			type: 'team.update_response',
+			message: { 'reponse': currentResponse }
+		}))
+	}
 </script>
 
 <h2>{$activeRound.round_number}.{$activeQuestion.question_number}</h2>
 
 <p class="question-text">{$activeQuestion.text}</p>
 
-<form on:submit|preventDefault>
+<form on:submit|preventDefault={handleResponseSubmit}>
 	<div class="input-element">
 		<input name="response" type="text" bind:value={currentResponse} />
 		<label for="response">Enter Answer</label>

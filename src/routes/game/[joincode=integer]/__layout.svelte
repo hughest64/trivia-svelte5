@@ -33,7 +33,7 @@
 
 	interface SocketMessage {
 		type: string;
-		message: Record<string, unknown>;
+		message?: string|number|Record<string, unknown>;
 	}
 
 	$: if (!!$socket) {

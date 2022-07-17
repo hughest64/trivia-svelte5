@@ -4,13 +4,16 @@
  * should be in python style snake case and is equivalent to the "type" key in the websocket message
  * functions should take in a data param which is equivalent to the "message" key in the websocekt message.
  */
+// import type { Writable } from 'svelte/store';
+import { updateResponse } from './response'
 
-export type MessageHandler = Record<string, (data?: unknown) => void>
+export type MessageHandler = Record<string, (data?: unknown) => unknown>
 
 const log_me = (data: unknown) => console.log('log function', data);
 
 const handlers:MessageHandler = {
     connected: () => undefined, //console.log('connected!'),
+    update_response: (data) => updateResponse(data as string),
     log_me,
 }
 
