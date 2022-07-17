@@ -11,7 +11,7 @@ class SocketConsumer(JsonWebsocketConsumer):
             async_to_sync(self.channel_layer.group_add)(
                 self.event_group, self.channel_name
             )
-        # reject the connection, you've no buisiness here.
+        # reject the connection, you've no business here.
         else:
             self.close()
 
