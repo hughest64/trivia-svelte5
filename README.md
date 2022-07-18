@@ -13,7 +13,7 @@ A re-platformed re-conceived version of the trivia app intended to provide more 
 ### Environment Variables
 - create a `.env` file at the root and add the following variables which are requried for running the dev server
 
-```python
+```bash
 VITE_API_HOST = 'http://localhost:8000'
 
 VITE_WEBSOCKET_HOST = 'ws://localhost:8000'
@@ -26,5 +26,5 @@ VITE_WEBSOCKET_HOST = 'ws://localhost:8000'
 - python - with `pipenv` active from the `server` run `python manage.py runserver`
 - SvelteKit - from the root run `npm run dev`
 
-## Building for Production
+## Testing
 - TODO
