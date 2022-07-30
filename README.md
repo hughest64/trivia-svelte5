@@ -20,7 +20,10 @@ VITE_WEBSOCKET_HOST = 'ws://localhost:8000'
 ```
 
 ## Project Setup
-- TODO: (db migrations, add users, add teams, etc)
+`NOTE:` There is no need to use the `createsuperuser` command here, that is handled in the setup script described below.\
+All commands need to be run from the server dirctory with `pipenv` active.
+- do the initia datbase migration with `python manage.py migrate`
+- run the database setup script with `python manage.py dbsetup` this will allow you to optionally create a superuser as well as create the example teams and guest user/team for the app
 
 ## Run the Dev Servers
 - python - with `pipenv` active from the `server` run `python manage.py runserver`
