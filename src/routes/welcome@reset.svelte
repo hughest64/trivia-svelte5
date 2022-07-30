@@ -1,32 +1,32 @@
 <script lang="ts">
-    import { page } from '$app/stores'
-    import { goto } from '$app/navigation'
+    import { page } from '$app/stores';
+    import { goto } from '$app/navigation';
     import { userdata } from '$stores/user';
-    import { getFetchConfig } from '$lib/utils'
+    import { getFetchConfig } from '$lib/utils';
 
-    const apiHost = import.meta.env.VITE_API_HOST
+    const apiHost = import.meta.env.VITE_API_HOST;
 
-    let message = ''
+    let message = '';
 
     const handleGuestClick = async(event: MouseEvent) => {
         const target = <HTMLAnchorElement>event.target;
-        message = 'logging in'
+        message = 'logging in';
 
         const response = await fetch(
             `${apiHost}/user/guest`,
-            getFetchConfig("POST")
-        )
+            getFetchConfig('POST')
+        );
 
         if (response.ok) {
-            const data = await response.json()
-            data  && userdata.set(data)
-            goto(target.href)
+            const data = await response.json();
+            data  && userdata.set(data);
+            goto(target.href);
         }
         else {
-            console.log("oopsy!")
-            message = "oops!"
+            console.log('oopsy!');
+            message = 'oops!';
         }
-    }
+    };
 </script>
 
 <svelte:head><title>Trivia Mafia | Welcome</title></svelte:head>

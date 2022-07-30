@@ -7,18 +7,18 @@
 	const apiHost = import.meta.env.VITE_API_HOST;
 
 	export const load: Load = async ({ fetch, session }) => {
-		if (browser) return { status: 200 };
+	    if (browser) return { status: 200 };
 		
-        const fetchConfig = getFetchConfig('GET');
-		const response = await fetch(`${apiHost}/user/login/`, fetchConfig);
+    const fetchConfig = getFetchConfig('GET');
+	    const response = await fetch(`${apiHost}/user/login/`, fetchConfig);
 
-		if (response.ok) {
-			const cookies = response.headers.get('set-cookie');
-			const csrftoken = (cookies && cookie.parse(cookies)?.csrftoken) || '';
-			session.csrftoken = csrftoken;
-		}
+	    if (response.ok) {
+	        const cookies = response.headers.get('set-cookie');
+	        const csrftoken = (cookies && cookie.parse(cookies)?.csrftoken) || '';
+	        session.csrftoken = csrftoken;
+	    }
 
-		return checkStatusCode(response)
+	    return checkStatusCode(response);
 	};
 </script>
 
@@ -26,30 +26,30 @@
 	import { goto } from '$app/navigation';
 	import { page, session } from '$app/stores';
 
-    $: next = $page.url.searchParams.get('next') || '/'
+$: next = $page.url.searchParams.get('next') || '/';
 
 	export let errorMessage: string;
 	let username: string;
 	let password: string;
 
 	const validateUser = async () => {
-		const fetchConfig = getFetchConfig(
-            'POST',
-            { username, password },
-            setCsrfHeaders($session.csrftoken)
-        );
+	    const fetchConfig = getFetchConfig(
+        'POST',
+        { username, password },
+        setCsrfHeaders($session.csrftoken)
+    );
 
-		const response = await fetch(`${apiHost}/user/login/`, fetchConfig);
+	    const response = await fetch(`${apiHost}/user/login/`, fetchConfig);
 
-		if (response.ok) {
-			const data: UserData = await response.json();
-			userdata.set(data);
-			goto(next)
+	    if (response.ok) {
+	        const data: UserData = await response.json();
+	        userdata.set(data);
+	        goto(next);
 
-		} else {
-			// TODO: we need to handle this better, it's not always bad password or username
-			errorMessage = 'Bad Username or Password';
-		}
+	    } else {
+	        // TODO: we need to handle this better, it's not always bad password or username
+	        errorMessage = 'Bad Username or Password';
+	    }
 	};
 </script>
 

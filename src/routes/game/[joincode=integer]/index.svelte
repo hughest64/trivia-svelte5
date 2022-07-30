@@ -1,14 +1,13 @@
 <script lang="ts">
-    import { activeRound, activeRoundNumber, activeQuestionNumber } from '$stores/event'
+    import { activeRound, activeRoundNumber, activeQuestionNumber } from '$stores/event';
     import RoundHeader from '$lib/game/RoundHeader.svelte';
-    import Round from "$lib/game/Round.svelte"
+    import Round from '$lib/game/Round.svelte';
 
     export let initialRoundNumber: number;
-    $: initialRoundNumber && activeRoundNumber.set(Number(initialRoundNumber))
+    $: initialRoundNumber && activeRoundNumber.set(Number(initialRoundNumber));
 
     export let initialQuestionNumber: number;
-    $: initialQuestionNumber && activeQuestionNumber.set(Number(initialQuestionNumber))
-
+    $: initialQuestionNumber && activeQuestionNumber.set(Number(initialQuestionNumber));
 </script>
 
 {#if !!$activeRound}

@@ -1,45 +1,45 @@
 <script lang="ts">
-	import { onMount, } from 'svelte'
-    import { page } from '$app/stores'
-    import { socket } from '$stores/socket'
+    import { onMount } from 'svelte';
+    import { page } from '$app/stores';
+    import { socket } from '$stores/socket';
 
-	const apiHost = import.meta.env.VITE_WEBSOCKET_HOST	
+    const apiHost = import.meta.env.VITE_WEBSOCKET_HOST;
     const path = $page.url.pathname;
 
-    export let socketUrl = `${apiHost}/ws${path}/`
-    export let maxRetries = 50
-    export let retryInterval = 1000
+    export let socketUrl = `${apiHost}/ws${path}/`;
+    export let maxRetries = 50;
+    export let retryInterval = 1000;
 
-    let interval: ReturnType<typeof setTimeout>
-    let retries = 0
-    
+    let interval: ReturnType<typeof setTimeout>;
+    let retries = 0;
+
     const createSocket = () => {
-        const webSocket = new WebSocket(socketUrl)
+        const webSocket = new WebSocket(socketUrl);
 
         webSocket.onopen = () => {
-            clearInterval(interval)
-            retries = 0
+            clearInterval(interval);
+            retries = 0;
             // console.log('connected')
-        }
+        };
         // webSocket.onerror = (e) => {
         //     console.log(e)
         // }
-        webSocket.onclose = (event) => {  
+        webSocket.onclose = (event) => {
             // console.log('closing socket')
             if (!event.wasClean && retries <= maxRetries) {
-                retries ++
-                setTimeout(createSocket, retryInterval)
+                retries++;
+                setTimeout(createSocket, retryInterval);
             } else {
                 // TODO: We could set a message letting the user know the connection died
                 clearTimeout(interval);
             }
-        }
+        };
 
         socket.set(webSocket);
-    }
+    };
 
     onMount(async () => {
-        createSocket()
-        return !!$socket && $socket.close
-    })
+        createSocket();
+        return !!$socket && $socket.close;
+    });
 </script>

@@ -1,5 +1,5 @@
-import { derived, writable } from "svelte/store";
-import type { Readable, Writable } from "svelte/store"
+import { derived, writable } from 'svelte/store';
+import type { Readable, Writable } from 'svelte/store';
 
 export interface UserData {
     username: string;
@@ -23,5 +23,5 @@ export const userdata: Writable<UserData> = writable();
 export const useractiveteam: Readable<UserTeam | undefined> = derived(
     userdata,
     ($userdata) => {
-        return $userdata.teams.find((team) => team.id === $userdata.active_team_id)
-})
+        return $userdata.teams.find((team) => team.id === $userdata.active_team_id);
+    });

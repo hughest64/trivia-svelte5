@@ -4,7 +4,7 @@
 	import Menu from '$lib/Menu.svelte';
 	import { fly } from 'svelte/transition';
 
-	let displayMenu = false
+	let displayMenu = false;
 </script>
 
 <main>

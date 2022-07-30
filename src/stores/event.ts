@@ -1,43 +1,43 @@
 /**
  * Store containing event related data
  */
-import { writable, derived } from "svelte/store";
-import type { Readable, Writable } from 'svelte/store'
-import type { EventData, EventRound, EventQuestion } from "$lib/types";
+import { writable, derived } from 'svelte/store';
+import type { Readable, Writable } from 'svelte/store';
+import type { EventData, EventRound, EventQuestion } from '$lib/types';
 
 // boolean that is set when the event stores are populated
-export const eventDataLoaded: Writable<boolean> = writable(false)
+export const eventDataLoaded: Writable<boolean> = writable(false);
 
-export const roundNumbers: Writable<number[]> = writable()
-export const eventRounds: Writable<EventRound[]> = writable()
+export const roundNumbers: Writable<number[]> = writable();
+export const eventRounds: Writable<EventRound[]> = writable();
 
 // comes from the database and represents current game progress
-export const currentRoundNumber: Writable<number> = writable()
-export const currentQuestionNumber: Writable<number> = writable()
+export const currentRoundNumber: Writable<number> = writable();
+export const currentQuestionNumber: Writable<number> = writable();
 
 // usually comes from a cookie and represents what a user is viewing
-export const activeRoundNumber: Writable<number> = writable()
-export const activeQuestionNumber: Writable<number> = writable()
+export const activeRoundNumber: Writable<number> = writable();
+export const activeQuestionNumber: Writable<number> = writable();
 
 export const activeRound: Readable<EventRound> = derived(
     [eventRounds, activeRoundNumber],
     ([$eventRounds, $activeRoundNumber]) => {
         const index = $eventRounds?.findIndex(
-            round => round.round_number === $activeRoundNumber
-        )
-        return $eventRounds[index]
+            (round) => round.round_number === $activeRoundNumber
+        );
+        return $eventRounds[index];
     }
-)
+);
 
 export const activeQuestion: Readable<EventQuestion> = derived(
     [activeRound, activeQuestionNumber],
     ([$activeRound, $activeQuestionNumber]) => {
         const index = $activeRound?.questions.findIndex(
-            q => q.question_number === $activeQuestionNumber
-        ) || 0
-        return $activeRound?.questions[index]
+            (q) => q.question_number === $activeQuestionNumber
+        ) || 0;
+        return $activeRound?.questions[index];
     }
-)
+);
 
 export const setEventStores = (data: EventData) => {
     roundNumbers.set(data.rounds.map((round) => round.round_number));
@@ -45,7 +45,7 @@ export const setEventStores = (data: EventData) => {
     currentQuestionNumber.set(data.current_question_number);
     eventRounds.set(data.rounds);
     eventDataLoaded.set(true);
-}
+};
 
 
 /** Web socket payload from get_event_data in the current version

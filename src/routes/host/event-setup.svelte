@@ -1,23 +1,21 @@
 <script context="module" lang="ts">
-    import { browser } from '$app/env';
-
     import { userdata } from '$stores/user';
     import { checkStatusCode, getFetchConfig } from '$lib/utils';
 
     import type { Load } from '@sveltejs/kit';
-    import type { GameSelectData, LocationSelectData } from '$lib/types'
+    import type { GameSelectData, LocationSelectData } from '$lib/types';
 
-    const apiHost = import.meta.env.VITE_API_HOST
+    const apiHost = import.meta.env.VITE_API_HOST;
     
     export const load: Load = async({ fetch }) => {
         // if (!browser) {
         //     return { status: 200}
         // }
-        const fetchConfig = getFetchConfig("GET")
-        const response = await fetch(`${apiHost}/eventsetup/`, fetchConfig) 
+        const fetchConfig = getFetchConfig('GET');
+        const response = await fetch(`${apiHost}/eventsetup/`, fetchConfig); 
 
         if (response.ok) {
-            const data = await response.json()
+            const data = await response.json();
             data && userdata.set(data.user_data);
 
             return {
@@ -26,43 +24,42 @@
                     gameSelectData: data.game_select_data || [],
                     locationSelectData: data.location_select_data || []
                 }
-            }
+            };
         }
-        return checkStatusCode(response)
+        return checkStatusCode(response);
 
-    }
+    };
 </script>
 
 <script lang="ts">
-    import { goto } from '$app/navigation'
-    import { setEventStores } from '$stores/event'
+    import { setEventStores } from '$stores/event';
 
-    export let gameSelectData: GameSelectData[]
-    export let locationSelectData: LocationSelectData[]
+    export let gameSelectData: GameSelectData[];
+    export let locationSelectData: LocationSelectData[];
     export let message: string;
 
-    let selectLocation: LocationSelectData // TODO: set to the host's "home" location
-    let selectedGame: GameSelectData
+    let selectLocation: LocationSelectData; // TODO: set to the host's "home" location
+    let selectedGame: GameSelectData;
 
     // TODO: csrf validation
     const handleEventSubmit = async () => {
         const fetchConfig = getFetchConfig('POST', {
             location_id: selectLocation.location_id,
             game_id: selectedGame.game_id
-        })
+        });
 
-        const response = await fetch (`${apiHost}/eventsetup/`, fetchConfig)
+        const response = await fetch (`${apiHost}/eventsetup/`, fetchConfig);
         if (response.ok) {
-            const data = await response.json()
-            const joincode = data.join_code
-            data && setEventStores(data)
+            const data = await response.json();
+            const joincode = data.join_code;
+            data && setEventStores(data);
             // goto(`/host/${joincode}`)
-            window.open(`/host/${joincode}`, '_self')
+            window.open(`/host/${joincode}`, '_self');
 
         } else {
-            message = 'Oops! Something went wrong! Please try again.'
+            message = 'Oops! Something went wrong! Please try again.';
         }
-    }
+    };
 
 </script>
 
