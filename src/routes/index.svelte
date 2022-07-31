@@ -43,8 +43,6 @@
         }
     };
 
-    console.log({ key: ['3'] });
-
     let historyIndex = 0;
     const handlepopstate = (event: PopStateEvent) => {
         const eventIndex = event.state['sveltekit:index'] || 0;
