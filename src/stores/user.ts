@@ -8,7 +8,7 @@ export interface UserData {
     active_team_id?: number | null;
     teams: UserTeam[];
     user_is_anonymous?: boolean;
-    user_home_locations?: string[]
+    user_home_locations?: string[];
 }
 
 export interface UserTeam {
@@ -20,8 +20,6 @@ export interface UserTeam {
 
 export const userdata: Writable<UserData> = writable();
 
-export const useractiveteam: Readable<UserTeam | undefined> = derived(
-    userdata,
-    ($userdata) => {
-        return $userdata.teams.find((team) => team.id === $userdata.active_team_id);
-    });
+export const useractiveteam: Readable<UserTeam | undefined> = derived(userdata, ($userdata) => 
+    $userdata.teams.find((team) => team.id === $userdata.active_team_id)
+);
