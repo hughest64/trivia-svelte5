@@ -6,6 +6,9 @@
     import type { Load } from '@sveltejs/kit';
     const apiHost = import.meta.env.VITE_API_HOST;
 
+    // TODO: migration - new file +layout.ts however,
+    // can we use session or the new await parent() to check user data?
+    // really questioning the store set up for user data
     export const load: Load = async () => {
         const data = get(userdata);
         if (!data && browser) {
