@@ -12,8 +12,15 @@ import { expect, test } from '@playwright/test';
  * when tests are ran.
  */
 
-test('index page has expected h1', async ({ page }) => {
+test('index page redirects to /user/login when not logged in', async ({ page }) => {
     await page.goto('/user/login');
+
+    expect(await page.textContent('h1')).toBe('Login');
+    // expect(true);
+});
+
+test('login page has expected h1', async ({ page }) => {
+    await page.goto('/user/login/');
 
     expect(await page.textContent('h1')).toBe('Login');
 });
