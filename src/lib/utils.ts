@@ -52,6 +52,7 @@ export const setEventCookie = async (
 export const setCsrfHeaders = (csrfToken: string): Record<string, string> => {
     return {
         Cookie: `csrftoken=${csrfToken}`,
+        // TODO: this probably isn't neccessary!
         'X-CSRFToken': csrfToken
     };
 };
