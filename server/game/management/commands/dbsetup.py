@@ -33,9 +33,16 @@ class Command(BaseCommand):
                 user.save()
 
             # get or create guest user
-            guest_user, _ = User.objects.get_or_create(username="guest")
-            guest_user.set_password("guest")
-            guest_user.save()
+            guest_user, guest_user_created = User.objects.get_or_create(username="guest")
+            if guest_user_created:
+                guest_user.set_password("guest")
+                guest_user.save()
+
+            # create a staff user for testing
+            sample_admin, sample_admin_created = User.objects.get_or_create(username="sample_admin")
+            if sample_admin_created:
+                sample_admin.set_password("sample_admin")
+                sample_admin.save()
 
             with open(settings.BASE_DIR.parent / "data" / "teams.json", "r") as f:
                 teams = json.load(f)
