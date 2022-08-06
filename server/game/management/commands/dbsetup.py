@@ -1,4 +1,4 @@
-# seed.py
+# dbsetup.py
 """
 Create a custom staff user, guest user, and associated teams.
 For use when running the demo app.
