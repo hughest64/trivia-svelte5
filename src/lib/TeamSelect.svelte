@@ -33,11 +33,7 @@
 
 <h1>Create a New Team</h1>
 
-<button
-    class="button button-red"
-    class:disabled={!hidecreateteam}
-    on:click={() => (hidecreateteam = !hidecreateteam)}
->
+<button class="button button-red" class:disabled={!hidecreateteam} on:click={() => (hidecreateteam = !hidecreateteam)}>
     Create a New Team
 </button>
 
@@ -62,7 +58,7 @@
                 <option value={team}>{team.name}</option>
             {/each}
         </select>
-        <input class="button button-red" type="submit" value="Choose This Team" />
+        <input class="button button-red" type="submit" id="team-select-submit" value="Choose This Team" />
     </form>
 {/if}
 
@@ -76,9 +72,9 @@
 
 <form class:hideteampassword on:click|preventDefault>
     <div class="input-element">
-        <input type="text" placeholder="Team Password" />
+        <input type="text" name="team-password" placeholder="Team Password" />
     </div>
-    <input class="button button-white" type="submit" name="" id="" value="Submit" />
+    <input class="button button-white" type="submit" name="" id="team-password-submit" value="Submit" />
 </form>
 
 <style lang="scss">

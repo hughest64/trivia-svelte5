@@ -53,7 +53,7 @@
     {#if message}<p class="error">{message}</p>{/if}
     <!-- TODO: on:focus, clear the message -->
     <div class="input-element">
-        <input type="text" placeholder="Enter Code" bind:value={joincode} />
+        <input type="text" name="joincode" placeholder="Enter Code" bind:value={joincode} />
     </div>
     <input class="button button-red" type="submit" value="Join Game!" />
 </form>

@@ -13,7 +13,6 @@ import * as cookie from 'cookie';
  * it would be nice to configure auto starting the Django side (with test server?)
  * when tests are run.
  */
-
 // TODO: fixture - once you are logged in, store the creds (however we do that)
 test('guest/not-staff login from redirect', async ({ page }) => {
     await page.goto('/');
@@ -56,4 +55,26 @@ test('login page redirects properly', async ({ page }) => {
 
     await expect(page).toHaveTitle(/Host Choice/);
     expect(await page.textContent('h1')).toBe('Greetings sample_admin');
+
+    // play a game
+    await page.locator('text=Play Trivia').click();
+    await expect(page).toHaveTitle(/team select/i);
+
+    // TODO: we shold not see the team passwor input until we click the button
+    // TODO: join by password is not actually set up
+    // await page.locator('text=Enter Team Password').click();
+    // await page.locator('input[name="team-password"]').fill('leads-joy-blossom');
+    // await page.locator('.team-password-submit').click();
+
+    await page.locator('text=Choose This Team').click();
+
+    // TODO: the title on the game select page says Team Select - this should be a failing test!
+    // now we should be on the game select page
+    expect(await page.textContent('h1')).toBe('Enter Game Code');
+
+    // fill the game code and join the game
+    await page.locator('input[name="joincode"]').fill('1234');
+    await page.locator('text=Join Game!').click();
+    // expect to be on the game page
+    await expect(page).toHaveTitle(/Event 1234/);
 });
