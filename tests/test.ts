@@ -14,7 +14,7 @@ import * as cookie from 'cookie';
  * when tests are run.
  */
 // TODO: fixture - once you are logged in, store the creds (however we do that)
-test('guest/not-staff login from redirect', async ({ page }) => {
+test.skip('guest/not-staff login from redirect', async ({ page }) => {
     await page.goto('/');
     // not logged in, we should land on the welcome page
     await expect(page).toHaveTitle(/welcome/i);
@@ -55,6 +55,8 @@ test('login page redirects properly', async ({ browser }) => {
     await page.locator('input[name="username"]').fill('sample_admin');
     await page.locator('input[name="password"]').fill('sample_admin');
     await page.locator('input[type="submit"]').click();
+
+    await page.context().storageState({ path: './test-creds.json' });
 
     await expect(page).toHaveTitle(/Host Choice/);
     expect(await page.textContent('h1')).toBe('Greetings sample_admin');
