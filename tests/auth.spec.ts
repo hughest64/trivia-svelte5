@@ -1,4 +1,5 @@
 import { expect, request, test } from '@playwright/test';
+import type { Browser, Cookie } from '@playwright/test';
 
 import * as cookie from 'cookie';
 
@@ -6,7 +7,7 @@ import * as cookie from 'cookie';
 const url = 'http://10.0.0.135:8000/user/login/';
 
 // Import this into test files and run
-export const getHostAuth = async (browser) => {
+export const getHostAuth = async (browser: Browser) => {
     // get a valid csrf token via the browser
     // const context = await browser.newContext();
     const page = await browser.newPage();
@@ -44,13 +45,13 @@ test.describe('authenticated requests', async () => {
         // TODO: need a helper function for setting this jwt cookie
         const staffContext = await browser.newContext({ storageState: 'staffUserAuth.json' });
         const cookies = await staffContext.cookies();
-        const jwt = cookies.find((cookie) => cookie.name === 'jwt') || {};
+        const jwt = <Cookie>cookies.find((cookie) => cookie.name === 'jwt') || {};
         
         const page = await staffContext.newPage();
-        await page.setExtraHTTPHeaders({ cookie: `jwt=${jwt['value']}` });
+        await page.setExtraHTTPHeaders({ cookie: `jwt=${jwt.value}` });
         await page.goto('/');
 
         await expect(page).toHaveTitle(/Host Choice/);
-        // expect(page.textContent('h1')).toBe('Greetings sample_admin');
+        expect( await page.textContent('h1')).toBe('Greetings sample_admin');
     });
 });
