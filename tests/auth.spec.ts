@@ -40,7 +40,7 @@ test.describe('authenticated requests', async () => {
     test.beforeAll(async ({ browser }) => await getHostAuth(browser));
     // test.use({ storageState: 'staffUserAuth.json' }); // TODO: will this work?
 
-    test('we can make an authenticated rquest', async ({ browser }) => {
+    test('we can make an authenticated request', async ({ browser }) => {
         // TODO: need a helper function for setting this jwt cookie
         const staffContext = await browser.newContext({ storageState: 'staffUserAuth.json' });
         const cookies = await staffContext.cookies();
