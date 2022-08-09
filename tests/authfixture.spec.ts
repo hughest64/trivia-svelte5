@@ -56,11 +56,4 @@ export const test = base.extend<{ authPage: AuthPage }>({
     }
 });
 
-// export { expect }; // from '@playwright/test';
-
-test('log in and go to root', async ({ authPage }) => {
-    const page = authPage.page;
-    await page.goto('/');
-
-    await expect(page).toHaveTitle(/Host Choice/);
-});
+export { expect };

@@ -48,7 +48,7 @@ test.describe('authenticated requests', async () => {
         const jwt = <Cookie>cookies.find((cookie) => cookie.name === 'jwt') || {};
         
         const page = await staffContext.newPage();
-        await page.setExtraHTTPHeaders({ cookie: `jwt=${jwt.value}` });
+        await page.setExtraHTTPHeaders({ cookie: `jwt=${jwt['value']}` });
         await page.goto('/');
 
         await expect(page).toHaveTitle(/Host Choice/);
