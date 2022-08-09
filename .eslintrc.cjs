@@ -30,7 +30,6 @@ module.exports = {
 		'quotes': ['warn', 'single'],
 		'radix': 'error',
 		'semi': ['warn', 'always'],
-		'spaced-comment': ['warn', 'always', { 'markers': ['/'] }],
-		'@typescript-eslint/ban-ts-comment': 'off'
+		'spaced-comment': ['warn', 'always', { 'markers': ['/'] }]
 	}
 };
