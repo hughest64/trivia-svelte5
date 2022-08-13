@@ -2,10 +2,6 @@ import { expect, test } from '@playwright/test';
 
 import * as cookie from 'cookie';
 
-// TODO: event adding tests to tsconfig, tests won't run cuz it can't import this
-// maybe fixed for 1.0? https://github.com/sveltejs/kit/issues/5833
-// import { setCsrfHeaders } from '$lib/utils';
-
 /**
  * TODO:
  * run the tests on port 3010 (or just not 3000 so the we can run the app at the same time)
@@ -13,7 +9,7 @@ import * as cookie from 'cookie';
  * it would be nice to configure auto starting the Django side (with test server?)
  * when tests are run.
  */
-// TODO: fixture - once you are logged in, store the creds (however we do that)
+
 test.skip('guest/not-staff login from redirect', async ({ page }) => {
     await page.goto('/');
     // not logged in, we should land on the welcome page
@@ -44,11 +40,7 @@ test('login page redirects properly', async ({ browser }) => {
     const cookies = headers['set-cookie'];
     const csrfToken = (cookies && cookie.parse(cookies).csrftoken) || '';
 
-    // TODO: we probably don't need to cet the X-CSRF in the app!
     await page.setExtraHTTPHeaders({ Cookie: `csrftoken=${csrfToken}` });
-
-    // BROKEN!
-    // await page.setExtraHTTPHeaders(setCsrfHeaders(csrfToken));
 
     expect(await page.textContent('h1')).toBe('Login');
 
