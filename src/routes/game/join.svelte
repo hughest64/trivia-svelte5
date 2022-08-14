@@ -45,6 +45,8 @@
     };
 </script>
 
+<svelte:head><title>Trivia Mafia | Join</title></svelte:head>
+
 <h1>Enter Game Code</h1>
 
 <p>Thanks for Playing with team {$useractiveteam?.name}! Enter the game code from your host to get started.</p>
