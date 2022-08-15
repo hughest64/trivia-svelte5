@@ -14,8 +14,8 @@ test('unauthenticated request to /game/join redirects properly', async ({ page }
     const cookies = await page.context().cookies();
     const csrfToken = <Cookie | undefined>cookies.find((cookie) => cookie.name === 'csrftoken');
     csrfToken && await page.setExtraHTTPHeaders({
-        Cookie: `csrftoken=${csrfToken?.value || ''}`,
-        'X-CSRFToken': csrfToken?.value || ''
+        Cookie: `csrftoken=${csrfToken.value}`,
+        'X-CSRFToken': csrfToken.value
     });
 
     // TODO: use guest instead of sample_admin, but perhaps user info could be a parameter?
@@ -26,4 +26,12 @@ test('unauthenticated request to /game/join redirects properly', async ({ page }
     // TODO: not part of the fixture as the critera changes per page
     await expect(page).toHaveTitle(/join/i);
     expect(await page.textContent('h1')).toBe('Enter Game Code');
+
+    // console.log(await page.context().cookies());
+
+    // TODO: this fails becuase the jwt cookie isn't set, not sure why
+    // await page.locator('input[name="joincode"]').fill('1234');
+    // await page.locator('input[value="Join Game!"]').click();
+
+    // await expect(page).toHaveTitle(/event 1234/i);
 });

@@ -49,6 +49,7 @@ class GuestView(APIView):
 class LoginView(APIView):
     @method_decorator(ensure_csrf_cookie)
     def get(self, request):
+
         return Response()
 
     @method_decorator(csrf_protect)
