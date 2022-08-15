@@ -3,7 +3,7 @@ import { currentQuestionNumber, currentRoundNumber } from '$stores/event';
 import type { RequestHandler } from '@sveltejs/kit';
 import { getEventCookie, setEventCookie } from '$lib/utils';
 
-export const get: RequestHandler = async ({ params, request }) => {
+export const GET: RequestHandler = async ({ params, request }) => {
     const body = {
         initialRoundNumber: getStore(currentRoundNumber) || 1,
         initialQuestionNumber: getStore(currentQuestionNumber) || 1
@@ -16,6 +16,6 @@ export const get: RequestHandler = async ({ params, request }) => {
     };
 };
 
-export const post: RequestHandler = async ({ params, request }) => {
+export const POST: RequestHandler = async ({ params, request }) => {
     return await setEventCookie(params, request);
 };

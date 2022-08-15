@@ -147,13 +147,13 @@ REST_FRAMEWORK = {
 }
 
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3000',
-    'http://10.0.0.135:3000'
+    'http://localhost:5173',
+    'http://10.0.0.135:5173'
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:3000",
-    'http://10.0.0.135:3000'
+    "http://localhost:5173",
+    'http://10.0.0.135:5173'
 ]
 
 CORS_ALLOW_CREDENTIALS = True
