@@ -1,5 +1,6 @@
 import * as cookie from 'cookie';
-import type { LoadOutput, RequestHandlerOutput } from '@sveltejs/kit';
+import type { LoadOutput, RequestHandlerOutput } from '@sveltejs/kit'; // TODO: check this path
+import type { RouteParams } from '.svelte-kit/types/src/routes/$types'; // TODO: check this path
 
 const cookieMaxAge = import.meta.env.VITE_COOKIE_MAX_AGE || 60 * 60; // 1 hour
 
@@ -9,7 +10,7 @@ const cookieMaxAge = import.meta.env.VITE_COOKIE_MAX_AGE || 60 * 60; // 1 hour
  * @param request
  * @returns
  */
-export const getEventCookie = (params: Record<string, string>, request: Request): string => {
+export const getEventCookie = (params: RouteParams, request: Request): string => {
     const cookies = cookie.parse(request.headers.get('cookie') || '');
     const eventKey = `event-${params.joincode}`;
     const eventCookie = cookies[eventKey] || '{}';
@@ -24,7 +25,7 @@ export const getEventCookie = (params: Record<string, string>, request: Request)
  * @returns
  */
 export const setEventCookie = async (
-    params: Record<string, string>,
+    params: RouteParams,
     request: Request
 ): Promise<RequestHandlerOutput> => {
     const data = await request.json();
@@ -51,7 +52,7 @@ export const setEventCookie = async (
  */
 export const setCsrfHeaders = (csrfToken: string): Record<string, string> => {
     return {
-        Cookie: `csrftoken=${csrfToken}`,
+        'Cookie': `csrftoken=${csrfToken}`,
         'X-CSRFToken': csrfToken
     };
 };

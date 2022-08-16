@@ -1,9 +1,8 @@
-import { browser } from '$app/env';
 import { getFetchConfig } from '$lib/utils';
 import { get } from 'svelte/store';
-import { error } from '@sveltejs/kit';
+import { redirect } from '@sveltejs/kit';
 import { userdata } from '$stores/user';
-import type { PageLoad } from '@sveltejs/kit';
+import type { PageLoad } from './$types';
 const apiHost = import.meta.env.VITE_API_HOST;
 
 // TODO: migration - new file +layout.ts however,
@@ -11,7 +10,7 @@ const apiHost = import.meta.env.VITE_API_HOST;
 // really questioning the store set up for user data
 export const load: PageLoad = async () => {
     const data = get(userdata);
-    if (!data && browser) {
+    if (!data) {
         // if (!data) {
         const fetchConfig = getFetchConfig('GET');
         const response = await fetch(`${apiHost}/user/`, fetchConfig);
@@ -19,9 +18,8 @@ export const load: PageLoad = async () => {
         if (response.ok) {
             const user_data = await response.json();
             user_data && userdata.set(user_data);
-        } else {
-            // TODO: modify checkStatusCode to have a reason?
-            throw error(403);
+        }  else {
+            throw redirect(307, '/user/login');
         }
     }
 };

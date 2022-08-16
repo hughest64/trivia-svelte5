@@ -5,7 +5,7 @@
     import { userdata } from '$stores/user';
     import { setCsrfHeaders } from '$lib/utils';
     import type { UserData } from '$stores/user';
-    const apiHost = import.meta.env.API_HOST;
+    import { PUBLIC_API_HOST as apiHost } from '$env/static/public';
 
     $: next = $page.url.searchParams.get('next') || '/';
 
