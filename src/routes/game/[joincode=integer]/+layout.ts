@@ -3,9 +3,10 @@ import { getFetchConfig } from '$lib/utils';
 import { eventDataLoaded, setEventStores } from '$stores/event';
 
 import type { EventData } from '$lib/types';
-import { redirect, type PageLoad } from '@sveltejs/kit';
+import { redirect } from '@sveltejs/kit';
+import type { PageLoad } from './$types';
 
-const apiHost = import { PUBLIC_API_HOST as apiHost } from '$env/static/public';;
+import { PUBLIC_API_HOST as apiHost } from '$env/static/public';
 
 export const load: PageLoad = async ({ fetch, url, params }) => {
     if (!get(eventDataLoaded)) {

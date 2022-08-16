@@ -1,6 +1,6 @@
 import { get as getStore } from 'svelte/store';
 import { currentQuestionNumber, currentRoundNumber } from '$stores/event';
-import type {  } from '@sveltejs/kit';
+import type {} from '@sveltejs/kit';
 import { getEventCookie, setEventCookie } from '$lib/utils';
 
 export const get: RequestHandler = async ({ params, request }) => {
@@ -9,7 +9,7 @@ export const get: RequestHandler = async ({ params, request }) => {
         initialQuestionNumber: getStore(currentQuestionNumber) || 1
     };
     const cookieData = JSON.parse(getEventCookie(params, request));
-    
+
     return {
         headers: { accept: 'application/json' },
         body: { ...body, ...cookieData }

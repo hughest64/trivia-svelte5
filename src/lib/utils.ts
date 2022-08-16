@@ -23,10 +23,7 @@ export const getEventCookie = (params: RouteParams, request: Request): string =>
  * @param request
  * @returns
  */
-export const setEventCookie = async (
-    params: RouteParams,
-    request: Request
-): Promise<RequestHandlerOutput> => {
+export const setEventCookie = async (params: RouteParams, request: Request): Promise<RequestHandlerOutput> => {
     const data = await request.json();
     const eventKey = `event-${params.joincode}`;
 
@@ -51,7 +48,7 @@ export const setEventCookie = async (
  */
 export const setCsrfHeaders = (csrfToken: string): Record<string, string> => {
     return {
-        'Cookie': `csrftoken=${csrfToken}`,
+        Cookie: `csrftoken=${csrfToken}`,
         'X-CSRFToken': csrfToken
     };
 };

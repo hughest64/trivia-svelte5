@@ -1,22 +1,22 @@
 {
-	"event_id": 65,
-	"game_id": 233,
-	"game_title": "20220606 - A - Sound",
-	"location": "Todd's Garage",
-	"join_code": "1154",
-	"round_locks": {},
-	"rounds_scored": {},
-	"visible_questions": {
-		"1": [],
-		"2": [],
-		"3": [],
-		"4": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-		"5": [],
-		"6": [],
-		"7": [],
-		"8": []
-	},
-	"displayed_answers": { "1": [], "2": [], "3": [], "4": [], "5": [], "6": [], "7": [], "8": [] },
-	"reveal_answers": false,
-	"primary_host_id": 1
+    "event_id": 65,
+    "game_id": 233,
+    "game_title": "20220606 - A - Sound",
+    "location": "Todd's Garage",
+    "join_code": "1154",
+    "round_locks": {},
+    "rounds_scored": {},
+    "visible_questions": {
+        "1": [],
+        "2": [],
+        "3": [],
+        "4": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+        "5": [],
+        "6": [],
+        "7": [],
+        "8": []
+    },
+    "displayed_answers": { "1": [], "2": [], "3": [], "4": [], "5": [], "6": [], "7": [], "8": [] },
+    "reveal_answers": false,
+    "primary_host_id": 1
 }

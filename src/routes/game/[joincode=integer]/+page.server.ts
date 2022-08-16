@@ -16,6 +16,5 @@ export const load: PageServerLoad = async ({ params, request }) => {
 };
 
 export const POST: Action = async ({ params, request }) => {
-
     return await setEventCookie(params, request);
 };

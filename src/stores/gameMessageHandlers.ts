@@ -11,10 +11,10 @@ import type { MessageHandler } from './types';
 // convenience logging function
 const log_me = (data: unknown) => console.log(data);
 
-const handlers:MessageHandler = {
+const handlers: MessageHandler = {
     connected: () => console.log('connected!'), // undefined,
     update_response: (data) => updateResponse(data as string),
-    log_me,
+    log_me
 };
 
 export default handlers;

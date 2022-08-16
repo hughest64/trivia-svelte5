@@ -4,9 +4,9 @@ import { get } from 'svelte/store';
 import { setEventStores, eventDataLoaded } from '$stores/event';
 import { userdata } from '$stores/user';
 import type { EventData } from '$lib/types';
-import type { PageLoad } from '@sveltejs/kit';
+import type { PageLoad } from './$types';
 import { error } from '@sveltejs/kit';
-const apiHost = import { PUBLIC_API_HOST as apiHost } from '$env/static/public';;
+import { PUBLIC_API_HOST as apiHost } from '$env/static/public';
 
 export const load: PageLoad = async ({ fetch, params }) => {
     const user = get(userdata);
@@ -18,7 +18,7 @@ export const load: PageLoad = async ({ fetch, params }) => {
         const response = await fetch(`${apiHost}/host-event/${params.joincode}/`, fetchConfig);
 
         if (response.ok) {
-            const data = <EventData>(await response.json());
+            const data = <EventData>await response.json();
             data && setEventStores(data);
         } else {
             // TODO: checkStatusCode

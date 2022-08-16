@@ -17,14 +17,12 @@ export const swipeQuestion = (node: HTMLElement, threshold = 10) => {
         const target = <HTMLElement>event.target;
 
         if (node.contains(target) && startPostion > -1) {
-            endPostion =
-                (event as MouseEvent).clientX || (event as TouchEvent).changedTouches[0].pageX;
+            endPostion = (event as MouseEvent).clientX || (event as TouchEvent).changedTouches[0].pageX;
 
             const direction = endPostion < startPostion ? 'right' : 'left';
             const shouldDispatch = Math.abs(startPostion - endPostion) > threshold;
 
-            shouldDispatch &&
-                node.dispatchEvent(new CustomEvent('swipe', { detail: { direction } }));
+            shouldDispatch && node.dispatchEvent(new CustomEvent('swipe', { detail: { direction } }));
         }
     };
 

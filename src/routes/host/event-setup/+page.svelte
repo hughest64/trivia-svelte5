@@ -2,7 +2,7 @@
     import { setEventStores } from '$stores/event';
     import { getFetchConfig } from '$lib/utils';
     import type { GameSelectData, LocationSelectData } from '$lib/types';
-    const apiHost = import { PUBLIC_API_HOST as apiHost } from '$env/static/public';;  
+    import { PUBLIC_API_HOST as apiHost } from '$env/static/public';
 
     export let gameSelectData: GameSelectData[];
     export let locationSelectData: LocationSelectData[];
@@ -18,19 +18,17 @@
             game_id: selectedGame.game_id
         });
 
-        const response = await fetch (`${apiHost}/eventsetup/`, fetchConfig);
+        const response = await fetch(`${apiHost}/eventsetup/`, fetchConfig);
         if (response.ok) {
             const data = await response.json();
             const joincode = data.join_code;
             data && setEventStores(data);
             // goto(`/host/${joincode}`)
             window.open(`/host/${joincode}`, '_self');
-
         } else {
             message = 'Oops! Something went wrong! Please try again.';
         }
     };
-
 </script>
 
 <svelte:head><title>Trivia Mafia | Event Setup</title></svelte:head>
@@ -39,8 +37,8 @@
 
 <form on:submit|preventDefault={handleEventSubmit}>
     {#if message}<p class="error">{message}</p>{/if}
-	<!-- TODO: on:focus, clear the message -->
-    
+    <!-- TODO: on:focus, clear the message -->
+
     <label class="select-label" for="game-select">Choose your Game</label>
     <select class="select" name="game-select" id="game-select" bind:value={selectedGame}>
         {#each gameSelectData as game (game.game_id)}
@@ -55,23 +53,23 @@
         {/each}
     </select>
 
-    <input class="button button-red" type="submit" name="submit" id="submit" value="Begin Event">
+    <input class="button button-red" type="submit" name="submit" id="submit" value="Begin Event" />
 </form>
 
 <style>
     form {
-		display: flex;
-		flex-direction: column;
-		align-items: flex-start;
-	}
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
     h1 {
-		margin: 1em 0;
-	}
-	select {
-		margin-bottom: 2em;
-	}
-	.select-label {
-		margin-top: 1em;
+        margin: 1em 0;
+    }
+    select {
+        margin-bottom: 2em;
+    }
+    .select-label {
+        margin-top: 1em;
         width: 100%;
-	}
+    }
 </style>

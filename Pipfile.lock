@@ -33,9 +33,7 @@
             "version": "==21.4.0"
         },
         "autobahn": {
-            "hashes": [
-                "sha256:fb63e946d5c2dd0df680851e84e65624a494ce87c999f2a4944e4f2d81bf4498"
-            ],
+            "hashes": ["sha256:fb63e946d5c2dd0df680851e84e65624a494ce87c999f2a4944e4f2d81bf4498"],
             "markers": "python_version >= '3.7'",
             "version": "==22.6.1"
         },
@@ -308,9 +306,7 @@
             "version": "==0.4.2"
         },
         "twisted": {
-            "extras": [
-                "tls"
-            ],
+            "extras": ["tls"],
             "hashes": [
                 "sha256:a047990f57dfae1e0bd2b7df2526d4f16dcdc843774dc108b78c52f2a5f13680",
                 "sha256:f9f7a91f94932477a9fc3b169d57f54f96c6e74a23d78d9ce54039a7f48928a2"

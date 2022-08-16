@@ -1,4 +1,4 @@
- <script lang="ts">
+<script lang="ts">
     import { page } from '$app/stores';
     import { activeRoundNumber } from '$stores/event';
     import RoundHeader from '$lib/host/RoundHeader.svelte';
@@ -8,7 +8,7 @@
     $: initialRoundNumber && activeRoundNumber.set(Number(initialRoundNumber));
 
     const joincode = $page.params.joincode;
- </script>
+</script>
 
 <h1>Good Luck Hosting Game {joincode}!</h1>
 
@@ -22,7 +22,7 @@
         display: flex;
         flex-direction: column;
         justify-content: center;
-        gap: .75em;
+        gap: 0.75em;
         max-width: 30rem;
         margin: 5rem auto 0;
     }

@@ -1,5 +1,4 @@
 <script>
-
 </script>
 
 <!-- TODO: conditional elements based on $userdata.is_staff -->
@@ -30,7 +29,6 @@
         &:last-of-type {
             flex-grow: 1;
         }
-        
     }
     a {
         text-decoration: none;

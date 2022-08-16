@@ -4,11 +4,11 @@ import { getFetchConfig } from '$lib/utils';
 
 import type { PageLoad } from './$types';
 
-const apiHost = import { PUBLIC_API_HOST as apiHost } from '$env/static/public';;
+import { PUBLIC_API_HOST as apiHost } from '$env/static/public';
 
-export const load: PageLoad = async({ fetch }) => {
+export const load: PageLoad = async ({ fetch }) => {
     const fetchConfig = getFetchConfig('GET');
-    const response = await fetch(`${apiHost}/eventsetup/`, fetchConfig); 
+    const response = await fetch(`${apiHost}/eventsetup/`, fetchConfig);
 
     if (response.ok) {
         const data = await response.json();
@@ -23,5 +23,4 @@ export const load: PageLoad = async({ fetch }) => {
     }
     // TODO: checkStatusCode /throw redirect?
     throw error(403);
-
 };

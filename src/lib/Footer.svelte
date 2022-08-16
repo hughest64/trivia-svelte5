@@ -11,9 +11,7 @@
     const joinCode = $page.params?.joincode;
     $: routeId = <string>$page.routeId?.split('/')[0];
     $: isEventRoute =
-        ['game', 'host'].indexOf(routeId) > -1 &&
-        $page.routeId !== 'game/join' &&
-        $page.routeId !== 'host/event-setup';
+        ['game', 'host'].indexOf(routeId) > -1 && $page.routeId !== 'game/join' && $page.routeId !== 'host/event-setup';
 
     $: isActive = (id: string) => {
         if (!browser) return false;

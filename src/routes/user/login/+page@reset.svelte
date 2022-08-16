@@ -21,7 +21,6 @@
             const data: UserData = await response.json();
             userdata.set(data);
             goto(next);
-
         } else {
             // TODO: we need to handle this better, it's not always bad password or username
             errorMessage = 'Bad Username or Password';

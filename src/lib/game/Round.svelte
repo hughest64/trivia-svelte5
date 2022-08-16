@@ -50,9 +50,7 @@
 <div class="question-box flex-column">
     <div class="question-selector">
         {#each questionNumbers as num}
-            <button class="button-white" id={String(num)} on:click={handleQuestionSelect}
-                >{num}</button
-            >
+            <button class="button-white" id={String(num)} on:click={handleQuestionSelect}>{num}</button>
         {/each}
     </div>
     <!-- TODO: transition params in a config object like { left: {...}, right: {...} } -->

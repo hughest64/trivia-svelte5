@@ -1,7 +1,7 @@
-@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,700;1,400;1,700&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 
 :root {
-    font-family: "Montserrat", sans-serif;
+    font-family: 'Montserrat', sans-serif;
     --color-red: #dc0926;
     --color-white: #fff;
     --color-black: #000;
@@ -9,7 +9,6 @@
     --color-alt-black: #413f43;
     --color-current: #6fcf97;
 }
-
 
 /* ------------------- */
 /* Reset               */
@@ -27,13 +26,13 @@
 /* Chrome, Safari, Edge, Opera */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+    -webkit-appearance: none;
+    margin: 0;
 }
 
 /* Firefox */
-input[type=number] {
-  -moz-appearance: textfield;
+input[type='number'] {
+    -moz-appearance: textfield;
 }
 
 /* Reset margins */

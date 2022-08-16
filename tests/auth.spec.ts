@@ -46,12 +46,12 @@ test.describe('authenticated requests', async () => {
         const staffContext = await browser.newContext({ storageState: 'staffUserAuth.json' });
         const cookies = await staffContext.cookies();
         const jwt = <Cookie>cookies.find((cookie) => cookie.name === 'jwt') || {};
-        
+
         const page = await staffContext.newPage();
         await page.setExtraHTTPHeaders({ cookie: `jwt=${jwt['value']}` });
         await page.goto('/');
 
         await expect(page).toHaveTitle(/Host Choice/);
-        expect( await page.textContent('h1')).toBe('Greetings sample_admin');
+        expect(await page.textContent('h1')).toBe('Greetings sample_admin');
     });
 });

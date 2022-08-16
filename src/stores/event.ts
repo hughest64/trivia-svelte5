@@ -22,9 +22,7 @@ export const activeQuestionNumber: Writable<number> = writable();
 export const activeRound: Readable<EventRound> = derived(
     [eventRounds, activeRoundNumber],
     ([$eventRounds, $activeRoundNumber]) => {
-        const index = $eventRounds?.findIndex(
-            (round) => round.round_number === $activeRoundNumber
-        );
+        const index = $eventRounds?.findIndex((round) => round.round_number === $activeRoundNumber);
         return $eventRounds[index];
     }
 );
@@ -32,9 +30,7 @@ export const activeRound: Readable<EventRound> = derived(
 export const activeQuestion: Readable<EventQuestion> = derived(
     [activeRound, activeQuestionNumber],
     ([$activeRound, $activeQuestionNumber]) => {
-        const index = $activeRound?.questions.findIndex(
-            (q) => q.question_number === $activeQuestionNumber
-        ) || 0;
+        const index = $activeRound?.questions.findIndex((q) => q.question_number === $activeQuestionNumber) || 0;
         return $activeRound?.questions[index];
     }
 );
@@ -46,7 +42,6 @@ export const setEventStores = (data: EventData) => {
     eventRounds.set(data.rounds);
     eventDataLoaded.set(true);
 };
-
 
 /** Web socket payload from get_event_data in the current version
 {
@@ -70,5 +65,3 @@ export const setEventStores = (data: EventData) => {
     "selected_megaround": team_megaround, // just part of the leaderboard ?
 }
 */
-
-

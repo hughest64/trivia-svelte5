@@ -4,7 +4,7 @@ import { userdata } from '$stores/user';
 import { redirect } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 
-const apiHost = import { PUBLIC_API_HOST as apiHost } from '$env/static/public';;
+import { PUBLIC_API_HOST as apiHost } from '$env/static/public';
 
 export const load: PageLoad = async ({ fetch, url }) => {
     const data = get(userdata);

@@ -20,6 +20,6 @@ export interface UserTeam {
 
 export const userdata: Writable<UserData> = writable();
 
-export const useractiveteam: Readable<UserTeam | undefined> = derived(userdata, ($userdata) => 
+export const useractiveteam: Readable<UserTeam | undefined> = derived(userdata, ($userdata) =>
     $userdata.teams.find((team) => team.id === $userdata.active_team_id)
 );
