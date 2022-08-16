@@ -2,7 +2,7 @@ import { error } from '@sveltejs/kit';
 import * as cookie from 'cookie';
 import { browser } from '$app/env';
 import { getFetchConfig } from '$lib/utils';
-import type { Load } from '@sveltejs/kit';
+import type { PageLoad } from './$types';
 
 // TODO for migration: this will need to be moved to +page.ts, however...
 // we are currently running this function on the server and setting a cookie header,
@@ -13,7 +13,7 @@ import type { Load } from '@sveltejs/kit';
 
 const apiHost = import.meta.env.VITE_API_HOST;
 
-export const load: Load = async ({ fetch, session }) => {
+export const load: PageLoad = async ({ fetch, session }) => {
     if (browser) return;
 
     const fetchConfig = getFetchConfig('GET');
