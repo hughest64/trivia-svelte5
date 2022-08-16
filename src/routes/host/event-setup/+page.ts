@@ -4,7 +4,7 @@ import { getFetchConfig } from '$lib/utils';
 
 import type { PageLoad } from './$types';
 
-const apiHost = import.meta.env.VITE_API_HOST;
+const apiHost = import { PUBLIC_API_HOST as apiHost } from '$env/static/public';;
 
 export const load: PageLoad = async({ fetch }) => {
     const fetchConfig = getFetchConfig('GET');

@@ -3,7 +3,7 @@ import { get } from 'svelte/store';
 import { redirect } from '@sveltejs/kit';
 import { userdata } from '$stores/user';
 import type { PageLoad } from './$types';
-const apiHost = import.meta.env.VITE_API_HOST;
+const apiHost = import { PUBLIC_API_HOST as apiHost } from '$env/static/public';;
 
 // TODO: migration - new file +layout.ts however,
 // use the new await parent() to check user data?

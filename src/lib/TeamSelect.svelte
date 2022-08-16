@@ -2,7 +2,7 @@
     import { getFetchConfig } from '$lib/utils';
     import { goto } from '$app/navigation';
     import { userdata, useractiveteam, type UserTeam } from '$stores/user';
-    const apiHost = import.meta.env.VITE_API_HOST;
+    const apiHost = import { PUBLIC_API_HOST as apiHost } from '$env/static/public';;
 
     let hidecreateteam = true;
     let hideteampassword = true;

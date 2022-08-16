@@ -2,8 +2,8 @@
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
     import { socket } from '$stores/socket';
+    import { PUBLIC_WEBSOCKET_HOST as apiHost } from '$env/static/public';
 
-    const apiHost = import.meta.env.VITE_WEBSOCKET_HOST;
     const path = $page.url.pathname;
 
     export let socketUrl = `${apiHost}/ws${path}/`;

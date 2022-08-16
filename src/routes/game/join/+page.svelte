@@ -2,7 +2,7 @@
     import { setEventStores } from '$stores/event';
     import { getFetchConfig } from '$lib/utils';
     import { useractiveteam } from '$stores/user';
-    const apiHost = import.meta.env.VITE_API_HOST;
+    import { PUBLIC_API_HOST as apiHost } from '$env/static/public';
 
     export let joincode: string;
     export let message: string;

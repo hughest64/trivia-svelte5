@@ -2,7 +2,7 @@
     import { setEventStores } from '$stores/event';
     import { getFetchConfig } from '$lib/utils';
     import type { GameSelectData, LocationSelectData } from '$lib/types';
-    const apiHost = import.meta.env.VITE_API_HOST;  
+    const apiHost = import { PUBLIC_API_HOST as apiHost } from '$env/static/public';;  
 
     export let gameSelectData: GameSelectData[];
     export let locationSelectData: LocationSelectData[];

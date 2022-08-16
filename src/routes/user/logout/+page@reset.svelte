@@ -1,7 +1,7 @@
 <script lang="ts">
     import { onMount } from 'svelte';
     import { getFetchConfig } from '$lib/utils';
-    const apiHost = import.meta.env.VITE_API_HOST;
+    const apiHost = import { PUBLIC_API_HOST as apiHost } from '$env/static/public';;
 
     onMount( async () => {
         const fetchConfig = getFetchConfig('POST');

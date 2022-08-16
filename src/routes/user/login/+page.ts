@@ -3,6 +3,7 @@ import * as cookie from 'cookie';
 import { browser } from '$app/env';
 import { getFetchConfig } from '$lib/utils';
 import type { PageLoad } from './$types';
+import { PUBLIC_API_HOST as apiHost } from '$env/static/public';;
 
 // TODO for migration: this will need to be moved to +page.ts, however...
 // we are currently running this function on the server and setting a cookie header,
@@ -11,7 +12,6 @@ import type { PageLoad } from './$types';
 
 // -or- can this move to +page.server.ts?
 
-const apiHost = import.meta.env.VITE_API_HOST;
 
 export const load: PageLoad = async ({ fetch, session }) => {
     if (browser) return;

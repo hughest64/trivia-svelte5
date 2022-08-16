@@ -1,8 +1,7 @@
 import * as cookie from 'cookie';
 import type { LoadOutput, RequestHandlerOutput } from '@sveltejs/kit'; // TODO: check this path
 import type { RouteParams } from '.svelte-kit/types/src/routes/$types'; // TODO: check this path
-
-const cookieMaxAge = import.meta.env.VITE_COOKIE_MAX_AGE || 60 * 60; // 1 hour
+import { PUBLIC_WEBSOCKET_HOST as cookieMaxAge } from '$env/static/public';
 
 /**
  * retrive a user's active round and question when the event page loads
@@ -37,7 +36,7 @@ export const setEventCookie = async (
             'set-cookie': cookie.serialize(eventKey, JSON.stringify(data), {
                 path: '/',
                 httpOnly: true,
-                maxAge: cookieMaxAge
+                maxAge: Number(cookieMaxAge) || 60 * 60
             })
         }
     };
