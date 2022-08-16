@@ -1,5 +1,5 @@
 import * as cookie from 'cookie';
-import type { LoadOutput, RequestHandlerOutput } from '@sveltejs/kit'; // TODO: check this path
+// import type { LoadOutput } from '@sveltejs/kit'; // TODO: check this path
 import type { RouteParams } from '.svelte-kit/types/src/routes/$types'; // TODO: check this path
 import { PUBLIC_WEBSOCKET_HOST as cookieMaxAge } from '$env/static/public';
 
@@ -23,7 +23,7 @@ export const getEventCookie = (params: RouteParams, request: Request): string =>
  * @param request
  * @returns
  */
-export const setEventCookie = async (params: RouteParams, request: Request): Promise<RequestHandlerOutput> => {
+export const setEventCookie = async (params: RouteParams, request: Request) => {
     const data = await request.json();
     const eventKey = `event-${params.joincode}`;
 
@@ -88,30 +88,30 @@ export const getFetchConfig = (
  * @param {string} next querystring appended to a redirect url
  * @returns {LoadOutput}
  */
-export const checkStatusCode = (response: Response, next?: string): LoadOutput => {
-    let output: LoadOutput;
+// export const checkStatusCode = (response: Response, next?: string): LoadOutput => {
+//     let output: LoadOutput;
 
-    switch (response.status) {
-        case 500:
-            output = { status: 500 };
-            break;
-        case 404:
-            output = { status: 404 };
-            break;
-        case 401:
-            output = { status: 302, redirect: '/' };
-            break;
-        case 403:
-            output = { status: 302, redirect: '/welcome' };
-            break;
-        case 200:
-        default:
-            output = { status: 200 };
-            break;
-    }
-    if (next && output?.redirect && response.status !== 401) {
-        output.redirect += `?next=${next}`;
-    }
+//     switch (response.status) {
+//         case 500:
+//             output = { status: 500 };
+//             break;
+//         case 404:
+//             output = { status: 404 };
+//             break;
+//         case 401:
+//             output = { status: 302, redirect: '/' };
+//             break;
+//         case 403:
+//             output = { status: 302, redirect: '/welcome' };
+//             break;
+//         case 200:
+//         default:
+//             output = { status: 200 };
+//             break;
+//     }
+//     if (next && output?.redirect && response.status !== 401) {
+//         output.redirect += `?next=${next}`;
+//     }
 
-    return output;
-};
+//     return output;
+// };

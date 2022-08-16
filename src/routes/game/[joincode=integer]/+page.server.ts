@@ -1,6 +1,6 @@
 import { get as getStore } from 'svelte/store';
 import { currentQuestionNumber, currentRoundNumber } from '$stores/event';
-import type { PageServerLoad, Action } from './$types';
+import type { PageServerLoad } from './$types';
 import { getEventCookie, setEventCookie } from '$lib/utils';
 
 export const load: PageServerLoad = async ({ params, request }) => {
@@ -15,6 +15,6 @@ export const load: PageServerLoad = async ({ params, request }) => {
     };
 };
 
-export const POST: Action = async ({ params, request }) => {
+export const POST: PageServerLoad = async ({ params, request }) => {
     return await setEventCookie(params, request);
 };

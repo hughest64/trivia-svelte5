@@ -1,14 +1,13 @@
 import { get } from 'svelte/store';
 import { getFetchConfig } from '$lib/utils';
 import { eventDataLoaded, setEventStores } from '$stores/event';
-
-import type { EventData } from '$lib/types';
 import { redirect } from '@sveltejs/kit';
-import type { PageLoad } from './$types';
+import type { LayoutLoad } from './$types';
+import type { EventData } from '$lib/types';
 
 import { PUBLIC_API_HOST as apiHost } from '$env/static/public';
 
-export const load: PageLoad = async ({ fetch, url, params }) => {
+export const load: LayoutLoad = async ({ fetch, url, params }) => {
     if (!get(eventDataLoaded)) {
         const fetchConfig = getFetchConfig('GET');
         const response = await fetch(`${apiHost}/event/${params.joincode}/`, fetchConfig);
