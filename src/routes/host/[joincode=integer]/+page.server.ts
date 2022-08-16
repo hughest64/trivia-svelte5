@@ -1,6 +1,6 @@
 import { get as getStore } from 'svelte/store';
 import { currentQuestionNumber, currentRoundNumber } from '$stores/event';
-import type { RequestHandler } from '@sveltejs/kit';
+import type {  } from '@sveltejs/kit';
 import { getEventCookie, setEventCookie } from '$lib/utils';
 
 export const get: RequestHandler = async ({ params, request }) => {

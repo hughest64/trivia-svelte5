@@ -1,38 +1,11 @@
-<script context="module" lang="ts">
-    import * as cookie from 'cookie';
-    import { browser } from '$app/env';
-    import { userdata, type UserData } from '$stores/user';
-    import { checkStatusCode, getFetchConfig, setCsrfHeaders } from '$lib/utils';
-    import type { Load } from '@sveltejs/kit';
-
-    // TODO for migration: this will need to be moved to +page.ts, however...
-    // we are currently running this function on the server and setting a cookie header,
-    // does that mean we could run this in server.js (i.e, GET for page) and use the 
-    // new setHeaders function
-
-    const apiHost = import.meta.env.VITE_API_HOST;
-
-    export const load: Load = async ({ fetch, session }) => {
-        if (browser) {
-            return { status: 200 };
-        }
-
-        const fetchConfig = getFetchConfig('GET');
-        const response = await fetch(`${apiHost}/user/login/`, fetchConfig);
-
-        if (response.ok) {
-            const cookies = response.headers.get('set-cookie');
-            const csrftoken = (cookies && cookie.parse(cookies)?.csrftoken) || '';
-            session.csrftoken = csrftoken;
-        }
-
-        return checkStatusCode(response);
-    };
-</script>
-
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { page, session } from '$app/stores';
+    import { getFetchConfig } from '$lib/utils';
+    import { userdata } from '$stores/user';
+    import { setCsrfHeaders } from '$lib/utils';
+    import type { UserData } from '$stores/user';
+    const apiHost = import.meta.env.API_HOST;
 
     $: next = $page.url.searchParams.get('next') || '/';
 

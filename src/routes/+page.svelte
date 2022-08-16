@@ -1,36 +1,8 @@
-<script context="module" lang="ts">
-    import { browser } from '$app/env';
-    import { checkStatusCode, getFetchConfig } from '$lib/utils';
-    import { get } from 'svelte/store';
-    import { userdata } from '$stores/user';
-    import type { Load } from '@sveltejs/kit';
-    const apiHost = import.meta.env.VITE_API_HOST;
-
-    // TODO: migration - new file +layout.ts however,
-    // can we use session or the new await parent() to check user data?
-    // really questioning the store set up for user data
-    export const load: Load = async () => {
-        const data = get(userdata);
-        if (!data && browser) {
-            // if (!data) {
-            const fetchConfig = getFetchConfig('GET');
-            const response = await fetch(`${apiHost}/user/`, fetchConfig);
-
-            if (response.ok) {
-                const user_data = await response.json();
-                user_data && userdata.set(user_data);
-            } else {
-                return checkStatusCode(response);
-            }
-        }
-        return { status: 200 };
-    };
-</script>
-
 <script lang="ts">
     import { goto } from '$app/navigation';
     import HostChoice from '$lib/HostChoice.svelte';
     import TeamSelect from '$lib/TeamSelect.svelte';
+    import { userdata } from '$stores/user';
 
     let hostchoice = 'choose'; // or 'play' or 'host'
 

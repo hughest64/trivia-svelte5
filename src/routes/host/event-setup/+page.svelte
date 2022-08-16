@@ -1,38 +1,8 @@
-<script context="module" lang="ts">
-    import { userdata } from '$stores/user';
-    import { checkStatusCode, getFetchConfig } from '$lib/utils';
-
-    import type { Load } from '@sveltejs/kit';
-    import type { GameSelectData, LocationSelectData } from '$lib/types';
-
-    const apiHost = import.meta.env.VITE_API_HOST;
-    
-    export const load: Load = async({ fetch }) => {
-        // if (!browser) {
-        //     return { status: 200}
-        // }
-        const fetchConfig = getFetchConfig('GET');
-        const response = await fetch(`${apiHost}/eventsetup/`, fetchConfig); 
-
-        if (response.ok) {
-            const data = await response.json();
-            data && userdata.set(data.user_data);
-
-            return {
-                status: 200,
-                props: {
-                    gameSelectData: data.game_select_data || [],
-                    locationSelectData: data.location_select_data || []
-                }
-            };
-        }
-        return checkStatusCode(response);
-
-    };
-</script>
-
 <script lang="ts">
     import { setEventStores } from '$stores/event';
+    import { getFetchConfig } from '$lib/utils';
+    import type { GameSelectData, LocationSelectData } from '$lib/types';
+    const apiHost = import.meta.env.VITE_API_HOST;  
 
     export let gameSelectData: GameSelectData[];
     export let locationSelectData: LocationSelectData[];
