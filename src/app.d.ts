@@ -3,12 +3,10 @@
 // See https://kit.svelte.dev/docs/types#app
 // for information about these interfaces
 declare namespace App {
-    // interface Locals {}
-    // interface Platform {}
-    interface Session {
-        csrftoken: string;
+    interface Locals {
+        csrfCookie?: string;
     }
-    // interface Stuff {}
+    // interface Platform {}
 }
 
 declare namespace svelte.JSX {

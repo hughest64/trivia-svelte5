@@ -1,6 +1,6 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
-    import { page, session } from '$app/stores';
+    import { page } from '$app/stores';
     import { getFetchConfig, setCsrfHeaders } from '$lib/utils';
     import { userdata } from '$stores/user';
     import type { UserData } from '$stores/user';
@@ -15,7 +15,7 @@
     let password: string;
 
     const validateUser = async () => {
-        const fetchConfig = getFetchConfig('POST', { username, password }, setCsrfHeaders($session.csrftoken));
+        const fetchConfig = getFetchConfig('POST', { username, password }, setCsrfHeaders(csrftoken));
         console.log(fetchConfig);
         // const response = await fetch(`${apiHost}/user/login/`, fetchConfig);
 
