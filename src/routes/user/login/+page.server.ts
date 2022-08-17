@@ -45,6 +45,10 @@ export const POST: Action = async ({ request, setHeaders }) => {
         throw error(403);
     }
 
-    const responseCookies = response.headers.get('set-cookie');
-    responseCookies && setHeaders({ 'set-cookie': responseCookies });
+    // TODO: cannot set another set-cookie header (contrary to the docs):
+    // https://kit.svelte.dev/docs/load#input-methods-setheaders
+    // source of the issue is here:
+    // setHeaders (file:///home/todd/dev/tm-svelte/node_modules/@sveltejs/kit/src/runtime/server/index.js:146:12)
+    // const responseCookies = response.headers.get('set-cookie');
+    // responseCookies && setHeaders({ 'set-cookie': responseCookies });
 };
