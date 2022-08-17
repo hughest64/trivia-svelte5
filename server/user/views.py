@@ -57,6 +57,8 @@ class LoginView(APIView):
         username = request.data.get("username")
         password = request.data.get("password")
 
+        # TODO: perhaps validate an existing HTTP_COOKIE header (jwt) if it exists?
+
         try:
             user = User.objects.get(Q(username=username) | Q(email=username))
         except User.DoesNotExist:
@@ -73,6 +75,7 @@ class LoginView(APIView):
         response.set_cookie(key="jwt", value=token, httponly=True)
 
         return response
+        # return Response()
 
 
 class UserView(APIView):
