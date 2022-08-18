@@ -1,8 +1,11 @@
 <script lang="ts">
     import '$lib/styles/app.scss';
+    import { page } from '$app/stores';
     import Footer from '$lib/Footer.svelte';
     import Menu from '$lib/Menu.svelte';
     import { fly } from 'svelte/transition';
+    import { userdata, type UserData } from '$stores/user';
+    $: $page.data && userdata.set($page.data as UserData);
 
     let displayMenu = false;
 </script>

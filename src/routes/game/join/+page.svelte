@@ -1,12 +1,13 @@
 <script lang="ts">
     import { setEventStores } from '$stores/event';
     import { getFetchConfig } from '$lib/utils';
-    import { useractiveteam } from '$stores/user';
+    import { userdata, useractiveteam } from '$stores/user';
     import { PUBLIC_API_HOST as apiHost } from '$env/static/public';
 
     export let joincode: string;
     export let message: string;
 
+    // TODO: deprecate in favor of POST function in +page.server
     const handleJoinEvent = async () => {
         // TODO: should we post here? It's likely we'll be creating leaderboard entries here
         const fetchConfig = getFetchConfig('GET');
@@ -26,6 +27,8 @@
 
 <h1>Enter Game Code</h1>
 
+<!-- TODO: handle no activeteam -->
+<p>{$userdata?.username},</p>
 <p>Thanks for Playing with team {$useractiveteam?.name}! Enter the game code from your host to get started.</p>
 
 <form on:submit|preventDefault={handleJoinEvent}>

@@ -1,27 +1,28 @@
 import * as cookie from 'cookie';
-// import type { LoadOutput } from '@sveltejs/kit'; // TODO: check this path
 import type { RouteParams } from '.svelte-kit/types/src/routes/$types'; // TODO: check this path
 import { PUBLIC_WEBSOCKET_HOST as cookieMaxAge } from '$env/static/public';
+
+export const getCookieObject = (request: Request): Record<string, string> => {
+    const cookies = request.headers.get('cookie') || '';
+    const cookieObject = cookie.parse(cookies) || {};
+
+    return cookieObject;
+};
 
 /**
  * parse a requests headers and return a concatenated string of requested headers
  * @param {Request} request
  * @param {string[]} cookieKeys an array of cookies to parse, defaaults to ['jwt', 'csrftoken']
  */
-export const parseRequestHeaders = (request: Request, cookieKeys: string[] = ['jwt', 'csrftoken']): HeadersInit => {
-    const cookies = request.headers.get('cookie') || '';
+export const parseRequestHeaders = (request: Request, cookieKeys: string[]=['jwt', 'csrftoken']): string => {
+    const cookieObject = getCookieObject(request);
     const cookieArry: string[] = [];
-    let csrftoken = '';
-    if (cookies) {
-        const cookieObject = cookie.parse(cookies) || {};
-        for (const [key, value] of Object.entries(cookieObject)) {
-            cookieKeys.indexOf(key) > -1 && cookieArry.push(`${key}=${value}`);
-            if (key === 'csrftoken') {
-                csrftoken = value;
-            };
-        }
+
+    for (const [key, value] of Object.entries(cookieObject)) {
+        cookieKeys.indexOf(key) > -1 && cookieArry.push(`${key}=${value}`);
     }
-    return { cookie: cookieArry.join(';'), 'X-CSRFToken': csrftoken };
+
+    return cookieArry.join(';');
 };
 
 /**

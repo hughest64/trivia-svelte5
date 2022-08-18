@@ -4,7 +4,7 @@
 // for information about these interfaces
 declare namespace App {
     interface Locals {
-        csrfCookie?: string;
+        userdata: import('$stores/user').UserData;
     }
     // interface Platform {}
 }

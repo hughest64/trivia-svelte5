@@ -47,7 +47,7 @@
 
 <h1>Or Play with an Existing Team</h1>
 
-{#if $userdata.teams.length > 0}
+{#if $userdata?.teams.length > 0}
     <form on:submit|preventDefault={handleTeamSelectSubmit}>
         {#if message}<p class="error">{message}</p>{/if}
         <!-- TODO: on:focus, clear the message -->

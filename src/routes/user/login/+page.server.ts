@@ -1,9 +1,7 @@
 import * as cookie from 'cookie';
 import { error } from '@sveltejs/kit';
-import { getFetchConfig } from '$lib/utils';
+import { getCookieObject, getFetchConfig } from '$lib/utils';
 import { PUBLIC_API_HOST as apiHost } from '$env/static/public';
-import { userdata } from '$stores/user';
-import type { UserData } from '$stores/user';
 import type {
     Action,
     PageServerLoad
@@ -17,10 +15,9 @@ import type {
 */
 
 export const load: PageServerLoad = async ({ request }) => {
-    const cookies = request.headers.get('set-cookie') || '';
-    const jwt = cookie.parse(cookies)?.jwt;
-    if (jwt) {
-        // redirect the user, they don't need to log in
+    const cookieObject = getCookieObject(request);
+    if (cookieObject.jwt) {
+        return { location: '/' };
     }
 };
 
@@ -59,18 +56,14 @@ export const POST: Action = async ({ request, setHeaders, url }) => {
         throw error(postResponse.status);
     }
 
-    const responseData: UserData = await postResponse.json();
-    userdata.set(responseData);
-
+    // TODO: return data to the login page then redirect from there once
+    // https://github.com/sveltejs/kit/issues/6015 is resloved
+    // const responseData: UserData = await postResponse.json();
     
     // finally set both as cookies for later use
     const responseCookies = postResponse.headers.get('set-cookie');
     responseCookies && setHeaders({ 'set-cookie': [responseCookies, csrfCookie] });
-    
-    // console.log(url);
     const next = url.searchParams.get('next') || '/';
-    // return { location: 'game/join' };
-
-    return { location: next };
     
+    return { location: next };
 };

@@ -80,7 +80,6 @@ class UserView(APIView):
 
     @method_decorator(csrf_protect)
     def get(self, request):
-        print (request.COOKIES)
         serializer = UserSerializer(request.user)
 
         return Response(serializer.data)
