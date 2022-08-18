@@ -2,6 +2,7 @@ import { derived, writable } from 'svelte/store';
 import type { Readable, Writable } from 'svelte/store';
 
 export interface UserData {
+    id: number;
     username: string;
     is_staff: string;
     email?: string;
@@ -21,5 +22,5 @@ export interface UserTeam {
 export const userdata: Writable<UserData> = writable();
 
 export const useractiveteam: Readable<UserTeam | undefined> = derived(userdata, ($userdata) =>
-    $userdata.teams.find((team) => team.id === $userdata.active_team_id)
+    $userdata?.teams?.find((team) => team.id === $userdata.active_team_id)
 );

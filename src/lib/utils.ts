@@ -4,6 +4,27 @@ import type { RouteParams } from '.svelte-kit/types/src/routes/$types'; // TODO:
 import { PUBLIC_WEBSOCKET_HOST as cookieMaxAge } from '$env/static/public';
 
 /**
+ * parse a requests headers and return a concatenated string of requested headers
+ * @param {Request} request
+ * @param {string[]} cookieKeys an array of cookies to parse, defaaults to ['jwt', 'csrftoken']
+ */
+export const parseRequestHeaders = (request: Request, cookieKeys: string[] = ['jwt', 'csrftoken']): HeadersInit => {
+    const cookies = request.headers.get('cookie') || '';
+    const cookieArry: string[] = [];
+    let csrftoken = '';
+    if (cookies) {
+        const cookieObject = cookie.parse(cookies) || {};
+        for (const [key, value] of Object.entries(cookieObject)) {
+            cookieKeys.indexOf(key) > -1 && cookieArry.push(`${key}=${value}`);
+            if (key === 'csrftoken') {
+                csrftoken = value;
+            };
+        }
+    }
+    return { cookie: cookieArry.join(';'), 'X-CSRFToken': csrftoken };
+};
+
+/**
  * retrive a user's active round and question when the event page loads
  * @param params
  * @param request
@@ -39,6 +60,7 @@ export const setEventCookie = async (params: RouteParams, request: Request) => {
     };
 };
 
+// TODO: deprecate in favor of parseReqeustHeaders?
 /**
  * convenience method which creates the necessary
  * headers to include a csrf token in a fetch request
@@ -64,7 +86,7 @@ export const setCsrfHeaders = (csrfToken: string): Record<string, string> => {
 export const getFetchConfig = (
     method: string,
     data?: Record<string, unknown>,
-    headers?: Record<string, unknown>
+    headers?: HeadersInit
 ): RequestInit => {
     const requestHeaders: Record<string, unknown> = {
         'content-type': 'application/json',
