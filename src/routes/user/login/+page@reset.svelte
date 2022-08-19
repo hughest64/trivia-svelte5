@@ -1,6 +1,4 @@
 <script lang="ts">
-    
-
     export let errorMessage: string;
     let username: string;
     let password: string;

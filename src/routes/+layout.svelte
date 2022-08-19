@@ -5,6 +5,7 @@
     import Menu from '$lib/Menu.svelte';
     import { fly } from 'svelte/transition';
     import { userdata, type UserData } from '$stores/user';
+
     $: $page.data && userdata.set($page.data as UserData);
 
     let displayMenu = false;
