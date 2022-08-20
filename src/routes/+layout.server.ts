@@ -5,6 +5,7 @@ import type { PageServerLoad } from './$types';
 import { PUBLIC_API_HOST as apiHost } from '$env/static/public';
 
 export const load: PageServerLoad = async ({ params, request, url }) => {
+    console.log('running layout.server');
     const joincode = params.joincode;
     // TODO: probably better to just pull url.pathname and mimic that an api endpoint
     // advantage is that know if it's host or player data that is requested

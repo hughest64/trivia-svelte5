@@ -1,11 +1,6 @@
-<script lang="ts">
-    import { onMount } from 'svelte';
-    import { getFetchConfig } from '$lib/utils';
-    import { PUBLIC_API_HOST as apiHost } from '$env/static/public';
-
-    onMount(async () => {
-        const fetchConfig = getFetchConfig('POST');
-        await fetch(`${apiHost}/user/logout/`, fetchConfig);
-        window.open('/welcome', '_self');
-    });
+<script>
+    // I don't do anything
+    // console.log('logging out');
+    // a bit frustating that this file is necessary cuz +page.server.ts
+    // maybe we can just use an endpoint file? (i.e +server.ts)
 </script>

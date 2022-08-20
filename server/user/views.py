@@ -66,7 +66,6 @@ class LoginView(APIView):
             raise AuthenticationFailed("Invalid Username or Password")
 
         serializer = UserSerializer(user)
-
         token = create_token(user.id)
 
         response = Response(serializer.data)
@@ -84,10 +83,12 @@ class UserView(APIView):
 
         return Response(serializer.data)
 
-
+# TODO: maybe don't need to do this since the cookies are controlled in SvelteKit
 class LogoutView(APIView):
     def post(self, request):
+
         response = Response()
+        print(request.META)
         response.delete_cookie("jwt")
         response.delete_cookie("csrftoken")
         response.data = {"message": "success"}
