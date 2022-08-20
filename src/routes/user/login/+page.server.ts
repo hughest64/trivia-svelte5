@@ -1,44 +1,40 @@
 import * as cookie from 'cookie';
-import { error } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 import { getCookieObject, getFetchConfig } from '$lib/utils';
 import { PUBLIC_API_HOST as apiHost } from '$env/static/public';
-import type {
-    Action,
-    PageServerLoad
-} from './$types';
-
-/**
-* TODO: cannot set multiple set-cookie header (contrary to the docs):
-* https://kit.svelte.dev/docs/load#input-methods-setheaders
-* source of the issue is here:
-* setHeaders (file:///home/todd/dev/tm-svelte/node_modules/@sveltejs/kit/src/runtime/server/index.js:146:12)
-*/
+import type { Action, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ request }) => {
+    // go home user, you're already logged in
     const cookieObject = getCookieObject(request);
     if (cookieObject.jwt) {
-        return { location: '/' };
+        throw redirect(302, '/');
     }
 };
 
 export const POST: Action = async ({ request, setHeaders, url }) => {
     // TODO: return error if either field is blank (validate)
     const formData = await request.formData();
-    const username = formData.get('username') || 'guest'; // TODO: remove the fallback!
-    const password = formData.get('password') || 'guest';
+    const username = formData.get('username');
+    const password = formData.get('password');
+
+    if (!username || !password) {
+        return { errors: { message: 'Both fields are required! ' } };
+    }
 
     // first, get a csrftoken
     const fetchConfig = getFetchConfig('GET');
     const getResponse = await fetch(`${apiHost}/user/login/`, fetchConfig);
 
-    // TODO: handle error
     if (!getResponse.ok) {
-        throw error(getResponse.status);
+        const getResponseData = await getResponse.json();
+        return { errors: { message: getResponseData.detail }};
     }
+
     const csrfCookie = getResponse.headers.get('set-cookie') || '';
     const csrftoken = (csrfCookie && cookie.parse(csrfCookie)?.csrftoken) || '';
 
-    // TODO: use fetchConfig
+    // TODO: use fetchConfig (maybe?)
     // then use the csrftoken to log in
     const postResponse = await fetch(`${apiHost}/user/login/`, {
         method: 'POST',
@@ -50,20 +46,22 @@ export const POST: Action = async ({ request, setHeaders, url }) => {
         },
         body: JSON.stringify({ username, password })
     });
-    
+
+    const postResponseData = await postResponse.json();
+
     if (!postResponse.ok) {
         // TODO: handle error messaging
-        throw error(postResponse.status);
+        return { errors: { message: postResponseData.detail } };
     }
 
     // TODO: return data to the login page then redirect from there once
     // https://github.com/sveltejs/kit/issues/6015 is resloved
     // const responseData: UserData = await postResponse.json();
-    
+
     // finally set both as cookies for later use
     const responseCookies = postResponse.headers.get('set-cookie');
     responseCookies && setHeaders({ 'set-cookie': [responseCookies, csrfCookie] });
     const next = url.searchParams.get('next') || '/';
-    
+
     return { location: next };
 };

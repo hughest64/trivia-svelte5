@@ -1,5 +1,6 @@
 <script lang="ts">
-    export let errorMessage: string;
+    // populated from the form response
+    export let errors: Record<string, string>;
     let username: string;
     let password: string;
 
@@ -15,7 +16,7 @@
 <h2>-or-</h2>
 
 <form action='' method="POST">
-    {#if errorMessage}<h3>{errorMessage}</h3>{/if}
+    {#if errors?.message}<h3>{errors?.message}</h3>{/if}
     <div class="input-element">
         <input type="text" id="username" name="username" bind:value={username} />
         <label for="username">Username or Email</label>
