@@ -1,5 +1,5 @@
 import * as cookie from 'cookie';
-import { error, redirect } from '@sveltejs/kit';
+import { redirect } from '@sveltejs/kit';
 import { getCookieObject, getFetchConfig } from '$lib/utils';
 import { PUBLIC_API_HOST as apiHost } from '$env/static/public';
 import type { Action, PageServerLoad } from './$types';
@@ -28,7 +28,7 @@ export const POST: Action = async ({ request, setHeaders, url }) => {
 
     if (!getResponse.ok) {
         const getResponseData = await getResponse.json();
-        return { errors: { message: getResponseData.detail }};
+        return { errors: { message: getResponseData.detail } };
     }
 
     const csrfCookie = getResponse.headers.get('set-cookie') || '';
