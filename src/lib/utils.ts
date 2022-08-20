@@ -14,7 +14,7 @@ export const getCookieObject = (request: Request): Record<string, string> => {
  * @param {Request} request
  * @param {string[]} cookieKeys an array of cookies to parse, defaaults to ['jwt', 'csrftoken']
  */
-export const parseRequestHeaders = (request: Request, cookieKeys: string[]=['jwt', 'csrftoken']): string => {
+export const parseRequestHeaders = (request: Request, cookieKeys: string[] = ['jwt', 'csrftoken']): string => {
     const cookieObject = getCookieObject(request);
     const cookieArry: string[] = [];
 
@@ -23,6 +23,25 @@ export const parseRequestHeaders = (request: Request, cookieKeys: string[]=['jwt
     }
 
     return cookieArry.join(';');
+};
+
+/**
+ * take one or many cookie keys and invalidate them by creating new cookies with an exipiration
+ * at the beginning of the time epoch
+ * @param keys a single cookie key or multiple keys in an array
+ * @returns an array of cookies to invalidate (delete)
+ */
+export const invalidateCookies = (keys: string | string[]): string[] => {
+    const blankCookies: string[] = [];
+
+    if (!Array.isArray(keys)) {
+        keys = [keys];
+    }
+    keys.forEach((key) => {
+        blankCookies.push(cookie.serialize(key, '', { path: '/', expires: new Date(0) }));
+    });
+
+    return blankCookies;
 };
 
 /**
@@ -84,11 +103,7 @@ export const setCsrfHeaders = (csrfToken: string): Record<string, string> => {
  * @param headers http headers
  * @returns config object passed to a fetch request
  */
-export const getFetchConfig = (
-    method: string,
-    data?: Record<string, unknown>,
-    headers?: HeadersInit
-): RequestInit => {
+export const getFetchConfig = (method: string, data?: Record<string, unknown>, headers?: HeadersInit): RequestInit => {
     const requestHeaders: Record<string, unknown> = {
         'content-type': 'application/json',
         accept: 'application/json'
