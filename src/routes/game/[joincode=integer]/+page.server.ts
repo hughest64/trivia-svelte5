@@ -3,6 +3,8 @@ import { currentQuestionNumber, currentRoundNumber } from '$stores/event';
 import type { PageServerLoad } from './$types';
 import { getEventCookie, setEventCookie } from '$lib/utils';
 
+// TODO: just try to read the cookie and return the cookie data
+// no worries about current question/round, handle that in page.svelte
 export const load: PageServerLoad = async ({ params, request }) => {
     const body = {
         initialRoundNumber: getStore(currentRoundNumber) || 1,
@@ -10,9 +12,7 @@ export const load: PageServerLoad = async ({ params, request }) => {
     };
     const cookieData = JSON.parse(getEventCookie(params, request));
 
-    return {
-        data: { ...body, ...cookieData }
-    };
+    return { ...body, ...cookieData };
 };
 
 export const POST: PageServerLoad = async ({ params, request }) => {

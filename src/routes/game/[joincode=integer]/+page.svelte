@@ -2,11 +2,14 @@
     import { activeRound, activeRoundNumber, activeQuestionNumber } from '$stores/event';
     import RoundHeader from '$lib/game/RoundHeader.svelte';
     import Round from '$lib/game/Round.svelte';
+    
+    // TODO: grab $page.data, it should contain the active q/r, if not fallback on current q/r from store
+    import { page } from '$app/stores';
 
-    export let initialRoundNumber: number;
+    $: initialRoundNumber = $page.data?.initialRoundNumber;
     $: initialRoundNumber && activeRoundNumber.set(Number(initialRoundNumber));
 
-    export let initialQuestionNumber: number;
+    $: initialQuestionNumber = $page.data?.initialQuestionNumber;
     $: initialQuestionNumber && activeQuestionNumber.set(Number(initialQuestionNumber));
 </script>
 
