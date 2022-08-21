@@ -1,26 +1,8 @@
 <script lang="ts">
-    import { setEventStores } from '$stores/event';
-    import { getFetchConfig } from '$lib/utils';
     import { userdata, useractiveteam } from '$stores/user';
-    import { PUBLIC_API_HOST as apiHost } from '$env/static/public';
-
+    export let errors: Record<string, string>;
     export let joincode: string;
-    export let message: string;
 
-    // TODO: deprecate in favor of POST function in +page.server
-    const handleJoinEvent = async () => {
-        // TODO: should we post here? It's likely we'll be creating leaderboard entries here
-        const fetchConfig = getFetchConfig('GET');
-        const response = await fetch(`${apiHost}/event/${joincode}/`, fetchConfig);
-
-        if (response.ok) {
-            const data = await response.json();
-            data && setEventStores(data);
-            window.open(`/game/${joincode}`, '_self');
-        } else if (response.status === 404) {
-            message = `Event with join code ${joincode} not found`;
-        }
-    };
 </script>
 
 <svelte:head><title>Trivia Mafia | Join</title></svelte:head>
@@ -31,8 +13,9 @@
 <p>{$userdata?.username},</p>
 <p>Thanks for Playing with team {$useractiveteam?.name}! Enter the game code from your host to get started.</p>
 
-<form on:submit|preventDefault={handleJoinEvent}>
-    {#if message}<p class="error">{message}</p>{/if}
+<!-- <form on:submit|preventDefault={handleJoinEvent}> -->
+<form action="" method="POST">
+    {#if errors.message}<p class="error">{errors.message}</p>{/if}
     <!-- TODO: on:focus, clear the message -->
     <div class="input-element">
         <input type="text" name="joincode" placeholder="Enter Code" bind:value={joincode} />
