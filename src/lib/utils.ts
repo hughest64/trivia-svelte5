@@ -1,6 +1,4 @@
 import * as cookie from 'cookie';
-import type { RouteParams } from '.svelte-kit/types/src/routes/$types'; // TODO: check this path
-import { PUBLIC_WEBSOCKET_HOST as cookieMaxAge } from '$env/static/public';
 
 export const getCookieObject = (request: Request): Record<string, string> => {
     const cookies = request.headers.get('cookie') || '';
