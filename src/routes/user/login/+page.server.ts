@@ -13,13 +13,12 @@ export const load: PageServerLoad = async ({ request }) => {
 };
 
 export const POST: Action = async ({ request, setHeaders, url }) => {
-    // TODO: return error if either field is blank (validate)
     const formData = await request.formData();
     const username = formData.get('username');
     const password = formData.get('password');
 
     if (!username || !password) {
-        return { errors: { message: 'Both fields are required! ' } };
+        return { errors: { message: 'Please fill in both fields' } };
     }
 
     // first, get a csrftoken

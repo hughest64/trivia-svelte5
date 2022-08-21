@@ -11,6 +11,7 @@
     let selected: UserTeam = $useractiveteam || $userdata?.teams[0];
     let message: string;
 
+    // TODO: holding off on this convert until the Actions api is updated
     const handleTeamSelectSubmit = async () => {
         if (selected.id === $userdata.active_team_id) {
             goto('/game/join');
