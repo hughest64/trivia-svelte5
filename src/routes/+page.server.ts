@@ -1,16 +1,39 @@
-// import { parseRequestHeaders } from '$lib/utils';
-// import { PUBLIC_API_HOST as apiHost } from '$env/static/public';
+import { getCookieObject, parseRequestHeaders } from '$lib/utils';
+import { PUBLIC_API_HOST as apiHost } from '$env/static/public';
 import type { Action } from './$types';
 
-// TODO: holding off on this convert until the Actions api is updated
+// NOTE: in the case of a new team, we need to update the user's active team store
+// so, we really need the abiltiy to return data to the page, however the userdata is
+// currently fetched separately after the redirect so it is updated via that. We probably
+// need to monitor this and verify it still works that way after the actions api changes
 export const POST: Action = async ({ request }) => {
-    const formData = await request.formData();
+    const { selectedteam, currentteam } = Object.fromEntries((await request.formData()).entries());
 
-    console.log(formData.get('team-select'));
-    // we may need the user's existing team as a hidden field
-    // and compare it with the selected value, if the same reutrn location
-    // else post to the api (setting the correct headers)
-    // get the reponse then return location
-    // NOTE: in the case of a new team, we need to update the user's active team store
-    // so, we really need the abiltiy to return data to the page :sadface:
+    if (selectedteam !== currentteam) {
+        // TODO: this needs to be streamlined fo sho
+        const cookieObject = getCookieObject(request);
+        const cookieString = parseRequestHeaders(request);
+        const response = await fetch(
+            `${apiHost}/teamselect/`,
+            {
+                method: 'POST',
+                headers: {
+                    'content-type': 'application/json',
+                    cookie: cookieString,
+                    'x-csrftoken': cookieObject.csrftoken
+                },
+                body: JSON.stringify({ team_id: selectedteam })
+            }
+        );
+        const responseData = await response.json();
+    
+        if (!response.ok) {
+            return { errors: { message: responseData.detail } };
+        }
+    }
+    return {
+        location: '/game/join'
+    };
+       
+
 };

@@ -1,35 +1,13 @@
 <script lang="ts">
-    import { getFetchConfig } from '$lib/utils';
-    import { goto } from '$app/navigation';
     import { userdata, useractiveteam, type UserTeam } from '$stores/user';
-    import { PUBLIC_API_HOST as apiHost } from '$env/static/public';
+
+    export let errors: Record<string, string>;
 
     let hidecreateteam = true;
     let hideteampassword = true;
 
     // TODO: finish create a team and join by code (team password)
     let selected: UserTeam = $useractiveteam || $userdata?.teams[0];
-    let message: string;
-
-    // TODO: holding off on this convert until the Actions api is updated
-    const handleTeamSelectSubmit = async () => {
-        if (selected.id === $userdata.active_team_id) {
-            goto('/game/join');
-
-        } else {
-            const fetchConfig = getFetchConfig('POST', { team_id: selected.id });
-            const response = await fetch(`${apiHost}/teamselect/`, fetchConfig);
-
-            if (response.ok) {
-                const active_team_id = await response.json();
-                userdata.update((data) => ({ ...data, ...active_team_id }));
-                goto('/game/join');
-
-            } else {
-                message = 'Oop! Something went wrong! Please try again.';
-            }
-        }
-    };
 </script>
 
 <svelte:head><title>TriviaMafia | Team Select</title></svelte:head>
@@ -51,16 +29,17 @@
 <h1>Or Play with an Existing Team</h1>
 
 {#if $userdata?.teams.length > 0}
-    <form on:submit|preventDefault={handleTeamSelectSubmit}>
-        {#if message}<p class="error">{message}</p>{/if}
-        <!-- TODO: on:focus, clear the message -->
+    <form action='' method='POST'>
+        {#if errors?.message}<p class="error">{errors?.message}</p>{/if}
+        
         <label class="select-label" for="team-select">Choose A Team</label>
-        <select class="select" id="team-select" name="team-select" bind:value={selected}>
+        <select class="select" id="team-select" name="selectedteam" bind:value={selected.id}>
             <!-- TODO: Team component to replicate the existing team select -->
             {#each $userdata.teams as team (team.id)}
-                <option value={team}>{team.name}</option>
+                <option value={team.id}>{team.name}</option>
             {/each}
         </select>
+        <input type="hidden" name="currentteam" value={$useractiveteam?.id}>
         <input class="button button-red" type="submit" id="team-select-submit" value="Choose This Team" />
     </form>
 {/if}

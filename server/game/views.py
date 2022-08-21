@@ -33,6 +33,7 @@ with open(
 class TeamSelectView(APIView):
     authentication_classes = [SessionAuthentication, JwtAuthentication]
 
+    @method_decorator(csrf_protect)
     def post(self, request):
         team_id = request.data.get("team_id")
         status = HTTP_200_OK
