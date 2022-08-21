@@ -9,16 +9,13 @@ export const POST: Action = async ({ locals, request }) => {
     const { selectedteam, currentteam } = Object.fromEntries((await request.formData()).entries());
 
     if (selectedteam !== currentteam) {
-        const response = await fetch(
-            `${apiHost}/teamselect/`,
-            {
-                method: 'POST',
-                headers: locals.fetchHeaders || {},
-                body: JSON.stringify({ team_id: selectedteam })
-            }
-        );
+        const response = await fetch(`${apiHost}/teamselect/`, {
+            method: 'POST',
+            headers: locals.fetchHeaders || {},
+            body: JSON.stringify({ team_id: selectedteam })
+        });
         const responseData = await response.json();
-    
+
         if (!response.ok) {
             return { errors: { message: responseData.detail } };
         }
@@ -26,6 +23,4 @@ export const POST: Action = async ({ locals, request }) => {
     return {
         location: '/game/join'
     };
-       
-
 };

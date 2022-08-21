@@ -8,8 +8,7 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
     // TODO: I don't think this is supposed to run at all here, maybe related to:
     // https://github.com/sveltejs/kit/issues/5960
     if (url.pathname === '/favicon.ico') return;
-    // console.log('running layout.server');
-    console.log(locals);
+    console.log('running layout.server');
 
     const joincode = params.joincode;
     // TODO: probably better to just pull url.pathname and mimic that an api endpoint
