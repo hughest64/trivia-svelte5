@@ -15,8 +15,7 @@
 
 <!-- <form on:submit|preventDefault={handleJoinEvent}> -->
 <form action="" method="POST">
-    {#if errors.message}<p class="error">{errors.message}</p>{/if}
-    <!-- TODO: on:focus, clear the message -->
+    {#if errors?.message}<p class="error">{errors?.message}</p>{/if}
     <div class="input-element">
         <input type="text" name="joincode" placeholder="Enter Code" bind:value={joincode} />
     </div>

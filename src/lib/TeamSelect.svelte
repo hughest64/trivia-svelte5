@@ -1,7 +1,7 @@
 <script lang="ts">
     import { userdata, useractiveteam, type UserTeam } from '$stores/user';
 
-    export let errors: Record<string, string>;
+    export let errors: Record<string, string> = {};
 
     let hidecreateteam = true;
     let hideteampassword = true;

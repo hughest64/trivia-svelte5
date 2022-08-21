@@ -50,51 +50,15 @@ export const invalidateCookies = (keys: string | string[]): string[] => {
  * @param request
  * @returns
  */
-export const getEventCookie = (params: RouteParams, request: Request): string => {
+export const getEventCookie = (joincode: string, request: Request): Record<string, string|number> => {
     const cookies = cookie.parse(request.headers.get('cookie') || '');
-    const eventKey = `event-${params.joincode}`;
-    const eventCookie = cookies[eventKey] || '{}';
+    const eventKey = `event-${joincode}`;
+    const eventCookie = JSON.parse(cookies[eventKey] || '{}');
 
     return eventCookie;
 };
 
-/**
- * set a users active round and question in a cookie for reference when the event page loads
- * @param params
- * @param request
- * @returns
- */
-export const setEventCookie = async (params: RouteParams, request: Request) => {
-    const data = await request.json();
-    const eventKey = `event-${params.joincode}`;
-
-    return {
-        headers: {
-            accept: 'application/json',
-            'set-cookie': cookie.serialize(eventKey, JSON.stringify(data), {
-                path: '/',
-                httpOnly: true,
-                maxAge: Number(cookieMaxAge) || 60 * 60
-            })
-        }
-    };
-};
-
-// TODO: deprecate in favor of parseReqeustHeaders?
-/**
- * convenience method which creates the necessary
- * headers to include a csrf token in a fetch request
- *
- * @param {string }csrfToken
- * @returns cookie headers for the csrf token
- */
-export const setCsrfHeaders = (csrfToken: string): Record<string, string> => {
-    return {
-        Cookie: `csrftoken=${csrfToken}`,
-        'X-CSRFToken': csrfToken
-    };
-};
-
+// TODO: investigate where this is used, maybe we can deprecate this
 /**
  * convenience method which sets standard fetch request config values
  *
@@ -118,6 +82,7 @@ export const getFetchConfig = (method: string, data?: Record<string, unknown>, h
     };
 };
 
+// TODO: probably deprecate
 /**
  * Convenience function that handles standard actions as the ouput
  * to a load function based on the response of a fetch call to the api.

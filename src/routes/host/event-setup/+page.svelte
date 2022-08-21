@@ -35,10 +35,9 @@
 
 <h1>Choose a Trivia Event</h1>
 
+<!-- TODO: convert to new page.server pattern -->
 <form on:submit|preventDefault={handleEventSubmit}>
     {#if message}<p class="error">{message}</p>{/if}
-    <!-- TODO: on:focus, clear the message -->
-
     <label class="select-label" for="game-select">Choose your Game</label>
     <select class="select" name="game-select" id="game-select" bind:value={selectedGame}>
         {#each gameSelectData as game (game.game_id)}

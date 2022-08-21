@@ -49,7 +49,6 @@ export const POST: Action = async ({ request, setHeaders, url }) => {
     const postResponseData = await postResponse.json();
 
     if (!postResponse.ok) {
-        // TODO: handle error messaging
         return { errors: { message: postResponseData.detail } };
     }
 

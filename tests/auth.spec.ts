@@ -4,7 +4,7 @@ import type { Browser, Cookie } from '@playwright/test';
 import * as cookie from 'cookie';
 
 // TODO: env variable
-const url = 'http://10.0.0.135:8000/user/login/';
+const url = 'http://127.0.0.1:8000/user/login/';
 
 // Import this into test files and run
 export const getHostAuth = async (browser: Browser) => {

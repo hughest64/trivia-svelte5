@@ -5,10 +5,19 @@
     import Menu from '$lib/Menu.svelte';
     import { fly } from 'svelte/transition';
     import { userdata, type UserData } from '$stores/user';
-    import { setEventStores } from '$stores/event';
+    import {
+        activeRoundNumber,
+        activeQuestionNumber,
+        currentRoundNumber,
+        currentQuestionNumber,
+        setEventStores
+    } from '$stores/event';
 
     $: $page.data?.user_data && userdata.set($page.data.user_data as UserData);
     $: $page.data?.event_data && setEventStores($page.data.event_data);
+
+    $: activeRoundNumber.set(Number($page.data?.event_cookies?.initialRoundNumber) || $currentRoundNumber || 1);
+    $: activeQuestionNumber.set(Number($page.data?.event_cookies?.initialQuestionNumber) || $currentQuestionNumber || 1 );
 
     let displayMenu = false;
 </script>
