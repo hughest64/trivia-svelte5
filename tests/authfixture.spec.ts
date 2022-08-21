@@ -3,7 +3,7 @@ import { expect, test as base } from '@playwright/test';
 import type { APIRequestContext, Cookie, Page } from '@playwright/test';
 import * as cookie from 'cookie';
 
-const url = 'http://10.0.0.135:8000/user/login/';
+const url = 'http://localhost:8000/user/login/';
 
 export class AuthPage {
     readonly page: Page;
