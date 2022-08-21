@@ -72,6 +72,7 @@ class EventSetupView(APIView):
             }
         )
 
+    @method_decorator(csrf_protect)
     def post(self, request):
         """create a new event or fetch an existing one with a specified game/location combo"""
         user = request.user
@@ -82,7 +83,9 @@ class EventSetupView(APIView):
         # get or create
         event_data["join_code"] = random.randint(1000, 9999)
         # serialize
-        return Response(event_data)
+        userSerializer = UserSerializer(request.user)
+
+        return Response({"event_data": event_data , "user_data": userSerializer.data})
 
 
 class EventView(APIView):
@@ -93,8 +96,9 @@ class EventView(APIView):
         # use the join code to look up event data
         event_data["join_code"] = joincode
         # raise if it's a bad join code
+        userSerializer = UserSerializer(request.user)
 
-        return Response(event_data)
+        return Response({"event_data": event_data, "user_data": userSerializer.data })
 
 
 class EventHostView(APIView):
@@ -110,5 +114,6 @@ class EventHostView(APIView):
         # use the join code to look up event data
         event_data["join_code"] = joincode
         # raise if it's a bad join code
+        userSerializer = UserSerializer(request.user)
 
-        return Response(event_data)
+        return Response({"event_data": event_data, "user_data": userSerializer.data })

@@ -36,7 +36,7 @@ class GuestView(APIView):
             valid_token = False
 
         serializer = UserSerializer(user)
-        response = Response(serializer.data)
+        response = Response({"user_data": serializer.data})
 
         # TODO: should we "refresh" the token if it is valid?
         if not valid_token:
@@ -68,7 +68,7 @@ class LoginView(APIView):
         serializer = UserSerializer(user)
         token = create_token(user.id)
 
-        response = Response(serializer.data)
+        response = Response({"user_data": serializer.data})
         response.set_cookie(key="jwt", value=token, httponly=True)
 
         return response
@@ -81,7 +81,7 @@ class UserView(APIView):
     def get(self, request):
         serializer = UserSerializer(request.user)
 
-        return Response(serializer.data)
+        return Response({"user_data": serializer.data})
 
 # TODO: maybe don't need to do this since the cookies are controlled in SvelteKit
 class LogoutView(APIView):

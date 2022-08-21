@@ -11,6 +11,7 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
     console.log('running layout.server');
 
     const joincode = params.joincode;
+
     // TODO: probably better to just pull url.pathname and mimic that an api endpoint
     // advantage is that know if it's host or player data that is requested
     const apiPathname = joincode ? `event/${joincode}` : 'user';

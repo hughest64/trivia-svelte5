@@ -5,8 +5,10 @@
     import Menu from '$lib/Menu.svelte';
     import { fly } from 'svelte/transition';
     import { userdata, type UserData } from '$stores/user';
+    import { setEventStores } from '$stores/event';
 
-    $: $page.data && userdata.set($page.data as UserData);
+    $: $page.data?.user_data && userdata.set($page.data.user_data as UserData);
+    $: $page.data?.event_data && setEventStores($page.data.event_data);
 
     let displayMenu = false;
 </script>
