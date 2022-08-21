@@ -4,7 +4,7 @@
 // for information about these interfaces
 declare namespace App {
     interface Locals {
-        userdata: import('$stores/user').UserData;
+        fetchHeaders: Record<string, string>
     }
     // interface Platform {}
 }
