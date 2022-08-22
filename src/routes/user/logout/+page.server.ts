@@ -11,5 +11,5 @@ export const load: PageServerLoad = async ({ setHeaders }) => {
     // delete auth cookies and redirect
     const invalidatedCookies = invalidateCookies(['jwt', 'csrftoken']);
     setHeaders({ 'set-cookie': invalidatedCookies });
-    throw redirect(302, '/user/login');
+    throw redirect(302, '/welcome');
 };

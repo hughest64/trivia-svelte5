@@ -3,10 +3,10 @@ import type { Page } from '@playwright/test';
 
 export const authRedirects = async (page: Page, pageUrl: string) => {
     await page.goto(pageUrl);
-    await expect(page).toHaveTitle(/login/i);
     await expect(page).toHaveTitle(/welcome/i);
-
+    
     await page.locator('text=Login/Create Account').click();
+    await expect(page).toHaveTitle(/login/i);
     expect(await page.textContent('h1')).toBe('Login');
 
     // TODO: use guest instead of sample_admin, but perhaps user info could be a parameter?

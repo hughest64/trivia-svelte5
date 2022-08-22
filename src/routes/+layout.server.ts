@@ -31,7 +31,7 @@ export const load: PageServerLoad = async ({ locals, params, request, url }) => 
         }
     } else {
         // TODO: checkStatusCode for the real status code
-        throw redirect(307, `/user/login?next=${url.pathname}`);
+        throw redirect(307, `/welcome?next=${url.pathname}`);
     }
 
     return data;
