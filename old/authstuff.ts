@@ -1,4 +1,4 @@
-import { expect, test } from './authfixture.spec.js';
+import { expect, test } from './authfixture.js';
 
 test('log in and go to root', async ({ authPage }) => {
     const page = authPage.page;

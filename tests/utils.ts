@@ -1,14 +1,29 @@
-// utils.ts - helper functions for testing
+import { expect } from '@playwright/test';
+import type { Page } from '@playwright/test';
 
-// NOTES:
-// test - game/1234 (points beyond? chat, leaderboard, etc?) - I thnk not until they are fleshed out
+export const authRedirects = async (page: Page, pageUrl: string) => {
+    await page.goto(pageUrl);
+    await expect(page).toHaveTitle(/login/i);
+    await expect(page).toHaveTitle(/welcome/i);
 
-// keep guest login test in test.ts (rename?) test goto('/') for these
-// also test staff vs. non-staff login there (team-select vs. host choice)
+    await page.locator('text=Login/Create Account').click();
+    expect(await page.textContent('h1')).toBe('Login');
 
-// use the auth fixture in separate file for testing game play things (staff vs non-staff not important here)
-// test websocket connection?
+    // TODO: use guest instead of sample_admin, but perhaps user info could be a parameter?
+    await page.locator('input[name="username"]').fill('sample_admin');
+    await page.locator('input[name="password"]').fill('sample_admin');
+    await page.locator('input[value="Submit"]').click();
 
-// test logout and forgot?
+    await expect(page).toHaveURL(pageUrl);
 
-export const login = () => console.log('testing rulZ!');
+};
+
+
+// TODO: not part of the fixture as the critera changes per page - use for separate log in tests!
+// await expect(page).toHaveTitle(/join/i);
+// expect(await page.textContent('h1')).toBe('Enter Game Code');
+
+// await page.locator('input[name="joincode"]').fill('1234');
+// await page.locator('input[value="Join Game!"]').click();
+
+// await expect(page).toHaveTitle(/event 1234/i);
