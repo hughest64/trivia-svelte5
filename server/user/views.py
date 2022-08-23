@@ -24,7 +24,12 @@ class RegisterView(APIView):
 
 
 class GuestView(APIView):
+    @method_decorator(ensure_csrf_cookie)
+    def get(self, request):
 
+        return Response()
+
+    @method_decorator(ensure_csrf_cookie)
     def post(self, request):
         valid_token = True
         jwt = request.COOKIES.get("jwt")

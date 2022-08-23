@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 import { authRedirects } from './utils.js';
 
 // test guest login
-test.skip('guest/not-staff login from redirect', async ({ page }) => {
+test('guest/not-staff login from redirect', async ({ page }) => {
     await page.goto('/');
     // not logged in, we should land on the welcome page
     await expect(page).toHaveTitle(/welcome/i);
