@@ -1,6 +1,7 @@
 <script lang="ts">
-    // populated from the form response
-    export let errors: Record<string, string>;
+    import type { Errors } from './$types';
+
+    export let errors: Errors;
     let username: string;
     let password: string;
 

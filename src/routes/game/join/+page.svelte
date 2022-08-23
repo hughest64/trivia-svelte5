@@ -1,6 +1,8 @@
 <script lang="ts">
     import { userdata, useractiveteam } from '$stores/user';
-    export let errors: Record<string, string>;
+    import type { Errors } from './$types';
+
+    export let errors: Errors;
     export let joincode: string;
 
 </script>

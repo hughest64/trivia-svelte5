@@ -1,8 +1,9 @@
 <script lang="ts">
     import { userdata, useractiveteam, type UserTeam } from '$stores/user';
 
-    export let errors: Record<string, string> = {};
-
+    // TODO: not able to type this as Errors as we don't have './$types' in the lib apparently
+    // this will likely be converted to an endpoint, so change then I guess?
+    export let errors: Record<string, string>;
     let hidecreateteam = true;
     let hideteampassword = true;
 

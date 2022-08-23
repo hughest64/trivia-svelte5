@@ -1,7 +1,8 @@
 <script lang="ts">
     import { page } from '$app/stores';
+    import type { Errors } from './$types';
 
-    export let errors: Record<string, string>;
+    export let errors: Errors;
 
 </script>
 
