@@ -53,7 +53,7 @@ export const POST: Action = async ({ request, setHeaders, url }) => {
     }
 
     // TODO: return data to the login page then redirect from there once
-    // https://github.com/sveltejs/kit/issues/6015 is resloved
+    // https://github.com/sveltejs/kit/issues/6015 is resolved
     // const responseData: UserData = await postResponse.json();
 
     // finally set both as cookies for later use

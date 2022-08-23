@@ -1,6 +1,8 @@
 import { expect } from '@playwright/test';
 import type { Page } from '@playwright/test';
 
+// TODO: make this take in an optional user/pass object
+// default this not a non "admin" user
 export const authRedirects = async (page: Page, pageUrl: string) => {
     await page.goto(pageUrl);
     await expect(page).toHaveTitle(/welcome/i);

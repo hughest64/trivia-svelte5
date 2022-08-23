@@ -13,7 +13,17 @@ test('guest/not-staff login from redirect', async ({ page }) => {
     expect(await page.textContent('h1')).toBe('Create a New Team');
 });
 
-// redirect and login of other routes
+// player side redirect and login to specific endpoints
 test('proper redirect for game home page', async ({ page }) => authRedirects(page, '/'));
 test('proper redirect for game join page', async ({ page }) => authRedirects(page, '/game/join'));
 test('proper redirect for game page', async ({ page }) => authRedirects(page, '/game/1234'));
+
+// host side redirect and login to specific endpoints
+// TODO: do we test non-staff redirects too?
+// host/event-setup
+// host/1234
+
+// TODO:
+// - login test (fill in form) - we do this a log alredy?
+// - logout test
+// - navigate to login when already logged in
