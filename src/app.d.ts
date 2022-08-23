@@ -4,7 +4,8 @@
 // for information about these interfaces
 declare namespace App {
     interface Locals {
-        fetchHeaders: Record<string, string>
+        fetchHeaders?: Record<string, string>,
+        jwt?: string
     }
     // interface Platform {}
 }

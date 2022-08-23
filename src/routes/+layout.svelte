@@ -16,8 +16,8 @@
     $: $page.data?.user_data && userdata.set($page.data.user_data as UserData);
     $: $page.data?.event_data && setEventStores($page.data.event_data);
 
-    $: activeRoundNumber.set(Number($page.data?.event_cookies?.initialRoundNumber) || $currentRoundNumber || 1);
-    $: activeQuestionNumber.set(Number($page.data?.event_cookies?.initialQuestionNumber) || $currentQuestionNumber || 1 );
+    $: activeRoundNumber.set(Number($page.data?.initialRoundNumber) || $currentRoundNumber || 1);
+    $: activeQuestionNumber.set(Number($page.data?.initialQuestionNumber) || $currentQuestionNumber || 1 );
 
     let displayMenu = false;
 </script>

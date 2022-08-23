@@ -15,6 +15,7 @@ export const handle: Handle = async({ event, resolve }) => {
             cookie: cookieString,
             'x-csrftoken': cookieObject.csrftoken
         };
+        event.locals.jwt = cookieObject.jwt || '';
     }
     const response = await resolve(event);
     

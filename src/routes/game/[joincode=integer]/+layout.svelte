@@ -1,10 +1,17 @@
 <script lang="ts">
-    import Socket from '$lib/Socket.svelte';
     import { page } from '$app/stores';
+    import type { PageData } from './$types';
+    
+    export let data: PageData;
+    const { socket } = data;
+    $: console.log(socket);
+
+    /**
+    import Socket from '$lib/Socket.svelte';
     import { socket } from '$stores/socket';
     import handlers from '$stores/gameMessageHandlers';
     import type { SocketMessage } from '$stores/types';
-
+    
     $: if (!!$socket) {
         // console.log('adding message handler')
         $socket.onmessage = (event) => {
@@ -16,6 +23,7 @@
             }
         };
     }
+    */
     const joincode = $page.params.joincode;
 </script>
 
@@ -23,6 +31,6 @@
     <title>Trivia Mafia Event {joincode}</title>
 </svelte:head>
 
-<Socket />
+<!-- <Socket /> -->
 
 <slot />

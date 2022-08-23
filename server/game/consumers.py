@@ -6,6 +6,7 @@ class SocketConsumer(JsonWebsocketConsumer):
         kwargs = self.scope.get("url_route", {}).get("kwargs")
         joincode = kwargs.get("joincode")
         self.event_group = f"event_{joincode}" if joincode else ""
+        print("hello", self.scope["user"], joincode, "is your Join code")
 
         if self.event_group:
             async_to_sync(self.channel_layer.group_add)(

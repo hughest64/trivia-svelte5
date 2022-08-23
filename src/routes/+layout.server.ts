@@ -7,7 +7,7 @@ import { PUBLIC_API_HOST as apiHost } from '$env/static/public';
 export const load: PageServerLoad = async ({ locals, params, request, url }) => {
     
     // TODO: I don't think this is supposed to run at all here, maybe related to:
-    // https://github.com/sveltejs/kit/issues/5960
+    // https://github.com/sveltejs/kit/issues/5960 it was not!, this happens on a failed log in attempt
     if (url.pathname === '/favicon.ico') return;
     console.log('running layout.server');
 
@@ -24,10 +24,11 @@ export const load: PageServerLoad = async ({ locals, params, request, url }) => 
 
     let data = {};
     if (response.ok) {
-        data = await response.json();
+        const responseData = await response.json();
+        data = { ...responseData, ...locals };
         if (joincode) {
             const event_cookies = getEventCookie(joincode, request);
-            Object.assign(data, { event_cookies });
+            Object.assign(data, { ...event_cookies });
         }
     } else {
         // TODO: checkStatusCode for the real status code
