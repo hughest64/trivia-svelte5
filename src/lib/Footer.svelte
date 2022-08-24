@@ -8,10 +8,17 @@
     import MenuIcon from './icons/MenuIcon.svelte';
     import ScoringIcon from './icons/ScoringIcon.svelte';
 
+    // example routes
+    // const d = '(app)/host/[joincode=integer]'; // should match
+    // const d2 = '(app)/game/join'; // should not match
+
+    // TODO: better regex so we don't have to do multiple checks in isEventRoute
+    const reg = /^\(\w+\)\/(game|host)\/[[=\w]+]\/?/;
+
     const joinCode = $page.params?.joincode;
-    $: routeId = <string>$page.routeId?.split('/')[0];
+    $: routeId = <string>$page.routeId?.split('/')[1];
     $: isEventRoute =
-        ['game', 'host'].indexOf(routeId) > -1 && $page.routeId !== 'game/join' && $page.routeId !== 'host/event-setup';
+        reg.test($page.routeId || '') && $page.routeId !== '(app)/game/join' && $page.routeId !== '(app)/host/event-setup';
 
     $: isActive = (id: string) => {
         if (!browser) return false;
