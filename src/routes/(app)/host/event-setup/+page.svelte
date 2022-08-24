@@ -4,8 +4,8 @@
     import type { GameSelectData, LocationSelectData } from '$lib/types';
     import { PUBLIC_API_HOST as apiHost } from '$env/static/public';
 
-    export let gameSelectData: GameSelectData[];
-    export let locationSelectData: LocationSelectData[];
+    export let gameSelectData: GameSelectData[] = [];
+    export let locationSelectData: LocationSelectData[] = [];
     export let message: string;
 
     let selectLocation: LocationSelectData; // TODO: set to the host's "home" location
