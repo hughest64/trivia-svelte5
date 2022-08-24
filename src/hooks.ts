@@ -5,10 +5,12 @@ import type { Handle } from '@sveltejs/kit';
 export const handle: Handle = async({ event, resolve }) => {
     // console.log(event.request.headers);
     const cookies = event.request.headers.get('cookie') || '';
+    const cookieObject = getCookieObject(event.request);
+    const cookieString = parseRequestHeaders(event.request);
+    const joincode = event.params.joincode;
+    const eventKey = `event-${joincode}`;
     
     if (cookies.includes('jwt') && cookies.includes('csrftoken')) {
-        const cookieObject = getCookieObject(event.request);
-        const cookieString = parseRequestHeaders(event.request);
 
         event.locals.fetchHeaders = {
             'content-type': 'application/json',
@@ -16,6 +18,11 @@ export const handle: Handle = async({ event, resolve }) => {
             'x-csrftoken': cookieObject.csrftoken
         };
         event.locals.jwt = cookieObject.jwt || '';
+    }
+    if (joincode && cookieObject[eventKey]) {
+        const { initialRoundNumber, initialQuestionNumber } = JSON.parse(cookieObject[eventKey]);
+        event.locals.initialRoundNumber = initialRoundNumber || '';
+        event.locals.initialQuestionNumber = initialQuestionNumber || '';
     }
     const response = await resolve(event);
     

@@ -6,6 +6,8 @@ declare namespace App {
     interface Locals {
         fetchHeaders?: Record<string, string>,
         jwt?: string
+        initialRoundNumber?: string | number
+        initialQuestionNumber?: string | number
     }
     // interface Platform {}
 }

@@ -12,12 +12,15 @@
         currentQuestionNumber,
         setEventStores
     } from '$stores/event';
+    import type { PageData } from './$types';
 
-    $: $page.data?.user_data && userdata.set($page.data.user_data as UserData);
-    $: $page.data?.event_data && setEventStores($page.data.event_data);
+    export let data: PageData;
 
-    $: activeRoundNumber.set(Number($page.data?.initialRoundNumber) || $currentRoundNumber || 1);
-    $: activeQuestionNumber.set(Number($page.data?.initialQuestionNumber) || $currentQuestionNumber || 1 );
+    $: data?.user_data && userdata.set($page.data.user_data as UserData);
+    $: data?.event_data && setEventStores($page.data.event_data);
+
+    $: activeRoundNumber.set(Number(data?.initialRoundNumber) || $currentRoundNumber || 1);
+    $: activeQuestionNumber.set(Number(data?.initialQuestionNumber) || $currentQuestionNumber || 1 );
 
     let displayMenu = false;
 </script>
