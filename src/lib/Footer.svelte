@@ -18,7 +18,8 @@
     const joinCode = $page.params?.joincode;
     $: routeId = <string>$page.routeId?.split('/')[1];
     $: isEventRoute =
-        reg.test($page.routeId || '') && $page.routeId !== '(app)/game/join' && $page.routeId !== '(app)/host/event-setup';
+        reg.test($page.routeId || '');
+    // && $page.routeId !== '(app)/game/join' && $page.routeId !== '(app)/host/event-setup';
 
     $: isActive = (id: string) => {
         if (!browser) return false;
