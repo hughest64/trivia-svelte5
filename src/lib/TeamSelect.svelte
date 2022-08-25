@@ -1,13 +1,13 @@
 <script lang="ts">
     import { userdata, useractiveteam, type UserTeam } from '$stores/user';
 
-    // TODO: not able to type this as Errors as we don't have './$types' in the lib apparently
-    // this will likely be converted to an endpoint, so change then I guess?
-    export let errors: Record<string, string>;
+    // TODO: only doing this because we cannot type it ad Errors as it should be
+    export let errors = { message: '' };
     let hidecreateteam = true;
     let hideteampassword = true;
 
     // TODO: finish create a team and join by code (team password)
+    // also, this component will likely become an actual page /team-select
     let selected: UserTeam = $useractiveteam || $userdata?.teams[0];
 </script>
 

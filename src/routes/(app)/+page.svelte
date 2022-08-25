@@ -3,8 +3,9 @@
     import HostChoice from '$lib/HostChoice.svelte';
     import TeamSelect from '$lib/TeamSelect.svelte';
     import { userdata } from '$stores/user';
+    import type { Errors } from './$types';
 
-    // $: console.log($userdata);
+    export let errors: Errors;
 
     let hostchoice = 'choose'; // or 'play' or 'host'
 
@@ -39,7 +40,7 @@
 <svelte:window on:popstate={handlepopstate} />
 
 {#if !$userdata || ($userdata?.username && !$userdata?.is_staff) || hostchoice === 'play'}
-    <TeamSelect />
+    <TeamSelect {errors}/>
 {:else}
     <HostChoice on:click={handleChoiceClick} />
 {/if}
