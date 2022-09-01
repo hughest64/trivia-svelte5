@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { browser } from '$app/environment';
     import { page } from '$app/stores';
     import QuizIcon from '$lib/icons/QuizIcon.svelte';
     import ChatIcon from './icons/ChatIcon.svelte';
@@ -12,40 +11,32 @@
     // const d = '(app)/host/[joincode=integer]'; // should match
     // const d2 = '(app)/game/join'; // should not match
 
-    // TODO: better regex so we don't have to do multiple checks in isEventRoute
+    // TODO: better regex
     const reg = /^\(\w+\)\/(game|host)\/[[=\w]+]\/?/;
 
     const joinCode = $page.params?.joincode;
     $: routeId = <string>$page.routeId?.split('/')[1];
     $: isEventRoute = reg.test($page.routeId || '');
-    // && $page.routeId !== '(app)/game/join' && $page.routeId !== '(app)/host/event-setup';
 
-    $: isActive = (id: string) => {
-        if (!browser) return false;
-        const link = <HTMLAnchorElement>document.querySelector(id)?.firstChild;
-        const linkHref = link?.href;
-
-        return linkHref === $page.url.href;
-    };
+    $: setActive = (link: string) => $page.url.pathname.endsWith(link);
 </script>
 
 <nav>
     <ul id="nav-links" class:justify-nav={!isEventRoute}>
         {#if isEventRoute}
-            <!-- <li id="quiz" class:active={isActive('#quiz')}> -->
-            <li id="quiz" class="active">
+            <li  class:active={setActive(joinCode)}>
                 <a href={`/${routeId}/${joinCode}`}>
                     <QuizIcon class="svg" />
                     <p>Quiz</p>
                 </a>
             </li>
-            <li id="leaderboard" class:active={isActive('#leaderboard')}>
+            <li class:active={setActive('leaderboard')}>
                 <a href={`/${routeId}/${joinCode}/leaderboard`}>
                     <LeaderboardIcon class="svg" />
                     <p>Leaderboard</p>
                 </a>
             </li>
-            <li id="chat" class:active={isActive('#chat')}>
+            <li  class:active={setActive('chat')}>
                 <a href={`/${routeId}/${joinCode}/chat`}>
                     <ChatIcon class="svg" />
                     <p>Chat</p>
@@ -53,14 +44,14 @@
             </li>
         {/if}
         {#if routeId === 'game' && isEventRoute}
-            <li id="megaround" class:active={isActive('#megaround')}>
+            <li  class:active={setActive('megaround')}>
                 <a href={`/game/${joinCode}/megaround`}>
                     <MegaroundIcon class="svg" />
                     <p>Megaround</p>
                 </a>
             </li>
         {:else if routeId === 'host' && isEventRoute}
-            <li id="score" class:active={isActive('#score')}>
+            <li  class:active={setActive('score')}>
                 <a href={`/host/${joinCode}/score`}>
                     <ScoringIcon class="svg" />
                     <p>Scoring</p>
