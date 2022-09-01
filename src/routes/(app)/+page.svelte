@@ -1,46 +1,34 @@
 <script lang="ts">
-    import { goto } from '$app/navigation';
-    import HostChoice from '$lib/HostChoice.svelte';
-    import TeamSelect from '$lib/TeamSelect.svelte';
-    import { userdata } from '$stores/user';
+    import { page } from '$app/stores';
     import type { Errors } from './$types';
 
     export let errors: Errors;
-
-    let hostchoice = 'choose'; // or 'play' or 'host'
-
-    const handleChoiceClick = (event: MouseEvent) => {
-        const target = <HTMLButtonElement>event.target;
-        const id = target.id;
-        if (id === 'host') {
-            goto('/host/event-setup');
-        }
-        if (id === 'play') {
-            hostchoice = 'play';
-            goto('/');
-        }
-    };
-
-    let historyIndex = 0;
-    const handlepopstate = (event: PopStateEvent) => {
-        const eventIndex = event.state['sveltekit:index'] || 0;
-
-        // back button
-        if (historyIndex === 0 || eventIndex < historyIndex) {
-            hostchoice = 'choose';
-
-        // forward button
-        } else if (historyIndex !== 0 && eventIndex > historyIndex) {
-            hostchoice = 'play';
-        }
-        historyIndex = eventIndex;
-    };
 </script>
 
-<svelte:window on:popstate={handlepopstate} />
+<svelte:head><title>Trivia Mafia | Welcome</title></svelte:head>
 
-{#if !$userdata || ($userdata?.username && !$userdata?.is_staff) || hostchoice === 'play'}
-    <TeamSelect {errors}/>
-{:else}
-    <HostChoice on:click={handleChoiceClick} />
-{/if}
+<div class="logo-container">
+    <img src="TM2021-Flat-Stacked-WhiteBackground.svg" alt="Trivia Mafia" />
+</div>
+
+{#if errors?.message}<p>{errors?.message}</p>{/if}
+
+<a class="button button-red" href={`/user/login${$page.url.search}`}> Login/Create Account </a>
+<form action="" method="POST">
+    <input class="button button-white" type="submit" value="Play as a Guest">
+</form>
+
+<style lang="scss">
+    a {
+        text-decoration: none;
+    }
+    .logo-container {
+        margin-bottom: 4em;
+        img {
+            width: 30em;
+            max-width: calc(100% - 2em);
+            margin: auto;
+            display: block;
+        }
+    }
+</style>

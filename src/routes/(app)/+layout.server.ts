@@ -26,9 +26,9 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
         const responseData = await response.json();
         data = { ...responseData, ...locals };
 
-    } else {
+    } else if (url.pathname !== '/') {
         // TODO: checkStatusCode for the real status code
-        throw redirect(307, `/welcome?next=${url.pathname}`);
+        throw redirect(307, `/?next=${url.pathname}`);
     }
 
     return data;

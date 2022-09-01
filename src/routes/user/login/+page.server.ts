@@ -8,7 +8,8 @@ export const load: PageServerLoad = async ({ request }) => {
     // go home user, you're already logged in
     const cookieObject = getCookieObject(request);
     if (cookieObject.jwt) {
-        throw redirect(302, '/');
+        // TODO: goto /host/choice if staff
+        throw redirect(302, '/team');
     }
 };
 

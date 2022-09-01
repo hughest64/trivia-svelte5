@@ -2,6 +2,7 @@
     import { userdata, useractiveteam, type UserTeam } from '$stores/user';
 
     // TODO: only doing this because we cannot type it ad Errors as it should be
+    // ^^^^ this is fixable now
     export let errors = { message: '' };
     let hidecreateteam = true;
     let hideteampassword = true;
