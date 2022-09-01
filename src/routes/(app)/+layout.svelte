@@ -25,7 +25,7 @@
     let displayMenu = false;
 </script>
 
-<main>
+<!-- <main> -->
     {#if displayMenu}
         <div transition:fly={{ y: -2000, duration: 800 }}>
             <Menu on:click={() => (displayMenu = false)} />
@@ -33,7 +33,7 @@
     {/if}
 
     <slot />
-</main>
+<!-- </main> -->
 
 <footer>
     <Footer on:click={() => (displayMenu = !displayMenu)} />
@@ -47,7 +47,7 @@
     div {
         position: fixed;
         top: 0;
-        height: calc(100% - 5.5em);
+        height: calc(100% - 10em);
         width: 100%;
         overflow: hidden;
         margin: 0;

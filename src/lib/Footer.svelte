@@ -17,8 +17,7 @@
 
     const joinCode = $page.params?.joincode;
     $: routeId = <string>$page.routeId?.split('/')[1];
-    $: isEventRoute =
-        reg.test($page.routeId || '');
+    $: isEventRoute = reg.test($page.routeId || '');
     // && $page.routeId !== '(app)/game/join' && $page.routeId !== '(app)/host/event-setup';
 
     $: isActive = (id: string) => {
@@ -33,47 +32,38 @@
 <nav>
     <ul id="nav-links" class:justify-nav={!isEventRoute}>
         {#if isEventRoute}
-            <li id="quiz" class:active={isActive('#quiz')}>
+            <!-- <li id="quiz" class:active={isActive('#quiz')}> -->
+            <li id="quiz" class="active">
                 <a href={`/${routeId}/${joinCode}`}>
-                    <div>
-                        <QuizIcon class="svg" />
-                        <p>Quiz</p>
-                    </div>
+                    <QuizIcon class="svg" />
+                    <p>Quiz</p>
                 </a>
             </li>
             <li id="leaderboard" class:active={isActive('#leaderboard')}>
                 <a href={`/${routeId}/${joinCode}/leaderboard`}>
-                    <div>
-                        <LeaderboardIcon class="svg" />
-                        <p>Leaderboard</p>
-                    </div>
+                    <LeaderboardIcon class="svg" />
+                    <p>Leaderboard</p>
                 </a>
             </li>
             <li id="chat" class:active={isActive('#chat')}>
                 <a href={`/${routeId}/${joinCode}/chat`}>
-                    <div>
-                        <ChatIcon class="svg" />
-                        <p>Chat</p>
-                    </div>
+                    <ChatIcon class="svg" />
+                    <p>Chat</p>
                 </a>
             </li>
         {/if}
         {#if routeId === 'game' && isEventRoute}
             <li id="megaround" class:active={isActive('#megaround')}>
                 <a href={`/game/${joinCode}/megaround`}>
-                    <div>
-                        <MegaroundIcon class="svg" />
-                        <p>Megaround</p>
-                    </div>
+                    <MegaroundIcon class="svg" />
+                    <p>Megaround</p>
                 </a>
             </li>
         {:else if routeId === 'host' && isEventRoute}
             <li id="score" class:active={isActive('#score')}>
                 <a href={`/host/${joinCode}/score`}>
-                    <div>
-                        <ScoringIcon class="svg" />
-                        <p>Scoring</p>
-                    </div>
+                    <ScoringIcon class="svg" />
+                    <p>Scoring</p>
                 </a>
             </li>
         {/if}
@@ -101,15 +91,14 @@
         padding: 0;
         margin: 0.25em 0;
     }
-    li > a {
+    li > a,
+    .menu {
         text-decoration: none;
-    }
-    div {
         width: 4em;
         height: 4em;
         background-color: #fcfcfc;
         border-radius: 0.5em;
-        margin: auto;
+        margin: 0 auto;
         padding: 1em;
         display: flex;
         flex-direction: column;
@@ -138,7 +127,7 @@
         // margin: 0.5em;
     }
     .active {
-        div {
+        a {
             background-color: #413f43;
         }
         :global(.svg path) {
