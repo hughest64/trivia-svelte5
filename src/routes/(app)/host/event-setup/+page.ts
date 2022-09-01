@@ -3,7 +3,7 @@
 import type { PageLoad } from './$types';
 
 import { PUBLIC_API_HOST as apiHost } from '$env/static/public';
-import { browser } from '$app/env';
+import { browser } from '$app/environment';
 
 export const load: PageLoad = async ({ parent, fetch }) => {
     if (browser) {

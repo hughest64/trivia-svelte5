@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { browser } from '$app/env';
+    import { browser } from '$app/environment';
     import { page } from '$app/stores';
     import QuizIcon from '$lib/icons/QuizIcon.svelte';
     import ChatIcon from './icons/ChatIcon.svelte';
@@ -78,7 +78,7 @@
             </li>
         {/if}
         <li>
-            <div on:click>
+            <div class="menu" on:click>
                 <MenuIcon class="svg" />
                 <p>Menu</p>
             </div>
@@ -110,7 +110,7 @@
         background-color: #fcfcfc;
         border-radius: 0.5em;
         margin: auto;
-        padding: 0.25em;
+        padding: 1em;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -152,5 +152,8 @@
         p {
             color: #fcfcfc;
         }
+    }
+    .menu {
+        cursor: pointer;
     }
 </style>

@@ -14,7 +14,7 @@
     "devDependencies": {
         "@playwright/test": "^1.21.0",
         "@sveltejs/adapter-auto": "next",
-        "@sveltejs/kit": "^1.0.0-next.436",
+        "@sveltejs/kit": "^1.0.0-next.461",
         "@types/cookie": "^0.5.1",
         "@typescript-eslint/eslint-plugin": "^5.10.1",
         "@typescript-eslint/parser": "^5.10.1",
@@ -33,6 +33,6 @@
     },
     "type": "module",
     "dependencies": {
-        "vite": "^3.0.8"
+        "vite": "^3.1.0-beta.1"
     }
 }

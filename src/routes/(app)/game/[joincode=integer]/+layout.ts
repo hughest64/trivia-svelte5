@@ -1,4 +1,4 @@
-import { browser } from '$app/env';
+import { browser } from '$app/environment';
 import { PUBLIC_WEBSOCKET_HOST as apiHost } from '$env/static/public';
 import type { LayoutLoad } from './$types';
 
