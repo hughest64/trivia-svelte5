@@ -1,10 +1,10 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import type { PageData } from './$types';
-    
-    export let data: PageData;
-    const { socket } = data;
-    $: console.log(socket);
+    // import type { PageData } from './$types';
+
+    // export let data: PageData;
+    // const { socket } = data;
+    // $: console.log(socket);
 
     /**
     import Socket from '$lib/Socket.svelte';
@@ -25,6 +25,7 @@
     }
     */
     const joincode = $page.params.joincode;
+
 </script>
 
 <svelte:head>

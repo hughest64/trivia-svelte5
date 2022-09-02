@@ -88,6 +88,19 @@ class UserView(APIView):
 
         return Response({"user_data": serializer.data})
 
+
+class ValidateView(APIView):
+
+    def post(self, request):
+        print(request.META)
+        # validate data["jwt"]
+        # if it's good, set-cookie
+        response = Response()
+        response.set_cookie(key='socket', value="testing", httponly=False, samesite='lax', path='/')
+        response.data = {"success": True}
+        return response
+
+
 # TODO: maybe don't need to do this since the cookies are controlled in SvelteKit
 class LogoutView(APIView):
     def post(self, request):
