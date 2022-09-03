@@ -80,39 +80,35 @@ export const getFetchConfig = (method: string, data?: Record<string, unknown>, h
     };
 };
 
-// TODO: probably deprecate
-/**
- * Convenience function that handles standard actions as the ouput
- * to a load function based on the response of a fetch call to the api.
- *
- * @param {Response} response the response object of an api fetch call
- * @param {string} next querystring appended to a redirect url
- * @returns {LoadOutput}
- */
-// export const checkStatusCode = (response: Response, next?: string): LoadOutput => {
-//     let output: LoadOutput;
+export interface SocketConfig {
+    socketUrl: string
+    token?: string
+    retryInterval: number
+    // interval?: ReturnType<typeof setTimeout>
+    maxRetries: number
+    retries: number
+}
 
-//     switch (response.status) {
-//         case 500:
-//             output = { status: 500 };
-//             break;
-//         case 404:
-//             output = { status: 404 };
-//             break;
-//         case 401:
-//             output = { status: 302, redirect: '/' };
-//             break;
-//         case 403:
-//             output = { status: 302, redirect: '/welcome' };
-//             break;
-//         case 200:
-//         default:
-//             output = { status: 200 };
-//             break;
-//     }
-//     if (next && output?.redirect && response.status !== 401) {
-//         output.redirect += `?next=${next}`;
-//     }
+let interval: ReturnType<typeof setTimeout>;
+export const createSocket = (socketConfig: SocketConfig) => {
+    const { socketUrl, retryInterval, maxRetries, retries } = socketConfig;
 
-//     return output;
-// };
+    const webSocket = new WebSocket(socketUrl);
+
+    webSocket.onopen = () => {
+        clearInterval(interval);
+        // TODO: socket.send token?
+    };
+  
+    webSocket.onclose = (event) => {
+        if (!event.wasClean && retries <= maxRetries) {
+            setTimeout(() => createSocket({ ...socketConfig, retries: retries + 1 }), retryInterval);
+
+        } else {
+            // TODO: We could set a message letting the user know the connection died
+            clearTimeout(interval);
+        }
+    };
+    // TODO: add onmessage here?
+    return webSocket;
+};

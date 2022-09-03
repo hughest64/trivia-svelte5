@@ -1,14 +1,13 @@
 <script lang="ts">
     import { page } from '$app/stores';
+    import  { createSocket } from '$lib/utils';
+    import { setContext, onDestroy } from 'svelte';
     // import type { PageData } from './$types';
 
     // export let data: PageData;
-    // const { socket } = data;
-    // $: console.log(socket);
+  
 
     /**
-    import Socket from '$lib/Socket.svelte';
-    import { socket } from '$stores/socket';
     import handlers from '$stores/gameMessageHandlers';
     import type { SocketMessage } from '$stores/types';
     
@@ -25,6 +24,16 @@
     }
     */
     const joincode = $page.params.joincode;
+
+    const socket = createSocket({
+        socketUrl: 'url',
+        retryInterval: 1000,
+        maxRetries: 50,
+        retries: 0
+    });
+    setContext('socket', socket);
+
+    onDestroy(() => !!socket && socket.close());
 
 </script>
 
