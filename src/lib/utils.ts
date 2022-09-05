@@ -89,7 +89,6 @@ export interface SocketConfig {
     retries: number
 }
 
-// TODO: consider a class here, pehaps one that extends WebSocket?
 let interval: ReturnType<typeof setTimeout>;
 export const createSocket = (socketConfig: SocketConfig) => {
     const { socketUrl, retryInterval, maxRetries, retries } = socketConfig;
@@ -98,7 +97,6 @@ export const createSocket = (socketConfig: SocketConfig) => {
 
     webSocket.onopen = () => {
         clearInterval(interval);
-        // TODO: socket.send token?
     };
   
     webSocket.onclose = (event) => {
@@ -106,7 +104,6 @@ export const createSocket = (socketConfig: SocketConfig) => {
             setTimeout(() => createSocket({ ...socketConfig, retries: retries + 1 }), retryInterval);
 
         } else {
-            // TODO: We could set a message letting the user know the connection died
             clearTimeout(interval);
         }
     };

@@ -76,18 +76,14 @@ class JwtAuthentication(authentication.BaseAuthentication):
         return (user, None)
 
 
-# TODO: using auth via a query string for now, not sure I like that in the
-# long run but we arent' getting any cookies from the new web socket setup 
-# ultimately we should investiagte what is setting scope in __call__ and how
-# headers are populated
 class JwtAuthMiddleware:
     """custom JWT authentication for Django Channels. Requires CookieMiddleware higher in the stack"""
     def __init__(self, app):
         self.app = app
 
     async def __call__(self, scope, receive, send):
-        # jwt = scope["cookies"].get("jwt")
-        jwt = QueryDict(scope.get("query_string", {})).get("jwt", "")
+        jwt = scope["cookies"].get("jwt")
+        # jwt = QueryDict(scope.get("query_string", {})).get("jwt", "")
         scope["user"] = await get_user(jwt)
 
         return await self.app(scope, receive, send)
