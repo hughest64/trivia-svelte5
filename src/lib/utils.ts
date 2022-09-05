@@ -89,6 +89,7 @@ export interface SocketConfig {
     retries: number
 }
 
+// TODO: consider a class here, pehaps one that extends WebSocket?
 let interval: ReturnType<typeof setTimeout>;
 export const createSocket = (socketConfig: SocketConfig) => {
     const { socketUrl, retryInterval, maxRetries, retries } = socketConfig;

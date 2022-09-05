@@ -1,7 +1,7 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import  { createSocket } from '$lib/utils';
-    import { setContext, onDestroy } from 'svelte';
+    import { getContext, hasContext, setContext, onDestroy } from 'svelte';
     // import type { PageData } from './$types';
 
     // export let data: PageData;
@@ -11,6 +11,7 @@
     import handlers from '$stores/gameMessageHandlers';
     import type { SocketMessage } from '$stores/types';
     
+    // TODO: move inside the createSocket function
     $: if (!!$socket) {
         // console.log('adding message handler')
         $socket.onmessage = (event) => {
@@ -25,13 +26,14 @@
     */
     const joincode = $page.params.joincode;
 
-    const socket = createSocket({
+    const hasSocket = hasContext('socket');
+    const socket: WebSocket = getContext('socket') || createSocket({
         socketUrl: 'url',
         retryInterval: 1000,
         maxRetries: 50,
         retries: 0
     });
-    setContext('socket', socket);
+    !hasSocket && setContext('socket', socket);
 
     onDestroy(() => !!socket && socket.close());
 
