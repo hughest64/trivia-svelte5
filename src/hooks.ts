@@ -1,6 +1,6 @@
 // import * as cookie from 'cookie';
 import { getCookieObject, parseRequestHeaders } from '$lib/utils';
-import type { Handle } from '@sveltejs/kit';
+import type { Handle, /* HandleFetch **/ } from '@sveltejs/kit';
 
 export const handle: Handle = async({ event, resolve }) => {
     // console.log(event.request.headers);
@@ -28,3 +28,8 @@ export const handle: Handle = async({ event, resolve }) => {
     
     return response;
 };
+
+// export const handleFetch: HandleFetch = ({ event, request, fetch }) => {
+//     console.log(request.headers);
+//     return fetch(request);
+// };

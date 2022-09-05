@@ -90,7 +90,7 @@
         background-color: #fcfcfc;
         border-radius: 0.5em;
         margin: 0 auto;
-        padding: 1em;
+        padding: .5em;
         display: flex;
         flex-direction: column;
         align-items: center;

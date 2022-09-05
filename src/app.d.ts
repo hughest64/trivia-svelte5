@@ -9,6 +9,10 @@ declare namespace App {
         initialRoundNumber?: string | number
         initialQuestionNumber?: string | number
     }
+    // interface PageData {
+    //     initialRoundNumber?: string | number
+    //     initialQuestionNumber?: string | number
+    // }
     // interface Platform {}
 }
 

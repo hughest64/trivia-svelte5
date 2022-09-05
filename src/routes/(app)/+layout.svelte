@@ -1,10 +1,9 @@
 <script lang="ts">
-    import '$lib/styles/app.scss';
     import { page } from '$app/stores';
     import Footer from '$lib/Footer.svelte';
     import Menu from '$lib/Menu.svelte';
     import { fly } from 'svelte/transition';
-    import { userdata, type UserData } from '$stores/user';
+    import { userdata } from '$stores/user';
     import {
         activeRoundNumber,
         activeQuestionNumber,
@@ -12,38 +11,30 @@
         currentQuestionNumber,
         setEventStores
     } from '$stores/event';
-    import type { PageData } from './$types';
+    
+    const data = $page.data;
+    $: data.user_data && userdata.set($page.data.user_data);
+    $: data.event_data && setEventStores($page.data.event_data);
 
-    export let data: PageData;
-
-    $: data?.user_data && userdata.set($page.data.user_data as UserData);
-    $: data?.event_data && setEventStores($page.data.event_data);
-
-    $: activeRoundNumber.set(Number(data?.initialRoundNumber) || $currentRoundNumber || 1);
-    $: activeQuestionNumber.set(Number(data?.initialQuestionNumber) || $currentQuestionNumber || 1 );
+    $: activeRoundNumber.set(Number(data.initialRoundNumber) || $currentRoundNumber || 1);
+    $: activeQuestionNumber.set(Number(data.initialQuestionNumber) || $currentQuestionNumber || 1 );
 
     let displayMenu = false;
 </script>
 
-<!-- <main> -->
-    {#if displayMenu}
-        <div transition:fly={{ y: -2000, duration: 800 }}>
-            <Menu on:click={() => (displayMenu = false)} />
-        </div>
-    {/if}
+{#if displayMenu}
+    <div transition:fly={{ y: -2000, duration: 800 }}>
+        <Menu on:click={() => (displayMenu = false)} />
+    </div>
+{/if}
 
-    <slot />
-<!-- </main> -->
+<slot />
 
 <footer>
     <Footer on:click={() => (displayMenu = !displayMenu)} />
 </footer>
 
 <style lang="scss">
-    // :global(body) {
-    // 	margin: 0;
-    // 	height: 100vh;
-    // }
     div {
         position: fixed;
         top: 0;
