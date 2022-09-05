@@ -79,34 +79,3 @@ export const getFetchConfig = (method: string, data?: Record<string, unknown>, h
         body: data && JSON.stringify(data)
     };
 };
-
-export interface SocketConfig {
-    socketUrl: string
-    token?: string
-    retryInterval: number
-    // interval?: ReturnType<typeof setTimeout>
-    maxRetries: number
-    retries: number
-}
-
-let interval: ReturnType<typeof setTimeout>;
-export const createSocket = (socketConfig: SocketConfig) => {
-    const { socketUrl, retryInterval, maxRetries, retries } = socketConfig;
-
-    const webSocket = new WebSocket(socketUrl);
-
-    webSocket.onopen = () => {
-        clearInterval(interval);
-    };
-  
-    webSocket.onclose = (event) => {
-        if (!event.wasClean && retries <= maxRetries) {
-            setTimeout(() => createSocket({ ...socketConfig, retries: retries + 1 }), retryInterval);
-
-        } else {
-            clearTimeout(interval);
-        }
-    };
-    // TODO: add onmessage here?
-    return webSocket;
-};

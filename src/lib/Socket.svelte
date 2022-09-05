@@ -1,14 +1,17 @@
 <script lang="ts">
-    import { onMount } from 'svelte';
+    import { onDestroy, onMount } from 'svelte';
     import { page } from '$app/stores';
     import { socket } from '$stores/socket';
+    import handlers from '$stores/gameMessageHandlers';
     import { PUBLIC_WEBSOCKET_HOST as apiHost } from '$env/static/public';
+    import type { SocketMessage } from '$stores/types';
 
     const path = $page.url.pathname;
 
     export let socketUrl = `${apiHost}/ws${path}/`;
     export let maxRetries = 50;
     export let retryInterval = 1000;
+    export let reconnect = true;
 
     let interval: ReturnType<typeof setTimeout>;
     let retries = 0;
@@ -19,27 +22,32 @@
         webSocket.onopen = () => {
             clearInterval(interval);
             retries = 0;
-            // console.log('connected')
         };
-        // webSocket.onerror = (e) => {
-        //     console.log(e)
-        // }
         webSocket.onclose = (event) => {
-            // console.log('closing socket')
-            if (!event.wasClean && retries <= maxRetries) {
+            if (!event.wasClean && reconnect && retries <= maxRetries) {
                 retries++;
                 setTimeout(createSocket, retryInterval);
             } else {
-                // TODO: We could set a message letting the user know the connection died
                 clearTimeout(interval);
             }
         };
+        // TODO: dynamic handling (or importing?) for handler files based on game vs. host routes would be good
+        webSocket.onmessage = (event) => {
+            const data: SocketMessage = JSON.parse(event.data);
+            try {
+                handlers[data.type](data.message);
+            } catch {
+                console.error(`message type ${data.type} does not have a handler function!`);
+            }
+        };
 
-        socket.set(webSocket);
+        return webSocket;
     };
 
-    onMount(async () => {
-        createSocket();
-        return !!$socket && $socket.close;
+    onMount(() => {
+        if ($socket?.readyState !== 1) {
+            $socket = createSocket();
+        }
     });
+    onDestroy(() => $socket?.close());
 </script>
