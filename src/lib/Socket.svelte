@@ -20,13 +20,13 @@
         const webSocket = new WebSocket(socketUrl);
 
         webSocket.onopen = () => {
-            clearInterval(interval);
+            clearTimeout(interval);
             retries = 0;
         };
         webSocket.onclose = (event) => {
             if (!event.wasClean && reconnect && retries <= maxRetries) {
                 retries++;
-                setTimeout(createSocket, retryInterval);
+                interval = setTimeout(createSocket, retryInterval);
             } else {
                 clearTimeout(interval);
             }

@@ -20,5 +20,4 @@ export const POST: Action = async ({ locals, request }) => {
     }
 
     return { location: `/game/${joincode}` };
-
 };
