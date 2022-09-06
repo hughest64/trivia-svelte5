@@ -13,6 +13,7 @@ export const load: PageServerLoad = async ({ request }) => {
     }
 };
 
+// guest login
 export const POST: Action = async ({ setHeaders, url }) => {
     // first, get a csrftoken
     const fetchConfig = getFetchConfig('GET');

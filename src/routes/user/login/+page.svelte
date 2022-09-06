@@ -1,10 +1,24 @@
 <script lang="ts">
-    import type { Errors } from './$types';
+    import { page } from '$app/stores';
+    import { goto } from '$app/navigation';
+    // import type { ActionData } from './$types';
+    import { userdata, type UserData } from '$stores/user';
+    import { browser } from '$app/environment';
 
-    export let errors: Errors;
-    let username: string;
-    let password: string;
+    // TODO: this shouldn't be necessary as it should be handled by the ActionData type, I think
+    interface FormResponseData {
+        error?: string;
+        userdata?: UserData;
+    }
 
+    export let form: FormResponseData;
+    // we can't use goto browser side
+    $: if (form?.userdata && browser) {
+        userdata.set(form.userdata);
+        const next = $page.url.searchParams.get('next') || $userdata.is_staff ? '/host/choice' : '/team';
+
+        goto(next);
+    }
 </script>
 
 <svelte:head><title>Trivia Mafia | Login</title></svelte:head>
@@ -16,15 +30,15 @@
 
 <h2>-or-</h2>
 
-<form action='' method="POST">
-    {#if errors?.message}<h3>{errors?.message}</h3>{/if}
+<form action="" method="POST">
+    {#if form?.error}<h3>{form?.error}</h3>{/if}
     <div class="input-element">
-        <input type="text" id="username" name="username" bind:value={username} />
+        <input type="text" id="username" name="username" />
         <label for="username">Username or Email</label>
     </div>
 
     <div class="input-element">
-        <input type="password" id="password" name="password" bind:value={password} />
+        <input type="password" id="password" name="password" />
         <label for="password">Password</label>
     </div>
 

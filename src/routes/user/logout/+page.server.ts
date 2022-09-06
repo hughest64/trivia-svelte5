@@ -2,10 +2,9 @@ import { invalidateCookies } from '$lib/utils';
 import type { PageServerLoad } from './$types';
 import { redirect } from '@sveltejs/kit';
 
-export const load: PageServerLoad = async ({ setHeaders }) => {
+export const load: PageServerLoad = async ({ cookies }) => {
     // delete auth cookies and redirect
-    const invalidatedCookies = invalidateCookies(['jwt', 'csrftoken']);
-    setHeaders({ 'set-cookie': invalidatedCookies });
+    invalidateCookies(cookies, ['jwt', 'csrftoken']);
 
     throw redirect(302, '/');
 };

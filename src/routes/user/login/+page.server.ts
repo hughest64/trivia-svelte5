@@ -1,5 +1,5 @@
 import * as cookie from 'cookie';
-import { redirect } from '@sveltejs/kit';
+import { invalid, redirect } from '@sveltejs/kit';
 import { getCookieObject, getFetchConfig } from '$lib/utils';
 import { PUBLIC_API_HOST as apiHost } from '$env/static/public';
 import type { Action, PageServerLoad } from './$types';
@@ -8,18 +8,18 @@ export const load: PageServerLoad = async ({ request }) => {
     // go home user, you're already logged in
     const cookieObject = getCookieObject(request);
     if (cookieObject.jwt) {
-        // TODO: goto /host/choice if staff
+        // TODO: goto /host/choice if staff which may require some user data in locals
         throw redirect(302, '/team');
     }
 };
 
-export const POST: Action = async ({ request, setHeaders, url }) => {
+const login: Action = async ({ cookies, request }) => {
     const formData = await request.formData();
     const username = formData.get('username');
     const password = formData.get('password');
 
     if (!username || !password) {
-        return { errors: { message: 'Please fill in both fields' } };
+        return invalid(403, { error: 'Please fill in both fields' });
     }
 
     // first, get a csrftoken
@@ -28,11 +28,11 @@ export const POST: Action = async ({ request, setHeaders, url }) => {
 
     if (!getResponse.ok) {
         const getResponseData = await getResponse.json();
-        return { errors: { message: getResponseData.detail } };
+        return invalid(getResponseData.status, { error: getResponseData.detail });
     }
 
-    const csrfCookie = getResponse.headers.get('set-cookie') || '';
-    const csrftoken = (csrfCookie && cookie.parse(csrfCookie)?.csrftoken) || '';
+    const csrfCookie = cookie.parse(getResponse.headers.get('set-cookie') || '');
+    const csrftoken = csrfCookie?.csrftoken || '';
 
     // TODO: use fetchConfig (maybe?)
     // then use the csrftoken to log in
@@ -50,17 +50,19 @@ export const POST: Action = async ({ request, setHeaders, url }) => {
     const postResponseData = await postResponse.json();
 
     if (!postResponse.ok) {
-        return { errors: { message: postResponseData.detail } };
+        return invalid(postResponseData.status, { error: postResponseData.detail });
     }
 
-    // TODO: return data to the login page then redirect from there once
-    // https://github.com/sveltejs/kit/issues/6015 is resolved
-    // const responseData: UserData = await postResponse.json();
-
     // finally set both as cookies for later use
-    const responseCookies = postResponse.headers.get('set-cookie');
-    responseCookies && setHeaders({ 'set-cookie': [responseCookies, csrfCookie] });
-    const next = url.searchParams.get('next') || '/';
+    const responseCookies = postResponse.headers.get('set-cookie') || '';
+    const jwt = cookie.parse(responseCookies)?.jwt;
 
-    return { location: next };
+    responseCookies && cookies.set('jwt', jwt, { path: '/' });
+    cookies.set('csrftoken', csrftoken, { expires: new Date(csrfCookie.expires), path: '/', sameSite: 'lax' });
+    
+    return { userdata: postResponseData.user_data };
+};
+
+export const actions = {
+    default: login
 };

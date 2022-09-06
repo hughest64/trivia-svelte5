@@ -15,7 +15,7 @@
     const reg = /^\(\w+\)\/(game|host)\/[[=\w]+]\/?/;
 
     const joinCode = $page.params?.joincode;
-    $: routeId = <string>$page.routeId?.split('/')[1];
+    $: routeId = $page.routeId?.split('/')[1];
     $: isEventRoute = reg.test($page.routeId || '');
 
     $: setActive = (link: string) => $page.url.pathname.endsWith(link);
