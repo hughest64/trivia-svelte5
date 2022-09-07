@@ -23,7 +23,6 @@ export const load: PageServerLoad = async ({ cookies }) => {
     const csrftoken = csrfCookie?.csrftoken || '';
 
     cookies.set('csrftoken', csrftoken, { expires: new Date(csrfCookie.expires), path: '/', sameSite: 'lax' });
-
 };
 
 const login: Action = async ({ cookies, request }) => {
@@ -60,6 +59,10 @@ const login: Action = async ({ cookies, request }) => {
     return { userdata: responseData.user_data };
 };
 
+
 export const actions = {
-    default: login
+    login,
+    // github, // (and google?),
+    // google,
+    // create // (new account)
 };

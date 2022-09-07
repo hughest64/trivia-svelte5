@@ -30,7 +30,7 @@
 
 <h2>-or-</h2>
 
-<form action="" method="POST">
+<form action="?/login" method="POST">
     {#if form?.error}<h3>{form?.error}</h3>{/if}
     <div class="input-element">
         <input type="text" id="username" name="username" />
