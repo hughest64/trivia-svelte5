@@ -56,7 +56,12 @@ const login: Action = async ({ cookies, request }) => {
     const jwt = cookie.parse(responseCookies)?.jwt;
     jwt && cookies.set('jwt', jwt, { path: '/' });
     
-    return { userdata: responseData.user_data };
+    // return { userdata: responseData.user_data };
+    // TODO: we need an algorithm to determine redirects
+    // - prefer query param, but check for authorization
+    // - if host goto /host/choice - maybe this should just be /host?
+    // - else goto /team
+    throw redirect(302, '/team');
 };
 
 

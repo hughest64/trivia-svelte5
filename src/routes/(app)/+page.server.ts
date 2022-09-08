@@ -1,35 +1,35 @@
 import * as cookie from 'cookie';
-import { redirect } from '@sveltejs/kit';
-import { getCookieObject, getFetchConfig } from '$lib/utils';
+import { invalid, redirect } from '@sveltejs/kit';
+import { /** getCookieObject, */ getFetchConfig } from '$lib/utils';
 import { PUBLIC_API_HOST as apiHost } from '$env/static/public';
 import type { Action, PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ request }) => {
+export const load: PageServerLoad = async ({ cookies }) => {
     // go home user, you're already logged in
-    const cookieObject = getCookieObject(request);
-    // TODO: goto /host/choice if the user is staff (so jwt by itself is not good enough)
-    if (cookieObject.jwt) {
+    if (cookies.get('jwt')) {
+        // TODO: goto /host/choice if staff
+        // I think the solution here might be to add is_staff to the jwt payload
+        // and use a decode lib to get the data?
         throw redirect(302, '/team');
     }
+
+    // get a csrf token from the api
+    const getResponse = await fetch(`${apiHost}/user/login/`);
+    if (!getResponse.ok) {
+        const getResponseData = await getResponse.json();
+        return invalid(getResponseData.status, { error: getResponseData.detail });
+    }
+
+    const csrfCookie = cookie.parse(getResponse.headers.get('set-cookie') || '');
+    const csrftoken = csrfCookie?.csrftoken || '';
+
+    cookies.set('csrftoken', csrftoken, { expires: new Date(csrfCookie.expires), path: '/', sameSite: 'lax' });
 };
 
 // guest login
-export const POST: Action = async ({ setHeaders, url }) => {
-    // first, get a csrftoken
-    const fetchConfig = getFetchConfig('GET');
-    const getResponse = await fetch(`${apiHost}/user/guest/`, fetchConfig);
-
-    if (!getResponse.ok) {
-        const getResponseData = await getResponse.json();
-        return { errors: { message: getResponseData.detail } };
-    }
-
-    const csrfCookie = getResponse.headers.get('set-cookie') || '';
-    const csrftoken = (csrfCookie && cookie.parse(csrfCookie)?.csrftoken) || '';
-
-    // TODO: use fetchConfig (maybe?)
-    // then use the csrftoken to log in
-    const postResponse = await fetch(`${apiHost}/user/guest/`, {
+const guestLogin: Action = async ({ cookies, url }) => {
+    const csrftoken = cookies.get('csrftoken') || '';
+    const response = await fetch(`${apiHost}/user/guest/`, {
         method: 'POST',
         headers: {
             accept: 'application/json',
@@ -39,16 +39,20 @@ export const POST: Action = async ({ setHeaders, url }) => {
         }
     });
 
-    const postResponseData = await postResponse.json();
+    const responseData = await response.json();
 
-    if (!postResponse.ok) {
-        return { errors: { message: postResponseData.detail } };
+    if (!response.ok) {
+        return invalid(responseData.status, { error: responseData.detail });
     }
 
-    // finally set both as cookies for later use
-    const responseCookies = postResponse.headers.get('set-cookie');
-    responseCookies && setHeaders({ 'set-cookie': [responseCookies, csrfCookie] });
-    const next = url.searchParams.get('next') || '/';
+    const responseCookies = response.headers.get('set-cookie') || '';
+    const jwt = cookie.parse(responseCookies)?.jwt;
+    jwt && cookies.set('jwt', jwt, { path: '/' });
+    const next = url.searchParams.get('next') || '/team';
 
-    return { location: next };
+    throw redirect(302, next);
+};
+
+export const actions = {
+    default: guestLogin
 };

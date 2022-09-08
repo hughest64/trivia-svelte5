@@ -30,8 +30,13 @@ with open(
     event_data = json.load(event_file)
 
 # TODO: classes
-class TeamSelectView(APIView):
+class TeamView(APIView):
     authentication_classes = [SessionAuthentication, JwtAuthentication]
+
+    def get(self, request):
+        serializer = UserSerializer(request.user)
+
+        return Response({"user_data": serializer.data})
 
     @method_decorator(csrf_protect)
     def post(self, request):

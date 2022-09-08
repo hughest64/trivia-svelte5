@@ -1,9 +1,10 @@
 <script lang="ts">
-    import { page } from '$app/stores';
-    import { goto } from '$app/navigation';
+    // import { page } from '$app/stores';
+    // import { goto } from '$app/navigation';
+    // import { userdat } from '$stores/user';
+    // import { browser } from '$app/environment';
     // import type { ActionData } from './$types';
-    import { userdata, type UserData } from '$stores/user';
-    import { browser } from '$app/environment';
+    import  type { UserData } from '$stores/user';
 
     // TODO: this shouldn't be necessary as it should be handled by the ActionData type, I think
     interface FormResponseData {
@@ -13,12 +14,12 @@
 
     export let form: FormResponseData;
     // we can't use goto browser side
-    $: if (form?.userdata && browser) {
-        userdata.set(form.userdata);
-        const next = $page.url.searchParams.get('next') || $userdata.is_staff ? '/host/choice' : '/team';
+    // $: if (form?.userdata && browser) {
+    //     userdata.set(form.userdata);
+    //     const next = $page.url.searchParams.get('next') || $userdata.is_staff ? '/host/choice' : '/team';
 
-        goto(next);
-    }
+    //     goto(next);
+    // }
 </script>
 
 <svelte:head><title>Trivia Mafia | Login</title></svelte:head>

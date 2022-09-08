@@ -8,7 +8,6 @@
     let hideteampassword = true;
 
     // TODO: finish create a team and join by code (team password)
-    // also, this component will likely become an actual page /team-select
     let selected: UserTeam = $useractiveteam || $userdata?.teams[0];
 </script>
 

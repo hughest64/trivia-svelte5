@@ -1,8 +1,14 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import type { Errors } from './$types';
+    // TODO: ActionData type doesn't currently work (bug)
+    // import type { ActionData } from './$types';
 
-    export let errors: Errors;
+    interface FormResponseData {
+        error?: string;
+        // userdata?: UserData;
+    }
+
+    export let form: FormResponseData;
 </script>
 
 <svelte:head><title>Trivia Mafia | Welcome</title></svelte:head>
@@ -11,7 +17,7 @@
     <img src="TM2021-Flat-Stacked-WhiteBackground.svg" alt="Trivia Mafia" />
 </div>
 
-{#if errors?.message}<p>{errors?.message}</p>{/if}
+{#if form?.error}<p>{form?.error}</p>{/if}
 
 <a class="button button-red" href={`/user/login${$page.url.search}`}> Login/Create Account </a>
 <form action="" method="POST">
