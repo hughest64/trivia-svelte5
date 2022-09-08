@@ -1,6 +1,5 @@
 import * as cookie from 'cookie';
 import { invalid, redirect } from '@sveltejs/kit';
-import { /** getCookieObject, */ getFetchConfig } from '$lib/utils';
 import { PUBLIC_API_HOST as apiHost } from '$env/static/public';
 import type { Action, PageServerLoad } from './$types';
 
