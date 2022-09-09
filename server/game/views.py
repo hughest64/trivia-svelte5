@@ -112,9 +112,11 @@ class EventJoinView(APIView):
     authentication_classes = [SessionAuthentication, JwtAuthentication]
 
     def get(self, request):
+        """return user data to /game/join"""
         serializer = UserSerializer(request.user)
 
         return Response({"user_data": serializer.data})
+
 
 class EventHostView(APIView):
     authentication_classes = [SessionAuthentication, JwtAuthentication]

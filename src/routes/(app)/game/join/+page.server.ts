@@ -1,14 +1,15 @@
+import { invalid, redirect } from '@sveltejs/kit';
 import { PUBLIC_API_HOST as apiHost } from '$env/static/public';
 import type { Action } from './$types';
 
-export const POST: Action = async ({ locals, request }) => {
+const joinevent: Action = async ({ locals, request }) => {
     const formData = await request.formData();
     const joincode = formData.get('joincode');
     
     if (!joincode) {
         return { errors: { message: 'Please Enter a Join Code' } };
     }
-    const response = await fetch(`${apiHost}/event/${joincode}`,
+    const response = await fetch(`${apiHost}/game/${joincode}`,
         {
             method: 'GET',
             headers: locals.fetchHeaders
@@ -16,8 +17,10 @@ export const POST: Action = async ({ locals, request }) => {
     );
     const responseData = await response.json();
     if (!response.ok) {
-        return { errors: { message: responseData.detail } };
+        throw invalid(responseData.status, { error: responseData.detail });
     }
 
-    return { location: `/game/${joincode}` };
+    throw redirect(303, `/game/${joincode}`);
 };
+
+export const actions = { joinevent };

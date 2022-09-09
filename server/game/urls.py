@@ -6,9 +6,9 @@ urlpatterns = [
     # host endpoints
     re_path(r"^host/event-setup/?$", views.EventSetupView.as_view()),
     re_path(r"^host/(?P<joincode>\d+)/?$", views.EventHostView.as_view()),
-    re_path(r"^game/join/?$/", views.EventJoinView.as_view()),
 
     # player endpoints
+    re_path(r"^game/join/?$", views.EventJoinView.as_view()),
     re_path(r"^game/(?P<joincode>\d+)/?$", views.EventView.as_view()),
     re_path(r"^teamselect/?$", views.TeamView.as_view()),
     re_path(r"^team/?$", views.TeamView.as_view()),

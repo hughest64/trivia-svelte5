@@ -19,7 +19,8 @@ export const load: PageServerLoad = async ({ locals, url }) => {
         data = { ...responseData, ...locals };
     }
     else if (url.pathname !== '/') {
-
+        // TODO: this is only appropriate for unathorized requests we may need
+        // to return an error to the page rather than redirecting in other cases
         throw redirect(307, `/?next=${url.pathname}`);
     }
 

@@ -1,8 +1,9 @@
 <script lang="ts">
     import { userdata, useractiveteam } from '$stores/user';
-    import type { Errors } from './$types';
+    // import type { ActionData } from './$types';
 
-    export let errors: Errors;
+    // TODO: yep, you got it, fix when ActionData works!
+    export let form: Record<string, string>; // ActionData;
     export let joincode: string;
 
 </script>
@@ -15,9 +16,8 @@
 <p>{$userdata?.username},</p>
 <p>Thanks for Playing with team {$useractiveteam?.name}! Enter the game code from your host to get started.</p>
 
-<!-- <form on:submit|preventDefault={handleJoinEvent}> -->
-<form action="" method="POST">
-    {#if errors?.message}<p class="error">{errors?.message}</p>{/if}
+<form action="?/joinevent" method="POST">
+    {#if form?.error}<p class="error">{form?.error}</p>{/if}
     <div class="input-element">
         <input type="text" name="joincode" placeholder="Enter Code" bind:value={joincode} />
     </div>
