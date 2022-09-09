@@ -108,6 +108,14 @@ class EventView(APIView):
         return Response({"event_data": event_data, "user_data": userSerializer.data })
 
 
+class EventJoinView(APIView):
+    authentication_classes = [SessionAuthentication, JwtAuthentication]
+
+    def get(self, request):
+        serializer = UserSerializer(request.user)
+
+        return Response({"user_data": serializer.data})
+
 class EventHostView(APIView):
     authentication_classes = [SessionAuthentication, JwtAuthentication]
     permission_classes = [IsAdminUser]

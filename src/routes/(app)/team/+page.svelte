@@ -1,9 +1,9 @@
 <script lang="ts">
     import { userdata, useractiveteam, type UserTeam } from '$stores/user';
+    // import type { ActionData } from './$types';
 
-    // TODO: only doing this because we cannot type it ad Errors as it should be
-    // ^^^^ this is fixable now
-    export let errors = { message: '' };
+    // TODO: update type once that shit if fixed
+    export let form: Record<string, string>; // ActionData;
     let hidecreateteam = true;
     let hideteampassword = true;
 
@@ -30,8 +30,8 @@
 <h1>Or Play with an Existing Team</h1>
 
 {#if $userdata?.teams.length > 0}
-    <form action='' method='POST'>
-        {#if errors?.message}<p class="error">{errors?.message}</p>{/if}
+    <form action='?/selectTeam' method='POST'>
+        {#if form?.error}<p class="error">{form?.error}</p>{/if}
         
         <label class="select-label" for="team-select">Choose A Team</label>
         <select class="select" id="team-select" name="selectedteam" bind:value={selected.id}>

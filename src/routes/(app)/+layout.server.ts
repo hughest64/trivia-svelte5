@@ -19,7 +19,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
         data = { ...responseData, ...locals };
     }
     else if (url.pathname !== '/') {
-        // TODO: checkStatusCode for the real status code
+
         throw redirect(307, `/?next=${url.pathname}`);
     }
 
