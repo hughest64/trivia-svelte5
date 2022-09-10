@@ -2,6 +2,7 @@
 import { getCookieObject, parseRequestHeaders } from '$lib/utils';
 import type { Handle, /** HandleFetch 8 */ } from '@sveltejs/kit';
 
+// TODO: just use the cookie api to get existing cookies
 export const handle: Handle = async({ event, resolve }) => {
     console.log('Hello from handle!');
     const cookies = event.request.headers.get('cookie') || '';

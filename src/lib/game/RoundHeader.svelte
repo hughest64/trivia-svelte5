@@ -8,7 +8,7 @@
         roundNumbers
     } from '$stores/event';
 
-    const joinCode = $page.params?.joincode;
+    const joincode = $page.params?.joincode;
 
     const handleRoundSelect = async (event: MouseEvent) => {
         const target = <HTMLButtonElement>event.target;
@@ -16,11 +16,12 @@
         // always reset the question when changing rounds
         activeQuestionNumber.set(1);
         // post to the game endpoint to set active round and question in a cookie
-        await fetch(`/game/${joinCode}`, {
+        await fetch('/update', {
             method: 'POST',
             body: JSON.stringify({
                 initialRoundNumber: target.id,
-                initialQuestionNumber: 1
+                initialQuestionNumber: 1,
+                joincode
             })
         });
     };

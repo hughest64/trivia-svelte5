@@ -3,7 +3,8 @@ import { invalid, redirect } from '@sveltejs/kit';
 import { PUBLIC_API_HOST as apiHost } from '$env/static/public';
 import type { Action, PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ cookies }) => {
+export const load: PageServerLoad = async ({ cookies, url }) => {
+    console.log(url.searchParams);
     // go home user, you're already logged in
     if (cookies.get('jwt')) {
         // TODO: goto /host/choice if staff
@@ -25,10 +26,10 @@ export const load: PageServerLoad = async ({ cookies }) => {
     cookies.set('csrftoken', csrftoken, { expires: new Date(csrfCookie.expires), path: '/', sameSite: 'lax' });
 };
 
-const login: Action = async ({ cookies, request }) => {
+const login: Action = async ({ cookies, request, url }) => {
     const formData = await request.formData();
-    const username = formData.get('username') || 'guest';
-    const password = formData.get('password') || 'guest';
+    const username = formData.get('username');
+    const password = formData.get('password');
 
     if (!username || !password) {
         return invalid(403, { error: 'Please fill in both fields' });
@@ -61,7 +62,8 @@ const login: Action = async ({ cookies, request }) => {
     // - prefer query param, but check for authorization
     // - if host goto /host/choice - maybe this should just be /host?
     // - else goto /team
-    throw redirect(302, '/team');
+    const next = url.searchParams.get('next') || '/team';
+    throw redirect(302, next);
 };
 
 

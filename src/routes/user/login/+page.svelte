@@ -1,8 +1,5 @@
 <script lang="ts">
-    // import { page } from '$app/stores';
-    // import { goto } from '$app/navigation';
-    // import { userdat } from '$stores/user';
-    // import { browser } from '$app/environment';
+    import { page } from '$app/stores';
     // import type { ActionData } from './$types';
     import  type { UserData } from '$stores/user';
 
@@ -13,13 +10,10 @@
     }
 
     export let form: FormResponseData;
-    // we can't use goto browser side
-    // $: if (form?.userdata && browser) {
-    //     userdata.set(form.userdata);
-    //     const next = $page.url.searchParams.get('next') || $userdata.is_staff ? '/host/choice' : '/team';
+    // TODO: the new action api strips the original querystring so we need this sort of gross
+    // mechanism in order to hit the correct action and retain the querystring, I consider this a bug
+    $: next = `?/login&next=${$page.url.searchParams.get('next') || ''}`;
 
-    //     goto(next);
-    // }
 </script>
 
 <svelte:head><title>Trivia Mafia | Login</title></svelte:head>
@@ -31,7 +25,7 @@
 
 <h2>-or-</h2>
 
-<form action="?/login" method="POST">
+<form action={next} method="POST">
     {#if form?.error}<h3>{form?.error}</h3>{/if}
     <div class="input-element">
         <input type="text" id="username" name="username" />

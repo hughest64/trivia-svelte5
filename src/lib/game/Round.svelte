@@ -6,7 +6,7 @@
     import { swipeQuestion } from './swipe';
     import { activeRound, activeRoundNumber, activeQuestionNumber } from '$stores/event';
 
-    const joinCode = $page.params?.joincode;
+    const joincode = $page.params?.joincode;
 
     $: questionNumbers = $activeRound?.questions.map((q) => q.question_number);
     $: lastQuestionNumber = Math.max(...questionNumbers);
@@ -35,11 +35,12 @@
         activeQuestionNumber.set(nextQuestionNumber);
 
         // post to the game endpoint to set active round and question in a cookie
-        await fetch(`/game/${joinCode}`, {
+        await fetch('/update', {
             method: 'POST',
             body: JSON.stringify({
                 initialRoundNumber: $activeRoundNumber,
-                initialQuestionNumber: $activeQuestionNumber
+                initialQuestionNumber: $activeQuestionNumber,
+                joincode
             })
         });
     };
