@@ -2,7 +2,7 @@
     import { activeRound, activeQuestion } from '$stores/event';
     import { socket } from '$stores/socket';
     import { response } from '$stores/response';
-    import Note from '$lib/Note.svelte';
+    import Note from './Note.svelte';
 
     $: currentResponse = $response; // TODO: check for an actual response
 

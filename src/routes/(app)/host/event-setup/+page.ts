@@ -8,7 +8,6 @@ import { browser } from '$app/environment';
 export const load: PageLoad = async ({ parent, fetch }) => {
     if (browser) {
         const data = await parent();
-        console.log(data);
         const response = await fetch(`${apiHost}/eventsetup/`, 
             {
                 method: 'GET',

@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import QuizIcon from '$lib/icons/QuizIcon.svelte';
+    import QuizIcon from '$lib/footer/icons/QuizIcon.svelte';
     import ChatIcon from './icons/ChatIcon.svelte';
     import LeaderboardIcon from './icons/LeaderboardIcon.svelte';
     import MegaroundIcon from './icons/MegaroundIcon.svelte';

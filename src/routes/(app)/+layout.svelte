@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import Footer from '$lib/Footer.svelte';
+    import Footer from '$lib/footer/Footer.svelte';
     import Menu from '$lib/Menu.svelte';
     import { fly } from 'svelte/transition';
     import { userdata } from '$stores/user';

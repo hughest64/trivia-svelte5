@@ -4,7 +4,6 @@ import { PUBLIC_API_HOST as apiHost } from '$env/static/public';
 import type { Action, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ cookies, url }) => {
-    console.log(url.searchParams);
     // go home user, you're already logged in
     // TODO: this is flaky a f and does not cut it
     // if (cookies.get('jwt')) {
