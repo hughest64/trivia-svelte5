@@ -1,25 +1,21 @@
-// import * as cookie from 'cookie';
-import { getCookieObject, parseRequestHeaders } from '$lib/utils';
-import type { Handle, /** HandleFetch 8 */ } from '@sveltejs/kit';
+import { getCookieObject } from '$lib/utils';
+import type { Handle, /* HandleFetch 8 */ } from '@sveltejs/kit';
 
-// TODO: just use the cookie api to get existing cookies
 export const handle: Handle = async({ event, resolve }) => {
     console.log('Hello from handle!');
     const cookies = event.request.headers.get('cookie') || '';
-    const cookieString = parseRequestHeaders(event.request);
     const cookieObject = getCookieObject(event.request);
-    const joincode = event.params.joincode;
-    const eventKey = `event-${joincode}`;
     
-    if (cookies.includes('jwt') && cookies.includes('csrftoken')) {
-
+    if (cookies.includes('jwt') && cookies.includes('csrftoken')) {   
         event.locals.fetchHeaders = {
             'content-type': 'application/json',
-            cookie: cookieString,
+            cookie: cookies, // cookieString,
             'x-csrftoken': cookieObject.csrftoken
         };
-        // event.locals.jwt = cookieObject.jwt || '';
     }
+
+    const joincode = event.params.joincode;
+    const eventKey = `event-${joincode}`;
     if (joincode && cookieObject[eventKey]) {
         const { initialRoundNumber, initialQuestionNumber } = JSON.parse(cookieObject[eventKey]);
         event.locals.initialRoundNumber = initialRoundNumber || '';

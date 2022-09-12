@@ -11,10 +11,9 @@ export const selectTeam: Action = async ({ locals, request }) => {
             headers: locals.fetchHeaders || {},
             body: JSON.stringify({ team_id: selectedteam })
         });
+
         const responseData = await response.json();
-        console.log(response);
         if (!response.ok) {
-            console.log('bad deal!');
             throw invalid(response.status, { error: responseData.detail });
         }
     }

@@ -12,7 +12,8 @@
     export let form: FormResponseData;
     // TODO: the new action api strips the original querystring so we need this sort of gross
     // mechanism in order to hit the correct action and retain the querystring, I consider this a bug
-    $: next = `?/login&next=${$page.url.searchParams.get('next') || ''}`;
+    $: next = $page.url.searchParams.get('next') || '';
+    $: action = next ? `?/login&next=${next}` : '?/login';
 
 </script>
 
@@ -25,7 +26,7 @@
 
 <h2>-or-</h2>
 
-<form action={next} method="POST">
+<form action={action} method="POST">
     {#if form?.error}<h3>{form?.error}</h3>{/if}
     <div class="input-element">
         <input type="text" id="username" name="username" />

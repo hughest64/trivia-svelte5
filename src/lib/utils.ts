@@ -1,6 +1,8 @@
 import type { Cookies } from '@sveltejs/kit';
 import * as cookie from 'cookie';
 
+// TODO: review which, if any, functions are still useful
+
 export const getCookieObject = (request: Request): Record<string, string> => {
     const cookies = request.headers.get('cookie') || '';
     const cookieObject = cookie.parse(cookies) || {};
@@ -53,7 +55,6 @@ export const getEventCookie = (joincode: string, request: Request): Record<strin
     return eventCookie;
 };
 
-// TODO: investigate where this is used, maybe we can deprecate this
 /**
  * convenience method which sets standard fetch request config values
  *

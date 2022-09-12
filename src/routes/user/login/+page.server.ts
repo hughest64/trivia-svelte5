@@ -6,12 +6,13 @@ import type { Action, PageServerLoad } from './$types';
 export const load: PageServerLoad = async ({ cookies, url }) => {
     console.log(url.searchParams);
     // go home user, you're already logged in
-    if (cookies.get('jwt')) {
-        // TODO: goto /host/choice if staff
-        // I think the solution here might be to add is_staff to the jwt payload
-        // and use a decode lib to get the data?
-        throw redirect(302, '/team');
-    }
+    // TODO: this is flaky a f and does not cut it
+    // if (cookies.get('jwt')) {
+    //     // TODO: goto /host/choice if staff
+    //     // I think the solution here might be to add is_staff to the jwt payload
+    //     // and use a decode lib to get the data?
+    //     throw redirect(302, '/team');
+    // }
 
     // get a csrf token from the api
     const getResponse = await fetch(`${apiHost}/user/login/`);
