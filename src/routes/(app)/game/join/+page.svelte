@@ -1,9 +1,8 @@
 <script lang="ts">
     import { userdata, useractiveteam } from '$stores/user';
-    // import type { ActionData } from './$types';
+    import type { ActionData } from './$types';
 
-    // TODO: yep, you got it, fix when ActionData works!
-    export let form: Record<string, string>; // ActionData;
+    export let form: ActionData;
     export let joincode: string;
 
 </script>

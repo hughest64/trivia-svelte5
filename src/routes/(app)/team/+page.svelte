@@ -1,9 +1,8 @@
 <script lang="ts">
     import { userdata, useractiveteam, type UserTeam } from '$stores/user';
-    // import type { ActionData } from './$types';
+    import type { ActionData } from './$types';
 
-    // TODO: update type once that shit if fixed
-    export let form: Record<string, string>; // ActionData;
+    export let form: ActionData;
     let hidecreateteam = true;
     let hideteampassword = true;
 

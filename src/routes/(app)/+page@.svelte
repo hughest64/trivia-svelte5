@@ -1,14 +1,8 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    // TODO: ActionData type doesn't currently work (bug)
-    // import type { ActionData } from './$types';
+    import type { ActionData } from './$types';
 
-    interface FormResponseData {
-        error?: string;
-        // userdata?: UserData;
-    }
-
-    export let form: FormResponseData;
+    export let form: ActionData;
 </script>
 
 <svelte:head><title>Trivia Mafia | Welcome</title></svelte:head>

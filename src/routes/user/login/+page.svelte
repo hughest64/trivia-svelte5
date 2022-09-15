@@ -1,15 +1,8 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    // import type { ActionData } from './$types';
-    import  type { UserData } from '$stores/user';
+    import type { ActionData } from './$types';
 
-    // TODO: this shouldn't be necessary as it should be handled by the ActionData type, I think
-    interface FormResponseData {
-        error?: string;
-        userdata?: UserData;
-    }
-
-    export let form: FormResponseData;
+    export let form: ActionData;
     // TODO: the new action api strips the original querystring so we need this sort of gross
     // mechanism in order to hit the correct action and retain the querystring, I consider this a bug
     $: next = $page.url.searchParams.get('next') || '';
