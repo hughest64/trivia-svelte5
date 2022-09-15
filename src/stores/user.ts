@@ -1,10 +1,6 @@
 import { getContext, setContext } from 'svelte';
-import { 
-    // derived,
-    writable } from 'svelte/store';
-import type { 
-    // Readable,
-    Writable } from 'svelte/store';
+import { writable } from 'svelte/store';
+import type { Writable } from 'svelte/store';
 
 export interface UserData {
     id: number;
@@ -12,7 +8,7 @@ export interface UserData {
     is_staff: boolean;
     email?: string;
     active_team_id?: number | null;
-    active_team?: UserTeam | null;
+    active_team?: UserTeam | undefined;
     teams: UserTeam[];
     user_is_anonymous?: boolean;
     user_home_locations?: string[];
@@ -25,12 +21,7 @@ export interface UserTeam {
     members?: string[];
 }
 
-// export const userdata: Writable<UserData> = writable();
-
-// export const useractiveteam: Readable<UserTeam | undefined> = derived(userdata, ($userdata) => {
-//     return $userdata?.teams?.find((team) => team.id === $userdata.active_team_id);
-// });
-
+// TODO: if we keep this, it goes in a different file
 enum StoreKeys {
     userData = 'userData'
 }
@@ -40,7 +31,7 @@ export const setUserActiveTeam = (userData: UserData) => (
 );
 
 export const createUserStore = (userData: UserData): void => {
-    // add the active team to the userdata fr
+    // find the active team based on id and add it to the userdata
     userData && setUserActiveTeam(userData);
     setContext(StoreKeys.userData, writable(userData));
 };
