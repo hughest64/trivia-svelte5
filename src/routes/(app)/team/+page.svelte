@@ -1,13 +1,16 @@
 <script lang="ts">
-    import { userdata, useractiveteam, type UserTeam } from '$stores/user';
+    import type { UserTeam } from '$stores/user';
+    import { getUserStore } from '$stores/user';
     import type { ActionData } from './$types';
 
     export let form: ActionData;
     let hidecreateteam = true;
     let hideteampassword = true;
 
+    const userData = getUserStore();
+
     // TODO: finish create a team and join by code (team password)
-    let selected: UserTeam = $useractiveteam || $userdata?.teams[0];
+    let selected: UserTeam = $userData?.active_team || $userData?.teams[0];
 </script>
 
 <svelte:head><title>TriviaMafia | Team Select</title></svelte:head>
@@ -28,18 +31,18 @@
 
 <h1>Or Play with an Existing Team</h1>
 
-{#if $userdata?.teams.length > 0}
+{#if $userData?.teams.length > 0}
     <form action='?/selectTeam' method='POST'>
         {#if form?.error}<p class="error">{form?.error}</p>{/if}
         
         <label class="select-label" for="team-select">Choose A Team</label>
         <select class="select" id="team-select" name="selectedteam" bind:value={selected.id}>
-            <!-- TODO: Team component to replicate the existing team select -->
-            {#each $userdata.teams as team (team.id)}
+            
+            {#each $userData.teams as team (team.id)}
                 <option value={team.id}>{team.name}</option>
             {/each}
         </select>
-        <input type="hidden" name="currentteam" value={$useractiveteam?.id}>
+        <input type="hidden" name="currentteam" value={$userData?.active_team?.id}>
         <input class="button button-red" type="submit" id="team-select-submit" value="Choose This Team" />
     </form>
 {/if}

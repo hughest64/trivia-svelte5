@@ -3,7 +3,7 @@ import { invalid, redirect } from '@sveltejs/kit';
 import { PUBLIC_API_HOST as apiHost } from '$env/static/public';
 import type { Action, PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ cookies, url }) => {
+export const load: PageServerLoad = async ({ cookies }) => {
     // go home user, you're already logged in
     // TODO: this is flaky a f and does not cut it
     // if (cookies.get('jwt')) {
@@ -56,8 +56,7 @@ const login: Action = async ({ cookies, request, url }) => {
     const responseCookies = response.headers.get('set-cookie') || '';
     const jwt = cookie.parse(responseCookies)?.jwt;
     jwt && cookies.set('jwt', jwt, { path: '/' });
-    
-    // return { userdata: responseData.user_data };
+
     // TODO: we need an algorithm to determine redirects
     // - prefer query param, but check for authorization
     // - if host goto /host/choice - maybe this should just be /host?

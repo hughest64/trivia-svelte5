@@ -1,3 +1,4 @@
+import { getContext, setContext } from 'svelte';
 import { writable } from 'svelte/store';
 import type { Writable } from 'svelte/store';
 
@@ -5,3 +6,11 @@ import type { Writable } from 'svelte/store';
 export const response: Writable<string> = writable();
 
 export const updateResponse = (data: string) => response.set(data);
+
+export const createResponseStore = (): void => {
+    setContext('response', writable());
+};
+
+export const getResponseStore = (): Writable<string> => {
+    return getContext('response');
+};
