@@ -9,6 +9,6 @@
     <title>Trivia Mafia Event {joincode}</title>
 </svelte:head>
 
-<Socket />
-
-<slot />
+<Socket>
+    <slot />
+</Socket>

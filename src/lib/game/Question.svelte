@@ -1,13 +1,16 @@
 <script lang="ts">
+    import { getContext } from 'svelte';
     import { activeRound, activeQuestion } from '$stores/event';
-    import { socket } from '$stores/socket';
+    // import { socket } from '$stores/socket';
     import { getResponseStore } from '$stores/response';
     import Note from './Note.svelte';
 
+    const socket: WebSocket = getContext('socket');
+    // $: console.log(socket);
     $: response = getResponseStore();
 
     const handleResponseSubmit = () => {
-        $socket.send(
+        socket.send(
             JSON.stringify({
                 type: 'team.update_response',
                 message: { response: $response }

@@ -9,7 +9,7 @@ export const handle: Handle = async({ event, resolve }) => {
     if (cookies.includes('jwt') && cookies.includes('csrftoken')) {   
         event.locals.fetchHeaders = {
             'content-type': 'application/json',
-            cookie: cookies, // cookieString,
+            cookie: cookies,
             'x-csrftoken': cookieObject.csrftoken
         };
     }
@@ -26,6 +26,7 @@ export const handle: Handle = async({ event, resolve }) => {
     return response;
 };
 
+// TODO: this won't fire from *.server.ts files until svelte fetch is added to the RequestHandler
 // export const handleFetch: HandleFetch = async ({request, fetch }) => {
 //     console.log('Running Handle Fetch'); 
 //     request.headers.set('test', 'test=does this work?');

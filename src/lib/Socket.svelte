@@ -1,13 +1,13 @@
 <script lang="ts">
-    import { onDestroy, onMount } from 'svelte';
+    import { onDestroy, getContext, setContext } from 'svelte';
+    import { browser } from '$app/environment';
     import { page } from '$app/stores';
-    import { socket } from '$stores/socket';
     import handlers from '$stores/gameMessageHandlers';
     import { PUBLIC_WEBSOCKET_HOST as apiHost } from '$env/static/public';
     import type { SocketMessage } from '$stores/types';
 
+    
     const path = $page.url.pathname;
-
     export let socketUrl = `${apiHost}/ws${path}/`;
     export let maxRetries = 50;
     export let retryInterval = 1000;
@@ -44,10 +44,10 @@
         return webSocket;
     };
 
-    onMount(() => {
-        if ($socket?.readyState !== 1) {
-            $socket = createSocket();
-        }
-    });
-    onDestroy(() => $socket?.close());
+    const socket: WebSocket = getContext('socket');
+    socket?.readyState !== 1 && browser && setContext('socket', createSocket());
+
+    onDestroy(() => socket?.close());
 </script>
+
+<slot />
