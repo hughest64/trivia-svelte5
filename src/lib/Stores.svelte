@@ -4,8 +4,8 @@
     import { createResponseStore } from '$stores/response';
 
     createResponseStore();
-
-    $: $page.data?.user_data && createUserStore($page.data.user_data);
+    // TODO: hmmm, is this the right fallback? do we need one?
+    createUserStore($page.data?.user_data || {});
 </script>
 
 <slot />

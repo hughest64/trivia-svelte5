@@ -3,7 +3,6 @@
     import Footer from '$lib/footer/Footer.svelte';
     import Menu from '$lib/Menu.svelte';
     import { fly } from 'svelte/transition';
-    // import { userdata } from '$stores/user';
     import {
         activeRoundNumber,
         activeQuestionNumber,
@@ -15,7 +14,6 @@
     import Stores from '$lib/Stores.svelte';
     
     const data = $page.data;
-    // $: data.user_data && userdata.set($page.data.user_data);
     
     $: data.event_data && setEventStores($page.data.event_data);
 
