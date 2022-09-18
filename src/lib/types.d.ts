@@ -40,8 +40,10 @@ export interface EventData {
     game_title: string;
     location: string;
     join_code: string | number;
+    rounds: EventRound[];
     reveal_answers: boolean;
     current_round_number: number;
     current_question_number: number;
-    rounds: EventRound[];
+    active_round_number?: number;
+    active_question_number?: number;
 }

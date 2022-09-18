@@ -1,6 +1,7 @@
 /**
  * Store containing event related data
  */
+import { getContext, setContext } from 'svelte';
 import { writable, derived } from 'svelte/store';
 import type { Readable, Writable } from 'svelte/store';
 import type { EventData, EventRound, EventQuestion } from '$lib/types';
@@ -41,6 +42,14 @@ export const setEventStores = (data: EventData) => {
     currentQuestionNumber.set(data.current_question_number);
     eventRounds.set(data.rounds);
     eventDataLoaded.set(true);
+};
+
+export const createEventStore = (data: EventData): void => {
+    setContext('eventStore', writable(data));
+};
+
+export const getEventStore = (): Writable<EventData> => {
+    return getContext('eventStore');
 };
 
 /** Web socket payload from get_event_data in the current version
