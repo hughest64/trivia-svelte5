@@ -52,6 +52,19 @@ export const getEventStore = (): Writable<EventData> => {
     return getContext('eventStore');
 };
 
+export interface EventState {
+    activeRoundNumber: number;
+    activeQuestionNumber: number;
+}
+
+export const createEventStateStore = (data: EventState) => {
+    setContext('eventProgress', writable(data));
+};
+
+export const getEventStateStore = (): Writable<EventState> => {
+    return getContext('eventProgress');
+};
+
 /** Web socket payload from get_event_data in the current version
 {
     // event store
