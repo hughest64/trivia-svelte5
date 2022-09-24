@@ -39,3 +39,24 @@ export const createUserStore = (userData: UserData): void => {
 export const getUserStore = (): Writable<UserData> => {
     return getContext(StoreKeys.userData);
 };
+
+
+// testing out typing styles for generic store functions
+
+// Can this be tied to an enum or something similar?
+type StoreKey = 'userData' | 'eventData'
+
+interface EventData {
+    win: boolean
+}
+
+export function createStore<T>(key: StoreKey, data: T): Writable<T> {
+    return setContext(key, writable(data));
+};
+
+export function getStore<T>(key: StoreKey): Writable<T> {
+    return getContext(key);
+}
+
+export const user = createStore<EventData>('eventData', { win: true });
+export const myUser = getStore<UserData>('userData');
