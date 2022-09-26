@@ -1,10 +1,9 @@
 /**
  * Store containing event related data
  */
-import { getContext, setContext } from 'svelte';
 import { writable, derived } from 'svelte/store';
 import type { Readable, Writable } from 'svelte/store';
-import type { EventData, EventRound, EventQuestion } from '$lib/types';
+import type { EventRound, EventQuestion } from '$lib/types';
 
 // boolean that is set when the event stores are populated
 export const eventDataLoaded: Writable<boolean> = writable(false);
@@ -35,35 +34,6 @@ export const activeQuestion: Readable<EventQuestion> = derived(
         return $activeRound?.questions[index];
     }
 );
-
-export const setEventStores = (data: EventData) => {
-    roundNumbers.set(data.rounds.map((round) => round.round_number));
-    currentRoundNumber.set(data.current_round_number);
-    currentQuestionNumber.set(data.current_question_number);
-    eventRounds.set(data.rounds);
-    eventDataLoaded.set(true);
-};
-
-export const createEventStore = (data: EventData): void => {
-    setContext('eventStore', writable(data));
-};
-
-export const getEventStore = (): Writable<EventData> => {
-    return getContext('eventStore');
-};
-
-export interface EventState {
-    activeRoundNumber: number;
-    activeQuestionNumber: number;
-}
-
-export const createEventStateStore = (data: EventState) => {
-    setContext('eventProgress', writable(data));
-};
-
-export const getEventStateStore = (): Writable<EventState> => {
-    return getContext('eventProgress');
-};
 
 /** Web socket payload from get_event_data in the current version
 {

@@ -1,3 +1,5 @@
+import { getContext, setContext } from 'svelte';
+import { writable, type Writable } from 'svelte/store';
 import type { Cookies } from '@sveltejs/kit';
 import * as cookie from 'cookie';
 
@@ -47,7 +49,7 @@ export const invalidateCookies = (cookies: Cookies, keys: string | string[]): vo
  * @param request
  * @returns
  */
-export const getEventCookie = (joincode: string, request: Request): Record<string, string|number> => {
+export const getEventCookie = (joincode: string, request: Request): Record<string, string | number> => {
     const cookies = cookie.parse(request.headers.get('cookie') || '');
     const eventKey = `event-${joincode}`;
     const eventCookie = JSON.parse(cookies[eventKey] || '{}');
@@ -77,3 +79,17 @@ export const getFetchConfig = (method: string, data?: Record<string, unknown>, h
         body: data && JSON.stringify(data)
     };
 };
+
+// testing out typing styles for generic store functions
+
+
+// Can this be tied to an enum or something similar?
+type StoreKey = 'userData' | 'eventData' | 'visibleEventData';
+
+export function createStore<T>(key: StoreKey, data: T): Writable<T> {
+    return setContext(key, writable(data));
+}
+
+export function getStore<T>(key: StoreKey): Writable<T> {
+    return getContext(key);
+}

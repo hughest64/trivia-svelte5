@@ -44,6 +44,11 @@ export interface EventData {
     reveal_answers: boolean;
     current_round_number: number;
     current_question_number: number;
-    active_round_number?: number;
-    active_question_number?: number;
+//     active_round_number?: number;
+//     active_question_number?: number;
+}
+
+export interface VisibleEventData {
+    activeRoundNumber: number;
+    activeQuestionNumber: number;
 }

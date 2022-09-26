@@ -1,23 +1,24 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { createUserStore } from '$stores/user';
+    import { createStore } from '$lib/utils';
     import { createResponseStore } from '$stores/response';
-    import { createEventStore, createEventStateStore } from '$stores/event';
+    import type { EventData, VisibleEventData } from './types';
 
     $: data = $page.data;
-    $: eventData = data?.event_data;
-    
+    $: eventData = <EventData>data?.event_data;
+
+    // event data
+    createStore<EventData>('eventData', eventData);
+
+    createStore<VisibleEventData>('visibleEventData', {
+        activeQuestionNumber: data?.activeQuestionNumber || eventData?.current_question_number || 1,
+        activeRoundNumber: data?.activeRoundNumber || eventData?.current_question_number || 1
+    });
+
     // user data
     createUserStore(data?.user_data);
-    // event data
-    createEventStore(eventData);
-    // trivia event progress data
-    createEventStateStore({
-        activeQuestionNumber: data?.activeQuestionNumber || eventData?.currentQuestionNumber,
-        activeRoundNumber: data?.activeRoundNumber || eventData?.currentRoundNumber
-    });
     createResponseStore();
-
 </script>
 
 <slot />
