@@ -19,22 +19,6 @@ export const currentQuestionNumber: Writable<number> = writable();
 export const activeRoundNumber: Writable<number> = writable();
 export const activeQuestionNumber: Writable<number> = writable();
 
-// export const activeRound: Readable<EventRound> = derived(
-//     [eventRounds, activeRoundNumber],
-//     ([$eventRounds, $activeRoundNumber]) => {
-//         const index = $eventRounds?.findIndex((round) => round.round_number === $activeRoundNumber);
-//         return $eventRounds[index];
-//     }
-// );
-
-// export const activeQuestion: Readable<EventQuestion> = derived(
-//     [activeRound, activeQuestionNumber],
-//     ([$activeRound, $activeQuestionNumber]) => {
-//         const index = $activeRound?.questions.findIndex((q) => q.question_number === $activeQuestionNumber) || 0;
-//         return $activeRound?.questions[index];
-//     }
-// );
-
 /** Web socket payload from get_event_data in the current version
 {
     // event store
