@@ -84,7 +84,7 @@ export const getFetchConfig = (method: string, data?: Record<string, unknown>, h
 
 
 // Can this be tied to an enum or something similar?
-type StoreKey = 'userData' | 'eventData' | 'visibleEventData';
+type StoreKey = 'userData' | 'eventData' | 'activeEventData';
 
 export function createStore<T>(key: StoreKey, data: T): Writable<T> {
     return setContext(key, writable(data));

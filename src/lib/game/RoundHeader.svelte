@@ -1,20 +1,20 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import {
-        activeRound,
-        activeRoundNumber,
-        activeQuestionNumber,
-        currentRoundNumber,
-        roundNumbers
-    } from '$stores/event';
+    import { getStore } from '$lib/utils';
+    import type { ActiveEventData, EventData } from '$lib/types';
 
     const joincode = $page.params?.joincode;
+    $: activeData = getStore<ActiveEventData>('activeEventData');
+    $: eventData = getStore<EventData>('eventData');
+    $: activeRound =
+        $eventData?.rounds.find((round) => round.round_number === $activeData.activeRoundNumber) || $eventData.rounds[0];
+    $: roundNumbers = $eventData?.rounds.map((round) => round.round_number);
 
     const handleRoundSelect = async (event: MouseEvent) => {
         const target = <HTMLButtonElement>event.target;
-        activeRoundNumber.set(Number(target.id));
-        // always reset the question when changing rounds
-        activeQuestionNumber.set(1);
+
+        $activeData = { activeQuestionNumber: 1, activeRoundNumber: Number(target.id) };
+
         // post to the game endpoint to set active round and question in a cookie
         await fetch('/update', {
             method: 'POST',
@@ -27,13 +27,13 @@
     };
 </script>
 
-<h3>{$activeRound.title}</h3>
+<h3>{activeRound.title}</h3>
 
 <div class="round-selector">
-    {#each $roundNumbers as roundNum}
+    {#each roundNumbers as roundNum}
         <button
-            class:active={$activeRoundNumber === roundNum}
-            class:current={$currentRoundNumber === roundNum}
+            class:active={$activeData.activeRoundNumber === roundNum}
+            class:current={$eventData.current_round_number === roundNum}
             id={String(roundNum)}
             on:click={handleRoundSelect}
         >

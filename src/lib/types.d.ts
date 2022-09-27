@@ -48,7 +48,7 @@ export interface EventData {
 //     active_question_number?: number;
 }
 
-export interface VisibleEventData {
+export interface ActiveEventData {
     activeRoundNumber: number;
     activeQuestionNumber: number;
 }

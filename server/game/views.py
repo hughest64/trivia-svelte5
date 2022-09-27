@@ -35,7 +35,6 @@ class TeamView(APIView):
 
     def get(self, request):
         serializer = UserSerializer(request.user)
-
         return Response({"user_data": serializer.data})
 
     @method_decorator(csrf_protect)

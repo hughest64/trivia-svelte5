@@ -1,11 +1,13 @@
 <script lang="ts">
-    import { getUserStore } from '$stores/user';
+    import { page } from '$app/stores';
+    import type { UserData } from '$stores/user';
     import type { ActionData } from './$types';
 
     export let form: ActionData;
     export let joincode: string;
 
-    $: userData = getUserStore();
+    const userData: UserData = $page.data?.user_data;
+    $: activeTeam = userData?.teams.find((team) => team.id === userData?.active_team_id);
 
 </script>
 
@@ -14,8 +16,8 @@
 <h1>Enter Game Code</h1>
 
 <!-- TODO: handle no activeteam -->
-<p>{$userData?.username},</p>
-<p>Thanks for Playing with team {$userData.active_team?.name}! Enter the game code from your host to get started.</p>
+<p>{userData?.username},</p>
+<p>Thanks for Playing with team {activeTeam?.name}! Enter the game code from your host to get started.</p>
 
 <form action="?/joinevent" method="POST">
     {#if form?.error}<p class="error">{form?.error}</p>{/if}

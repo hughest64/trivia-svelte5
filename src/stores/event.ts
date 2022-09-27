@@ -1,9 +1,9 @@
 /**
  * Store containing event related data
  */
-import { writable, derived } from 'svelte/store';
-import type { Readable, Writable } from 'svelte/store';
-import type { EventRound, EventQuestion } from '$lib/types';
+import { writable } from 'svelte/store';
+import type { Writable } from 'svelte/store';
+import type { EventRound, /** EventQuestion */ } from '$lib/types';
 
 // boolean that is set when the event stores are populated
 export const eventDataLoaded: Writable<boolean> = writable(false);
@@ -19,21 +19,21 @@ export const currentQuestionNumber: Writable<number> = writable();
 export const activeRoundNumber: Writable<number> = writable();
 export const activeQuestionNumber: Writable<number> = writable();
 
-export const activeRound: Readable<EventRound> = derived(
-    [eventRounds, activeRoundNumber],
-    ([$eventRounds, $activeRoundNumber]) => {
-        const index = $eventRounds?.findIndex((round) => round.round_number === $activeRoundNumber);
-        return $eventRounds[index];
-    }
-);
+// export const activeRound: Readable<EventRound> = derived(
+//     [eventRounds, activeRoundNumber],
+//     ([$eventRounds, $activeRoundNumber]) => {
+//         const index = $eventRounds?.findIndex((round) => round.round_number === $activeRoundNumber);
+//         return $eventRounds[index];
+//     }
+// );
 
-export const activeQuestion: Readable<EventQuestion> = derived(
-    [activeRound, activeQuestionNumber],
-    ([$activeRound, $activeQuestionNumber]) => {
-        const index = $activeRound?.questions.findIndex((q) => q.question_number === $activeQuestionNumber) || 0;
-        return $activeRound?.questions[index];
-    }
-);
+// export const activeQuestion: Readable<EventQuestion> = derived(
+//     [activeRound, activeQuestionNumber],
+//     ([$activeRound, $activeQuestionNumber]) => {
+//         const index = $activeRound?.questions.findIndex((q) => q.question_number === $activeQuestionNumber) || 0;
+//         return $activeRound?.questions[index];
+//     }
+// );
 
 /** Web socket payload from get_event_data in the current version
 {

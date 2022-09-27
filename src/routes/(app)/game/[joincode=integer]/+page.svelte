@@ -1,14 +1,8 @@
 <script lang="ts">
-    import { activeRound } from '$stores/event';
     import RoundHeader from '$lib/game/RoundHeader.svelte';
-    import Round from '$lib/game/Round.svelte';
+    // import Round from '$lib/game/Round.svelte';
 
 </script>
 
-{#if !!$activeRound}
-    <RoundHeader />
-    <Round />
-{:else}
-    <h3>Something Went Wrong!</h3>
-    <p>Please refresh the page to try and resolve the issue</p> 
-{/if}
+<RoundHeader />
+<!-- <Round /> -->
