@@ -3,22 +3,7 @@
     import Footer from '$lib/footer/Footer.svelte';
     import Menu from '$lib/Menu.svelte';
     import { fly } from 'svelte/transition';
-    // import {
-    //     activeRoundNumber,
-    //     activeQuestionNumber,
-    //     currentRoundNumber,
-    //     currentQuestionNumber,
-    //     setEventStores
-    // } from '$stores/event';
-
     import Stores from '$lib/Stores.svelte';
-    
-    // const data = $page.data;
-    
-    // $: data.event_data && setEventStores($page.data.event_data);
-
-    // $: activeRoundNumber.set(Number(data.initialRoundNumber) || $currentRoundNumber || 1);
-    // $: activeQuestionNumber.set(Number(data.initialQuestionNumber) || $currentQuestionNumber || 1);
 
     let displayMenu = false;
 </script>

@@ -10,6 +10,7 @@
     // event data
     $: createStore<EventData>('eventData', eventData);
 
+    // active event data
     $: createStore<ActiveEventData>('activeEventData', {
         activeQuestionNumber: data?.activeQuestionNumber || eventData?.current_question_number || 1,
         activeRoundNumber: data?.activeRoundNumber || eventData?.current_question_number || 1

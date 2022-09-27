@@ -18,11 +18,7 @@
         // post to the game endpoint to set active round and question in a cookie
         await fetch('/update', {
             method: 'POST',
-            body: JSON.stringify({
-                initialRoundNumber: target.id,
-                initialQuestionNumber: 1,
-                joincode
-            })
+            body: JSON.stringify({ activeData: $activeData, joincode })
         });
     };
 </script>

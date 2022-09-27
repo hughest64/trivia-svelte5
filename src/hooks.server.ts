@@ -3,6 +3,11 @@ import type { Handle, /* HandleFetch 8 */ } from '@sveltejs/kit';
 
 export const handle: Handle = async({ event, resolve }) => {
     console.log('Hello from handle!');
+    // TODO: This may work so we can eliminate the getCookieObject function
+    // console.log(event.cookies.get('event-4569'));
+    // console.log('csrf:', event.cookies.get('csrftoken'));
+    // console.log('jwt:', event.cookies.get('jwt'));
+
     const cookies = event.request.headers.get('cookie') || '';
     const cookieObject = getCookieObject(event.request);
     
@@ -17,9 +22,9 @@ export const handle: Handle = async({ event, resolve }) => {
     const joincode = event.params.joincode;
     const eventKey = `event-${joincode}`;
     if (joincode && cookieObject[eventKey]) {
-        const { initialRoundNumber, initialQuestionNumber } = JSON.parse(cookieObject[eventKey]);
-        event.locals.initialRoundNumber = initialRoundNumber || '';
-        event.locals.initialQuestionNumber = initialQuestionNumber || '';
+        const { activeRoundNumber, activeQuestionNumber } = JSON.parse(cookieObject[eventKey]);
+        event.locals.activeRoundNumber = activeRoundNumber || '';
+        event.locals.activeQuestionNumber = activeQuestionNumber || '';
     }
     const response = await resolve(event);
     
