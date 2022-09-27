@@ -1,11 +1,12 @@
 <script lang="ts">
-    import { activeRoundNumber, activeQuestionNumber } from '$stores/event';
+    export let activeRoundNumber: number;
+    export let activeQuestionNumber: number;
     let hidden = true;
 </script>
 
 <div class="notes-container flex-column">
     <div class="button disabled" on:click={() => (hidden = !hidden)}>
-        Notes for {$activeRoundNumber}.{$activeQuestionNumber}
+        Notes for {activeRoundNumber}.{activeQuestionNumber}
     </div>
 
     <form class:hidden on:click|preventDefault>

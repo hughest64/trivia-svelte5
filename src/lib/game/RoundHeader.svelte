@@ -1,14 +1,15 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { getStore } from '$lib/utils';
-    import type { ActiveEventData, EventData } from '$lib/types';
+    // import { getStore } from '$lib/utils';
+    import type { ActiveEventData, EventData, EventRound } from '$lib/types';
+    import type { Writable } from 'svelte/store';
 
     const joincode = $page.params?.joincode;
-    $: activeData = getStore<ActiveEventData>('activeEventData');
-    $: eventData = getStore<EventData>('eventData');
-    $: activeRound =
-        $eventData?.rounds.find((round) => round.round_number === $activeData.activeRoundNumber) || $eventData.rounds[0];
-    $: roundNumbers = $eventData?.rounds.map((round) => round.round_number);
+
+    export let activeData: Writable<ActiveEventData>;
+    export let eventData: Writable<EventData>;
+    export let activeRound: EventRound;
+    export let roundNumbers: number[];
 
     const handleRoundSelect = async (event: MouseEvent) => {
         const target = <HTMLButtonElement>event.target;

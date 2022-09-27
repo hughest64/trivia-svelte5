@@ -2,13 +2,16 @@
     import { fly } from 'svelte/transition';
     import { sineInOut } from 'svelte/easing';
     import { page } from '$app/stores';
-    import Question from './Question.svelte';
     import { swipeQuestion } from './swipe';
-    import { activeRound, activeRoundNumber, activeQuestionNumber } from '$stores/event';
+    import type { ActiveEventData, EventRound } from '$lib/types';
+    import type { Writable } from 'svelte/store';
 
     const joincode = $page.params?.joincode;
+    export let activeRound: EventRound;
+    export let activeData: Writable<ActiveEventData>;
+    $: activeQuestionNumber = $activeData?.activeQuestionNumber;
 
-    $: questionNumbers = $activeRound?.questions.map((q) => q.question_number);
+    $: questionNumbers = activeRound?.questions.map((q) => q.question_number);
     $: lastQuestionNumber = Math.max(...questionNumbers);
 
     let swipeDirection = 'right'; // or 'left'
@@ -21,27 +24,24 @@
         const target = <HTMLElement>event.target;
         const eventDirection = event.detail?.direction;
         const keyCode = (event as KeyboardEvent).code;
-        let nextQuestionNumber = $activeQuestionNumber;
+        let nextQuestionNumber = activeQuestionNumber;
 
         if (eventDirection === 'right' || keyCode === 'ArrowRight') {
-            nextQuestionNumber = Math.min(lastQuestionNumber, $activeQuestionNumber + 1);
+            nextQuestionNumber = Math.min(lastQuestionNumber, activeQuestionNumber + 1);
         } else if (eventDirection === 'left' || keyCode === 'ArrowLeft') {
-            nextQuestionNumber = Math.max(1, $activeQuestionNumber - 1);
+            nextQuestionNumber = Math.max(1, activeQuestionNumber - 1);
         } else if (!!target.id) {
             nextQuestionNumber = Number(target.id);
         }
 
-        swipeDirection = nextQuestionNumber < $activeQuestionNumber ? 'left' : 'right';
-        activeQuestionNumber.set(nextQuestionNumber);
+        swipeDirection = nextQuestionNumber < activeQuestionNumber ? 'left' : 'right';
+        
+        activeData.update((data) => ({ ...data, activeQuestionNumber: Number(target.id) }));
 
         // post to the game endpoint to set active round and question in a cookie
         await fetch('/update', {
             method: 'POST',
-            body: JSON.stringify({
-                initialRoundNumber: $activeRoundNumber,
-                initialQuestionNumber: $activeQuestionNumber,
-                joincode
-            })
+            body: JSON.stringify({ activeData: $activeData, joincode })
         });
     };
 </script>
@@ -56,7 +56,7 @@
     </div>
     <!-- TODO: transition params in a config object like { left: {...}, right: {...} } -->
     <div class="question-row">
-        {#key $activeQuestionNumber}
+        {#key activeQuestionNumber}
             <div
                 class="flex-column question"
                 in:fly={{
@@ -69,7 +69,7 @@
                 use:swipeQuestion
                 on:swipe={handleQuestionSelect}
             >
-                <Question />
+                <slot />
             </div>
         {/key}
     </div>

@@ -1,12 +1,12 @@
 <script lang="ts">
     import { getContext } from 'svelte';
-    import { activeRound, activeQuestion } from '$stores/event';
-    // import { socket } from '$stores/socket';
     import { getResponseStore } from '$stores/response';
-    import Note from './Note.svelte';
+    import type { EventRound, EventQuestion } from '$lib/types';
+
+    export let activeRound: EventRound;
+    export let activeQuestion: EventQuestion;
 
     const socket: WebSocket = getContext('socket');
-    // $: console.log(socket);
     $: response = getResponseStore();
 
     const handleResponseSubmit = () => {
@@ -19,9 +19,9 @@
     };
 </script>
 
-<h2>{$activeRound.round_number}.{$activeQuestion.question_number}</h2>
+<h2>{activeRound.round_number}.{activeQuestion.question_number}</h2>
 
-<p class="question-text">{$activeQuestion.text}</p>
+<p class="question-text">{activeQuestion.text}</p>
 
 <form on:submit|preventDefault={handleResponseSubmit}>
     <div class="input-element">
@@ -30,8 +30,6 @@
     </div>
     <input class="button button-red" type="submit" value="Submit" />
 </form>
-
-<Note />
 
 <style lang="scss">
     h2 {

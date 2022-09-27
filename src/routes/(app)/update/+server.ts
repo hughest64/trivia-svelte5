@@ -3,7 +3,6 @@ import { PUBLIC_COOKIE_MAX_AGE } from '$env/static/public';
 
 export const POST: RequestHandler = async ({ cookies, request }) => {
     const data = await request.json();
-    console.log({ ...data.activeData });
 
     if (data) {
         cookies.set(`event-${data.joincode}`, JSON.stringify({ ...data.activeData }), {
