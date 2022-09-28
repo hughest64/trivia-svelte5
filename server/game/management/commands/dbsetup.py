@@ -59,14 +59,12 @@ class Command(BaseCommand):
                     team.members.add(guest_user.id)
 
                 elif user is not None:
-                    team.members.add(guest_user.id)
-
-            # Team.objects.bulk_update(created_teams)
+                    team.members.add(user.id)
 
             self.stdout.write("Successfully created data")
 
         except KeyboardInterrupt:
-            self.stdout.write("\nCancelled Database Setup")
+            self.stdout.write("\nCancelled database setup")
 
         except Exception as e:
             self.stdout.write(e)
