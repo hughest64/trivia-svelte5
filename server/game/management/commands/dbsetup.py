@@ -28,7 +28,7 @@ class Command(BaseCommand):
                 username, email = self.get_username()
                 password = self.get_password()
 
-                user = User(username=username, email=email, is_staff=True)
+                user = User(username=username, email=email, is_staff=True, is_superuser=True)
                 user.set_password(password)
                 user.save()
 
