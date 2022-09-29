@@ -1,8 +1,8 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
-    import { getUserStore } from '$stores/user';
-    $: userData = getUserStore();
-    $: username = $userData?.username || '';
+    import type { UserData } from '$lib/types';
+    $: userData = {} as UserData;
+    $: username = userData?.username || '';
 </script>
 
 <svelte:head><title>Trivia Mafia | Host Choice</title></svelte:head>

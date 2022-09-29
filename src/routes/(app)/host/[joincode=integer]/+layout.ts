@@ -1,18 +1,15 @@
-import { redirect } from '@sveltejs/kit';
+// import { redirect } from '@sveltejs/kit';
 import { getFetchConfig } from '$lib/utils';
-import { get } from 'svelte/store';
-// import { setEventStores, eventDataLoaded } from '$stores/event';
-import { getUserStore } from '$stores/user';
 // import type { EventData } from '$lib/types';
 import type { LayoutLoad } from './$types';
 import { error } from '@sveltejs/kit';
 import { PUBLIC_API_HOST as apiHost } from '$env/static/public';
 
 export const load: LayoutLoad = async ({ fetch, params }) => {
-    const user = get(getUserStore());
-    if (user && !user.is_staff) {
-        throw redirect(302, '/');
-    }
+    // const user = get(getUserStore());
+    // if (user && !user.is_staff) {
+    //     throw redirect(302, '/');
+    // }
     // if (!get(eventDataLoaded)) {
     const fetchConfig = getFetchConfig('GET');
     const response = await fetch(`${apiHost}/host-event/${params.joincode}/`, fetchConfig);

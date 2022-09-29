@@ -1,8 +1,7 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import type { UserTeam } from '$stores/user';
+    import type { UserData, UserTeam } from '$lib/types';
     import type { ActionData } from './$types';
-    import type { UserData } from '$stores/user';
 
     export let form: ActionData;
     let hidecreateteam = true;

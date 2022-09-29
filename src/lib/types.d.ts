@@ -1,3 +1,22 @@
+export interface UserData {
+    id: number;
+    username: string;
+    is_staff: boolean;
+    email?: string;
+    active_team_id?: number | null;
+    active_team?: UserTeam | undefined;
+    teams: UserTeam[];
+    user_is_anonymous?: boolean;
+    user_home_locations?: string[];
+}
+
+export interface UserTeam {
+    id: string | number;
+    name: string;
+    password: string;
+    members?: string[];
+}
+
 export interface LocationSelectData {
     location_id: string | number;
     location_name: string;
