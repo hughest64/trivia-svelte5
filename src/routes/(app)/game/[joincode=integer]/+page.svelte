@@ -22,6 +22,6 @@
 
 <RoundHeader {activeData} {eventData} {activeRound} {roundNumbers} />
 <Round {activeRound} {activeData}>
-    <Question {activeRound} {activeQuestion} />
+    <Question activeRoundNumber={activeRound.round_number} {activeQuestion} />
     <Note activeRoundNumber={activeRound.round_number} activeQuestionNumber={activeQuestion.question_number} />
 </Round>

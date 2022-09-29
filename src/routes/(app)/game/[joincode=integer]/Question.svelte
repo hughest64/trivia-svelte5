@@ -1,9 +1,9 @@
 <script lang="ts">
     import { getContext } from 'svelte';
     import { getStore } from '$lib/utils';
-    import type { EventRound, EventQuestion } from '$lib/types';
+    import type { EventQuestion } from '$lib/types';
 
-    export let activeRound: EventRound;
+    export let activeRoundNumber: number;
     export let activeQuestion: EventQuestion;
 
     const socket: WebSocket = getContext('socket');
@@ -19,7 +19,7 @@
     };
 </script>
 
-<h2>{activeRound.round_number}.{activeQuestion.question_number}</h2>
+<h2>{activeRoundNumber}.{activeQuestion.question_number}</h2>
 
 <p class="question-text">{activeQuestion.text}</p>
 
