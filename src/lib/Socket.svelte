@@ -2,9 +2,14 @@
     import { onDestroy, getContext, setContext } from 'svelte';
     import { browser } from '$app/environment';
     import { page } from '$app/stores';
-    import handlers from '$stores/gameMessageHandlers';
+    import handlers from '$messages/player';
     import { PUBLIC_WEBSOCKET_HOST as apiHost } from '$env/static/public';
-    import type { SocketMessage } from '$stores/types';
+    import type { SocketMessage } from '$lib/types';
+
+    import { getAllContexts } from 'svelte';
+
+    const stores = getAllContexts();
+    $: console.log(stores);
 
     
     const path = $page.url.pathname;
@@ -34,8 +39,10 @@
         // TODO: dynamic handling (or importing?) for handler files based on game vs. host routes would be good
         webSocket.onmessage = (event) => {
             const data: SocketMessage = JSON.parse(event.data);
+
             try {
-                handlers[data.type](data.message);
+                handlers[data.type](data.message, stores.get(data.action));
+
             } catch {
                 console.error(`message type ${data.type} does not have a handler function!`);
             }

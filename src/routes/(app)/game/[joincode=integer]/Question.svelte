@@ -8,12 +8,13 @@
 
     const socket: WebSocket = getContext('socket');
     $: response = getStore('responseData');
+    $: console.log($response);
 
     const handleResponseSubmit = () => {
         socket.send(
             JSON.stringify({
                 type: 'team.update_response',
-                message: { response: $response }
+                message: $response
             })
         );
     };

@@ -71,3 +71,9 @@ export interface ActiveEventData {
     activeRoundNumber: number;
     activeQuestionNumber: number;
 }
+
+export interface SocketMessage {
+    type: string;
+    action?: string;
+    message?: string | number | Record<string, unknown>;
+}

@@ -6,7 +6,7 @@ class SocketConsumer(JsonWebsocketConsumer):
         kwargs = self.scope.get("url_route", {}).get("kwargs")
         joincode = kwargs.get("joincode")
         self.event_group = f"event_{joincode}" if joincode else ""
-        print("hello", self.scope["user"], joincode, "is your Join code")
+        print(f"hello {self.scope['user']}, {joincode}, is your Join code")
 
         if self.event_group:
             async_to_sync(self.channel_layer.group_add)(
@@ -45,6 +45,22 @@ class SocketConsumer(JsonWebsocketConsumer):
 
     def team_update_response(self, data):
         print(data)
+        # do some business logic
+        # async_to_sync(self.channel_layer.group_send)(
+        #     # this actually needs to be the team group!
+        #     self.event_group,
+        #     {
+        #         "type": "update_response",
+        #         "action": "responseData",
+        #         "data": data
+        #     }
+        # )
+
+        self.send_json({
+            "type": "update_response",
+            "action": "responseData",
+            "message": data.get('message')
+        })
 
     ######################
     ### EVENT MESSAGES ###
