@@ -5,7 +5,7 @@
  * functions should take in a data param which is equivalent to the "message" key in the websocekt message.
  */
 // import type { Writable } from 'svelte/store';
-import { updateResponse } from './response';
+// import { updateResponse } from './response'; // TODO: replace this, because it's gone
 import type { MessageHandler } from './types';
 
 // convenience logging function
@@ -13,7 +13,7 @@ const log_me = (data: unknown) => console.log(data);
 
 const handlers: MessageHandler = {
     connected: () => console.log('connected!'), // undefined,
-    update_response: (data) => updateResponse(data as string),
+    // update_response: (data) => updateResponse(data as string),
     log_me
 };
 

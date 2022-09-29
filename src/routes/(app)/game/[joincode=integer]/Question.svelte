@@ -1,13 +1,13 @@
 <script lang="ts">
     import { getContext } from 'svelte';
-    import { getResponseStore } from '$stores/response';
+    import { getStore } from '$lib/utils';
     import type { EventRound, EventQuestion } from '$lib/types';
 
     export let activeRound: EventRound;
     export let activeQuestion: EventQuestion;
 
     const socket: WebSocket = getContext('socket');
-    $: response = getResponseStore();
+    $: response = getStore('responseData');
 
     const handleResponseSubmit = () => {
         socket.send(

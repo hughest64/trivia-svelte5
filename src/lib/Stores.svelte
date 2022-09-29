@@ -1,7 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { createStore } from '$lib/utils';
-    import { createResponseStore } from '$stores/response';
     import type { EventData, ActiveEventData } from './types';
 
     $: data = $page.data;
@@ -16,7 +15,8 @@
         activeRoundNumber: data?.activeRoundNumber || eventData?.current_question_number || 1
     });
 
-    createResponseStore();
+    // TODO: this will need to be a ResponseData[], but we haven't made that yet
+    $: createStore<string>('responseData', '');
 </script>
 
 <slot />
