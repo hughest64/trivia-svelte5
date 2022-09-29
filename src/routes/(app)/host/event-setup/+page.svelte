@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { setEventStores } from '$stores/event';
+    // import { setEventStores } from '$stores/event';
     import { getFetchConfig } from '$lib/utils';
     import type { GameSelectData, LocationSelectData } from '$lib/types';
     import { PUBLIC_API_HOST as apiHost } from '$env/static/public';
@@ -22,7 +22,7 @@
         if (response.ok) {
             const data = await response.json();
             const joincode = data.join_code;
-            data && setEventStores(data);
+            // data && setEventStores(data);
             // goto(`/host/${joincode}`)
             window.open(`/host/${joincode}`, '_self');
         } else {

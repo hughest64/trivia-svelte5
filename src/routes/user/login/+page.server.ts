@@ -48,7 +48,7 @@ const login: Action = async ({ cookies, request, url }) => {
     });
 
     const responseData = await response.json();
-    
+
     if (!response.ok) {
         return invalid(responseData.status, { error: responseData.detail });
     }
