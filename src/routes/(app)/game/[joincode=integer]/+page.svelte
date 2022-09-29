@@ -1,9 +1,9 @@
 <script lang="ts">
     import { getStore } from '$lib/utils';
-    import RoundHeader from '$lib/game/RoundHeader.svelte';
-    import Round from '$lib/game/Round.svelte';
-    import Question from '$lib/game/Question.svelte';
-    import Note from '$lib/game/Note.svelte';
+    import RoundHeader from './RoundHeader.svelte';
+    import Round from './Round.svelte';
+    import Question from './Question.svelte';
+    import Note from './Note.svelte';
     import type { ActiveEventData, EventData } from '$lib/types';
 
     $: activeData = getStore<ActiveEventData>('activeEventData');

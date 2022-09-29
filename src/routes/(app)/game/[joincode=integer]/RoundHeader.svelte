@@ -1,6 +1,5 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    // import { getStore } from '$lib/utils';
     import type { ActiveEventData, EventData, EventRound } from '$lib/types';
     import type { Writable } from 'svelte/store';
 
