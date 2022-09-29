@@ -36,7 +36,7 @@
 
         swipeDirection = nextQuestionNumber < activeQuestionNumber ? 'left' : 'right';
         
-        activeData.update((data) => ({ ...data, activeQuestionNumber: Number(target.id) }));
+        activeData.update((data) => ({ ...data, activeQuestionNumber: nextQuestionNumber }));
 
         // post to the game endpoint to set active round and question in a cookie
         await fetch('/update', {
