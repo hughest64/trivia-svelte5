@@ -46,7 +46,7 @@ class Command(BaseCommand):
             )
             if sample_admin_created:
                 sample_admin.set_password("sample_admin")
-                sample_admin.is_staff = True;
+                sample_admin.is_staff = True
                 sample_admin.save()
 
             with open(settings.BASE_DIR.parent / "data" / "teams.json", "r") as f:
