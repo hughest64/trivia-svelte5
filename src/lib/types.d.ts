@@ -76,6 +76,6 @@ export interface ActiveEventData {
 // Then message could be typed better on implementation
 export interface SocketMessage {
     type: string;
-    action?: string;
+    store?: string;
     message?: string | number | Record<string, unknown>
 }

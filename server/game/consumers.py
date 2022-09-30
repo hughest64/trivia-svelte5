@@ -46,21 +46,13 @@ class SocketConsumer(JsonWebsocketConsumer):
     def team_update_response(self, data):
         print(data)
         # do some business logic
-        # async_to_sync(self.channel_layer.group_send)(
-        #     # this actually needs to be the team group!
-        #     self.event_group,
-        #     {
-        #         "type": "update_response",
-        #         "action": "responseData",
-        #         "data": data
-        #     }
-        # )
 
         self.send_json({
-            "type": "update_response",
-            "action": "responseData",
+            "type": "update_store",
+            # TODO: I really want a snake_case to camelCase converter and vice versa
+            "store": "responseData",
             "message": data.get('message')
-        })
+        })            
 
     ######################
     ### EVENT MESSAGES ###

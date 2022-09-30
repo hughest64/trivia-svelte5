@@ -41,7 +41,7 @@
             const data: SocketMessage = JSON.parse(event.data);
 
             try {
-                handlers[data.type](data.message, stores.get(data.action));
+                handlers[data.type](data.message, stores.get(data.store));
 
             } catch {
                 console.error(`message type ${data.type} does not have a handler function!`);

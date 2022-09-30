@@ -16,7 +16,8 @@ const log_me = (message: SocketMessage['message']) => console.log(message);
 const handlers: MessageHandler = {
     connected: () => console.log('connected!'), // undefined,
     log_me,
-    update_response: (message, store) => store.set(message)
+    // this could be use as a generic store setter/updater
+    update_store: (message, store) => store.set(message)
 };
 
 export default handlers;
