@@ -72,8 +72,10 @@ export interface ActiveEventData {
     activeQuestionNumber: number;
 }
 
+// TODO: is a generic like SocketMessage<T> useful here?
+// Then message could be typed better on implementation
 export interface SocketMessage {
     type: string;
     action?: string;
-    message?: string | number | Record<string, unknown>;
+    message?: string | number | Record<string, unknown>
 }
