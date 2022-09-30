@@ -3,15 +3,12 @@
  * export them in the handler object at the bottom. function names (or the key in the handler object)
  * should be in python style snake case and is equivalent to the "type" key in the websocket message
  * functions should take in a data param which is equivalent to the "message" key in the websocekt message.
- * 
- * TODO: since a lot will happen in this file, it's probably best to define "getAllStores" and run a filtered
- * version of "getAllContexts" limited to the keys available in the StoreKey interface
  */
 
 import type { Writable } from 'svelte/store';
+import type { SocketMessage } from '$lib/types';
 
-// TODO: there must be a better way to type this and still be dynmic
-export type MessageHandler = Record<string, (message: unknown, store: Writable<unknown>) => unknown>;
+export type MessageHandler = Record<string, (message: SocketMessage['message'], store: Writable<typeof message>) => any>;
 
 // convenience logging function
 const log_me = (message: unknown) => console.log(message);
