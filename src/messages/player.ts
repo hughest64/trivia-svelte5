@@ -6,9 +6,12 @@
  */
 
 import type { Writable } from 'svelte/store';
-import type { SocketMessage } from '$lib/types';
+import type { SocketMessage, /** AllStores */ } from '$lib/types';
 
-export type MessageHandler = Record<string, (message: SocketMessage['message'], store: Writable<typeof message>) => any>;
+export type MessageHandler = Record<
+    string,
+    (message: SocketMessage['message'], store: Writable<typeof message>) => unknown
+>;
 
 // convenience logging function
 const log_me = (message: SocketMessage['message']) => console.log(message);

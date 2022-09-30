@@ -63,8 +63,6 @@ export interface EventData {
     reveal_answers: boolean;
     current_round_number: number;
     current_question_number: number;
-//     active_round_number?: number;
-//     active_question_number?: number;
 }
 
 export interface ActiveEventData {
@@ -78,4 +76,13 @@ export interface SocketMessage {
     type: string;
     store?: string;
     message?: string | number | Record<string, unknown>
+}
+
+// potentially use this to source store keys (I think you get get an array of keys via ts somehow)
+// and type store param in MessageHandler as keyof AllStores
+export type AllStores = {
+    eventData: EventData;
+    userData: UserData;
+    activeEventData: ActiveEventData;
+    responseData: ResponseData
 }

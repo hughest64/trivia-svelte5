@@ -1,16 +1,15 @@
 <script lang="ts">
-    import { onDestroy, getContext, setContext } from 'svelte';
+    import { onDestroy, getAllContexts, getContext, setContext } from 'svelte';
     import { browser } from '$app/environment';
     import { page } from '$app/stores';
     import handlers from '$messages/player';
     import { PUBLIC_WEBSOCKET_HOST as apiHost } from '$env/static/public';
-    import type { SocketMessage } from '$lib/types';
+    import type { SocketMessage, /** AllStores */} from '$lib/types';
+    // import type { Writable } from 'svelte/store';
 
-    import { getAllContexts } from 'svelte';
-
+    // : Map<keyof AllStores, Writable<AllStores | string >| undefined>
     const stores = getAllContexts();
     $: console.log(stores);
-
     
     const path = $page.url.pathname;
     export let socketUrl = `${apiHost}/ws${path}/`;
