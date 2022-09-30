@@ -4,7 +4,7 @@
     import { page } from '$app/stores';
     import handlers from '$messages/player';
     import { PUBLIC_WEBSOCKET_HOST as apiHost } from '$env/static/public';
-    import type { SocketMessage, /** AllStores */} from '$lib/types';
+    import type { SocketMessage, /** AllStores */ } from '$lib/types';
     // import type { Writable } from 'svelte/store';
 
     // : Map<keyof AllStores, Writable<AllStores | string >| undefined>
