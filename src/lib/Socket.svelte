@@ -6,10 +6,9 @@
     import { PUBLIC_WEBSOCKET_HOST as apiHost } from '$env/static/public';
     import type { SocketMessage, StoreKey, StoreMap, StoreType } from '$lib/types';
 
-    const stores: StoreMap = getAllContexts();
-    $: console.log(stores);
-
     const path = $page.url.pathname;
+    const stores: StoreMap = getAllContexts();
+
     export let socketUrl = `${apiHost}/ws${path}/`;
     export let maxRetries = 50;
     export let retryInterval = 1000;

@@ -15,22 +15,6 @@ export const getCookieObject = (request: Request): Record<string, string> => {
 };
 
 /**
- * parse a requests headers and return a concatenated string of requested headers
- * @param {Request} request
- * @param {string[]} cookieKeys an array of cookies to parse, defaaults to ['jwt', 'csrftoken']
- */
-export const parseRequestHeaders = (request: Request, cookieKeys: string[] = ['jwt', 'csrftoken']): string => {
-    const cookieObject = getCookieObject(request);
-    const cookieArry: string[] = [];
-
-    for (const [key, value] of Object.entries(cookieObject)) {
-        cookieKeys.indexOf(key) > -1 && cookieArry.push(`${key}=${value}`);
-    }
-
-    return cookieArry.join(';');
-};
-
-/**
  * take one or many cookie keys and invalidate them by creating new cookies with an exipiration
  * at the beginning of the time epoch
  * @param keys a single cookie key or multiple keys in an array
@@ -43,20 +27,6 @@ export const invalidateCookies = (cookies: Cookies, keys: string | string[]): vo
     keys.forEach((key) => {
         cookies.set(key, '', { path: '/', expires: new Date(0) });
     });
-};
-
-/**
- * retrive a user's active round and question when the event page loads
- * @param params
- * @param request
- * @returns
- */
-export const getEventCookie = (joincode: string, request: Request): Record<string, string | number> => {
-    const cookies = cookie.parse(request.headers.get('cookie') || '');
-    const eventKey = `event-${joincode}`;
-    const eventCookie = JSON.parse(cookies[eventKey] || '{}');
-
-    return eventCookie;
 };
 
 /**
@@ -81,12 +51,6 @@ export const getFetchConfig = (method: string, data?: Record<string, unknown>, h
         body: data && JSON.stringify(data)
     };
 };
-
-// testing out typing styles for generic store functions
-
-
-// Can this be tied to an enum or something similar?
-
 
 export function createStore<T>(key: StoreKey, data: T): Writable<T> {
     return setContext(key, writable(data));
