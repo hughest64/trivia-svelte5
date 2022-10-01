@@ -4,13 +4,11 @@
     import { page } from '$app/stores';
     import handlers from '$messages/player';
     import { PUBLIC_WEBSOCKET_HOST as apiHost } from '$env/static/public';
-    import type { SocketMessage, /** AllStores */ } from '$lib/types';
-    // import type { Writable } from 'svelte/store';
+    import type { SocketMessage, StoreKey, StoreMap, StoreType } from '$lib/types';
 
-    // : Map<keyof AllStores, Writable<AllStores | string >| undefined>
-    const stores = getAllContexts();
+    const stores: StoreMap = getAllContexts();
     $: console.log(stores);
-    
+
     const path = $page.url.pathname;
     export let socketUrl = `${apiHost}/ws${path}/`;
     export let maxRetries = 50;
@@ -18,7 +16,7 @@
     export let reconnect = true;
 
     let interval: ReturnType<typeof setTimeout>;
-    let retries = 0;
+    let retries = 0;    
 
     const createSocket = () => {
         const webSocket = new WebSocket(socketUrl);
@@ -40,8 +38,7 @@
             const data: SocketMessage = JSON.parse(event.data);
 
             try {
-                handlers[data.type](data.message, stores.get(data.store));
-
+                handlers[data.type](data.message, <StoreType>stores.get(<StoreKey>data.store));
             } catch {
                 console.error(`message type ${data.type} does not have a handler function!`);
             }

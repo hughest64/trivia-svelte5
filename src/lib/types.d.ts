@@ -70,19 +70,21 @@ export interface ActiveEventData {
     activeQuestionNumber: number;
 }
 
-// TODO: is a generic like SocketMessage<T> useful here?
-// Then message could be typed better on implementation
-export interface SocketMessage {
-    type: string;
-    store?: string;
-    message?: string | number | Record<string, unknown>
-}
-
 // potentially use this to source store keys (I think you get get an array of keys via ts somehow)
 // and type store param in MessageHandler as keyof AllStores
 export type AllStores = {
     eventData: EventData;
     userData: UserData;
     activeEventData: ActiveEventData;
-    responseData: ResponseData
+    responseData: ResponseData;
+};
+
+export interface SocketMessage {
+    type: string;
+    store?: string;
+    message?: string | [keyof AllStores]
 }
+
+export type StoreKey = 'userData' | 'eventData' | 'activeEventData' | 'responseData';
+export type StoreType = Writable<string | [keyof AllStores]>
+export type StoreMap = Map<StoreKey, StoreType>

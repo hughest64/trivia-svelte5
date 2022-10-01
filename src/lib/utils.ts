@@ -3,6 +3,8 @@ import { writable, type Writable } from 'svelte/store';
 import type { Cookies } from '@sveltejs/kit';
 import * as cookie from 'cookie';
 
+import type { StoreKey } from './types';
+
 // TODO: review which, if any, functions are still useful
 
 export const getCookieObject = (request: Request): Record<string, string> => {
@@ -84,7 +86,7 @@ export const getFetchConfig = (method: string, data?: Record<string, unknown>, h
 
 
 // Can this be tied to an enum or something similar?
-type StoreKey = 'userData' | 'eventData' | 'activeEventData' | 'responseData';
+
 
 export function createStore<T>(key: StoreKey, data: T): Writable<T> {
     return setContext(key, writable(data));
