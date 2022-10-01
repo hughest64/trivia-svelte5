@@ -1,6 +1,7 @@
 import { getContext, setContext } from 'svelte';
 import { writable, type Writable } from 'svelte/store';
 import type { Cookies } from '@sveltejs/kit';
+import { PUBLIC_API_PORT as apiPort } from '$env/static/public';
 import * as cookie from 'cookie';
 
 import type { StoreKey } from './types';
@@ -58,4 +59,20 @@ export function createStore<T>(key: StoreKey, data: T): Writable<T> {
 
 export function getStore<T>(key: StoreKey): Writable<T> {
     return getContext(key);
+}
+
+/**
+ * helper which returns the api or websocket host url from the current page url
+ */
+export function getApiHost(url: URL, pathname='', socket=false): string {
+    const isSecure = url.protocol.startsWith('https')
+    let protocol = url.protocol;
+    
+    if (socket) {
+        protocol = isSecure ? 'wss:' : 'ws:';
+    }
+    const hostname = url.hostname
+    const port = url.port ? `:${apiPort}` : '';
+
+    return `${protocol}//${hostname}${port}${pathname || url.pathname}`;
 }
