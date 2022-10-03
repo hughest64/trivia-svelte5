@@ -65,13 +65,13 @@ export function getStore<T>(key: StoreKey): Writable<T> {
  * helper which returns the api or websocket host url from the current page url
  */
 export function getApiHost(url: URL, pathname='', socket=false): string {
-    const isSecure = url.protocol.startsWith('https')
+    const isSecure = url.protocol.startsWith('https');
     let protocol = url.protocol;
     
     if (socket) {
         protocol = isSecure ? 'wss:' : 'ws:';
     }
-    const hostname = url.hostname
+    const hostname = url.hostname;
     const port = url.port ? `:${apiPort}` : '';
 
     return `${protocol}//${hostname}${port}${pathname || url.pathname}`;
