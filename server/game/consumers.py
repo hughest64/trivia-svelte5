@@ -52,7 +52,7 @@ class SocketConsumer(JsonWebsocketConsumer):
             # TODO: I really want a snake_case to camelCase converter and vice versa
             "store": "responseData",
             "message": data.get('message')
-        })            
+        })
 
     ######################
     ### EVENT MESSAGES ###

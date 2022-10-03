@@ -5,19 +5,11 @@
  * functions should take in a data param which is equivalent to the "message" key in the websocekt message.
  */
 
-import type { SocketMessage, StoreType } from '$lib/types';
-
-export type MessageHandler = Record<
-    string,
-    (message: SocketMessage['message'], store: StoreType) => unknown
->;
-
-// convenience logging function
-const log_me = (message: SocketMessage['message']) => console.log(message);
+import type { MessageHandler } from '$lib/types';
 
 const handlers: MessageHandler = {
     connected: () => console.log('connected!'), // undefined,
-    log_me,
+    log_me: (message) => console.log(message),
     update_store: (message, store) => store.set(message)
 };
 

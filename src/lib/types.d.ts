@@ -70,9 +70,7 @@ export interface ActiveEventData {
     activeQuestionNumber: number;
 }
 
-// potentially use this to source store keys (I think you get get an array of keys via ts somehow)
-// and type store param in MessageHandler as keyof AllStores
-export type AllStores = {
+export interface AllStores {
     eventData: EventData;
     userData: UserData;
     activeEventData: ActiveEventData;
@@ -88,3 +86,8 @@ export interface SocketMessage {
 export type StoreKey = 'userData' | 'eventData' | 'activeEventData' | 'responseData';
 export type StoreType = Writable<string | [keyof AllStores]>
 export type StoreMap = Map<StoreKey, StoreType>
+
+export type MessageHandler = Record<
+    string,
+    (message: SocketMessage['message'], store?: StoreType) => unknown
+>;
