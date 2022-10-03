@@ -1,6 +1,7 @@
 import { getContext, setContext } from 'svelte';
 import { writable, type Writable } from 'svelte/store';
 import type { Cookies } from '@sveltejs/kit';
+import { PUBLIC_API_PORT as apiPort } from '$env/static/public';
 import * as cookie from 'cookie';
 
 import type { StoreKey } from './types';
@@ -12,22 +13,6 @@ export const getCookieObject = (request: Request): Record<string, string> => {
     const cookieObject = cookie.parse(cookies) || {};
 
     return cookieObject;
-};
-
-/**
- * parse a requests headers and return a concatenated string of requested headers
- * @param {Request} request
- * @param {string[]} cookieKeys an array of cookies to parse, defaaults to ['jwt', 'csrftoken']
- */
-export const parseRequestHeaders = (request: Request, cookieKeys: string[] = ['jwt', 'csrftoken']): string => {
-    const cookieObject = getCookieObject(request);
-    const cookieArry: string[] = [];
-
-    for (const [key, value] of Object.entries(cookieObject)) {
-        cookieKeys.indexOf(key) > -1 && cookieArry.push(`${key}=${value}`);
-    }
-
-    return cookieArry.join(';');
 };
 
 /**
@@ -43,20 +28,6 @@ export const invalidateCookies = (cookies: Cookies, keys: string | string[]): vo
     keys.forEach((key) => {
         cookies.set(key, '', { path: '/', expires: new Date(0) });
     });
-};
-
-/**
- * retrive a user's active round and question when the event page loads
- * @param params
- * @param request
- * @returns
- */
-export const getEventCookie = (joincode: string, request: Request): Record<string, string | number> => {
-    const cookies = cookie.parse(request.headers.get('cookie') || '');
-    const eventKey = `event-${joincode}`;
-    const eventCookie = JSON.parse(cookies[eventKey] || '{}');
-
-    return eventCookie;
 };
 
 /**
@@ -82,16 +53,26 @@ export const getFetchConfig = (method: string, data?: Record<string, unknown>, h
     };
 };
 
-// testing out typing styles for generic store functions
-
-
-// Can this be tied to an enum or something similar?
-
-
 export function createStore<T>(key: StoreKey, data: T): Writable<T> {
     return setContext(key, writable(data));
 }
 
 export function getStore<T>(key: StoreKey): Writable<T> {
     return getContext(key);
+}
+
+/**
+ * helper which returns the api or websocket host url from the current page url
+ */
+export function getApiHost(url: URL, pathname='', socket=false): string {
+    const isSecure = url.protocol.startsWith('https')
+    let protocol = url.protocol;
+    
+    if (socket) {
+        protocol = isSecure ? 'wss:' : 'ws:';
+    }
+    const hostname = url.hostname
+    const port = url.port ? `:${apiPort}` : '';
+
+    return `${protocol}//${hostname}${port}${pathname || url.pathname}`;
 }
