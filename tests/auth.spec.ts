@@ -19,14 +19,7 @@ test('proper redirect for game home page', async ({ page }) => authRedirects(pag
 test('proper redirect for game join page', async ({ page }) => authRedirects(page, '/game/join'));
 test('proper redirect for game page', async ({ page }) => authRedirects(page, '/game/1234'));
 
-// TODO: host side tests
-// host side redirect and login to specific endpoints
-// host/event-setup
-// host/1234
-// test non-staff redirects too?
-
 test.describe('navigate to a trivia event', async () => {
-    // - login test (fill in form) - we do this a log alredy?
     let page: Page;
     test.beforeAll(async ({ browser }) => {
         page = await browser.newPage();
@@ -62,13 +55,19 @@ test.describe('navigate to a trivia event', async () => {
         await expect(page).toHaveTitle(/event 1234/i);
     });
 
-    // - logout test
     test('logout navigates back to the home page', async () => {
         await page.locator('text=menu').click();
         await page.locator('text=Logout').click();
         await expect(page).toHaveURL('/');
     });
 });
+
+// TODO: host side tests
+// host side redirect and login to specific endpoints
+// host/event-setup
+// host/1234
+// test non-staff redirects too?
+// test hook similar plaher side for host (i.e. route all the way from login to hosting an event)
 
 // TODO: we need to determine the desired behavior here!
 // - navigate to login when already logged in (as player and host)
