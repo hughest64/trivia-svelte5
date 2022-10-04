@@ -41,10 +41,9 @@ test.describe('navigate to a trivia event', async () => {
         await expect(page).toHaveTitle(/team/i);
         expect (await page.textContent('h1')).toBe('Create a New Team');
 
-        // expect the list to have content?
-        // TODO: validate that there are team options availalbe
-        // how to work with select data?
-        await page.locator('input[name="selectedteam"]').isVisible();
+        // check the select options to make sure there is at least one option
+        await page.selectOption('select#team-select', { label: 'hello world' });
+        // await page.locator('input[name="selectedteam"]').isVisible();
 
         await page.locator('text=Choose This Team').click();
     });
@@ -52,8 +51,7 @@ test.describe('navigate to a trivia event', async () => {
     test('enter a join code then navigate', async () => {
         await expect(page).toHaveTitle(/join/i);
         expect(await page.textContent('h1')).toBe('Enter Game Code');
-        
-        // TODO: very important! test to make sure a team name is displayed
+        expect(await page.textContent('p')).not.toBe(/undefined/i);
         
         await page.locator('input[name="joincode"]').fill('1234');
         await page.locator('text=Join Game!').click();

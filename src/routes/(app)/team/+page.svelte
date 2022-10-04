@@ -37,14 +37,13 @@
     
     <label class="select-label" for="team-select">Choose A Team</label>
     <select class="select" id="team-select" name="selectedteam" bind:value={selected.id}>
-        
-            {#each userData.teams as team (team.id)}
-                <option value={team.id}>{team.name}</option>
-            {/each}
-        </select>
-        <input type="hidden" name="currentteam" value={userData?.active_team?.id}>
-        <button class="button button-red" type="submit" id="team-select-submit">Choose This Team</button>
-    </form>
+        {#each userData.teams as team (team.id)}
+            <option value={team.id}>{team.name}</option>
+        {/each}
+    </select>
+    <input type="hidden" name="currentteam" value={userData?.active_team?.id}>
+    <button class="button button-red" type="submit" id="team-select-submit">Choose This Team</button>
+</form>
 {/if}
 
 <button
