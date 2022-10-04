@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { authRedirects } from './utils.js';
+import { authRedirects, login } from './utils.js';
 
 // test guest login
 test('guest/not-staff login from redirect', async ({ page }) => {
@@ -18,12 +18,31 @@ test('proper redirect for game home page', async ({ page }) => authRedirects(pag
 test('proper redirect for game join page', async ({ page }) => authRedirects(page, '/game/join'));
 test('proper redirect for game page', async ({ page }) => authRedirects(page, '/game/1234'));
 
+// TODO: host side tests
 // host side redirect and login to specific endpoints
-// TODO: do we test non-staff redirects too?
 // host/event-setup
 // host/1234
+// test non-staff redirects too?
 
-// TODO:
-// - login test (fill in form) - we do this a log alredy?
-// - logout test
+test.describe('navigate to a trivia event', () => {
+    // - login test (fill in form) - we do this a log alredy?
+    test.beforeAll(async ({ page }) => {
+        await login(page);
+    });
+    // test select a team
+    
+    // expect to be on join page
+    // await expect(page).toHaveTitle(/join/i);
+    // expect(await page.textContent('h1')).toBe('Enter Game Code');
+    // await page.locator('input[name="joincode"]').fill('1234');
+    // await page.locator('input[value="Join Game!"]').click();
+
+    // test fill in join code
+    // expect to be on event page
+    // await expect(page).toHaveTitle(/event 1234/i);
+
+    // - logout test (afterAll)
+});
+
+// TODO: we need to determine the desired behavior here!
 // - navigate to login when already logged in (as player and host)

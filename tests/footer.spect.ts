@@ -1,7 +1,8 @@
 // what footer content should be on a give page
 import { expect, test } from '@playwright/test';
+// import { login } from './utils.js';
 
-// we need a login shortcut
+// create a test hook, log in with beforeAll?
 
 // login page - nothing
 test.skip('tests should pass', async ({ page }) => {

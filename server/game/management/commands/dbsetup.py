@@ -49,6 +49,13 @@ class Command(BaseCommand):
                 sample_admin.is_staff = True
                 sample_admin.save()
 
+            trivia_player, trivia_player_created = User.objects.get_or_create(
+                username="player"
+            )
+            if trivia_player_created:
+                trivia_player.set_password("player")
+                trivia_player.save()
+
             with open(settings.BASE_DIR.parent / "data" / "teams.json", "r") as f:
                 teams = json.load(f)
 
@@ -60,6 +67,7 @@ class Command(BaseCommand):
 
                 elif user is not None:
                     team.members.add(user.id)
+                    team.members.add(trivia_player.id)
 
             self.stdout.write("Successfully created data")
 
