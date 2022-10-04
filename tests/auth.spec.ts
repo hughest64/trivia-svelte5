@@ -44,6 +44,7 @@ test.describe('navigate to a trivia event', async () => {
         // expect the list to have content?
         // TODO: validate that there are team options availalbe
         // how to work with select data?
+        await page.locator('input[name="selectedteam"]').isVisible();
 
         await page.locator('text=Choose This Team').click();
     });
