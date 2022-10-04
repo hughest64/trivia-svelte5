@@ -2,8 +2,7 @@ import { expect, test } from '@playwright/test';
 import type { Page } from '@playwright/test';
 import { authRedirects, login } from './utils.js';
 
-// test guest login
-test('guest/not-staff login from redirect', async ({ page }) => {
+test('guest login', async ({ page }) => {
     await page.goto('/');
     // not logged in, we should land on the welcome page
     await expect(page).toHaveTitle(/welcome/i);
