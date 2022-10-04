@@ -34,10 +34,8 @@ class TeamView(APIView):
     authentication_classes = [SessionAuthentication, JwtAuthentication]
 
     def get(self, request):
-        print(request.COOKIES)
-        print(request.user)
         serializer = UserSerializer(request.user)
-        print(serializer.data)
+
         return Response({"user_data": serializer.data})
 
     @method_decorator(csrf_protect)
