@@ -24,7 +24,7 @@
     <div class="input-element">
         <input type="text" name="joincode" placeholder="Enter Code" bind:value={joincode} />
     </div>
-    <input class="button button-red" type="submit" value="Join Game!" />
+    <button class="button button-red" type="submit">Join Game!</button>
 </form>
 
 <style>

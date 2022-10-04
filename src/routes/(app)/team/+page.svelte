@@ -31,21 +31,21 @@
 
 <h1>Or Play with an Existing Team</h1>
 
-{#if userData?.teams.length > 0}
-    <form action='?/selectTeam' method='POST'>
-        {#if form?.error}<p class="error">{form?.error}</p>{/if}
+<form action='?/selectTeam' method='POST'>
+    {#if form?.error}<p class="error">{form?.error}</p>{/if}
+    
+    <label class="select-label" for="team-select">Choose A Team</label>
+    <select class="select" id="team-select" name="selectedteam" bind:value={selected.id}>
         
-        <label class="select-label" for="team-select">Choose A Team</label>
-        <select class="select" id="team-select" name="selectedteam" bind:value={selected.id}>
-            
+        {#if userData?.teams.length > 0}
             {#each userData.teams as team (team.id)}
                 <option value={team.id}>{team.name}</option>
             {/each}
+        {/if}
         </select>
         <input type="hidden" name="currentteam" value={userData?.active_team?.id}>
-        <input class="button button-red" type="submit" id="team-select-submit" value="Choose This Team" />
+        <button class="button button-red" type="submit" id="team-select-submit">Choose This Team</button>
     </form>
-{/if}
 
 <button
     class="button button-black"

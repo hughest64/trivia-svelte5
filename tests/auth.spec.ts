@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import type { Page } from '@playwright/test';
 import { authRedirects, login } from './utils.js';
 
 // test guest login
@@ -24,24 +25,50 @@ test('proper redirect for game page', async ({ page }) => authRedirects(page, '/
 // host/1234
 // test non-staff redirects too?
 
-test.describe('navigate to a trivia event', () => {
+test.describe('navigate to a trivia event', async () => {
     // - login test (fill in form) - we do this a log alredy?
-    test.beforeAll(async ({ page }) => {
+    let page: Page;
+    test.beforeAll(async ({ browser }) => {
+        page = await browser.newPage();
         await login(page);
     });
-    // test select a team
-    
-    // expect to be on join page
-    // await expect(page).toHaveTitle(/join/i);
-    // expect(await page.textContent('h1')).toBe('Enter Game Code');
-    // await page.locator('input[name="joincode"]').fill('1234');
-    // await page.locator('input[value="Join Game!"]').click();
+    test.afterAll(async () => {
+        await page.close();
+    });
 
-    // test fill in join code
-    // expect to be on event page
-    // await expect(page).toHaveTitle(/event 1234/i);
+    // select a team
+    test('select a team then navigate', async () => {
+        await expect(page).toHaveTitle(/team/i);
+        expect (await page.textContent('h1')).toBe('Create a New Team');
 
-    // - logout test (afterAll)
+        // expect the list to have content?
+        // TODO: validate that there are team options availalbe
+        // how to work with select data?
+
+        await page.locator('text=Choose This Team').click();
+    });
+
+    test('enter a join code then navigate', async () => {
+        await expect(page).toHaveTitle(/join/i);
+        expect(await page.textContent('h1')).toBe('Enter Game Code');
+        
+        // TODO: very important! test to make sure a team name is displayed
+        
+        await page.locator('input[name="joincode"]').fill('1234');
+        await page.locator('text=Join Game!').click();
+    });
+
+    test('navigate to trivia event', async () => {
+        // the join code should be in the title (good enough for now)
+        await expect(page).toHaveTitle(/event 1234/i);
+    });
+
+    // - logout test
+    test('logout navigates back to the home page', async () => {
+        await page.locator('text=menu').click();
+        await page.locator('text=Logout').click();
+        await expect(page).toHaveURL('/');
+    });
 });
 
 // TODO: we need to determine the desired behavior here!
