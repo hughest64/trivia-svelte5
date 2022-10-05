@@ -24,9 +24,7 @@ test.describe('navigate to a trivia event', async () => {
         page = await browser.newPage();
         await login(page);
     });
-    test.afterAll(async () => {
-        await page.close();
-    });
+    test.afterAll(async () =>  await page.close());
 
     // select a team
     test('select a team then navigate', async () => {
@@ -34,6 +32,7 @@ test.describe('navigate to a trivia event', async () => {
         expect (await page.textContent('h1')).toBe('Create a New Team');
 
         // check the select options to make sure there is at least one option
+        // TODO: validate this works properly
         await page.selectOption('select#team-select', { label: 'hello world' });
         // await page.locator('input[name="selectedteam"]').isVisible();
 
@@ -43,6 +42,8 @@ test.describe('navigate to a trivia event', async () => {
     test('enter a join code then navigate', async () => {
         await expect(page).toHaveTitle(/join/i);
         expect(await page.textContent('h1')).toBe('Enter Game Code');
+        // TODO: the regex here might be flaky, rethink this test
+        // maybe :has-text? https://playwright.dev/docs/selectors
         expect(await page.textContent('p')).not.toBe(/undefined/i);
         
         await page.locator('input[name="joincode"]').fill('1234');

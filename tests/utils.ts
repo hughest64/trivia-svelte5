@@ -1,7 +1,6 @@
 import { expect } from '@playwright/test';
 import type { Page } from '@playwright/test';
 
-// TODO: use non-staff user not sample_admin
 export const defaultCredentials = {
     username: 'player',
     password: 'player'
@@ -29,4 +28,13 @@ export const authRedirects = async (page: Page, pageUrl: string) => {
 
     await login(page, defaultCredentials.username, defaultCredentials.password, '');
     await expect(page).toHaveURL(pageUrl);
+};
+
+export const createSelectorPromises = (page: Page, visibleLinks: string[], footerLinks: string[]): Promise<void>[] => {
+    const linkPromises = footerLinks.map((link: string) => {
+        const selector = expect(page.locator(`p:has-text("${link}")`));
+        return visibleLinks.includes(link) ? selector.toBeVisible() : selector.not.toBeVisible();
+    });
+
+    return linkPromises;
 };
