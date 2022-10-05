@@ -18,7 +18,7 @@ test('proper redirect for game home page', async ({ page }) => authRedirects(pag
 test('proper redirect for game join page', async ({ page }) => authRedirects(page, '/game/join'));
 test('proper redirect for game page', async ({ page }) => authRedirects(page, '/game/1234'));
 
-test.describe('navigate to a trivia event', async () => {
+test.describe('navigate to a trivia event as player', async () => {
     let page: Page;
     test.beforeAll(async ({ browser }) => {
         page = await browser.newPage();
@@ -62,12 +62,37 @@ test.describe('navigate to a trivia event', async () => {
     });
 });
 
+test.describe('navigate to trivia event as host', async () => {
+    let page: Page;
+    test.beforeAll(async ({ browser }) => {
+        page = await browser.newPage();
+        await login(page, 'sample_admin', 'sample_admin');
+    });
+    test.afterAll(async () =>  {
+        await page.goto('/user/logout');
+        await page.close();
+    });
+
+    // test click 'Play Trivia
+    // expect to be on team select
+
+    // test hit the back button
+    // expect to be on /host/choice
+
+    test('host choice is visible', async () => {
+        await expect(page).toHaveTitle(/host or play/i);
+        expect(await page.textContent('h1')).toBe('Greetings sample_admin')
+        await page.locator('text=Host a Game').click(); // TODO: separate test for 'Play Trivia'
+    });
+    // test('event setup')
+    // test('event page)
+});
+
 // TODO: host side tests
 // host side redirect and login to specific endpoints
 // host/event-setup
 // host/1234
 // test non-staff redirects too?
-// test hook similar plaher side for host (i.e. route all the way from login to hosting an event)
 
 // TODO: we need to determine the desired behavior here!
 // - navigate to login when already logged in (as player and host)
