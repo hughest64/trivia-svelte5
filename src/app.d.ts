@@ -9,11 +9,14 @@ declare namespace App {
         activeRoundNumber?: string | number
         activeQuestionNumber?: string | number
     }
-    // interface PageData {}
+    interface PageData {
+        user_data: import('$lib/types').UserData;
+    }
     // interface Platform {}
 }
 
 declare namespace svelte.JSX {
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars*/
     interface HTMLAttributes {
         onswipe?: (event: CustomEvent) => Promise<void>;
     }

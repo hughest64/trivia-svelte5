@@ -1,11 +1,15 @@
 <script lang="ts">
+    import { page } from '$app/stores';
     import { goto } from '$app/navigation';
-    import type { UserData } from '$lib/types';
-    $: userData = {} as UserData;
+    // import { getStore } from '$lib/utils';
+    // import type { UserData } from '$lib/types';
+    $: userData = $page.data?.user_data;
+    // $: userData = getStore<UserData>('userData');
+    // $: console.log($userData);
     $: username = userData?.username || '';
 </script>
 
-<svelte:head><title>Trivia Mafia | Host Choice</title></svelte:head>
+<svelte:head><title>Trivia Mafia | Host or Play</title></svelte:head>
 
 <h1>Greetings {username}</h1>
 <h3>Do you want to:</h3>

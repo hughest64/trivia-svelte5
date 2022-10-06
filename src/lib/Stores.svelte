@@ -5,6 +5,8 @@
 
     $: data = $page.data;
     $: eventData = <EventData>data?.event_data;
+    // $: userData = <UserData>data?.user_data;
+    // $: console.log(userData);
 
     // event data
     $: createStore<EventData>('eventData', eventData);

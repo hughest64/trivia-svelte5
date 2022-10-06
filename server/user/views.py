@@ -94,7 +94,6 @@ class LogoutView(APIView):
     def post(self, request):
 
         response = Response()
-        print(request.META)
         response.delete_cookie("jwt")
         response.delete_cookie("csrftoken")
         response.data = {"message": "success"}

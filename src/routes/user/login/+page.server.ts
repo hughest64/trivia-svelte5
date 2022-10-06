@@ -3,8 +3,7 @@ import { invalid, redirect } from '@sveltejs/kit';
 import { PUBLIC_API_HOST as apiHost } from '$env/static/public';
 import type { Action, PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ cookies, url }) => {
-    console.log(url)
+export const load: PageServerLoad = async ({ cookies }) => {
     /**
     // go home user, you're already logged in
     // TODO: this is flaky a f and does not cut it
@@ -54,16 +53,15 @@ const login: Action = async ({ cookies, request, url }) => {
     if (!response.ok) {
         return invalid(responseData.status, { error: responseData.detail });
     }
+    console.log(responseData?.user_data);
+    console.log(url.searchParams.get('next'));
     
     const responseCookies = response.headers.get('set-cookie') || '';
     const jwt = cookie.parse(responseCookies)?.jwt;
     jwt && cookies.set('jwt', jwt, { path: '/' });
 
-    // TODO: we need an algorithm to determine redirects
-    // - prefer query param, but check for authorization
-    // - if host goto /host/choice - maybe this should just be /host?
-    // - else goto /team
-    const next = url.searchParams.get('next') || '/team';
+    const next = url.searchParams.get('next') || (responseData?.user_data?.is_staff ? '/host/choice' : '/team');
+
     throw redirect(302, next);
 };
 

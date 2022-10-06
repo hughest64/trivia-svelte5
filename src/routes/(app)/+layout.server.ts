@@ -4,11 +4,12 @@ import type { PageServerLoad } from './$types';
 import { PUBLIC_API_HOST as apiHost } from '$env/static/public';
 
 export const load: PageServerLoad = async ({ locals, url }) => {
-    if (url.pathname === '/favicon.ico') return;
+    // TODO: this is not how we should have this in the end!
+    const apiEndpoint =  url.pathname === '/host/choice' ? '/user' : url.pathname;
     console.log('running layout.server');
 
     // TODO: only run under what conditions?
-    const response = await fetch(`${apiHost}${url.pathname}/`, {
+    const response = await fetch(`${apiHost}${apiEndpoint}/`, {
         method: 'GET',
         headers: locals.fetchHeaders || {}
     });

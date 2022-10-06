@@ -61,9 +61,7 @@ class EventSetupView(APIView):
 
     def get(self, request):
         """get this weeks games and a list of locations"""
-        print(request.COOKIES)
         user = request.user
-        print(request.user)
         if user.is_authenticated and not user.is_staff:
             raise PermissionDenied(code=HTTP_401_UNAUTHORIZED)
 

@@ -81,11 +81,11 @@ test.describe('navigate to trivia event as host', async () => {
 
     test('host choice is visible', async () => {
         await expect(page).toHaveTitle(/host or play/i);
-        expect(await page.textContent('h1')).toBe('Greetings sample_admin')
-        await page.locator('text=Host a Game').click(); // TODO: separate test for 'Play Trivia'
+        expect(await page.textContent('h1')).toBe('Greetings sample_admin');
+        await page.locator('text=Host a Game').click();
     });
     // test('event setup')
-    // test('event page)
+    // test('event page')
 });
 
 // TODO: host side tests
