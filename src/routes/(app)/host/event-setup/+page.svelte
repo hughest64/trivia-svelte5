@@ -1,58 +1,41 @@
 <script lang="ts">
-    // import { setEventStores } from '$stores/event';
-    import { getFetchConfig } from '$lib/utils';
+    import { page } from '$app/stores';
+    import { enhance } from '$app/forms';
+    import type { ActionData } from './$types';
     import type { GameSelectData, LocationSelectData } from '$lib/types';
-    import { PUBLIC_API_HOST as apiHost } from '$env/static/public';
 
-    export let gameSelectData: GameSelectData[] = [];
-    export let locationSelectData: LocationSelectData[] = [];
-    export let message: string;
+    export let form: ActionData;
 
-    let selectLocation: LocationSelectData; // TODO: set to the host's "home" location
-    let selectedGame: GameSelectData;
+    $: gameSelectData =  <GameSelectData[]>$page.data?.game_select_data || [];
+    $: locationSelectData = <LocationSelectData[]>$page.data?.location_select_data || [];
 
-    // TODO: csrf validation
-    const handleEventSubmit = async () => {
-        const fetchConfig = getFetchConfig('POST', {
-            location_id: selectLocation.location_id,
-            game_id: selectedGame.game_id
-        });
+    // TODO: set to the host's "home" location
+    let selectLocation: string; 
+    let selectedGame: string;
 
-        const response = await fetch(`${apiHost}/eventsetup/`, fetchConfig);
-        if (response.ok) {
-            const data = await response.json();
-            const joincode = data.join_code;
-            // data && setEventStores(data);
-            // goto(`/host/${joincode}`)
-            window.open(`/host/${joincode}`, '_self');
-        } else {
-            message = 'Oops! Something went wrong! Please try again.';
-        }
-    };
 </script>
 
 <svelte:head><title>Trivia Mafia | Event Setup</title></svelte:head>
 
 <h1>Choose a Trivia Event</h1>
 
-<!-- TODO: convert to new page.server pattern -->
-<form on:submit|preventDefault={handleEventSubmit}>
-    {#if message}<p class="error">{message}</p>{/if}
+<form action='?/fetchEventData' method="POST" use:enhance>
+    {#if form?.error}<p class="error">{form?.error}</p>{/if}
     <label class="select-label" for="game-select">Choose your Game</label>
     <select class="select" name="game-select" id="game-select" bind:value={selectedGame}>
         {#each gameSelectData as game (game.game_id)}
-            <option value={game}>{game.game_title}</option>
+            <option value={game.game_id}>{game.game_title}</option>
         {/each}
     </select>
 
     <label for="loaction-select" class="select-label">Choose your Venue</label>
     <select class="select" name="location-select" id="location-select" bind:value={selectLocation}>
         {#each locationSelectData as location (location.location_id)}
-            <option value={location}>{location.location_name}</option>
+            <option value={location.location_id}>{location.location_name}</option>
         {/each}
     </select>
 
-    <input class="button button-red" type="submit" name="submit" id="submit" value="Begin Event" />
+    <button class="button button-red" type="submit" name="submit" id="submit">Begin Event</button>
 </form>
 
 <style>

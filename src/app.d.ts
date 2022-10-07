@@ -11,6 +11,8 @@ declare namespace App {
     }
     interface PageData {
         user_data?: import('$lib/types').UserData;
+        location_select_data?: Array<import('$lib/types').LocationSelectData>;
+        game_select_data?: Array<import('$lib/types').GameSelectData>;
     }
     // interface Platform {}
 }

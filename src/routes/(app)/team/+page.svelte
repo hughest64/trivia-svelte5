@@ -7,7 +7,7 @@
     let hidecreateteam = true;
     let hideteampassword = true;
 
-    const userData: UserData = $page.data?.user_data;
+    const userData = <UserData>$page.data?.user_data;
 
     // TODO: finish create a team and join by code (team password)
     let selected: UserTeam = userData?.teams.find((team) => team.id === userData?.active_team_id) || userData?.teams[0];

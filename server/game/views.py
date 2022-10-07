@@ -1,4 +1,5 @@
 import json
+from os import pread
 import random
 
 from django.conf import settings
@@ -56,8 +57,8 @@ class TeamView(APIView):
 
 
 class EventSetupView(APIView):
-    # authentication_classes = [SessionAuthentication, JwtAuthentication]
-    # permission_classes = [IsAdminUser]
+    authentication_classes = [SessionAuthentication, JwtAuthentication]
+    permission_classes = [IsAdminUser]
 
     def get(self, request):
         """get this weeks games and a list of locations"""

@@ -1,5 +1,5 @@
 import { getCookieObject } from '$lib/utils';
-import type { Handle, /* HandleFetch 8 */ } from '@sveltejs/kit';
+import type { Handle, HandleFetch } from '@sveltejs/kit';
 
 export const handle: Handle = async({ event, resolve }) => {
     console.log('Hello from handle!');
@@ -32,8 +32,14 @@ export const handle: Handle = async({ event, resolve }) => {
 };
 
 // TODO: this won't fire from *.server.ts files until svelte fetch is added to the RequestHandler
-// export const handleFetch: HandleFetch = async ({request, fetch }) => {
-//     console.log('Running Handle Fetch'); 
-//     request.headers.set('test', 'test=does this work?');
-//     return fetch(request);
-// };
+export const handleFetch: HandleFetch = async ({ event, request }) => {
+    const requestMod = new Request(request.url,
+        {
+            method: request.method,
+            headers: event.locals.fetchHeaders, // TODO: we should probably merge existing headers
+            body: request.body
+        }    
+    );
+
+    return fetch(requestMod);
+};
