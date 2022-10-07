@@ -1,9 +1,9 @@
 import { redirect } from '@sveltejs/kit';
-import type { PageServerLoad } from './$types';
+import type { LayoutServerLoad } from './$types';
 
 import { PUBLIC_API_HOST as apiHost } from '$env/static/public';
 
-export const load: PageServerLoad = async ({ locals, url }) => {
+export const load: LayoutServerLoad = async ({ locals, url }) => {
     // TODO: this is not how we should have this in the end!
     const apiEndpoint =  url.pathname === '/host/choice' ? '/user' : url.pathname;
     console.log('running layout.server');

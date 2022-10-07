@@ -53,9 +53,7 @@ const login: Action = async ({ cookies, request, url }) => {
     if (!response.ok) {
         return invalid(responseData.status, { error: responseData.detail });
     }
-    console.log(responseData?.user_data);
-    console.log(url.searchParams.get('next'));
-    
+
     const responseCookies = response.headers.get('set-cookie') || '';
     const jwt = cookie.parse(responseCookies)?.jwt;
     jwt && cookies.set('jwt', jwt, { path: '/' });

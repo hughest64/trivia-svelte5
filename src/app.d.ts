@@ -10,7 +10,7 @@ declare namespace App {
         activeQuestionNumber?: string | number
     }
     interface PageData {
-        user_data: import('$lib/types').UserData;
+        user_data?: import('$lib/types').UserData;
     }
     // interface Platform {}
 }
