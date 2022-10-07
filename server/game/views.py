@@ -91,6 +91,7 @@ class EventSetupView(APIView):
         # serialize
         userSerializer = UserSerializer(request.user)
 
+        # TODO: this could just return the join code since the data won't be loaded from this response
         return Response({"event_data": event_data , "user_data": userSerializer.data})
 
 

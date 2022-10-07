@@ -7,7 +7,6 @@ export const load: LayoutServerLoad = async ({ locals, url }) => {
     // TODO: this is not how we should have this in the end!
     const apiEndpoint =  url.pathname === '/host/choice' ? '/user' : url.pathname;
     console.log('running layout.server');
-    console.log(apiEndpoint);
 
     // TODO: only run under what conditions?
     const response = await fetch(`${apiHost}${apiEndpoint}/`, {

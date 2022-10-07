@@ -1,23 +1,24 @@
-// import { invalid } from '@sveltejs/kit';
+import { invalid, redirect } from '@sveltejs/kit';
+import { PUBLIC_API_HOST as apiHost } from '$env/static/public';
 import type { Action } from './$types';
 
-const fetchEventData: Action = async ({ fetch, request } ) => {
+const fetchEventData: Action = async ({ fetch, request }) => {
     const data = await request.formData();
     const gameId = data.get('game-select');
     const locationId = data.get('location-select');
+
+    const response = await fetch(`${apiHost}/host/event-setup/`, {
+        method: 'POST',
+        body: JSON.stringify({ gameId, locationId })
+    });
+
+    const responseData = await response.json();
+    if (!response.ok) {
+        return invalid(response.status, { error: responseData.detail });
+    }
     
-    const response = await fetch('http://localhost:8000/host/event-setup/',
-        {
-            method: 'POST',
-            // headers: locals.fetchHeaders || {},
-            body: JSON.stringify({ gameId, locationId })
-        }
-    );
-    // if !response.ok
-    console.log(await response.json());
-    // throw invalid (import thing)
-    // throw invalid(200, { error: 'Feature Not Implemented' });
-    // else redirect to /host/<joincode from response data>
+    const joinCode = responseData?.event_data?.join_code;
+    throw redirect(302, `/host/${joinCode}`);
 };
 
 export const actions = { fetchEventData };

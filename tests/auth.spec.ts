@@ -84,13 +84,16 @@ test.describe('navigate to trivia event as host', async () => {
         expect(await page.textContent('h1')).toBe(`Greetings ${adminUser}`);
         await page.locator('text=Host a Game').click();
     });
-    // test('event setup')
+
     test('event setup has event options', async () => {
         await expect(page).toHaveURL('/host/event-setup');
         expect(await page.textContent('h1')).toBe('Choose a Trivia Event');
 
-        // both select from both drop downs
-        // click begin event (or do that in the next test?)
+        // TODO: test the select menus for content
+
+        await page.locator('button:has-text("Begin Event")').click();
+        await expect(page).toHaveURL(/\/host\/\d+\/?$/i);
+
     });
     // test('event page')
 });

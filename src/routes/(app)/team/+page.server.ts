@@ -14,7 +14,7 @@ export const selectTeam: Action = async ({ locals, request }) => {
 
         const responseData = await response.json();
         if (!response.ok) {
-            throw invalid(response.status, { error: responseData.detail });
+            return invalid(response.status, { error: responseData.detail });
         }
     }
 

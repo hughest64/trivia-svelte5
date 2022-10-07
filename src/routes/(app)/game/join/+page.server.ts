@@ -17,7 +17,7 @@ const joinevent: Action = async ({ locals, request }) => {
     );
     const responseData = await response.json();
     if (!response.ok) {
-        throw invalid(responseData.status, { error: responseData.detail });
+        return invalid(responseData.status, { error: responseData.detail });
     }
 
     throw redirect(303, `/game/${joincode}`);
