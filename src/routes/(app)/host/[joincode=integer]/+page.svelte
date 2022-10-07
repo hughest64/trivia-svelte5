@@ -1,20 +1,27 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    // import { activeRoundNumber } from '$stores/event';
-    import RoundHeader from '$lib/host/RoundHeader.svelte';
-    import Round from '$lib/host/Round.svelte';
+    import { getStore } from '$lib/utils';
+    import RoundHeader from './RoundHeader.svelte';
+    // import Round from './Round.svelte';
+    import type { ActiveEventData, EventData } from '$lib/types';
 
-    // export let initialRoundNumber: number;
-    // $: initialRoundNumber && activeRoundNumber.set(Number(initialRoundNumber));
+    $: activeData = getStore<ActiveEventData>('activeEventData');
+    $: eventData = getStore<EventData>('eventData');
+
+    $: activeRound =
+        $eventData?.rounds.find((round) => round.round_number === $activeData.activeRoundNumber) ||
+        $eventData.rounds[0];
+
+    $: roundNumbers = $eventData?.rounds.map((round) => round.round_number);
 
     const joincode = $page.params.joincode;
 </script>
 
-<h1>Good Luck Hosting Game {joincode}!</h1>
+<h1>Today's Join Code: <strong>{joincode}</strong></h1>
 
 <div class="container">
-    <RoundHeader />
-    <Round />
+    <RoundHeader {roundNumbers}/>
+    <!-- <Round {activeRound} /> -->
 </div>
 
 <style>

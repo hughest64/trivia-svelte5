@@ -1,6 +1,5 @@
 <script lang="ts">
     // import { page } from '$app/stores';
-    // import { activeRound } from '$stores/event';
 
     // const joinCode = $page.params?.joincode;
 </script>
