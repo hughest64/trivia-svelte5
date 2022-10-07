@@ -3,16 +3,13 @@ import type { LayoutServerLoad } from './$types';
 
 import { PUBLIC_API_HOST as apiHost } from '$env/static/public';
 
-export const load: LayoutServerLoad = async ({ locals, url }) => {
+export const load: LayoutServerLoad = async ({ locals, url, fetch }) => {
     // TODO: this is not how we should have this in the end!
     const apiEndpoint =  url.pathname === '/host/choice' ? '/user' : url.pathname;
     console.log('running layout.server');
 
     // TODO: only run under what conditions?
-    const response = await fetch(`${apiHost}${apiEndpoint}/`, {
-        method: 'GET',
-        headers: locals.fetchHeaders || {}
-    });
+    const response = await fetch(`${apiHost}${apiEndpoint}/`);
 
     let data = {};
     if (response.ok) {

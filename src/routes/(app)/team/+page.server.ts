@@ -2,13 +2,12 @@ import { invalid, redirect } from '@sveltejs/kit';
 import { PUBLIC_API_HOST as apiHost } from '$env/static/public';
 import type { Action } from './$types';
 
-export const selectTeam: Action = async ({ locals, request }) => {
+export const selectTeam: Action = async ({  fetch, request }) => {
     const { selectedteam, currentteam } = Object.fromEntries((await request.formData()).entries());
 
     if (selectedteam !== currentteam) {
         const response = await fetch(`${apiHost}/teamselect/`, {
             method: 'POST',
-            headers: locals.fetchHeaders || {},
             body: JSON.stringify({ team_id: selectedteam })
         });
 
