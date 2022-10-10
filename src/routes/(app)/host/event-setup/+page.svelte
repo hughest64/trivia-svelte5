@@ -1,6 +1,5 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { enhance } from '$app/forms';
     import type { ActionData } from './$types';
     import type { GameSelectData, LocationSelectData } from '$lib/types';
 
@@ -19,7 +18,7 @@
 
 <h1>Choose a Trivia Event</h1>
 
-<form action='?/fetchEventData' method="POST" use:enhance>
+<form action='?/fetchEventData' method="POST">
     {#if form?.error}<p class="error">{form?.error}</p>{/if}
     <label class="select-label" for="game-select">Choose your Game</label>
     <select class="select" name="game-select" id="game-select" bind:value={selectedGame}>
