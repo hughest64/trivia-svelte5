@@ -10,7 +10,7 @@
 
     $: activeRound =
         $eventData?.rounds.find((round) => round.round_number === $activeData.activeRoundNumber) ||
-        $eventData.rounds[0];
+        $eventData?.rounds[0];
 
     $: roundNumbers = $eventData?.rounds.map((round) => round.round_number);
 
@@ -20,7 +20,7 @@
 <h1>Today's Join Code: <strong>{joincode}</strong></h1>
 
 <div class="container">
-    <RoundHeader {roundNumbers}/>
+    <RoundHeader  {activeData} {activeRound} {eventData} {roundNumbers}/>
     <!-- <Round {activeRound} /> -->
 </div>
 
