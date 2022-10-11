@@ -1,7 +1,7 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { getStore } from '$lib/utils';
-    // import Round from './Round.svelte';
+    import Round from './Round.svelte';
     import type { ActiveEventData, EventData } from '$lib/types';
 
     $: activeData = getStore<ActiveEventData>('activeEventData');
@@ -43,7 +43,7 @@
     {/each}
 </div>
 
-<!-- <Round {activeRound} /> -->
+<Round {activeRound} />
 
 <style lang="scss">
     h3 {
