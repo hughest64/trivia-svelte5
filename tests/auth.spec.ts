@@ -27,12 +27,12 @@ test.describe('navigate to a trivia event as player', async () => {
         page = await browser.newPage();
         await login(page);
     });
-    test.afterAll(async () =>  await page.close());
+    test.afterAll(async () => await page.close());
 
     // select a team
     test('select a team then navigate', async () => {
         await expect(page).toHaveTitle(/team/i);
-        expect (await page.textContent('h1')).toBe('Create a New Team');
+        expect(await page.textContent('h1')).toBe('Create a New Team');
         await page.selectOption('select#team-select', { label: playerSelectedTeam });
         await page.locator('text=Choose This Team').click();
     });
@@ -42,7 +42,7 @@ test.describe('navigate to a trivia event as player', async () => {
         expect(await page.textContent('h1')).toBe('Enter Game Code');
         await expect(page.locator(`p:has-text("${playerSelectedTeam}")`)).toBeVisible();
     });
-    
+
     test('navigate to trivia event', async () => {
         await page.locator('input[name="joincode"]').fill('1234');
         await page.locator('text=Join Game!').click();
@@ -93,16 +93,15 @@ test.describe('navigate to trivia event as host', async () => {
 
         await page.locator('button:has-text("Begin Event")').click();
         await expect(page).toHaveURL(/\/host\/\d+\/?$/i);
-
     });
-    // test('event page')
 });
 
-// TODO: host side tests
-// host side redirect and login to specific endpoints
-// host/event-setup
-// host/1234
-// test non-staff redirects too?
+test('proper redirect for host choice page', async ({ page }) =>
+    authRedirects(page, '/host/choice', adminUser, adminUser));
+test('proper redirect for host event setup', async ({ page }) =>
+    authRedirects(page, '/host/event-setup', adminUser, adminUser));
+test('proper redirect for host game page', async ({ page }) => authRedirects(page, '/host/1234', adminUser, adminUser));
 
 // TODO: we need to determine the desired behavior here!
 // - navigate to login when already logged in (as player and host)
+// - test non-staff accessing host endpoint?

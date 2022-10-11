@@ -18,7 +18,12 @@ export const login = async (
     await page.locator('input[value="Submit"]').click();
 };
 
-export const authRedirects = async (page: Page, pageUrl: string) => {
+export const authRedirects = async (
+    page: Page,
+    pageUrl: string,
+    username = defaultCredentials.username,
+    password = defaultCredentials.password
+) => {
     await page.goto(pageUrl);
     await expect(page).toHaveTitle(/welcome/i);
 
@@ -26,7 +31,7 @@ export const authRedirects = async (page: Page, pageUrl: string) => {
     await expect(page).toHaveTitle(/login/i);
     expect(await page.textContent('h1')).toBe('Login');
 
-    await login(page, defaultCredentials.username, defaultCredentials.password, '');
+    await login(page, username, password, '');
     await expect(page).toHaveURL(pageUrl);
 };
 
