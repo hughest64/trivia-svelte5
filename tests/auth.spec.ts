@@ -16,10 +16,15 @@ test('guest login', async ({ page }) => {
     expect(await page.textContent('h1')).toBe('Create a New Team');
 });
 
-// player side redirect and login to specific endpoints
+// redirects to specific endpoints
 test('proper redirect for game home page', async ({ page }) => authRedirects(page, '/team'));
 test('proper redirect for game join page', async ({ page }) => authRedirects(page, '/game/join'));
 test('proper redirect for game page', async ({ page }) => authRedirects(page, '/game/1234'));
+test('proper redirect for host choice page', async ({ page }) =>
+    authRedirects(page, '/host/choice', adminUser, adminUser));
+test('proper redirect for host event setup', async ({ page }) =>
+    authRedirects(page, '/host/event-setup', adminUser, adminUser));
+test('proper redirect for host game page', async ({ page }) => authRedirects(page, '/host/1234', adminUser, adminUser));
 
 test.describe('navigate to a trivia event as player', async () => {
     let page: Page;
@@ -95,12 +100,6 @@ test.describe('navigate to trivia event as host', async () => {
         await expect(page).toHaveURL(/\/host\/\d+\/?$/i);
     });
 });
-
-test('proper redirect for host choice page', async ({ page }) =>
-    authRedirects(page, '/host/choice', adminUser, adminUser));
-test('proper redirect for host event setup', async ({ page }) =>
-    authRedirects(page, '/host/event-setup', adminUser, adminUser));
-test('proper redirect for host game page', async ({ page }) => authRedirects(page, '/host/1234', adminUser, adminUser));
 
 // TODO: we need to determine the desired behavior here!
 // - navigate to login when already logged in (as player and host)

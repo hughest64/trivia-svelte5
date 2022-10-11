@@ -6,6 +6,7 @@ export const defaultCredentials = {
     password: 'player'
 };
 
+// TODO: config objects for all params excpet page
 export const login = async (
     page: Page,
     username = defaultCredentials.username,
@@ -18,6 +19,9 @@ export const login = async (
     await page.locator('input[value="Submit"]').click();
 };
 
+// TODO: pageUrl/username/password should be a "config" object along with expected endpoint
+// if that is empty, it can be set to the desired endpoint, i.e.
+// const expectdEndpoint = config.expectedEndpoint || config.desiredEncpoint
 export const authRedirects = async (
     page: Page,
     pageUrl: string,
