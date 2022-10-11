@@ -3,12 +3,12 @@
     import { getStore } from '$lib/utils';
     import type { EventQuestion } from '$lib/types';
 
-    export let activeRoundNumber: number;
+    export let activeRoundQuestion: string;
     export let activeQuestion: EventQuestion;
 
     const socket: WebSocket = getContext('socket');
     $: response = getStore('responseData');
-    $: console.log($response);
+    // $: console.log($response);
 
     const handleResponseSubmit = () => {
         socket.send(
@@ -20,7 +20,7 @@
     };
 </script>
 
-<h2>{activeRoundNumber}.{activeQuestion.question_number}</h2>
+<h2>{activeRoundQuestion}</h2>
 
 <p class="question-text">{activeQuestion.text}</p>
 

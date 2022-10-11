@@ -164,3 +164,30 @@
     padding: 4px 6px 0;
     font-size: 14px;
 }
+
+// round numbers
+.round-selector {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 0.25em;
+    max-width: calc(100% - 2em);
+    button {
+        width: 3em;
+        height: 3em;
+        border: 2px solid var(--color-black);
+        border-radius: 0.5em;
+        font-size: 1em;
+        font-weight: bold;
+        color: var(--color-black);
+        background-color: var(--color-white);
+        cursor: pointer;
+        &.active {
+            color: var(--color-white);
+            background-color: var(--color-red);
+        }
+        &.current {
+            border-color: var(--color-current);
+        }
+    }
+}

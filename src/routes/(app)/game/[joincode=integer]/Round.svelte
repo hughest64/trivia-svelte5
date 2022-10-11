@@ -69,6 +69,7 @@
                 use:swipeQuestion
                 on:swipe={handleQuestionSelect}
             >
+                <!-- slot represeents the question and note components -->
                 <slot />
             </div>
         {/key}

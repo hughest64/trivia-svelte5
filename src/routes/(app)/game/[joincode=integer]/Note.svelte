@@ -1,12 +1,11 @@
 <script lang="ts">
-    export let activeRoundNumber: number;
-    export let activeQuestionNumber: number;
+    export let activeRoundQuestion: string;
     let hidden = true;
 </script>
 
 <div class="notes-container flex-column">
     <div class="button disabled" on:click={() => (hidden = !hidden)}>
-        Notes for {activeRoundNumber}.{activeQuestionNumber}
+        Notes for {activeRoundQuestion}
     </div>
 
     <form class:hidden on:click|preventDefault>
