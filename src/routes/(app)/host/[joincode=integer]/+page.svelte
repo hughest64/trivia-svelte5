@@ -32,6 +32,7 @@
 
     const handleLockRound = () => {
         console.log('the active round is locked?', activeRound.locked);
+        // TODO: or do we post?
         socket.send(JSON.stringify({
             type: 'lock_round',
             message: {
