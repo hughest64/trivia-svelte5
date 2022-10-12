@@ -72,23 +72,16 @@ export interface ActiveEventData {
     activeQuestionNumber: number;
 }
 
-export interface AllStores {
-    eventData: EventData;
-    userData: UserData;
-    activeEventData: ActiveEventData;
-    responseData: ResponseData;
-};
-
-export type StoreUnion = EventData | ActiveEventData | EventQuestion | EventRound;
+export type AllStores = EventData | ActiveEventData | EventQuestion | EventRound;
 
 export interface SocketMessage {
     type: string;
-    store: string;
-    message: string | [keyof AllStores]
+    store: StoreKey;
+    message: AllStores
 }
 
 export type StoreKey = 'userData' | 'eventData' | 'activeEventData' | 'responseData';
-export type StoreType = Writable<string | [keyof AllStores]>
+export type StoreType = Writable<AllStores>;
 export type StoreMap = Map<StoreKey, StoreType>
 
 export type MessageHandler = Record<

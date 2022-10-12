@@ -42,7 +42,14 @@ class SocketConsumer(JsonWebsocketConsumer):
 
     def lock_round(self, data):
         print(data)
-        # send the lock status back
+        # load the event from datq["message"]["event_id"]
+        # set the round lock
+        # send all rounds back via:
+        # self.send_json(
+        #     "type": "update_store",
+        #     "store": "eventData",
+        #     "message": { "rounds": ["update Rounds"]}
+        # )
 
     #####################
     ### TEAM MESSAGES ###

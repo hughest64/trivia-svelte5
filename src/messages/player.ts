@@ -13,8 +13,7 @@ const handlers: MessageHandler = {
     set_store: (message, store: StoreType) => store.set(message),
     // TODO: I don't think this works any more than one layer deep, so to lock a round
     // message would need to be all rounds
-    // TODO: get rid of [keyof AllStores] in favor of a simple union type
-    // update_store: (message, store: StoreType) => store.update((data) => ({ ...data, ...message }))
+    update_store: (message, store: StoreType) => store.update((data) => ({ ...data, ...message }))
 };
 
 export default handlers;

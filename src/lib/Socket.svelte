@@ -4,7 +4,7 @@
     import { page } from '$app/stores';
     import handlers from '$messages/player';
     import { PUBLIC_WEBSOCKET_HOST as apiHost } from '$env/static/public';
-    import type { SocketMessage, StoreKey, StoreMap, StoreType } from '$lib/types';
+    import type { SocketMessage, StoreMap, StoreType } from '$lib/types';
 
     const path = $page.url.pathname;
     const stores = getAllContexts<StoreMap>();
@@ -37,7 +37,7 @@
             const data: SocketMessage = JSON.parse(event.data);
 
             try {
-                handlers[data.type](data.message, <StoreType>stores.get(data.store as StoreKey));
+                handlers[data.type](data.message, <StoreType>stores.get(data.store));
             } catch {
                 console.error(`message type ${data.type} does not have a handler function!`);
             }
