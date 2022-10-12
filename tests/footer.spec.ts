@@ -87,7 +87,7 @@ test.describe('footer links display and navigate correctly for hosts', async () 
         await page.close();
     });
     // test for links on /host/choice (menu only)
-    test('only the menu is visibon host the host choice page', async () => {
+    test('only the menu is visible host the host choice page', async () => {
         await page.goto('/host/choice');
         await expect(page).toHaveURL('/host/choice');
         const visibleLinks = ['Menu'];
@@ -96,7 +96,7 @@ test.describe('footer links display and navigate correctly for hosts', async () 
         await Promise.all(linkPromises);
     });
     // test for links on /host/event-setup (menu only)
-    test('only the menu is visibon host the event setup', async () => {
+    test('only the menu is visible host the event setup', async () => {
         await page.goto('/host/event-setup');
         await expect(page).toHaveURL('/host/event-setup');
         const visibleLinks = ['Menu'];

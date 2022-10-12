@@ -39,6 +39,11 @@ class SocketConsumer(JsonWebsocketConsumer):
     def connected(self, data):
         self.send_json(data)
 
+
+    def lock_round(self, data):
+        print(data)
+        # send the lock status back
+
     #####################
     ### TEAM MESSAGES ###
     #####################
