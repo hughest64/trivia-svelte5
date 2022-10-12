@@ -5,12 +5,16 @@
  * functions should take in a data param which is equivalent to the "message" key in the websocekt message.
  */
 
-import type { MessageHandler } from '$lib/types';
+import type { MessageHandler, StoreType } from '$lib/types';
 
 const handlers: MessageHandler = {
     connected: () => console.log('connected!'), // undefined,
     log_me: (message) => console.log(message),
-    update_store: (message, store) => store.set(message)
+    set_store: (message, store: StoreType) => store.set(message),
+    // TODO: I don't think this works any more than one layer deep, so to lock a round
+    // message would need to be all rounds
+    // TODO: get rid of [keyof AllStores] in favor of a simple union type
+    // update_store: (message, store: StoreType) => store.update((data) => ({ ...data, ...message }))
 };
 
 export default handlers;

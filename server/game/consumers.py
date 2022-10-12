@@ -53,7 +53,7 @@ class SocketConsumer(JsonWebsocketConsumer):
         # do some business logic
 
         self.send_json({
-            "type": "update_store",
+            "type": "set_store",
             # TODO: I really want a snake_case to camelCase converter and vice versa
             "store": "responseData",
             "message": data.get('message')
