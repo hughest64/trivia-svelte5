@@ -103,4 +103,5 @@ test.describe('navigate to trivia event as host', async () => {
 
 // TODO: we need to determine the desired behavior here!
 // - navigate to login when already logged in (as player and host)
+//   we might be on the right track here
 // - test non-staff accessing host endpoint?
