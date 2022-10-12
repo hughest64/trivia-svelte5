@@ -1,10 +1,9 @@
 import json
-from os import pread
 import random
 
 from django.conf import settings
 from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import ensure_csrf_cookie, csrf_protect
+from django.views.decorators.csrf import csrf_protect
 
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.exceptions import PermissionDenied

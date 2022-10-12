@@ -30,9 +30,8 @@
         });
     };
 
-    const handleLockRound = () => {
-        console.log('the active round is locked?', activeRound.locked);
-        // TODO: or do we post?
+    const handleLockRound = async () => {
+        // send a socket message?
         socket.send(JSON.stringify({
             type: 'lock_round',
             message: {
@@ -41,6 +40,13 @@
                 lock_status: !activeRound.locked
             }
         }));
+        // TODO: or do we post?
+        // const response = await fetch('some url', {
+        //     method: 'POST',
+        //     // we should have the proper headers in $page.data (I think) if we need them
+        //     // headers: {}
+        //     body: ''
+        // });
     };
 </script>
 
