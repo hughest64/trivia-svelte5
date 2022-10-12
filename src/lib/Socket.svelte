@@ -7,7 +7,7 @@
     import type { SocketMessage, StoreKey, StoreMap, StoreType } from '$lib/types';
 
     const path = $page.url.pathname;
-    const stores: StoreMap = getAllContexts();
+    const stores = getAllContexts<StoreMap>();
 
     export let socketUrl = `${apiHost}/ws${path}/`;
     export let maxRetries = 50;
@@ -37,7 +37,7 @@
             const data: SocketMessage = JSON.parse(event.data);
 
             try {
-                handlers[data.type](data.message, <StoreType>stores.get(<StoreKey>data.store));
+                handlers[data.type](data.message, <StoreType>stores.get(data.store as StoreKey));
             } catch {
                 console.error(`message type ${data.type} does not have a handler function!`);
             }

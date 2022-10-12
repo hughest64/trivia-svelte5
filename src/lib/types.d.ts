@@ -1,3 +1,5 @@
+import type { Writable } from 'svelte/store';
+
 export interface UserData {
     id: number;
     username: string;
@@ -77,10 +79,12 @@ export interface AllStores {
     responseData: ResponseData;
 };
 
+export type StoreUnion = EventData | ActiveEventData | EventQuestion | EventRound;
+
 export interface SocketMessage {
     type: string;
-    store?: string;
-    message?: string | [keyof AllStores]
+    store: string;
+    message: string | [keyof AllStores]
 }
 
 export type StoreKey = 'userData' | 'eventData' | 'activeEventData' | 'responseData';
@@ -89,5 +93,5 @@ export type StoreMap = Map<StoreKey, StoreType>
 
 export type MessageHandler = Record<
     string,
-    (message: SocketMessage['message'], store?: StoreType) => unknown
+    (message: SocketMessage['message'], store: StoreType) => unknown
 >;
