@@ -17,6 +17,7 @@ export const handle: Handle = async({ event, resolve }) => {
             cookie: cookies,
             'x-csrftoken': cookieObject.csrftoken
         };
+        event.locals.loaded = true;
     }
 
     const joincode = event.params.joincode;
