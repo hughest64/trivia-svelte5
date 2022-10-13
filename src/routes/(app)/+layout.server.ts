@@ -3,8 +3,9 @@ import { PUBLIC_API_HOST as apiHost } from '$env/static/public';
 import type { LayoutServerLoad } from './$types';
 
 
-export const load: LayoutServerLoad = async ({ locals, url, fetch }) => {
-    console.log('running layout.server');
+export const load: LayoutServerLoad = async ({ locals, routeId, url, fetch }) => {
+    // can we use routeId in the quest to stop nefarious api calls?
+    console.log('running layout.server', routeId);
 
     // TODO: this is not how we should have this in the end!
     const apiEndpoint = url.pathname === '/host/choice' ? '/user' : url.pathname;
