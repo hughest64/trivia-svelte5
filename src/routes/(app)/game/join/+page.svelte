@@ -6,7 +6,7 @@
     export let form: ActionData;
     export let joincode: string;
 
-    const userData: UserData = $page.data?.user_data;
+    const userData = <UserData>$page.data?.user_data;
     $: activeTeam = userData?.teams.find((team) => team.id === userData?.active_team_id);
 
 </script>

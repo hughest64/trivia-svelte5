@@ -6,7 +6,7 @@ export const defaultCredentials = {
     password: 'player'
 };
 
-// TODO: config objects for all params excpet page
+// TODO: config objects for all params except page
 export const login = async (
     page: Page,
     username = defaultCredentials.username,
