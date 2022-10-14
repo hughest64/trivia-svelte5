@@ -5,6 +5,16 @@ import type { Page } from '@playwright/test';
 const adminUser = 'sample_admin';
 const footerLinks = ['Quiz', 'Leaderboard', 'Chat', 'Megaround', 'Scoring', 'Menu'];
 
+test('no nav on the login page', async ({ page }) => {
+    await page.goto('/user/login');
+    await expect(page.locator('nav')).not.toBeVisible();
+});
+
+test('no nav on the home (welcom) page', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.locator('nav')).not.toBeVisible();
+});
+
 test.describe('footer links display and navigate correctly for players', async () => {
     let page: Page;
     test.beforeAll(async ({ browser }) => {
@@ -14,11 +24,6 @@ test.describe('footer links display and navigate correctly for players', async (
     test.afterAll(async () => {
         await page.goto('/user/logout');
         await page.close();
-    });
-
-    test('home page does not have a nav bar', async () => {
-        await page.goto('/');
-        await expect(page.locator('nav')).not.toBeVisible();
     });
 
     test('team page only displays the menu link', async () => {

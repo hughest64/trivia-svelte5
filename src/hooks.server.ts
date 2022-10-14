@@ -1,9 +1,12 @@
+import { validateJwt } from '$lib/utils';
 import type { Handle, HandleFetch } from '@sveltejs/kit';
 
 export const handle: Handle = async ({ event, resolve }) => {
     const { cookies, params, request } = event;
     const csrftoken = cookies.get('csrftoken') || '';
     const jwt = cookies.get('jwt') || '';
+
+    event.locals.validtoken = validateJwt(jwt);
 
     if (jwt && csrftoken) {
         event.locals.fetchHeaders = {

@@ -6,7 +6,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 
 from rest_framework.authentication import SessionAuthentication
-from rest_framework.exceptions import PermissionDenied
+from rest_framework.exceptions import AuthenticationFailed, PermissionDenied
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_401_UNAUTHORIZED, HTTP_404_NOT_FOUND
@@ -63,7 +63,7 @@ class EventSetupView(APIView):
         """get this weeks games and a list of locations"""
         user = request.user
         if user.is_authenticated and not user.is_staff:
-            raise PermissionDenied(code=HTTP_401_UNAUTHORIZED)
+            return Response(status=401, data={"detail": "You are not authorized to view this page"})
 
         locationSerializer = LocationSerializer(location_classes, many=True)
         gameSerializer = GameSerializer(game_classes, many=True)
@@ -82,7 +82,7 @@ class EventSetupView(APIView):
         """create a new event or fetch an existing one with a specified game/location combo"""
         user = request.user
         if user.is_authenticated and not user.is_staff:
-            raise PermissionDenied(code=HTTP_401_UNAUTHORIZED)
+            return Response(status=401, data={"detail": "You are not authorized to view this page"})
         # self.check_permissions(request)
         # validate the data
         # get or create
@@ -118,14 +118,17 @@ class EventJoinView(APIView):
 
 
 class EventHostView(APIView):
-    authentication_classes = [SessionAuthentication, JwtAuthentication]
-    permission_classes = [IsAdminUser]
+    authentication_classes = [JwtAuthentication]
+    # permission_classes = [IsAdminUser]
 
     def get(self, request, joincode=None):
         """fetch a specific event from the joincode parsed from the url"""
         user = request.user
+        # TODO: investigate why raise AutenticationFailed doesn't actually
+        # return a 401
         if user.is_authenticated and not user.is_staff:
-            raise PermissionDenied(code=HTTP_401_UNAUTHORIZED)
+            return Response(status=401, data={"detail": "You are not authorized to view this page"})
+
 
         # use the join code to look up event data
         event_data["join_code"] = joincode

@@ -31,6 +31,13 @@ export function getStore<T>(key: StoreKey): Writable<T> {
     return getContext(key);
 }
 
+export const validateJwt = (token?: string): boolean => {
+    if (!token) return false;
+    // TODO: use a jwt lib to parse the token and check the exp,
+    // if expired return false
+    return true;
+};
+
 /**
  * helper which returns the api or websocket host url from the current page url
  * TODO: this may not actually bes used, I think env variable is the way to go
