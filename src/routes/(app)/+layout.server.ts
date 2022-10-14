@@ -4,7 +4,8 @@ import type { LayoutServerLoad } from './$types';
 
 const validateJwt = (token?: string): boolean => {
     if (!token) return false;
-    // use a jwt lib to parset the token and check the exp, if expired return false
+    // TODO: use a jwt lib to parse the token and check the exp,
+    // if expired return false
     return true;
 };
 
@@ -14,7 +15,6 @@ export const load: LayoutServerLoad = async ({ cookies, locals, request, fetch }
     const url = new URL(request.url);
     const apiEndpoint = apiMap.get(url.pathname) || url.pathname;
     
-    // TODO: this could also happen in the handle hook so it's avialable everywhere
     const jwtIsValid = validateJwt(cookies.get('jwt'));
     if (!jwtIsValid) throw redirect(302, `/user/logout?next=${url.pathname}`);
 
