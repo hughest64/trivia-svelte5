@@ -10,7 +10,8 @@
 
 <h3>Do you want to:</h3>
 
-<a class="button button-red" id="host" href="/host/event-setup">Host A Game</a>
+<!-- NOTE: rel="eternal" here ensures that the layout load will run and we get our data from the api -->
+<a class="button button-red" id="host" href="/host/event-setup" rel="external">Host A Game</a>
 <a class="button button-black" id="play" href="/team">Play Trivia</a>
 
 <small>To view the recent changes in the application, click Here.</small>

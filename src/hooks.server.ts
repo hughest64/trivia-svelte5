@@ -1,12 +1,17 @@
 import { getCookieObject } from '$lib/utils';
 import type { Handle, HandleFetch } from '@sveltejs/kit';
 
+// TODO: perhaps a jwt parsing lib is useful to detect user info and set it
+// in locals, just basic info like:
+// - username
+// - is_staff
+// - expiration of token
 export const handle: Handle = async({ event, resolve }) => {
-    console.log('Hello from handle!');
     // TODO: This may work so we can eliminate the getCookieObject function
     // console.log(event.cookies.get('event-4569'));
     // console.log('csrf:', event.cookies.get('csrftoken'));
     // console.log('jwt:', event.cookies.get('jwt'));
+    // console.log(event.request.headers)
 
     const cookies = event.request.headers.get('cookie') || '';
     const cookieObject = getCookieObject(event.request);
@@ -32,7 +37,6 @@ export const handle: Handle = async({ event, resolve }) => {
     return response;
 };
 
-// TODO: this won't fire from *.server.ts files until svelte fetch is added to the RequestHandler
 export const handleFetch: HandleFetch = async ({ event, request }) => {
     const requestMod = new Request(request.url,
         {

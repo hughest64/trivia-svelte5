@@ -2,18 +2,24 @@ import { redirect } from '@sveltejs/kit';
 import { PUBLIC_API_HOST as apiHost } from '$env/static/public';
 import type { LayoutServerLoad } from './$types';
 
+const validateJwt = (token?: string): boolean => {
+    if (!token) return false;
+    // use a jwt lib to parset the token and check the exp, if expired return false
+    return true;
+};
 
-export const load: LayoutServerLoad = async ({ locals, routeId, url, fetch }) => {
-    // can we use routeId in the quest to stop nefarious api calls?
-    console.log('running layout.server', routeId);
+const apiMap = new Map([['/host/choice', '/user']]);
 
-    // TODO: this is not how we should have this in the end!
-    const apiEndpoint = url.pathname === '/host/choice' ? '/user' : url.pathname;
+export const load: LayoutServerLoad = async ({ cookies, locals, request, fetch }) => {
+    const url = new URL(request.url);
+    const apiEndpoint = apiMap.get(url.pathname) || url.pathname;
+    
+    // TODO: this could also happen in the handle hook so it's avialable everywhere
+    const jwtIsValid = validateJwt(cookies.get('jwt'));
+    if (!jwtIsValid) throw redirect(302, `/user/logout?next=${url.pathname}`);
 
     let data = {};
 
-    // TODO: by virtue of accessing url.pathname this will run on every navigation
-    // how to determine when to not run?
     const response = await fetch(`${apiHost}${apiEndpoint}/`);
 
     if (response.ok) {
@@ -23,7 +29,7 @@ export const load: LayoutServerLoad = async ({ locals, routeId, url, fetch }) =>
     } else if (url.pathname !== '/') {
         // TODO: this is only appropriate for unathorized requests we may need
         // to return an error to the page rather than redirecting in other cases
-        throw redirect(307, `/?next=${url.pathname}`);
+        throw redirect(302, `/?next=${url.pathname}`);
     }
 
     return data;
