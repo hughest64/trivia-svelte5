@@ -57,7 +57,7 @@ class TeamView(APIView):
 
 class EventSetupView(APIView):
     authentication_classes = [SessionAuthentication, JwtAuthentication]
-    permission_classes = [IsAdminUser]
+    # permission_classes = [IsAdminUser]
 
     def get(self, request):
         """get this weeks games and a list of locations"""
