@@ -12,7 +12,7 @@
     <li>Submit App Feedback</li>
     <li>Trivia Mafia Host Feedback</li>
     <li><a rel="external" href="/user/logout">Logout</a></li>
-    <h4 on:click>X</h4>
+    <button on:click>X</button>
 </ul>
 
 <style lang="scss">
@@ -34,12 +34,14 @@
         text-decoration: none;
         color: var(--color-white);
     }
-    h4 {
+    button {
         width: fit-content;
         text-align: right;
         align-self: flex-end;
         font-size: 2em;
         color: var(--color-white);
+        background-color: inherit;
+        border: none;
         margin-bottom: 1em;
         cursor: pointer;
     }

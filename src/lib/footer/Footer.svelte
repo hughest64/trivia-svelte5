@@ -59,10 +59,10 @@
             </li>
         {/if}
         <li>
-            <div class="menu" on:click>
+            <button class="menu" on:click>
                 <MenuIcon class="svg" />
                 <p>Menu</p>
-            </div>
+            </button>
         </li>
     </ul>
 </nav>
@@ -82,6 +82,7 @@
         padding: 0;
         margin: 0.25em 0;
     }
+    
     li > a,
     .menu {
         text-decoration: none;
@@ -95,6 +96,11 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
+    }
+    .menu{
+        margin: 0;
+        padding: 0;
+        border: none;
     }
     a:hover,
     a:focus {

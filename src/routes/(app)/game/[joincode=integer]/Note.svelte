@@ -4,11 +4,11 @@
 </script>
 
 <div class="notes-container flex-column">
-    <div class="button disabled" on:click={() => (hidden = !hidden)}>
+    <button class="button disabled" on:click={() => (hidden = !hidden)}>
         Notes for {activeRoundQuestion}
-    </div>
+    </button>
 
-    <form class:hidden on:click|preventDefault>
+    <form class:hidden on:submit|preventDefault>
         <div class="input-element">
             <input name="note" type="text" />
             <label for="note">Add a New Note</label>

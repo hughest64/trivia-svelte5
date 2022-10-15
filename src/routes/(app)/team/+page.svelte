@@ -21,7 +21,7 @@
     Create a New Team
 </button>
 
-<form class:hidecreateteam on:click|preventDefault>
+<form class:hidecreateteam on:submit|preventDefault>
     <h3>Enter Your Team Name</h3>
     <div class="input-element">
         <input type="text" placeholder="Team Name" />
@@ -54,7 +54,7 @@
     Enter Team Password
 </button>
 
-<form class:hideteampassword on:click|preventDefault>
+<form class:hideteampassword on:submit|preventDefault>
     <div class="input-element">
         <input type="text" name="team-password" placeholder="Team Password" />
     </div>
