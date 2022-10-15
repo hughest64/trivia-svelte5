@@ -1,9 +1,9 @@
 import { getContext, setContext } from 'svelte';
 import { writable, type Writable } from 'svelte/store';
-import type { Cookies } from '@sveltejs/kit';
+import jwt_decode from 'jwt-decode';
 import { PUBLIC_API_PORT as apiPort } from '$env/static/public';
-
-import type { StoreKey } from './types';
+import type { Cookies } from '@sveltejs/kit';
+import type { JwtPayload, StoreKey } from './types';
 
 /**
  * take one or many cookie keys and invalidate them by creating new cookies with an exipiration
@@ -19,10 +19,7 @@ export const invalidateCookies = (cookies: Cookies, keys: string | string[]): vo
         cookies.set(key, '', { path: '/', expires: new Date(0) });
     });
 };
-/**
- * 
 
- */
 export function createStore<T>(key: StoreKey, data: T): Writable<T> {
     return setContext(key, writable(data));
 }
@@ -31,11 +28,13 @@ export function getStore<T>(key: StoreKey): Writable<T> {
     return getContext(key);
 }
 
-export const validateJwt = (token?: string): boolean => {
-    if (!token) return false;
-    // TODO: use a jwt lib to parse the token and check the exp,
-    // if expired return false
-    return true;
+export const getJwtPayload = (token?: string): JwtPayload => {
+    if (!token) return { validtoken: false };
+
+    const payload = jwt_decode<JwtPayload>(token);
+    payload.validtoken = Date.now() < (payload.exp || NaN) ;
+    
+    return payload;
 };
 
 /**

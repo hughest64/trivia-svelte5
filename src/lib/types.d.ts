@@ -1,5 +1,18 @@
 import type { Writable } from 'svelte/store';
 
+export interface JwtPayload {
+    // user.id
+    id?: number;
+    // user.is_staff
+    staff_user?: boolean;
+    // expiration timestamp
+    exp?: number;
+    // created timestamp
+    iat?: number;
+    // token exists and is not expired
+    validtoken?: boolean
+}
+
 export interface UserData {
     id: number;
     username: string;
