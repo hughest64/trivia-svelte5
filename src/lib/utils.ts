@@ -32,7 +32,7 @@ export const getJwtPayload = (token?: string): JwtPayload => {
     if (!token) return { validtoken: false };
 
     const payload = jwt_decode<JwtPayload>(token);
-    payload.validtoken = Date.now() < (payload.exp || NaN) ;
+    payload.validtoken = Date.now() / 1000 < (payload.exp || NaN) ;
     
     return payload;
 };
