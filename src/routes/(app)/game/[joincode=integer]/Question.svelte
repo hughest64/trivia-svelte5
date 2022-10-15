@@ -7,14 +7,15 @@
     export let activeQuestion: EventQuestion;
 
     const socket: WebSocket = getContext('socket');
-    $: response = getStore('responseData');
-    // $: console.log($response);
+    $: responseStore = getStore('responseData');
+    $: response = $responseStore; // filtered to this r.q
+    $: notsubmitted = $responseStore !== response;
 
     const handleResponseSubmit = () => {
         socket.send(
             JSON.stringify({
                 type: 'team.update_response',
-                message: $response
+                message: response
             })
         );
     };
@@ -25,8 +26,8 @@
 <p class="question-text">{activeQuestion.text}</p>
 
 <form on:submit|preventDefault={handleResponseSubmit}>
-    <div class="input-element">
-        <input name="response" type="text" bind:value={$response} />
+    <div class="input-element" class:notsubmitted >
+        <input name="response" type="text" bind:value={response} />
         <label for="response">Enter Answer</label>
     </div>
     <input class="button button-red" type="submit" value="Submit" />
@@ -38,5 +39,14 @@
     }
     .question-text {
         padding: 0 1em;
+    }
+
+    .notsubmitted {
+        input {
+            border-color: var(--color-red);
+        }
+        label {
+            background-color: var(--color-red);
+        }
     }
 </style>
