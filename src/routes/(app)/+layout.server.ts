@@ -18,12 +18,12 @@ export const load: LayoutServerLoad = async ({ locals, request, fetch }) => {
         data = { ...responseData, ...locals };
     }
 
-    // forbidden, redirect to log out to ensure cookies get deleted
-    if (response.status === 403) {
+    // not authorized, redirect to log out to ensure cookies get deleted
+    if (response.status === 401) {
         throw redirect(302, `/user/logout?next=${url.pathname}`);
     }
-    // not authorized, redirect to a safe page
-    if (response.status === 401) {
+    // forbidden, redirect to a safe page
+    if (response.status === 403) {
         throw redirect(302, '/team');
     }
 

@@ -6,10 +6,9 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 
 from rest_framework.authentication import SessionAuthentication
-from rest_framework.exceptions import AuthenticationFailed, PermissionDenied
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
-from rest_framework.status import HTTP_200_OK, HTTP_401_UNAUTHORIZED, HTTP_404_NOT_FOUND
+from rest_framework.status import HTTP_200_OK, HTTP_404_NOT_FOUND
 from rest_framework.views import APIView
 
 from user.authentication import JwtAuthentication
@@ -31,7 +30,7 @@ with open(
 
 # TODO: classes
 class TeamView(APIView):
-    authentication_classes = [SessionAuthentication, JwtAuthentication]
+    authentication_classes = [JwtAuthentication]
 
     def get(self, request):
         serializer = UserSerializer(request.user)
@@ -56,15 +55,12 @@ class TeamView(APIView):
 
 
 class EventSetupView(APIView):
-    authentication_classes = [SessionAuthentication, JwtAuthentication]
-    # permission_classes = [IsAdminUser]
+    authentication_classes = [JwtAuthentication]
+    permission_classes = [IsAdminUser]
 
     def get(self, request):
         """get this weeks games and a list of locations"""
         user = request.user
-        if user.is_authenticated and not user.is_staff:
-            return Response(status=401, data={"detail": "You are not authorized to view this page"})
-
         locationSerializer = LocationSerializer(location_classes, many=True)
         gameSerializer = GameSerializer(game_classes, many=True)
         userSerializer = UserSerializer(user)
@@ -81,21 +77,18 @@ class EventSetupView(APIView):
     def post(self, request):
         """create a new event or fetch an existing one with a specified game/location combo"""
         user = request.user
-        if user.is_authenticated and not user.is_staff:
-            return Response(status=401, data={"detail": "You are not authorized to view this page"})
-        # self.check_permissions(request)
         # validate the data
         # get or create
         event_data["join_code"] = random.randint(1000, 9999)
         # serialize
-        userSerializer = UserSerializer(request.user)
+        userSerializer = UserSerializer(user)
 
         # TODO: this could just return the join code since the data won't be loaded from this response
         return Response({"event_data": event_data , "user_data": userSerializer.data})
 
 
 class EventView(APIView):
-    authentication_classes = [SessionAuthentication, JwtAuthentication]
+    authentication_classes = [JwtAuthentication]
 
     def get(self, request, joincode=None):
         """fetch a specific event from the joincode parsed from the url"""
@@ -108,7 +101,7 @@ class EventView(APIView):
 
 
 class EventJoinView(APIView):
-    authentication_classes = [SessionAuthentication, JwtAuthentication]
+    authentication_classes = [JwtAuthentication]
 
     def get(self, request):
         """return user data to /game/join"""
@@ -119,20 +112,14 @@ class EventJoinView(APIView):
 
 class EventHostView(APIView):
     authentication_classes = [JwtAuthentication]
-    # permission_classes = [IsAdminUser]
+    permission_classes = [IsAdminUser]
 
     def get(self, request, joincode=None):
         """fetch a specific event from the joincode parsed from the url"""
         user = request.user
-        # TODO: investigate why raise AutenticationFailed doesn't actually
-        # return a 401
-        if user.is_authenticated and not user.is_staff:
-            return Response(status=401, data={"detail": "You are not authorized to view this page"})
-
-
         # use the join code to look up event data
-        event_data["join_code"] = joincode
         # raise if it's a bad join code
-        userSerializer = UserSerializer(request.user)
+        event_data["join_code"] = joincode
+        userSerializer = UserSerializer(user)
 
         return Response({"event_data": event_data, "user_data": userSerializer.data })

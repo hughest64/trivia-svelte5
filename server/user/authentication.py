@@ -58,6 +58,11 @@ def get_user(token):
 class JwtAuthentication(authentication.BaseAuthentication):
     """custom JWT authentication for Django Rest Framework"""
 
+    # this is set so that DRF will populate the WWW-Authenticate header on requests
+    # without it DRF will never raise an auth exception with 401, it would always be 403
+    def authenticate_header(self, request):
+        return "session"
+
     def authenticate(self, request):
         token = request.COOKIES.get("jwt")
 
@@ -84,7 +89,6 @@ class JwtAuthMiddleware:
 
     async def __call__(self, scope, receive, send):
         jwt = scope["cookies"].get("jwt")
-        # jwt = QueryDict(scope.get("query_string", {})).get("jwt", "")
         scope["user"] = await get_user(jwt)
 
         return await self.app(scope, receive, send)
