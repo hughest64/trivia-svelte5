@@ -1,14 +1,22 @@
 import { validateJwt } from '$lib/utils';
+import jwt_decode from 'jwt-decode';
 import type { Handle, HandleFetch } from '@sveltejs/kit';
 
 export const handle: Handle = async ({ event, resolve }) => {
     const { cookies, params, request } = event;
     const csrftoken = cookies.get('csrftoken') || '';
     const jwt = cookies.get('jwt') || '';
-
-    event.locals.validtoken = validateJwt(jwt);
-
+    
+    
     if (jwt && csrftoken) {
+        // TODO:
+        // interface for for decode return
+        // decode in the validate function
+        // return an object of data
+        // validtoken should be required
+        const jwtPayload = jwt_decode(jwt);
+        event.locals.validtoken = validateJwt(jwt);
+        console.log(jwtPayload);
         event.locals.fetchHeaders = {
             'content-type': 'application/json',
             cookie: request.headers.get('cookie') || '',

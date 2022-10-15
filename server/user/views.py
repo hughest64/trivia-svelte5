@@ -45,7 +45,7 @@ class GuestView(APIView):
 
         # TODO: should we "refresh" the token if it is valid?
         if not valid_token:
-            token = create_token(user.id)
+            token = create_token(user)
             response.set_cookie(key="jwt", value=token, httponly=True)
 
         return response
@@ -71,7 +71,7 @@ class LoginView(APIView):
             raise AuthenticationFailed("Invalid Username or Password")
 
         serializer = UserSerializer(user)
-        token = create_token(user.id)
+        token = create_token(user)
 
         response = Response({"user_data": serializer.data})
         response.set_cookie(key="jwt", value=token, httponly=True)
