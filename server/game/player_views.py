@@ -16,10 +16,11 @@ class ResponseView(APIView):
     authentication_classes = [JwtAuthentication]
 
     def post(self, request, joincode, id):
+        print(request.data)
 
         # TODO: permission class for this?
-        if request.user.active_team_id != request.data.get("team_id"):
-            return Response(code=400, data={ "detail": "you are not on the right team"})
+        # if request.user.active_team_id != request.data.get("team_id"):
+        #     return Response(code=400, data={ "detail": "you are not on the right team"})
 
         # lock the transaction to prevent race conditions?
         try:
@@ -29,7 +30,7 @@ class ResponseView(APIView):
 
         except Exception as e:  # if something goes wrong:
             # TODO: probably want better messaging back to the user
-            return Response(code=400, data={"error": e})
+            return Response(status=400, data={"error": e})
         else:
             # use request.data["team_id"] to group send back to the team group
             # no need to send anything back, could event use a 201 code

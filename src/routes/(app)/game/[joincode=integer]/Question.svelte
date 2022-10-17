@@ -1,53 +1,38 @@
 <script lang="ts">
-    import { page } from '$app/stores';
-    import { PUBLIC_API_HOST as apiHost } from '$env/static/public';
-    import type { EventQuestion, Response } from '$lib/types';
+    import { page }from '$app/stores';
+    import { enhance } from '$app/forms';
+    import { getStore } from '$lib/utils';
+    import type { ActionData } from './$types';
+    import type { EventQuestion, Response, UserData } from '$lib/types';
 
-    export let error = '';
     export let activeRoundQuestion: string;
     export let activeQuestion: EventQuestion;
     export let activeResponse: Response | undefined;
+
+    $: form = <ActionData>$page.form;
+    $: console.log('form', form);
     $: responseText = activeResponse?.recorded_answer || '';
-
-    $: userData = $page.data?.user_data;
+    $: userData =  getStore<UserData>('userData');
     $: response = responseText;
-    $: notsubmitted = response && activeResponse?.recorded_answer !== response;
+    $: notsubmitted = false; // response && activeResponse?.recorded_answer !== response;
 
-    const handleResponse = async () => {
-        console.log($page.data.fetchHeaders.cookie);
-        const postResponse = await fetch(
-            `${apiHost}/game/${$page.params.joincode}/response/${activeResponse?.id || 'create'}`,
-            {
-                method: 'POST',
-                credentials: 'include',
-                headers: $page.data.fetchHeaders,
-                body: JSON.stringify({
-                    response_text: response,
-                    key: activeRoundQuestion,
-                    team_id: userData?.active_team_id
-                })
-            }
-        );
-
-        if (!postResponse.ok) {
-            error = (await postResponse.json()).detail;
-        }
-    };
 </script>
 
 <h2>{activeRoundQuestion}</h2>
 
 <p class="question-text">{activeQuestion.text}</p>
 
-<form on:submit|preventDefault={handleResponse}>
-    
+<!-- TODO: perhaps customizing enchance could help us reatiin the input after submitting and only for this r.q
+or at least provide a spinner or some such -->
+<form action="?/response" method="POST" use:enhance>
+    <input type="hidden" name="team_id" value={$userData?.active_team_id || ''}>
+    <input type="hidden" name="response_id" value={activeResponse?.id || 'create'}>
+
     <div class="input-element" class:notsubmitted>
-        <input required name="response_text" type="text" bind:value={response} on:change={() => (error = '')} />
+        <input required name="response_text" type="text" bind:value={response}>
         <label for="response_text">Enter Answer</label>
     </div>
-    
-    {#if error}<p>{error}</p>{/if}
-
+    {#if form?.error}<p>{form.error}</p>{/if}
     <button class="button button-red">Submit</button>
 </form>
 

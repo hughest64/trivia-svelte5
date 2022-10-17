@@ -95,7 +95,7 @@ export interface ActiveEventData {
     activeQuestionNumber: number;
 }
 
-export type AllStores = EventData | ActiveEventData | EventQuestion | EventRound;
+export type AllStores = EventData | ActiveEventData | EventQuestion | EventRound | UserData;
 
 export interface SocketMessage {
     type: string;

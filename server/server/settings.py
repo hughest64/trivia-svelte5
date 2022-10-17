@@ -160,11 +160,6 @@ CSRF_TRUSTED_ORIGINS = [
 
 CORS_ALLOW_CREDENTIALS = True
 
-# TODO: is this a good idea? doing this becuase I can't get the cookie header to come through
-# in client fetches, the JwtAuth class checks for a jwt cooke first, then the x-jwt-auth header
-from corsheaders.defaults import default_headers
-CORS_ALLOW_HEADERS = list(default_headers) + ["x-jwt-auth"]
-
 # jwt settings
 
 # token expiration in minutes

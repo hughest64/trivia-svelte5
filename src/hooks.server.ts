@@ -5,7 +5,7 @@ export const handle: Handle = async ({ event, resolve }) => {
     const { cookies, params, request } = event;
     const csrftoken = cookies.get('csrftoken') || '';
     const jwt = cookies.get('jwt') || '';
-    
+
     if (jwt && csrftoken) {
         const jwtPayload = getJwtPayload(jwt);
         event.locals.validtoken = jwtPayload.validtoken;
@@ -14,8 +14,7 @@ export const handle: Handle = async ({ event, resolve }) => {
         event.locals.fetchHeaders = {
             'content-type': 'application/json',
             cookie: request.headers.get('cookie') || '',
-            'x-csrftoken': csrftoken,
-            'x-jwt-auth': jwt
+            'x-csrftoken': csrftoken
         };
     }
 
@@ -31,11 +30,10 @@ export const handle: Handle = async ({ event, resolve }) => {
 };
 
 export const handleFetch: HandleFetch = async ({ event, request }) => {
-    const requestMod = new Request(request.url, {
-        method: request.method,
-        headers: { ...request.headers, ...event.locals.fetchHeaders },
-        body: request.body
-    });
 
-    return fetch(requestMod);
+    for (const [key, value] of Object.entries(<Record<string, string>>event.locals.fetchHeaders)) {
+        request.headers.set(key, value);
+    }
+
+    return fetch(request);
 };
