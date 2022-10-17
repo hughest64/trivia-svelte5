@@ -4,14 +4,24 @@ from asgiref.sync import async_to_sync
 
 class SocketConsumer(JsonWebsocketConsumer):
     def connect(self):
+        user = self.scope["user"]
+        active_team_id = user.active_team_id
         kwargs = self.scope.get("url_route", {}).get("kwargs")
         joincode = kwargs.get("joincode")
-        self.event_group = f"event_{joincode}" if joincode else ""
-        print(f"hello {self.scope['user']}, {joincode}, is your Join code")
 
-        if self.event_group:
+        # TODO: helper functions for this would be great so we keep changes consistent
+        self.event_group = f"event_{joincode}" if joincode else ""
+        # TODO: make this tie to a team an event
+        self.team_group = f"team_{active_team_id}" if active_team_id else ""
+
+        print(f"hello {user}, {joincode}, is your Join code and Your active team is {user.active_team_id}")
+
+        if self.event_group and self.team_group:
             async_to_sync(self.channel_layer.group_add)(
                 self.event_group, self.channel_name
+            )
+            async_to_sync(self.channel_layer.group_add)(
+                self.team_group, self.channel_name
             )
         # reject the connection, you've no business here.
         else:
@@ -63,16 +73,7 @@ class SocketConsumer(JsonWebsocketConsumer):
 
     def team_update_response(self, data):
         print(data)
-        # do some business logic
-
-        self.send_json(
-            {
-                "type": "set_store",
-                # TODO: I really want a snake_case to camelCase converter and vice versa
-                "store": "responseData",
-                "message": data.get("message"),
-            }
-        )
+        self.send_json(data)
 
     ######################
     ### EVENT MESSAGES ###

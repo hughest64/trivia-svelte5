@@ -16,7 +16,10 @@ class ResponseView(APIView):
     authentication_classes = [JwtAuthentication]
 
     def post(self, request, joincode, id):
-        print(request.data)
+        team_id = request.data.get("team_id")
+        response_id = request.data.get("response_id")
+        new_id = "".join(request.data.get("key", "").split("."))
+        response_text = request.data.get("response_text")
 
         # TODO: permission class for this?
         # if request.user.active_team_id != request.data.get("team_id"):
@@ -32,14 +35,17 @@ class ResponseView(APIView):
             # TODO: probably want better messaging back to the user
             return Response(status=400, data={"error": e})
         else:
-            # use request.data["team_id"] to group send back to the team group
             # no need to send anything back, could event use a 201 code
-            # async_to_sync(channel_layer.group_send)(
-            #     f"event_{joincode}",
-            #     {
-            #         "type": "team_set_response",
-            #         "store": "response",
-            #         "message": {"r.q": "serialized response"},
-            #     },
-            # )
+            async_to_sync(channel_layer.group_send)(
+                f"team_{team_id}",  # TODO: make this tie to a team an event
+                {
+                    "type": "team_update_response",
+                    "store": "responseData",
+                    "message": {
+                        "response_id": response_id or new_id,
+                        "recorded_answer": response_text,
+                        "key": request.data.get("key", ""),
+                    },
+                },
+            )
             return Response()

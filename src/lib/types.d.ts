@@ -95,7 +95,7 @@ export interface ActiveEventData {
     activeQuestionNumber: number;
 }
 
-export type AllStores = EventData | ActiveEventData | EventQuestion | EventRound | UserData;
+export type AllStores = EventData | ActiveEventData | EventQuestion | EventRound | UserData | Response[];
 
 export interface SocketMessage {
     type: string;
@@ -107,7 +107,7 @@ export type StoreKey = 'userData' | 'eventData' | 'activeEventData' | 'responseD
 export type StoreType = Writable<AllStores>;
 export type StoreMap = Map<StoreKey, StoreType>
 
-export type MessageHandler = Record<
-    string,
-    (message: SocketMessage['message'], store: StoreType) => unknown
->;
+// export type MessageHandler = Record<
+//     string,
+//     (message: SocketMessage['message'], store: StoreType) => unknown
+// >;

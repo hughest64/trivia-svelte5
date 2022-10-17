@@ -1,5 +1,6 @@
 <script lang="ts">
     import { onDestroy, getAllContexts, getContext, setContext } from 'svelte';
+    import { get } from 'svelte/store';
     import { browser } from '$app/environment';
     import { page } from '$app/stores';
     import handlers from '$messages/player';
@@ -35,7 +36,7 @@
         // TODO: dynamic handling (or importing?) for handler files based on game vs. host routes would be good
         webSocket.onmessage = (event) => {
             const data: SocketMessage = JSON.parse(event.data);
-
+            
             try {
                 handlers[data.type](data.message, <StoreType>stores.get(data.store));
             } catch {

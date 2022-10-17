@@ -9,6 +9,7 @@
     $: activeData = getStore<ActiveEventData>('activeEventData');
     $: eventData = getStore<EventData>('eventData');
     $: responseStore = getStore<Response[]>('responseData');
+    $: console.log('RESONSES UPDATED!', $responseStore);
 
     $: activeRound =
         $eventData?.rounds.find((round) => round.round_number === $activeData.activeRoundNumber) ||

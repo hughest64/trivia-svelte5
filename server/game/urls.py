@@ -14,7 +14,7 @@ urlpatterns = [
     # player endpoints
     re_path(r"^game/join/?$", views.EventJoinView.as_view()),
     # create/update responses - id should should be the id of an existing resonse or "create" to create a new response
-    re_path(r"^game/(?P<joincode>\d+)/response/(?P<id>\w+)/?$", player_views.ResponseView.as_view()),
+    re_path(r"^game/(?P<joincode>\d+)/response/(?P<id>\w*)/?$", player_views.ResponseView.as_view()),
     re_path(r"^game/(?P<joincode>\d+)[/\w]*/?$", views.EventView.as_view()),
     re_path(r"^teamselect/?$", views.TeamView.as_view()),
     re_path(r"^team/?$", views.TeamView.as_view()),
