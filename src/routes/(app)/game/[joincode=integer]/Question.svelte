@@ -10,7 +10,6 @@
     export let activeResponse: Response | undefined;
 
     $: form = <ActionData>$page.form;
-    $: console.log('form', form);
     $: responseText = activeResponse?.recorded_answer || '';
     $: userData =  getStore<UserData>('userData');
     $: response = responseText;
