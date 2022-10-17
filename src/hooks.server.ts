@@ -14,7 +14,8 @@ export const handle: Handle = async ({ event, resolve }) => {
         event.locals.fetchHeaders = {
             'content-type': 'application/json',
             cookie: request.headers.get('cookie') || '',
-            'x-csrftoken': csrftoken
+            'x-csrftoken': csrftoken,
+            'x-jwt-auth': jwt
         };
     }
 

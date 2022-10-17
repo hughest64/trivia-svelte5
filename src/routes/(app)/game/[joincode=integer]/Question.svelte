@@ -1,10 +1,9 @@
 <script lang="ts">
-    import { enhance } from '$app/forms';
     import { page } from '$app/stores';
-    import type { ActionData } from './$types';
+    import { PUBLIC_API_HOST as apiHost } from '$env/static/public';
     import type { EventQuestion, Response } from '$lib/types';
 
-    export let form: ActionData = {};
+    export let error = '';
     export let activeRoundQuestion: string;
     export let activeQuestion: EventQuestion;
     export let activeResponse: Response | undefined;
@@ -13,27 +12,41 @@
     $: userData = $page.data?.user_data;
     $: response = responseText;
     $: notsubmitted = response && activeResponse?.recorded_answer !== response;
+
+    const handleResponse = async () => {
+        console.log($page.data.fetchHeaders.cookie);
+        const postResponse = await fetch(
+            `${apiHost}/game/${$page.params.joincode}/response/${activeResponse?.id || 'create'}`,
+            {
+                method: 'POST',
+                credentials: 'include',
+                headers: $page.data.fetchHeaders,
+                body: JSON.stringify({
+                    response_text: response,
+                    key: activeRoundQuestion,
+                    team_id: userData?.active_team_id
+                })
+            }
+        );
+
+        if (!postResponse.ok) {
+            error = (await postResponse.json()).detail;
+        }
+    };
 </script>
 
 <h2>{activeRoundQuestion}</h2>
 
 <p class="question-text">{activeQuestion.text}</p>
 
-<!-- TODO: client fetch maybe a better answer here, w/o use:enhance we refreshing the page on each submission
-     (i.e. disconnect, reconnect to the socket) and with it we lose our state (userData.active_team_id, etc)
-     if might be fine as long as the response always return user data, but it seems like risky overhead to me
--->
-<form action="?/response" method="post" use:enhance>
-    {#if form?.error}<p>{form.error}</p>{/if}
-
-    <input type="hidden" name="team_id" value={userData?.active_team_id}>
-    <input type="hidden" name="round_question" value={activeResponse?.key}>
-    <input type="hidden" name="response_id" value={activeResponse?.id || ''}>
-
-    <div class="input-element" class:notsubmitted >
-        <input name="response_text" type="text" bind:value={response} />
+<form on:submit|preventDefault={handleResponse}>
+    
+    <div class="input-element" class:notsubmitted>
+        <input required name="response_text" type="text" bind:value={response} on:change={() => (error = '')} />
         <label for="response_text">Enter Answer</label>
     </div>
+    
+    {#if error}<p>{error}</p>{/if}
 
     <button class="button button-red">Submit</button>
 </form>

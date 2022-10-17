@@ -64,7 +64,7 @@ class JwtAuthentication(authentication.BaseAuthentication):
         return "session"
 
     def authenticate(self, request):
-        token = request.COOKIES.get("jwt")
+        token = request.COOKIES.get("jwt") or request.META.get("HTTP_X_JWT_AUTH")
 
         if not token:
             raise AuthenticationFailed("You need to log in!")

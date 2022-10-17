@@ -15,7 +15,12 @@ channel_layer = get_channel_layer()
 class ResponseView(APIView):
     authentication_classes = [JwtAuthentication]
 
-    def post(self, request, joincode, id=None):
+    def post(self, request, joincode, id):
+
+        # TODO: permission class for this?
+        if request.user.active_team_id != request.data.get("team_id"):
+            return Response(code=400, data={ "detail": "you are not on the right team"})
+
         # lock the transaction to prevent race conditions?
         try:
             "lookup up the object with id"
@@ -28,12 +33,12 @@ class ResponseView(APIView):
         else:
             # use request.data["team_id"] to group send back to the team group
             # no need to send anything back, could event use a 201 code
-            async_to_sync(channel_layer.group_send)(
-                f"event_{joincode}",
-                {
-                    "type": "team_set_response",
-                    "store": "response",
-                    "message": {"r.q": "serialized response"},
-                },
-            )
+            # async_to_sync(channel_layer.group_send)(
+            #     f"event_{joincode}",
+            #     {
+            #         "type": "team_set_response",
+            #         "store": "response",
+            #         "message": {"r.q": "serialized response"},
+            #     },
+            # )
             return Response()
