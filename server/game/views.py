@@ -28,6 +28,11 @@ with open(
 ) as event_file:
     event_data = json.load(event_file)
 
+with open(
+    settings.BASE_DIR.parent / "data" / "response_data.json", "r"
+) as response_file:
+    response_data = json.load(response_file)
+
 # TODO: classes
 class TeamView(APIView):
     authentication_classes = [JwtAuthentication]
@@ -63,13 +68,13 @@ class EventSetupView(APIView):
         user = request.user
         locationSerializer = LocationSerializer(location_classes, many=True)
         gameSerializer = GameSerializer(game_classes, many=True)
-        userSerializer = UserSerializer(user)
+        user_serializer = UserSerializer(user)
 
         return Response(
             {
                 "location_select_data": locationSerializer.data,
                 "game_select_data": gameSerializer.data,
-                "user_data": userSerializer.data
+                "user_data": user_serializer.data,
             }
         )
 
@@ -81,10 +86,10 @@ class EventSetupView(APIView):
         # get or create
         event_data["join_code"] = random.randint(1000, 9999)
         # serialize
-        userSerializer = UserSerializer(user)
+        user_serializer = UserSerializer(user)
 
         # TODO: this could just return the join code since the data won't be loaded from this response
-        return Response({"event_data": event_data , "user_data": userSerializer.data})
+        return Response({"event_data": event_data, "user_data": user_serializer.data})
 
 
 class EventView(APIView):
@@ -95,9 +100,19 @@ class EventView(APIView):
         # use the join code to look up event data
         event_data["join_code"] = joincode
         # raise if it's a bad join code
-        userSerializer = UserSerializer(request.user)
+        user_serializer = UserSerializer(request.user)
 
-        return Response({"event_data": event_data, "user_data": userSerializer.data })
+        # TOOD: get responses for this event via the user's active team
+        # if they do not have an active team respond with a 400 and a message
+        # kit will need to handle the response accordingly
+
+        return Response(
+            {
+                "event_data": event_data,
+                "user_data": user_serializer.data,
+                "response_data": response_data,
+            }
+        )
 
 
 class EventJoinView(APIView):
@@ -120,6 +135,6 @@ class EventHostView(APIView):
         # use the join code to look up event data
         # raise if it's a bad join code
         event_data["join_code"] = joincode
-        userSerializer = UserSerializer(user)
+        user_serializer = UserSerializer(user)
 
-        return Response({"event_data": event_data, "user_data": userSerializer.data })
+        return Response({"event_data": event_data, "user_data": user_serializer.data})

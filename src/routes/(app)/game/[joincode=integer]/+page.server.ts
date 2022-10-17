@@ -5,9 +5,11 @@ import type { Action } from './$types';
 const response: Action = async ({ fetch, request, params }) => {
     const data = Object.fromEntries((await request.formData()).entries());
 
+    console.log(data);
+
     // we could check for a response id, if there isn't one post /create
     // if there is one patch (put?) to /response/<id>
-    const response = await fetch(`${apiHost}/${params.joincode}/response/`, {
+    const response = await fetch(`${apiHost}/game/${params.joincode}/response/`, {
         method: 'POST',
         body: JSON.stringify(data)
     });

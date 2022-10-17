@@ -1,10 +1,11 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { createStore } from '$lib/utils';
-    import type { EventData, ActiveEventData } from './types';
+    import type { ActiveEventData, EventData, Response } from './types';
 
     $: data = $page.data;
     $: eventData = <EventData>data?.event_data;
+    $: responseData = <Response[]>data?.response_data || [];
 
     // event data
     $: createStore<EventData>('eventData', eventData);
@@ -15,8 +16,8 @@
         activeRoundNumber: data?.activeRoundNumber || eventData?.current_question_number || 1
     });
 
-    // TODO: this will need to be a ResponseData[], but we haven't made that yet
-    $: createStore<string>('responseData', '');
+    // TODO: get responses from the server
+    $: createStore<Response[]>('responseData', responseData);
 </script>
 
 <slot />

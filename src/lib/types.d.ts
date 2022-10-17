@@ -80,6 +80,16 @@ export interface EventData {
     current_question_number: number;
 }
 
+// TODO: many more fields to add here
+export interface Response {
+    id: number;
+    recorded_answer: string;
+    round_number: string | number;
+    question_number: string | number;
+    // i.e. `r${round_number}.q${question_number}
+    key: string
+}
+
 export interface ActiveEventData {
     activeRoundNumber: number;
     activeQuestionNumber: number;

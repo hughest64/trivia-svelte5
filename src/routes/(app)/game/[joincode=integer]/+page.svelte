@@ -4,10 +4,11 @@
     import Round from './Round.svelte';
     import Question from './Question.svelte';
     import Note from './Note.svelte';
-    import type { ActiveEventData, EventData } from '$lib/types';
+    import type { ActiveEventData, EventData, Response } from '$lib/types';
 
     $: activeData = getStore<ActiveEventData>('activeEventData');
     $: eventData = getStore<EventData>('eventData');
+    $: responseStore = getStore<Response[]>('responseData');
 
     $: activeRound =
         $eventData?.rounds.find((round) => round.round_number === $activeData.activeRoundNumber) ||
@@ -18,7 +19,7 @@
         activeRound?.questions[0];
 
     $: activeRoundQuestion = `${activeRound.round_number}.${activeQuestion.question_number}`;
-
+    $: activeResponse = $responseStore.find((response) => response.key === activeRoundQuestion);
     $: roundNumbers = $eventData?.rounds.map((round) => round.round_number);
 
     $: joincode = $page.params?.joincode;
@@ -52,7 +53,7 @@
 </div>
 
 <Round {activeRound} {activeData}>
-    <Question {activeRoundQuestion} {activeQuestion} />
+    <Question {activeRoundQuestion} {activeQuestion} {activeResponse} />
     <Note {activeRoundQuestion} />
 </Round>
 
