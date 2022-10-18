@@ -17,18 +17,22 @@ class SocketConsumer(JsonWebsocketConsumer):
         print(f"hello {user}, {joincode}, is your Join code and Your active team is {user.active_team_id}")
 
         if self.event_group and self.team_group:
+            # trivia event group
             async_to_sync(self.channel_layer.group_add)(
                 self.event_group, self.channel_name
             )
+            # team group
             async_to_sync(self.channel_layer.group_add)(
                 self.team_group, self.channel_name
             )
+            # individual group (used mostly for host comms with a single player)
+            async_to_sync(self.channel_layer.group_add)(
+               f"user_{user.id}", self.channel_name
+            )
+
         # reject the connection, you've no business here.
         else:
             self.close()
-
-        # TODO: handle setting a team group from the user's active_team_id
-        # how to handle changing it or when it's not set?
 
         self.accept()
         async_to_sync(self.channel_layer.send)(
@@ -72,7 +76,6 @@ class SocketConsumer(JsonWebsocketConsumer):
     #####################
 
     def team_update_response(self, data):
-        print(data)
         self.send_json(data)
 
     ######################

@@ -1,6 +1,6 @@
 <script lang="ts">
+    // TODO: we need to close the connectin if a user changes teams with an active socket, which may not be in this file
     import { onDestroy, getAllContexts, getContext, setContext } from 'svelte';
-    import { get } from 'svelte/store';
     import { browser } from '$app/environment';
     import { page } from '$app/stores';
     import handlers from '$messages/player';

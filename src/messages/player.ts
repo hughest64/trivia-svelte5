@@ -21,7 +21,7 @@ const handlers: Record<string, (message: any, store: Writable<any>) => unknown> 
                 // keep the original index if the response exists
                 currentResponses.splice(responseIndex, 1, { ...currentResponses[responseIndex], ...message });
             } else {
-                // add to the end of the list
+                // otherwise add to the end of the list
                 currentResponses.push(message);
             }
 

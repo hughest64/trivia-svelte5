@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { page }from '$app/stores';
+    import { page } from '$app/stores';
     import { applyAction, enhance } from '$app/forms';
     import { getStore } from '$lib/utils';
     import type { ActionData } from './$types';
@@ -11,28 +11,31 @@
     $: responseText = activeResponse?.recorded_answer || '';
 
     $: form = <ActionData>$page.form;
-    $: userData =  getStore<UserData>('userData');
-    // TODO: this is no longer working becuase responseText is not set using bind:value
-    // as doing so resets it to the active response on every key stroke
+    $: userData = getStore<UserData>('userData');
+    
     $: notsubmitted = responseText && activeResponse?.recorded_answer !== responseText;
-    // $: console.log(notsubmitted);
+    // event types are rough
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+    const handleResponseInput = async (event: any) => {
+        const target = <HTMLInputElement>event.target;
+        notsubmitted = target.value !== responseText;
+    };
 </script>
 
 <h2>{activeRoundQuestion}</h2>
 
 <p class="question-text">{activeQuestion.text}</p>
 
-<!-- TODO: applyAction here ensures the the user input is not cleared, however it's
- not clear as to whether or not the actual updated store value is getting set -->
-<form action="?/response" use:enhance={() => {
-    return async ({ result }) => await applyAction(result);
-}}>
-    <input type="hidden" name="team_id" value={$userData?.active_team_id || ''}>
-    <input type="hidden" name="response_id" value={activeResponse?.id || ''}>
-    <input type="hidden" name="key" value={activeRoundQuestion}>
+<form
+    action="?/response"
+    use:enhance={() => async ({ result }) => await applyAction(result)}
+>
+    <input type="hidden" name="team_id" value={$userData?.active_team_id || ''} />
+    <input type="hidden" name="response_id" value={activeResponse?.id || ''} />
+    <input type="hidden" name="key" value={activeRoundQuestion} />
 
     <div class="input-element" class:notsubmitted>
-        <input required name="response_text" type="text" value={responseText}>
+        <input required name="response_text" type="text" on:input={handleResponseInput} value={responseText}/>
         <label for="response_text">Enter Answer</label>
     </div>
 
