@@ -5,13 +5,13 @@
  * functions should take in a data param which is equivalent to the "message" key in the websocekt message.
  */
 import type { Writable } from 'svelte/store';
-import type { AllStores, Response, StoreType } from '$lib/types';
+import type { Response } from '$lib/types';
 
 /* eslint-disable-next-line @typescript-eslint/no-explicit-any*/
-const handlers: Record<string, any> = {
+const handlers: Record<string, (message: any, store: Writable<any>) => unknown> = {
     connected: () => console.log('connected!'), // undefined,
-    log_me: (message: AllStores) => console.log(message),
-    set_store: (message: AllStores, store: StoreType) => store.set(message),
+    log_me: (message) => console.log(message),
+    set_store: (message, store) => store.set(message),
     team_update_response: (message: Response, store: Writable<Response[]>) => {
         store.update((responses) => {
             const responseIndex = responses.findIndex((response) => response.key === message.key);
@@ -24,7 +24,6 @@ const handlers: Record<string, any> = {
                 // add to the end of the list
                 currentResponses.push(message);
             }
-            // console.log(currentResponses);
 
             return currentResponses;
         });
