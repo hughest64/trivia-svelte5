@@ -1,5 +1,4 @@
 <script lang="ts">
-    // TODO: we need to close the connectin if a user changes teams with an active socket, which may not be in this file
     import { onDestroy, getAllContexts, getContext, setContext } from 'svelte';
     import { browser } from '$app/environment';
     import { page } from '$app/stores';
@@ -36,6 +35,10 @@
         // TODO: dynamic handling (or importing?) for handler files based on game vs. host routes would be good
         webSocket.onmessage = (event) => {
             const data: SocketMessage = JSON.parse(event.data);
+            // TODO: special cases for connection problems, anonymous user and no active team id
+            // anonymous - send the user id back in a message
+            // no team id - set a store (or just context) and goto '/team', display the message there
+            // that may not always be appropriate I guess
             
             try {
                 handlers[data.type](data.message, <StoreType>stores.get(data.store));

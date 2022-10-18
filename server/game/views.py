@@ -45,7 +45,6 @@ class TeamView(APIView):
     @method_decorator(csrf_protect)
     def post(self, request):
         team_id = request.data.get("team_id")
-        print(request.data)
         status = HTTP_200_OK
         if team_id:
             user = request.user

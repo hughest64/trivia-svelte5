@@ -1,6 +1,16 @@
-import { invalid } from '@sveltejs/kit';
+import { invalid, /* redirect */ } from '@sveltejs/kit';
 import { PUBLIC_API_HOST as apiHost } from '$env/static/public';
-import type { Action } from './$types';
+import type { Action, /* PageServerLoad */ } from './$types';
+
+// TODO: most likely deprecate this works but the user data we are checking doesn't
+// necessarily refelct what the websocket receives on connection
+// export const load: PageServerLoad = async ({ parent, })  => {
+//     const data = <App.PageData>(await parent());
+//     const userData = data.user_data;
+
+//     // disallow /game endpoints if a user does not have an active set
+//     if (!userData?.active_team_id) throw redirect(302, '/team');
+// };
 
 const response: Action = async ({ fetch, request, params }) => {
     const data = Object.fromEntries((await request.formData()).entries());

@@ -1,20 +1,52 @@
+from attr import has
 from channels.generic.websocket import JsonWebsocketConsumer
 from asgiref.sync import async_to_sync
 
-
+# TODO: if we end up adding lots of custom methods, it may be nice
+# to create a separate class for them and either inherit, or use a mix-in
 class SocketConsumer(JsonWebsocketConsumer):
+    team_group = "none"
+    event_group = "none"
+
+    def _set_attrs(self, data=None):
+        """ set useful attributes for use throughout the clss"""
+        # self.user
+        # self.event_group
+        # self.team_group
+        # self.user_group
+
+    def authenticate(self, data=None):
+        """secondary attempt at authentication if the orignal connection was placed as an anonymous user"""
+        # db lookup and if exits, self._set_attrs(data=user) ?
+        # self.send_json
+        # if still no good self.close(code=4xxx)
+
     def connect(self):
+        # TODO: self.user = UserSerializer(self.scope["user"]) if user.is_authenticated
         user = self.scope["user"]
-        active_team_id = user.active_team_id
         kwargs = self.scope.get("url_route", {}).get("kwargs")
         joincode = kwargs.get("joincode")
 
-        # TODO: helper functions for this would be great so we keep changes consistent
-        self.event_group = f"event_{joincode}" if joincode else ""
-        # TODO: make this tie to a team an event
-        self.team_group = f"team_{active_team_id}" if active_team_id else ""
+        self.accept()
 
-        print(f"hello {user}, {joincode}, is your Join code and Your active team is {user.active_team_id}")
+        if user.is_anonymous or not user.active_team_id:
+            # TODO: instead of closing send a message either asking for credentials (helps in case we have header issues)
+            # or have the client redirect to /team (helps if user is_authenticated, but doesn't have an active_team_id)
+            self.close(code=4008)
+            # - send a message asking for credentials
+            # - update if validated
+            # - close if not
+            return
+
+        active_team_id = user.active_team_id
+        # TODO: helper functions for this would be great so we keep changes consistent
+        self.event_group = f"event_{joincode}"
+        # TODO: make this tie to a team an event
+        self.team_group = f"team_{active_team_id}"
+
+        print(
+            f"hello {user}, {joincode}, is your Join code and Your active team is {active_team_id}"
+        )
 
         if self.event_group and self.team_group:
             # trivia event group
@@ -27,14 +59,13 @@ class SocketConsumer(JsonWebsocketConsumer):
             )
             # individual group (used mostly for host comms with a single player)
             async_to_sync(self.channel_layer.group_add)(
-               f"user_{user.id}", self.channel_name
+                f"user_{user.id}", self.channel_name
             )
 
         # reject the connection, you've no business here.
         else:
             self.close()
 
-        self.accept()
         async_to_sync(self.channel_layer.send)(
             self.channel_name, {"type": "connected", "message": {"hello": "Svelte!"}}
         )
@@ -42,6 +73,12 @@ class SocketConsumer(JsonWebsocketConsumer):
     def disconnect(self, close_code):
         async_to_sync(self.channel_layer.group_discard)(
             self.event_group, self.channel_name
+        )
+        async_to_sync(self.channel_layer.group_discard)(
+            self.team_group, self.channel_name
+        )
+        async_to_sync(self.channel_layer.group_discard)(
+            f"user_{self.scope['user'].id}", self.channel_name
         )
 
     def receive_json(self, content):
