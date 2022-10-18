@@ -4,36 +4,28 @@
  * should be in python style snake case and is equivalent to the "type" key in the websocket message
  * functions should take in a data param which is equivalent to the "message" key in the websocekt message.
  */
-import { get } from 'svelte/store';
 import type { Writable } from 'svelte/store';
 import type { AllStores, Response, StoreType } from '$lib/types';
 
+/* eslint-disable-next-line @typescript-eslint/no-explicit-any*/
 const handlers: Record<string, any> = {
     connected: () => console.log('connected!'), // undefined,
     log_me: (message: AllStores) => console.log(message),
     set_store: (message: AllStores, store: StoreType) => store.set(message),
-    // TODO: I don't think this works any more than one layer deep, so to lock a round
-    // message would need to be all rounds
-    update_store: (message: AllStores, store: StoreType) => store.update((data) => ({ ...data, ...message })),
-
     team_update_response: (message: Response, store: Writable<Response[]>) => {
-    
         store.update((responses) => {
-            console.log(responses);
             const responseIndex = responses.findIndex((response) => response.key === message.key);
-            console.log(responseIndex);
             const currentResponses = [...responses];
-    
-            let response_to_update: Response;
+
             if (responseIndex > -1) {
-                response_to_update = currentResponses.splice(responseIndex, 1)[0];
-                Object.assign(response_to_update, message);
+                // keep the original index if the response exists
+                currentResponses.splice(responseIndex, 1, { ...currentResponses[responseIndex], ...message });
             } else {
-                response_to_update = message;
+                // add to the end of the list
+                currentResponses.push(message);
             }
-            currentResponses.push(response_to_update);
-            console.log(currentResponses);
-            
+            // console.log(currentResponses);
+
             return currentResponses;
         });
     }
