@@ -21,7 +21,7 @@
     const createSocket = () => {
         const webSocket = new WebSocket(socketUrl);
 
-        // TODO: we could just default to authenticating here by sending type: user_authenticate
+        // TODO: we could just default to authenticating here by sending type: authenticate
         webSocket.onopen = () => {
             clearTimeout(interval);
             retries = 0;
@@ -62,6 +62,8 @@
         return webSocket;
     };
 
+    // TODO: challenge! come up with a way to store a # of open connections, if > 0 either don't create a new one
+    // or close existing ones
     const socket: WebSocket = getContext('socket');
     socket?.readyState !== 1 && browser && setContext('socket', createSocket());
 
