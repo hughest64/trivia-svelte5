@@ -1,11 +1,6 @@
 import { expect } from '@playwright/test';
 import type { Page } from '@playwright/test';
 
-export const defaultCredentials = {
-    username: 'player',
-    password: 'player'
-};
-
 export interface TestConfig {
     username?: string;
     password?: string;
@@ -29,14 +24,11 @@ export const login = async (page: Page, config: TestConfig = {}): Promise<void> 
     await page.locator('input[value="Submit"]').click();
 };
 
-// TODO: pageUrl/username/password should be a "config" object along with expected endpoint
-// if that is empty, it can be set to the desired endpoint, i.e.
-// const expectdEndpoint = config.expectedEndpoint || config.desiredEncpoint
-export const authRedirects = async (
-    page: Page,
-    config: TestConfig = {}
-) => {
-    const { pageUrl, username, password }: TestConfig = { ...defaultTestConfig, ...config };
+export const authRedirects = async (page: Page, config: TestConfig = {}) => {
+    const { pageUrl, username, password, destinationUrl }: TestConfig = { ...defaultTestConfig, ...config };
+    // expect to land on a destination url if proived otherwise the original page url
+    const endpoint = destinationUrl || pageUrl;
+
     await page.goto(pageUrl as string);
     await expect(page).toHaveTitle(/welcome/i);
 
@@ -45,7 +37,7 @@ export const authRedirects = async (
     expect(await page.textContent('h1')).toBe('Login');
 
     await login(page, { username, password, pageUrl: '' });
-    await expect(page).toHaveURL(pageUrl as string);
+    await expect(page).toHaveURL(endpoint as string);
 };
 
 export const createSelectorPromises = (page: Page, visibleLinks: string[], footerLinks: string[]): Promise<void>[] => {
