@@ -1,5 +1,6 @@
 <script lang="ts">
     import { onDestroy, getAllContexts, getContext, setContext } from 'svelte';
+    import { goto } from '$app/navigation';
     import { browser } from '$app/environment';
     import { page } from '$app/stores';
     import handlers from '$messages/player';
@@ -15,7 +16,7 @@
     export let reconnect = true;
 
     let interval: ReturnType<typeof setTimeout>;
-    let retries = 0;    
+    let retries = 0;
 
     const createSocket = () => {
         const webSocket = new WebSocket(socketUrl);
@@ -26,6 +27,10 @@
             retries = 0;
         };
         webSocket.onclose = (event) => {
+            // authentication issue, remove the exisitng token if there is one, by forcing a logout
+            if (event.code === 4010) {
+                goto('/user/logout');
+            }
             if (!event.wasClean && reconnect && retries <= maxRetries) {
                 retries++;
                 interval = setTimeout(createSocket, retryInterval);
@@ -36,19 +41,22 @@
         // TODO: dynamic handling (or importing?) for handler files based on game vs. host routes would be good
         webSocket.onmessage = (event) => {
             const data: SocketMessage = JSON.parse(event.data);
+
+            // no active_team_id
             if (data.type === 'unauthorized') {
-                webSocket.send(JSON.stringify({ type: 'user_authenticate', message: 'test data' }));
+                // TODO: set an errorMessage store?
+                // I think we can do better than window.open, but goto is behaving strangly
+                // next=thispage param
+                window.open('/team', '_self');
+            // aononymous user in the socket connection
             } else if (data.type === 'unauthenticated') {
-                // TODO:
-            } else {
-                try {
-                    handlers[data.type](data.message, <StoreType>stores.get(data.store));
-                } catch {
-                    console.error(`message type ${data.type} does not have a handler function!`);
-                }
+                webSocket.send(JSON.stringify({ type: 'authenticate', message: { token: $page.data.jwt } }));
             }
-             
-            
+            else if (handlers[data.type]) {
+                handlers[data.type](data.message, <StoreType>stores.get(data.store));
+            } else {
+                console.error(`message type ${data.type} does not have a handler function!`);
+            }
         };
 
         return webSocket;

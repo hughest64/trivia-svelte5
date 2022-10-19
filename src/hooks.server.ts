@@ -10,6 +10,7 @@ export const handle: Handle = async ({ event, resolve }) => {
         const jwtPayload = getJwtPayload(jwt);
         event.locals.validtoken = jwtPayload.validtoken;
         event.locals.staffuser = jwtPayload.staff_user;
+        event.locals.jwt = jwt;
 
         event.locals.fetchHeaders = {
             'content-type': 'application/json',

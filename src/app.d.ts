@@ -5,6 +5,7 @@
 declare namespace App {
     interface Locals {
         fetchHeaders?: Record<string, string>
+        jwt?: string
         validtoken?: boolean
         staffuser?: boolean
         activeRoundNumber?: string | number

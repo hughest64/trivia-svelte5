@@ -10,26 +10,22 @@ export const load: LayoutServerLoad = async ({ locals, request, fetch }) => {
 
     if (!locals.validtoken) throw redirect(302, `/user/logout?next=${url.pathname}`);
 
-    // TODO: something about use:enhance in Question.svelte (and the post in +page.server)
-    // cuase the load function to reun with this endpoint, we never want that to hit the api
-    if (!url.pathname.endsWith('__data.json')) {
-        const response = await fetch(`${apiHost}${apiEndpoint}/`);
+    const response = await fetch(`${apiHost}${apiEndpoint}/`);
 
-        let data = {};
-        if (response.ok) {
-            const responseData = await response.json();
-            data = { ...responseData, ...locals };
-        }
-    
-        // not authorized, redirect to log out to ensure cookies get deleted
-        if (response.status === 401) {
-            throw redirect(302, `/user/logout?next=${url.pathname}`);
-        }
-        // forbidden, redirect to a safe page
-        if (response.status === 403) {
-            throw redirect(302, '/team');
-        }
-    
-        return data;
+    let data = {};
+    if (response.ok) {
+        const responseData = await response.json();
+        data = { ...responseData, ...locals };
     }
+
+    // not authorized, redirect to log out to ensure cookies get deleted
+    if (response.status === 401) {
+        throw redirect(302, `/user/logout?next=${url.pathname}`);
+    }
+    // forbidden, redirect to a safe page
+    if (response.status === 403) {
+        throw redirect(302, '/team');
+    }
+
+    return data;
 };

@@ -26,6 +26,7 @@
 
 <p class="question-text">{activeQuestion.text}</p>
 
+<!-- TODO it would be nice to stop submission if the value has not changed, on:submit = () => preventDefault isn't working-->
 <form
     action="?/response"
     use:enhance={() => async ({ result }) => await applyAction(result)}
