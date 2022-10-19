@@ -22,3 +22,9 @@ test('non staff user accessing /host/1234 redirects to team', async ({ page }) =
 
 // TODO: we can probably modify the auth function to handle an
 // alternate expected endpoint and then add tests for /scoring, etc
+
+// test that that /team?next=/abc/123 redirects to the next param
+// test sample_admin (or any user w/o an active team)
+// - should get redirected to /team with a querystring, don't select a team, or the will be invalid next time
+// test expired (or lack of) jwt when connectiong to websocket
+// - should be logged out and endup back at login

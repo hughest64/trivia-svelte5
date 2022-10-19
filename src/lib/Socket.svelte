@@ -1,6 +1,5 @@
 <script lang="ts">
     import { onDestroy, getAllContexts, getContext, setContext } from 'svelte';
-    import { goto } from '$app/navigation';
     import { browser } from '$app/environment';
     import { page } from '$app/stores';
     import handlers from '$messages/player';
@@ -27,11 +26,11 @@
             retries = 0;
         };
         webSocket.onclose = (event) => {
-            // authentication issue, remove the exisitng token if there is one, by forcing a logout
+            // authentication issue remove the exisitng token if there is one by forcing a logout
             if (event.code === 4010) {
-                goto('/user/logout');
+                window.open('/user/logout', '_self');
             }
-            if (!event.wasClean && reconnect && retries <= maxRetries) {
+            if (!event.wasClean && event.code !== 4010 && reconnect && retries <= maxRetries) {
                 retries++;
                 interval = setTimeout(createSocket, retryInterval);
             } else {
@@ -45,15 +44,16 @@
             // no active_team_id
             if (data.type === 'unauthorized') {
                 // TODO: set an errorMessage store?
-                // I think we can do better than window.open, but goto is behaving strangly
-                // next=thispage param
-                window.open('/team', '_self');
+                // I think we can do better than window.open, but goto is behaving strangly        
+                window.open(`/team?next=${location.pathname}`, '_self');
+
             // aononymous user in the socket connection
             } else if (data.type === 'unauthenticated') {
                 webSocket.send(JSON.stringify({ type: 'authenticate', message: { token: $page.data.jwt } }));
-            }
-            else if (handlers[data.type]) {
+
+            } else if (handlers[data.type]) {
                 handlers[data.type](data.message, <StoreType>stores.get(data.store));
+
             } else {
                 console.error(`message type ${data.type} does not have a handler function!`);
             }

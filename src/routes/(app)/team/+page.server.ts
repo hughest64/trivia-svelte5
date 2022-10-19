@@ -2,7 +2,7 @@ import { invalid, redirect } from '@sveltejs/kit';
 import { PUBLIC_API_HOST as apiHost } from '$env/static/public';
 import type { Action } from './$types';
 
-export const selectTeam: Action = async ({  fetch, request }) => {
+export const selectTeam: Action = async ({  fetch, request, url }) => {
     const { selectedteam, currentteam } = Object.fromEntries((await request.formData()).entries());
 
     if (selectedteam !== currentteam) {
@@ -17,9 +17,10 @@ export const selectTeam: Action = async ({  fetch, request }) => {
         }
     }
 
-    throw redirect(302, '/game/join');
+    const next = url.searchParams.get('next') || '/game/join';
+    throw redirect(302, next);
 };
 
 export const actions = {
-    selectTeam,
+    default: selectTeam,
 };

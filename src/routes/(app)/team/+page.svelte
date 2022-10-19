@@ -32,7 +32,7 @@
 <h1>Or Play with an Existing Team</h1>
 
 {#if userData?.teams.length > 0}
-<form action='?/selectTeam' method='POST'>
+<form method='POST'>
     {#if form?.error}<p class="error">{form?.error}</p>{/if}
     
     <label class="select-label" for="team-select">Choose A Team</label>

@@ -84,17 +84,19 @@ class SocketConsumer(JsonWebsocketConsumer):
 
     def authenticate(self, data):
         """authenticate the user"""
+        kwargs = self.scope.get("url_route", {}).get("kwargs")
         msg = data.get("message")
         token = msg.get("token")
 
         user = decode_token(token)
         if user.is_anonymous:
             self.close(code=4010)
+            return
         else:
             self.scope["user"] = user
 
         
-        if not user.active_team_id:
+        if not user.active_team_id and kwargs.get("gametype") != "host":
             self.send_json(error_messages["unauthorized"])
             return
 
@@ -108,7 +110,6 @@ class SocketConsumer(JsonWebsocketConsumer):
     #####################
 
     def team_update_response(self, data):
-        print("updating a response")
         self.send_json(data)
 
     ######################
