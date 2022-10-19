@@ -2,20 +2,17 @@ from channels.generic.websocket import JsonWebsocketConsumer
 from asgiref.sync import async_to_sync
 
 from user.authentication import decode_token
-from user.serializers import UserSerializer
 
-error_messages = {
-    "unauthorized": {
+
+# TODO: possibly create a separate class for the extra methods as a mix-in
+class SocketConsumer(JsonWebsocketConsumer):
+    unauthorized_msg = {
         "type": "unauthorized",
         "message": "You must be on a team to to play trivia",
-    },
-    "unauthenticated": {"type": "unauthenticated", "message": "You need to log in"},
-}
+    }
+    unauthenticated_msg = {"type": "unauthenticated", "message": "You need to log in"}
 
-# TODO: if we end up adding lots of custom methods, it may be nice
-# to create a separate class for them and either inherit, or use a mix-in
-class SocketConsumer(JsonWebsocketConsumer):
-    user = {}
+    user = None
     event_group = ""
     team_group = ""
     user_group = ""
@@ -25,14 +22,37 @@ class SocketConsumer(JsonWebsocketConsumer):
         kwargs = self.scope.get("url_route", {}).get("kwargs")
         self.joincode = kwargs.get("joincode")
         self.gametype = kwargs.get("gametype")
-        # TODO: consider if this is useful, or if we should just keep the User object
-        self.user = UserSerializer(self.scope["user"]).data
+        self.user = self.scope["user"]
         self.event_group = f"event_{self.joincode}"
-        self.team_group = f"team_{self.user.get('active_team_id')}"
-        self.user_group = f"user_id_{self.user.get('id')}"
+        self.team_group = f"team_{self.user.active_team_id}"
+        self.user_group = f"user_id_{self.user.id}"
+
+    def _set_connection(self):
+        """Called after a user is validated. Will send an unauthenticated message
+        (eqivalent to http 401) if user.is_anonymous == True as well as send an
+        unauthorized (equvalant to http 403) messasge when accessing a game
+        connection without an active team id set.
+        """
+        user = self.scope.get("user", {})
+        kwargs = self.scope.get("url_route", {}).get("kwargs", {})
+
+        if user.is_anonymous:
+            self.send_json(self.unauthenticated_msg)
+            return
+
+        # the game socket requires an active team, but on the host socket
+        if not user.active_team_id and kwargs.get("gametype") != "host":
+            self.send_json(self.unauthenticated_msg)
+            return
+
+        self._set_attrs()
+        self.join_socket_groups()
+        self.send_json({"type": "connected", "message": "hello Svelte!"})
+
+        print(f"hello {self.user.username} your Join code is {self.joincode}")
 
     def join_socket_groups(self):
-        """add the connection to the three event groups"""
+        """Add socket groups for the trivia event, user team, and indiviual user. """
         # trivia event group
         async_to_sync(self.channel_layer.group_add)(self.event_group, self.channel_name)
         # team group
@@ -41,24 +61,8 @@ class SocketConsumer(JsonWebsocketConsumer):
         async_to_sync(self.channel_layer.group_add)(self.user_group, self.channel_name)
 
     def connect(self):
-        user = self.scope.get("user", {})
-        kwargs = self.scope.get("url_route", {}).get("kwargs", {})
         self.accept()
-
-        if user.is_anonymous:
-            self.send_json(error_messages["unauthenticated"])
-            return
-
-        # the game socket requires an active team, but on the host socket
-        if not user.active_team_id and kwargs.get("gametype") != "host":
-            self.send_json(error_messages["unauthorized"])
-            return
-
-        self._set_attrs()
-        self.join_socket_groups()
-        self.send_json({"type": "connected", "message": "hello Svelte!"})
-
-        print(f"hello {self.user.get('username')} your Join code is {self.joincode}")
+        self._set_connection()
 
     def disconnect(self, close_code):
         if self.event_group:
@@ -83,8 +87,9 @@ class SocketConsumer(JsonWebsocketConsumer):
     #####################
 
     def authenticate(self, data):
-        """authenticate the user"""
-        kwargs = self.scope.get("url_route", {}).get("kwargs")
+        """Validate a JWT. close the connection with a custom 4010 code if the
+        token is not valid. Otherwise set the user in scope and connect.
+        """
         msg = data.get("message")
         token = msg.get("token")
 
@@ -94,22 +99,14 @@ class SocketConsumer(JsonWebsocketConsumer):
             return
         else:
             self.scope["user"] = user
-
-        
-        if not user.active_team_id and kwargs.get("gametype") != "host":
-            self.send_json(error_messages["unauthorized"])
-            return
-
-        self._set_attrs()
-        self.join_socket_groups()
-
-        print(f"hello {self.user.get('username')} your Join code is {self.joincode}")
+            self._set_connection()
 
     #####################
     ### TEAM MESSAGES ###
     #####################
 
     def team_update_response(self, data):
+        """Pass a single response object back to a team group."""
         self.send_json(data)
 
     ######################
