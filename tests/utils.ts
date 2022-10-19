@@ -14,7 +14,6 @@ export const defaultTestConfig: TestConfig = {
     pageUrl: '/user/login'
 };
 
-// TODO: config objects for all params except page
 export const login = async (page: Page, config: TestConfig = {}): Promise<void> => {
     const { pageUrl, username, password }: TestConfig = { ...defaultTestConfig, ...config };
 
