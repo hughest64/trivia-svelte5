@@ -8,7 +8,7 @@ from user.serializers import UserSerializer
 # to create a separate class for them and either inherit, or use a mix-in
 class SocketConsumer(JsonWebsocketConsumer):
     def _set_attrs(self, data=None):
-        """set useful attributes for use throughout the clss"""
+        """set useful attributes from the scope"""
         user = data or self.scope["user"]
         kwargs = self.scope.get("url_route", {}).get("kwargs")
 
@@ -74,17 +74,14 @@ class SocketConsumer(JsonWebsocketConsumer):
     #####################
 
     def user_authenticate(self, data):
-        """secondary attempt at authentication if the orignal connection was placed as an anonymous user"""
+        """authenticate the user"""
         print(data)
-        # db lookup and if exits, self._set_attrs(data=user) ?
+        # TODO: should this reqire a token or user id? (token is more secure)
+        # TODO: use the get_user function from user.authentication?
         # TODO: in the case of data being passed, should be try to set it in the scope?
+        # db lookup and if exits, self._set_attrs(data=user) ?
         # self.send_json
         # if still no good self.close(code=4xxx)
-
-    # if we do the db work in a view function and use the socket to update all clients:
-    def update_round_locks(self, data):
-        data.update({"type": "update_store"})
-        self.send_json(data)
 
     #####################
     ### TEAM MESSAGES ###
@@ -97,6 +94,11 @@ class SocketConsumer(JsonWebsocketConsumer):
     ######################
     ### EVENT MESSAGES ###
     ######################
+
+    # if we do the db work in a view function and use the socket to update all clients:
+    def update_round_locks(self, data):
+        data.update({"type": "update_store"})
+        self.send_json(data)
 
     def lock_round(self, data):
         print(data)

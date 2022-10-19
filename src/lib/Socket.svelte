@@ -20,6 +20,7 @@
     const createSocket = () => {
         const webSocket = new WebSocket(socketUrl);
 
+        // TODO: we could just default to authenticating here by sending type: user_authenticate
         webSocket.onopen = () => {
             clearTimeout(interval);
             retries = 0;
