@@ -14,6 +14,7 @@ class SocketConsumer(JsonWebsocketConsumer):
 
         self.user = UserSerializer(user).data
         self.joincode = kwargs.get("joincode")
+        self.gametype = kwargs.get("gametype")
         self.event_group = f"event_{self.joincode}"
         self.team_group = f"team_{user.active_team_id}"
         self.user_group = f"user_id_{user.id}"
@@ -37,7 +38,9 @@ class SocketConsumer(JsonWebsocketConsumer):
             )
             return
 
-        if not user.active_team_id:
+        # the game socket requires an active team, but on the host socket
+        # TODO: the gametype check is too long, clean it up, perhaps kwargs can be set as attrs early?
+        if not user.active_team_id and self.scope.get("url_route", {}).get("kwargs").get("gametype") != "host":
             self.send_json(
                 {
                     "type": "unauthorized",
