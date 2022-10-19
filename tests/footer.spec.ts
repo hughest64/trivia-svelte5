@@ -85,7 +85,7 @@ test.describe('footer links display and navigate correctly for hosts', async () 
     let page: Page;
     test.beforeAll(async ({ browser }) => {
         page = await browser.newPage();
-        await login(page, adminUser, adminUser);
+        await login(page, { username: adminUser, password: adminUser });
     });
     test.afterAll(async () => {
         await page.goto('/user/logout');

@@ -17,14 +17,15 @@ test('guest login', async ({ page }) => {
 });
 
 // redirects to specific endpoints
-test('proper redirect for game home page', async ({ page }) => authRedirects(page, '/team'));
-test('proper redirect for game join page', async ({ page }) => authRedirects(page, '/game/join'));
-test('proper redirect for game page', async ({ page }) => authRedirects(page, '/game/1234'));
+test('proper redirect for game home page', async ({ page }) => authRedirects(page, { pageUrl: '/team' }));
+test('proper redirect for game join page', async ({ page }) => authRedirects(page, { pageUrl: '/game/join' }));
+test('proper redirect for game page', async ({ page }) => authRedirects(page, { pageUrl: '/game/1234' }));
 test('proper redirect for host choice page', async ({ page }) =>
-    authRedirects(page, '/host/choice', adminUser, adminUser));
+    authRedirects(page, { username: adminUser, password: adminUser, pageUrl: '/host/choice' }));
 test('proper redirect for host event setup', async ({ page }) =>
-    authRedirects(page, '/host/event-setup', adminUser, adminUser));
-test('proper redirect for host game page', async ({ page }) => authRedirects(page, '/host/1234', adminUser, adminUser));
+    authRedirects(page, { username: adminUser, password: adminUser, pageUrl: '/host/event-setup' }));
+test('proper redirect for host game page', async ({ page }) =>
+    authRedirects(page, { username: adminUser, password: adminUser, pageUrl: '/host/1234' }));
 
 test.describe('navigate to a trivia event as player', async () => {
     let page: Page;
@@ -66,7 +67,7 @@ test.describe('navigate to trivia event as host', async () => {
     let page: Page;
     test.beforeAll(async ({ browser }) => {
         page = await browser.newPage();
-        await login(page, adminUser, adminUser);
+        await login(page, { username: adminUser, password: adminUser });
     });
     test.afterAll(async () => {
         await page.goto('/user/logout');
@@ -100,8 +101,3 @@ test.describe('navigate to trivia event as host', async () => {
         await expect(page).toHaveURL(/\/host\/\d+\/?$/i);
     });
 });
-
-// TODO: we need to determine the desired behavior here!
-// - navigate to login when already logged in (as player and host)
-//   we might be on the right track here
-// - test non-staff accessing host endpoint?

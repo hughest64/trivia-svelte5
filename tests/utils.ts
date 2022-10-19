@@ -6,16 +6,26 @@ export const defaultCredentials = {
     password: 'player'
 };
 
+export interface TestConfig {
+    username?: string;
+    password?: string;
+    pageUrl?: string;
+    destinationUrl?: string;
+}
+
+export const defaultTestConfig: TestConfig = {
+    username: 'player',
+    password: 'player',
+    pageUrl: '/user/login'
+};
+
 // TODO: config objects for all params except page
-export const login = async (
-    page: Page,
-    username = defaultCredentials.username,
-    password = defaultCredentials.password,
-    pageUrl = '/user/login'
-): Promise<void> => {
+export const login = async (page: Page, config: TestConfig = {}): Promise<void> => {
+    const { pageUrl, username, password }: TestConfig = { ...defaultTestConfig, ...config };
+
     if (pageUrl) await page.goto(pageUrl);
-    await page.locator('input[name="username"]').fill(username);
-    await page.locator('input[name="password"]').fill(password);
+    await page.locator('input[name="username"]').fill(username as string);
+    await page.locator('input[name="password"]').fill(password as string);
     await page.locator('input[value="Submit"]').click();
 };
 
@@ -24,19 +34,18 @@ export const login = async (
 // const expectdEndpoint = config.expectedEndpoint || config.desiredEncpoint
 export const authRedirects = async (
     page: Page,
-    pageUrl: string,
-    username = defaultCredentials.username,
-    password = defaultCredentials.password
+    config: TestConfig = {}
 ) => {
-    await page.goto(pageUrl);
+    const { pageUrl, username, password }: TestConfig = { ...defaultTestConfig, ...config };
+    await page.goto(pageUrl as string);
     await expect(page).toHaveTitle(/welcome/i);
 
     await page.locator('text=Login/Create Account').click();
     await expect(page).toHaveTitle(/login/i);
     expect(await page.textContent('h1')).toBe('Login');
 
-    await login(page, username, password, '');
-    await expect(page).toHaveURL(pageUrl);
+    await login(page, { username, password, pageUrl: '' });
+    await expect(page).toHaveURL(pageUrl as string);
 };
 
 export const createSelectorPromises = (page: Page, visibleLinks: string[], footerLinks: string[]): Promise<void>[] => {
