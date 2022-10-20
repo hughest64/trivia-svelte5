@@ -15,8 +15,6 @@
 
 <h1>Enter Game Code</h1>
 
-<!-- TODO: handle no activeteam, probably at a higher level, but a user
-should not be able to access any endpoint here or after without an active team -->
 <p>Thanks for Playing with team {activeTeam?.name}! Enter the game code from your host to get started.</p>
 
 <form action="?/joinevent" method="POST">

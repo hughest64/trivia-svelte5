@@ -14,6 +14,7 @@
 {#if form?.error}<p>{form?.error}</p>{/if}
 
 <a class="button button-red" href={`/user/login${$page.url.search}`}> Login/Create Account </a>
+<!-- TODO: button with a formAction? -->
 <form action="" method="POST">
     <input class="button button-white" type="submit" value="Play as a Guest">
 </form>

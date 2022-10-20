@@ -86,8 +86,7 @@ export interface Response {
     recorded_answer: string;
     round_number: string | number;
     question_number: string | number;
-    // i.e. `r${round_number}.q${question_number}
-    key: string
+    key: string // `${round_number}.${question_number}
 }
 
 export interface ActiveEventData {

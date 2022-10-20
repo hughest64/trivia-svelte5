@@ -9,7 +9,8 @@
 
     const userData = <UserData>$page.data?.user_data;
 
-    // TODO: finish create a team and join by code (team password)
+    // TODO: I think we want to determine this in ssr or at least higher in the stack
+    // we get an annoying whot teams[0] then update, possibly add the attr in api side?
     let selected: UserTeam = userData?.teams.find((team) => team.id === userData?.active_team_id) || userData?.teams[0];
 </script>
 
