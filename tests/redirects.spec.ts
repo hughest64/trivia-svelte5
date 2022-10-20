@@ -1,34 +1,84 @@
 import { expect, test } from '@playwright/test';
 import { login } from './utils.js';
 
-test.beforeEach( async ({ page }) => {
-    await login(page);
+const playerSelectedTeam = 'hello world';
+
+test.describe('a player cannot access host endpoints', async () => {
+    test.beforeEach( async ({ page }) => {
+        await login(page);
+    });
+    
+    test('non staff user accessing /host/choice redirects to team', async ({ page }) => {
+        await page.goto('/host/choice');
+        await expect(page).toHaveURL(/\/team/i);
+    });
+    
+    test('non staff user accessing /host/event-setup redirects to team', async ({ page }) => {
+        await page.goto('/host/event-setup');
+        await expect(page).toHaveURL(/team/i);
+    });
+    
+    test('non staff user accessing /host/1234 redirects to team', async ({ page }) => {
+        await page.goto('/host/1234');
+        await expect(page).toHaveURL(/team/i);
+    });
+    
+    test('non staff user accessing /host/1234/chat redirects to team', async ({ page }) => {
+        await page.goto('/host/1234/chat');
+        await expect(page).toHaveURL(/team/i);
+    });
+    
+    test('non staff user accessing /host/1234/score redirects to team', async ({ page }) => {
+        await page.goto('/host/1234/score');
+        await expect(page).toHaveURL(/team/i);
+    });
+    
+    test('non staff user accessing /host/1234/leaderboard redirects to team', async ({ page }) => {
+        await page.goto('/host/1234/leaderboard');
+        await expect(page).toHaveURL(/team/i);
+    });
 });
 
-test('non staff user accessing /host/choice redirects to team', async ({ page }) => {
-    await page.goto('/host/choice');
-    await expect(page).toHaveURL(/\/team/i);
+
+test.describe('logged in users cannot access login routes', async () => {
+    test.beforeEach( async ({ page }) => {
+        await login(page);
+    });
+
+    test('logged in user is redirect to /team when trying to go to /user/login', async ({ page }) => {
+        await expect(page).toHaveURL(/team/i);
+        await page.goto('/user/login');
+        await expect(page).toHaveURL(/team/i);
+    });
+    
+    test('logged in user is redirect to /team when trying to go to /', async ({ page }) => {
+        await expect(page).toHaveURL(/team/i);
+        await page.goto('/');
+        await expect(page).toHaveURL(/team/i);
+    });
+    
+    test('/team with a next query param redirects to next', async ({ page }) => {
+        await page.goto('/team?next=game/1234');
+        await page.selectOption('select#team-select', { label: playerSelectedTeam });
+        await page.locator('text=Choose This Team').click();
+    
+        await expect(page).toHaveURL('/game/1234');
+    });
 });
 
-test('non staff user accessing /host/event-setup redirects to team', async ({ page }) => {
-    await page.goto('/host/event-setup');
-    await expect(page).toHaveURL(/team/i);
+
+test.describe('tests for a player without an active team', async () => {
+    test.beforeEach( async ({ page }) => {
+        await login(page, { username: 'sample_admin', password: 'sample_admin' });
+    });
+    
+    test('user with no active team is redirected to /team when trying to join a trivia event', async ({ page }) => {
+        await page.goto('/game/1234');
+        await expect(page).toHaveURL(/team/i);
+    });
+    // TODO: - test game, leaderboard, megaround, chat, join,
 });
 
-test('non staff user accessing /host/1234 redirects to team', async ({ page }) => {
-    await page.goto('/host/1234');
-    await expect(page).toHaveURL(/team/i);
-});
-
-// TODO: we can probably modify the auth function to handle an
-// alternate expected endpoint and then add tests for /scoring, etc
-
-// - navigate to login when already logged in
-// - navigate to / when already logged in
-
-// test that that /team?next=/abc/123 redirects to the next param
-// test sample_admin (or any user w/o an active team)
-// - should get redirected to /team with a querystring, don't select a team, or the will be invalid next time
-// - test game, leaderboard, megaround, chat, join,
+// TODO:
 // test expired (or lack of) jwt when connectiong to websocket
 // - should be logged out and endup back at login
