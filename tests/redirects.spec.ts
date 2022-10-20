@@ -76,7 +76,21 @@ test.describe('tests for a player without an active team', async () => {
         await page.goto('/game/1234');
         await expect(page).toHaveURL(/team/i);
     });
-    // TODO: - test game, leaderboard, megaround, chat, join,
+
+    test('user with no active team is redirected to /team when trying to access a leaderboard', async ({ page }) => {
+        await page.goto('/game/1234/leaderboard');
+        await expect(page).toHaveURL(/team/i);
+    });
+
+    test('user with no active team is redirected to /team when trying to access a megaround', async ({ page }) => {
+        await page.goto('/game/1234/megaround');
+        await expect(page).toHaveURL(/team/i);
+    });
+
+    test('user with no active team is redirected to /team when trying to access team chat', async ({ page }) => {
+        await page.goto('/game/1234/chat');
+        await expect(page).toHaveURL(/team/i);
+    });
 });
 
 // TODO:
