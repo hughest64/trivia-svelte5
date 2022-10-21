@@ -7,15 +7,13 @@
     import MenuIcon from './icons/MenuIcon.svelte';
     import ScoringIcon from './icons/ScoringIcon.svelte';
 
-    // example routes
-    // const d = '(app)/host/[joincode=integer]'; // should match
-    // const d2 = '(app)/game/join'; // should not match
-
     // TODO: better regex
-    const reg = /^\(\w+\)\/(game|host)\/[[=\w]+]\/?/;
+    const reg = /^\/\(\w+\)\/(game|host)\/[[=\w]+]\/?/;
 
     const joinCode = $page.params?.joincode;
-    $: routeId = $page.routeId?.split('/')[1];
+
+    $: routeId = $page.routeId?.split('/')[2];
+
     $: isEventRoute = reg.test($page.routeId || '');
 
     $: setActive = (link: string) => $page.url.pathname.endsWith(link);
@@ -24,7 +22,7 @@
 <nav>
     <ul id="nav-links" class:justify-nav={!isEventRoute}>
         {#if isEventRoute}
-            <li  class:active={setActive(joinCode)}>
+            <li class:active={setActive(joinCode)}>
                 <a href={`/${routeId}/${joinCode}`}>
                     <QuizIcon class="svg" />
                     <p>Quiz</p>
@@ -36,7 +34,7 @@
                     <p>Leaderboard</p>
                 </a>
             </li>
-            <li  class:active={setActive('chat')}>
+            <li class:active={setActive('chat')}>
                 <a href={`/${routeId}/${joinCode}/chat`}>
                     <ChatIcon class="svg" />
                     <p>Chat</p>
@@ -44,14 +42,14 @@
             </li>
         {/if}
         {#if routeId === 'game' && isEventRoute}
-            <li  class:active={setActive('megaround')}>
+            <li class:active={setActive('megaround')}>
                 <a href={`/game/${joinCode}/megaround`}>
                     <MegaroundIcon class="svg" />
                     <p>Megaround</p>
                 </a>
             </li>
         {:else if routeId === 'host' && isEventRoute}
-            <li  class:active={setActive('score')}>
+            <li class:active={setActive('score')}>
                 <a href={`/host/${joinCode}/score`}>
                     <ScoringIcon class="svg" />
                     <p>Scoring</p>
@@ -82,7 +80,7 @@
         padding: 0;
         margin: 0.25em 0;
     }
-    
+
     li > a,
     .menu {
         text-decoration: none;
@@ -91,13 +89,13 @@
         background-color: #fcfcfc;
         border-radius: 0.5em;
         margin: 0 auto;
-        padding: .5em;
+        padding: 0.5em;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
     }
-    .menu{
+    .menu {
         margin: 0;
         padding: 0;
         border: none;
