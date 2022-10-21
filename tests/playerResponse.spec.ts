@@ -25,7 +25,7 @@ const gamePage = '/game/1234';
 const submissionOne = 'answer for question';
 const submissionTwo = 'a different answer';
 
-test.describe.skip('proper response handling during an event', async () => {
+test.describe('proper response handling during an event', async () => {
     let playerOnePage: Page;
     let playerTwoPage: Page;
     let playerThreePage: Page;
@@ -58,7 +58,7 @@ test.describe.skip('proper response handling during an event', async () => {
 
     // TODO: this test is probaby too long and flaky af, maybe timing fo the socket?
     // just a thought, but maybe a unit test is better for this, as in check the updated response array
-    test('proper response handling', async () => {
+    test.skip('proper response handling', async () => {
         // all players on round one question one
         expect(await playerOnePage.textContent('h2')).toBe('1.1');
         expect(await playerTwoPage.textContent('h2')).toBe('1.1');
@@ -100,23 +100,21 @@ test.beforeEach(async ({ page }) => {
     await page.goto(gamePage);
 });
 
-test('round question cookies work properly', async({ page }) => {
+test.skip('round question cookies work properly', async({ page }) => {
     expect(await page.textContent('h2')).toBe('1.1');
-    // click round 3
+
     await page.locator('.round-selector').locator('button:has-text("3")').click();
-    // expect 3.1
     expect(await page.textContent('h2')).toBe('3.1');
 
     await page.locator('.round-selector').locator('button:has-text("6")').click();
-    // expect 6.1
+    expect(await page.textContent('h2')).toBe('6.1');
+
+    await page.reload();
     expect(await page.textContent('h2')).toBe('6.1');
     
-
-    // click question 4 // TODO: changing question numbers isn't working
-    // await page.locator('.question-selector').locator('button:has-text("4")').click();
-    // expect(await page.textContent('h2')).toBe('1.4');
-
-    // expect 3.4
-    // reload the page
-    // expect 3.4
+    // TODO: changing question numbers isn't working
+    // click question 3
+    const questionThree = page.locator('.question-selector').locator('button:has-text("3")');
+    await questionThree.click();
+    expect(await page.textContent('h2')).toBe('6.3');
 });
