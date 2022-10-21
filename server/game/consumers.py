@@ -107,6 +107,7 @@ class SocketConsumer(JsonWebsocketConsumer):
 
     def team_update_response(self, data):
         """Pass a single response object back to a team group."""
+        print("updating response", self.team_group)
         self.send_json(data)
 
     ######################

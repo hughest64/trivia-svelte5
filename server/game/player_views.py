@@ -35,6 +35,7 @@ class ResponseView(APIView):
             # TODO: probably want better messaging back to the user
             return Response(status=400, data={"error": e})
         else:
+            print(f"sending to team_{team_id}")
             # no need to send anything back, could event use a 201 code
             async_to_sync(channel_layer.group_send)(
                 f"team_{team_id}",  # TODO: make this tie to a team an event
