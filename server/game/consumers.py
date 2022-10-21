@@ -49,7 +49,7 @@ class SocketConsumer(JsonWebsocketConsumer):
         self.join_socket_groups()
         self.send_json({"type": "connected", "message": "hello Svelte!"})
 
-        print(f"hello {self.user.username} your Join code is {self.joincode}")
+        print(f"hello {self.user.username} your Join code is {self.joincode} and you are playing on {self.user.active_team_id}")
 
     def join_socket_groups(self):
         """Add socket groups for the trivia event, user team, and indiviual user. """
