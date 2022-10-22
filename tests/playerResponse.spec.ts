@@ -8,12 +8,6 @@ import { login } from './utils.js';
  * - ( I think this will fail right now due to how team groups are nameed)
  *
  * not related to responses (other than loading?)
- * - click a different round
- * - expect r.q to change
- * - click a different question
- * - expect r.q to change
- * - refresh the page
- * - expect r.q to persist
  *
  * - test arrow key for changing questions
  * - test swiping (how to do this?)
@@ -25,7 +19,7 @@ const gamePage = '/game/1234';
 const submissionOne = 'answer for question';
 const submissionTwo = 'a different answer';
 
-async function asyncTimeout(ms: number): Promise<ReturnType<typeof setTimeout>> {
+async function asyncTimeout(ms=200): Promise<ReturnType<typeof setTimeout>> {
     return new Promise((resolve) => setTimeout(resolve, ms));
 };
 
@@ -60,9 +54,7 @@ test.describe('proper response handling during an event', async () => {
         await expect(playerThreePage).toHaveURL(gamePage);
     });
 
-    // TODO: this test is probaby too long and flaky af, maybe timing fo the socket?
-    // just a thought, but maybe a unit test is better for this, as in check the updated response array
-    test.skip('proper response handling', async () => {
+    test('proper response handling', async () => {
         // all players on round one question one
         expect(await playerOnePage.textContent('h2')).toBe('1.1');
         expect(await playerTwoPage.textContent('h2')).toBe('1.1');
@@ -80,6 +72,9 @@ test.describe('proper response handling during an event', async () => {
         await playerOneResponseInput.fill(submissionOne);
         expect(await playerOneResponseInput.inputValue()).toBe(submissionOne);
         await playerOnePage.locator('button:has-text("Submit")').click();
+
+        // wait for the socket message
+        await asyncTimeout();
 
         // response should persist
         expect(await playerOneResponseInput.inputValue()).toBe(submissionOne);
@@ -110,16 +105,12 @@ test('round question cookies work properly', async({ page }) => {
     await page.locator('.round-selector').locator('button:has-text("3")').click();
     expect(await page.textContent('h2')).toBe('3.1');
 
-    await page.locator('.round-selector').locator('button:has-text("6")').click();
-    expect(await page.textContent('h2')).toBe('6.1');
+    const questionThree = page.locator('.question-selector').locator('button:has-text("4")');
+    await questionThree.click();
+    await asyncTimeout();
+    expect(await page.textContent('h2')).toBe('3.4');
 
     await page.reload();
-    expect(await page.textContent('h2')).toBe('6.1');
+    expect(await page.textContent('h2')).toBe('3.4');
     
-    // TODO: changing question numbers isn't working
-    // click question 3
-    const questionThree = page.locator('.question-selector').locator('button:has-text("3")');
-    await questionThree.click();
-    await asyncTimeout(200);
-    expect(await page.textContent('h2')).toBe('6.3');
 });

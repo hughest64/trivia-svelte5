@@ -5,7 +5,7 @@ const config: PlaywrightTestConfig = {
         {
             command: 'npm run build && npm run preview',
             port: 4173,
-            timeout: 10000
+            // timeout: 10000
         }
         // TODO: possibly run a test django server as described at
         // https://docs.djangoproject.com/en/dev/ref/django-admin/#testserver
