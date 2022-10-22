@@ -25,6 +25,10 @@ const gamePage = '/game/1234';
 const submissionOne = 'answer for question';
 const submissionTwo = 'a different answer';
 
+async function asyncTimeout(ms: number): Promise<ReturnType<typeof setTimeout>> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+};
+
 test.describe('proper response handling during an event', async () => {
     let playerOnePage: Page;
     let playerTwoPage: Page;
@@ -100,7 +104,7 @@ test.beforeEach(async ({ page }) => {
     await page.goto(gamePage);
 });
 
-test.skip('round question cookies work properly', async({ page }) => {
+test('round question cookies work properly', async({ page }) => {
     expect(await page.textContent('h2')).toBe('1.1');
 
     await page.locator('.round-selector').locator('button:has-text("3")').click();
@@ -116,5 +120,6 @@ test.skip('round question cookies work properly', async({ page }) => {
     // click question 3
     const questionThree = page.locator('.question-selector').locator('button:has-text("3")');
     await questionThree.click();
+    await asyncTimeout(200);
     expect(await page.textContent('h2')).toBe('6.3');
 });
