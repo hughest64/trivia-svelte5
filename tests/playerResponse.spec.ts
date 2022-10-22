@@ -4,8 +4,6 @@ import { asyncTimeout, login } from './utils.js';
 
 /**
  * TODO:
- * test a player connected to a different game but a differnt team
- * - ( I think this will fail right now due to how team groups are nameed)
  * - test swiping (how to do this?)
  */
 
@@ -87,6 +85,19 @@ test.describe('proper response handling during an event', async () => {
         expect(await playerThreeResponseInput.inputValue()).toBe(submissionTwo);
         expect(await playerOneResponseInput.inputValue()).toBe(submissionOne);
         expect(await playerTwoResponseInput.inputValue()).toBe(submissionOne);
+    });
+
+    test('members of the same team at different events should not share responses', async () => {
+        await playerTwoPage.goto('/game/9999');
+        await expect(playerTwoPage).toHaveURL('/game/9999');
+        await expect(playerOnePage).toHaveURL(gamePage);
+        
+        const playerOneResponseInput = playerOnePage.locator('input[name="response_text"]');
+        const playerTwoResponseInput = playerTwoPage.locator('input[name="response_text"]');
+        await playerTwoResponseInput.fill('response for game 9999');
+        await playerTwoPage.locator('button:has-text("Submit")').click();
+        await asyncTimeout();
+        expect (await playerOneResponseInput.inputValue()).toBeFalsy();
     });
 });
 

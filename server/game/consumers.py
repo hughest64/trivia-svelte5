@@ -24,7 +24,7 @@ class SocketConsumer(JsonWebsocketConsumer):
         self.gametype = kwargs.get("gametype")
         self.user = self.scope["user"]
         self.event_group = f"event_{self.joincode}"
-        self.team_group = f"team_{self.user.active_team_id}"
+        self.team_group = f"team_{self.user.active_team_id}_{self.event_group}"
         self.user_group = f"user_id_{self.user.id}"
 
     def _set_connection(self):

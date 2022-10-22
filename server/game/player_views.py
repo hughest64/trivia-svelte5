@@ -38,7 +38,7 @@ class ResponseView(APIView):
             print(f"sending to team_{team_id}")
             # no need to send anything back, could event use a 201 code
             async_to_sync(channel_layer.group_send)(
-                f"team_{team_id}",  # TODO: make this tie to a team an event
+                f"team_{team_id}_event_{joincode}",  # TODO: make this tie to a team an event
                 {
                     "type": "team_update_response",
                     "store": "responseData",
