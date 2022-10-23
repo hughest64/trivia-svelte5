@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import type { UserData, UserTeam } from '$lib/types';
+    import type { UserData } from '$lib/types';
     import type { ActionData } from './$types';
 
     export let form: ActionData;
@@ -8,10 +8,6 @@
     let hideteampassword = true;
 
     const userData = <UserData>$page.data?.user_data;
-
-    // TODO: I think we want to determine this in ssr or at least higher in the stack
-    // we get an annoying whot teams[0] then update, possibly add the attr in api side?
-    let selected: UserTeam = userData?.teams.find((team) => team.id === userData?.active_team_id) || userData?.teams[0];
 </script>
 
 <svelte:head><title>TriviaMafia | Team Select</title></svelte:head>
@@ -37,7 +33,7 @@
     {#if form?.error}<p class="error">{form?.error}</p>{/if}
     
     <label class="select-label" for="team-select">Choose A Team</label>
-    <select class="select" id="team-select" name="selectedteam" bind:value={selected.id}>
+    <select class="select" id="team-select" name="selectedteam">
         {#each userData.teams as team (team.id)}
             <option value={team.id}>{team.name}</option>
         {/each}
