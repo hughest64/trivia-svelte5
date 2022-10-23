@@ -1,9 +1,8 @@
 import { getContext, setContext } from 'svelte';
 import { writable, type Writable } from 'svelte/store';
 import jwt_decode from 'jwt-decode';
-import { PUBLIC_API_PORT as apiPort } from '$env/static/public';
 import type { Cookies } from '@sveltejs/kit';
-import type { JwtPayload, StoreKey } from './types';
+import type { JwtPayload, StoreKey, UserTeam } from './types';
 
 /**
  * take one or many cookie keys and invalidate them by creating new cookies with an exipiration
@@ -32,24 +31,18 @@ export const getJwtPayload = (token?: string): JwtPayload => {
     if (!token) return { validtoken: false };
 
     const payload = jwt_decode<JwtPayload>(token);
-    payload.validtoken = Date.now() / 1000 < (payload.exp || NaN) ;
-    
+    payload.validtoken = Date.now() / 1000 < (payload.exp || NaN);
+
     return payload;
 };
 
-/**
- * helper which returns the api or websocket host url from the current page url
- * TODO: this may not actually bes used, I think env variable is the way to go
- */
-export function getApiHost(url: URL, pathname='', socket=false): string {
-    const isSecure = url.protocol.startsWith('https');
-    let protocol = url.protocol;
-    
-    if (socket) {
-        protocol = isSecure ? 'wss:' : 'ws:';
-    }
-    const hostname = url.hostname;
-    const port = url.port ? `:${apiPort}` : '';
+// sort a user's teams so their active team comes first
+export const sortUserTeams = (userTeams: UserTeam[], activeTeamId: number): UserTeam[] | void => {
+    const activeTeamIndex = userTeams.findIndex((team) => team.id === activeTeamId);
+    if (!activeTeamIndex) return;
 
-    return `${protocol}//${hostname}${port}${pathname || url.pathname}`;
-}
+    const updatedTeams = [...userTeams];
+    const activeTeam = updatedTeams.splice(activeTeamIndex, 1)[0];
+
+    return [activeTeam, ...updatedTeams];
+};
