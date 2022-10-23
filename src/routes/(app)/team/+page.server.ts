@@ -7,14 +7,9 @@ export const load: PageServerLoad = async ({ parent }) => {
     const data = <App.PageData>await parent();
     const activeTeamId = data.user_data?.active_team_id;
     const userTeams = data.user_data?.teams;
-    // TODO: I think we can do better, right not we have to do an extra request from host/choice
-    // to get this to run, map we can invalidate somehow?
+
     // put the user's active team at the front
     if (data.user_data && activeTeamId && userTeams?.length) {
-        // const activeTeamIndex = userTeams.findIndex((team) => team.id === activeTeamId);
-        // if (activeTeamIndex) {
-        //     const updatedTeams = [...userTeams];
-        //     const activeTeam = updatedTeams.splice(activeTeamIndex, 1)[0];
         const sortedTeams = sortUserTeams(userTeams, activeTeamId);
         if (sortedTeams) data.user_data.teams = sortedTeams;
     }
