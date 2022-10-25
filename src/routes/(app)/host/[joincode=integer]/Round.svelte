@@ -1,4 +1,5 @@
 <script lang="ts">
+    import Question from './Question.svelte';
     import type { EventRound } from '$lib/types';
 
     export let activeRound: EventRound;
@@ -17,6 +18,7 @@
                 id="reveal-all-questions"
                 name="reveal-all-questions"
                 bind:checked={allQuestionsRevealed}
+                on:change={() =>  console.log('send msg to lock or unlock all questions for this round')}
             />
             <span class="slider" />
         </label>
@@ -24,75 +26,12 @@
     </div>
 </div>
 
-<!-- {#each activeRound?.questions as question (question.question_number)}
-    <h3>Question {question.question_number}</h3>
-    <p>{question.text}</p>
-{/each} -->
+{#each activeRound?.questions as question (question.question_number)}
+    <Question roundNumber={activeRound.round_number} {question} />
+{/each}
+
 <style lang="scss">
     h4 {
         margin: 2em 0.25em;
-    }
-    .host-question-panel {
-        width: 100%; // calc(100% - 2em);
-        padding: 0;
-        margin: 1em 0;
-        // TODO: applies only to actual question (image rounds)
-        // img {
-        //     max-width: calc(100% - 2em);
-        //     margin: 0.5em auto;
-        // }
-        // TODO: variable?
-        background-color: #e0e0e0;
-    }
-
-    .switch-container {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        margin: 1em .5em;
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 4em;
-            height: 2em;
-            margin: 0 0.5em;
-            input {
-                opacity: 0;
-                width: 0;
-                height: 0;
-            }
-            .slider {
-                position: absolute;
-                cursor: pointer;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                -webkit-transition: 0.4s;
-                transition: 0.4s;
-                border-radius: 2em;
-                background-color: #413f43;
-                &:before {
-                    background-color: white;
-                }
-                &:before {
-                    position: absolute;
-                    content: '';
-                    height: 1.5em;
-                    width: 1.5em;
-                    left: 0.25em;
-                    bottom: 0.25em;
-                    -webkit-transition: 0.4s;
-                    transition: 0.4s;
-                    border-radius: 50%;
-                }
-            }
-            input:checked + .slider {
-                background-color: #6fcf97;
-            }
-            input:checked + .slider:before {
-                transform: translateX(2em);
-            }
-        }
     }
 </style>
