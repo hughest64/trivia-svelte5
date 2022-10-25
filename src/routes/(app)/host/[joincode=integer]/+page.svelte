@@ -80,7 +80,8 @@
     </label>
 </div>
 
-<!-- TODO: should this be an anchor or do we have actions to execute here? -->
+<!-- TODO: should this be an anchor or do we have actions to execute here?
+this is also conditionally displayed based on lock status and the text needs updating -->
 <button class="button button-red" on:click|preventDefault>Score/Edit This Round</button>
 
 <Round {activeRound} />
