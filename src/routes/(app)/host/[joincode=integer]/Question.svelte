@@ -28,3 +28,9 @@
     <!-- TODO: only show if answerRevealed -->
     <h3>{question.answer}</h3>
 </div>
+
+<style lang="scss">
+    .host-question-panel {
+        padding: 1em;
+    }
+</style>
