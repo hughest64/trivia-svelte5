@@ -5,7 +5,6 @@
     import type { ActionData } from './$types';
     import type { EventQuestion, Response, UserData } from '$lib/types';
 
-    export let activeRoundQuestion: string;
     export let activeQuestion: EventQuestion;
     export let activeResponse: Response | undefined;
     $: responseText = activeResponse?.recorded_answer || '';
@@ -22,7 +21,7 @@
     };
 </script>
 
-<h2>{activeRoundQuestion}</h2>
+<h2>{activeQuestion.key}</h2>
 
 <p class="question-text">{activeQuestion.text}</p>
 
@@ -33,7 +32,7 @@
 >
     <input type="hidden" name="team_id" value={$userData?.active_team_id || ''} />
     <input type="hidden" name="response_id" value={activeResponse?.id || ''} />
-    <input type="hidden" name="key" value={activeRoundQuestion} />
+    <input type="hidden" name="key" value={activeQuestion.key} />
 
     <div class="input-element" class:notsubmitted>
         <input required name="response_text" type="text" on:input={handleResponseInput} value={responseText}/>
