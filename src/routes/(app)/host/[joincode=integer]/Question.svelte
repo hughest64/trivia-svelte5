@@ -13,7 +13,7 @@
         data.set('key', question.key);
 
         const response = await fetch('?/reveal', { method: 'POST', body: data });
-        // TODO: maybe if the response is not ok, reset the question value and set an error msg? 
+        // TODO: maybe if the response is not ok, reset the question value and set an error msg?
         console.log(response);
     };
 
