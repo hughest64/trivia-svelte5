@@ -1,11 +1,8 @@
 <script lang="ts">
     import type { EventQuestion } from '$lib/types';
 
-    export let roundNumber: number;
     export let question: EventQuestion;
 
-    // TODO: this should be part the the question
-    const questionKey = `${roundNumber}.${question.question_number}`;
     let questionRevealed = question.question_displayed;
 
     const handleRevealQuestion = async () => {
@@ -13,7 +10,7 @@
 
         const data = new FormData();
         data.set('value', String(questionRevealed));
-        data.set('key', questionKey);
+        data.set('key', question.key);
 
         const response = await fetch('?/reveal', { method: 'POST', body: data });
         // TODO: maybe if the response is not ok, reset the question value and set an error msg? 
