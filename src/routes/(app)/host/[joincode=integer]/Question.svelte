@@ -42,10 +42,4 @@
     .host-question-panel {
         padding: 1em;
     }
-    
-    // .switch-container {
-    //     border: none;
-    //     padding: 0;
-    //     background-color: inherit;
-    // }
 </style>

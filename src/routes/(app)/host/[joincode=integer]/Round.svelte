@@ -10,7 +10,7 @@
 
 <div class="host-question-panel flex-column">
     <h4>{activeRound.title}</h4>
-    <p>This should be the round description, it needs to be added to the data</p>
+    <p>{activeRound.description}</p>
     <div class="switch-container">
         <label for="reveal-all-questions" class="switch">
             <input
