@@ -53,8 +53,8 @@
 </div>
 
 <Round {activeRound} {activeData}>
-    <Question {activeRoundQuestion} {activeQuestion} {activeResponse} />
-    <Note {activeRoundQuestion} />
+    <Question {activeQuestion} {activeResponse} />
+    <Note activeRoundQuestion={activeQuestion.key} />
 </Round>
 
 <style lang="scss">

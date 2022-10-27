@@ -27,7 +27,7 @@
 </div>
 
 {#each activeRound?.questions as question (question.question_number)}
-    <Question roundNumber={activeRound.round_number} {question} />
+    <Question {question} />
 {/each}
 
 <style lang="scss">

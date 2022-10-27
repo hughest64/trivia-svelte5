@@ -52,6 +52,7 @@ export interface EventQuestion {
     text: string;
     answer: string;
     question_number: number;
+    key: string;
     question_type: string;
     question_url: string;
     question_displayed: boolean;

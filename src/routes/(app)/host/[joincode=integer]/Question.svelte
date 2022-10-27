@@ -25,8 +25,7 @@
 </script>
 
 <div class="host-question-panel flex-column">
-    <h3>{questionKey}</h3>
-    <!-- TODO: can we make this a form? that would make progressive enhancement possible -->
+    <h3>{question.key}</h3>
     <div class="switch-container">
         <label for={`reveal-${question.question_number}`} class="switch">
             <input
