@@ -1,14 +1,13 @@
 <script lang="ts">
     import type { EventQuestion } from '$lib/types';
 
-    export let roundNumber: number;
     export let question: EventQuestion;
     let questionRevealed = false;
     $: revealedText = questionRevealed ? 'Hide Question' : 'Reveal Question';
 </script>
 
 <div class="host-question-panel flex-column">
-    <h3>{roundNumber}.{question.question_number}</h3>
+    <h3>{question.key}</h3>
     <div class="switch-container">
         <label for={`reveal-${question.question_number}`} class="switch">
             <input
