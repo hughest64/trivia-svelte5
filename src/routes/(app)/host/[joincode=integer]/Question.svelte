@@ -3,7 +3,7 @@
 
     export let question: EventQuestion;
 
-    let questionRevealed = question.question_displayed;
+    $: questionRevealed = question.question_displayed;
 
     const handleRevealQuestion = async () => {
         questionRevealed = !questionRevealed;
