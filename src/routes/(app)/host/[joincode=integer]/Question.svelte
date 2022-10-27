@@ -38,16 +38,15 @@
             />
             <span class="slider" />
         </label>
-        <p>{questionRevealed ? 'Hide Question' : 'Reveal Question'}</p>
+        <p>{questionRevealed ? 'Hide' : 'Reveal'} Question</p>
     </div>
     <p>{question.text}</p>
 
     <!-- TODO: qustion.host_notes -->
 
-    <!-- TODO: todo we could use the event cookie to store the stat of these, just need a form like seleting an active round -->
-    <button class="button button-white" on:click={() => (answerRevealed = !answerRevealed)}
-        >{answerRevealed ? 'Click To Hide Answer' : 'Click To Answer'}</button
-    >
+    <button class="button button-white" on:click={() => (answerRevealed = !answerRevealed)}>
+        Click To {answerRevealed ? 'Hide' : 'Reveal'} Answer
+    </button>
     {#if answerRevealed}<h3>{question.answer}</h3>{/if}
 </div>
 
