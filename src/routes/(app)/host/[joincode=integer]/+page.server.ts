@@ -1,20 +1,30 @@
+import { PUBLIC_API_HOST as apiHost } from '$env/static/public';
 import type { Action } from './$types';
 
-const reveal: Action = async ({ request }) => {
-    const data = await request.formData();
-    console.log('data', data.get('value'));
+async function asyncTimeout(ms=100): Promise<ReturnType<typeof setTimeout>> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+};
 
-    // for the case of a single question key will be r.q
-    // for the case of revealAll the key will be 'all'
-    const key = data.get('key');
-    console.log('key', key);
+const reveal: Action = async ({ fetch, request, params }) => {
+    const formData = await request.formData();
+    const data = Object.fromEntries(formData.entries());
 
-    // post the message that a q will be revealed (no db update)
-    // async timeout
-    // post the db update
-
-    // will this return before the timeout completes?
-    return { success: true };
+    // notify players (no db update)
+    const revealResponse = await fetch(`${apiHost}/host/${params.joincode}/reveal/`, {
+        method: 'post',
+        body: JSON.stringify(data)
+    });
+    
+    await asyncTimeout(5000);
+    // update the db
+    const updateResponse = await fetch(`${apiHost}/host/${params.joincode}/update/`, {
+        method: 'post',
+        body: JSON.stringify({ data: 'lock the round' })
+    });
+    const updateData = await updateResponse.json();
+    
+    const revealData = await revealResponse.json();
+    return { revealData, updateData };
 };
 
 export const actions = { reveal };

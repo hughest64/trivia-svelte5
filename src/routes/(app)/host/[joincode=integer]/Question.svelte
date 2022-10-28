@@ -2,19 +2,26 @@
     import type { EventQuestion } from '$lib/types';
 
     export let question: EventQuestion;
+    let updating = false;
 
     $: questionRevealed = question.question_displayed;
 
     const handleRevealQuestion = async () => {
-        questionRevealed = !questionRevealed;
-
-        const data = new FormData();
-        data.set('value', String(questionRevealed));
-        data.set('key', question.key);
-
-        const response = await fetch('?/reveal', { method: 'POST', body: data });
-        // TODO: maybe if the response is not ok, reset the question value and set an error msg?
-        console.log(response);
+        if (!updating) {
+            // questionRevealed = !questionRevealed;
+            updating = true;
+    
+            const data = new FormData();
+            // send and empty string for the false condition as the api will interperet that as false
+            data.set('value', questionRevealed ? 'true': '');
+            data.set('key', question.key);
+    
+            const response = await fetch('?/reveal', { method: 'POST', body: data });
+            // TODO: maybe if the response is not ok, reset the question value and set an error msg?
+            console.log(await response.json());
+            // make sure resp.ok and
+            updating = false;
+        };
     };
 
     // TODO: add this data to the question? or in a cookie?
@@ -34,7 +41,7 @@
             />
             <span class="slider" />
         </label>
-        <p>{questionRevealed ? 'Hide' : 'Reveal'} Question</p>
+        <p>{updating ? 'Updating' : questionRevealed ? 'Hide' : 'Reveal'} Question</p>
     </div>
     <p>{question.text}</p>
 

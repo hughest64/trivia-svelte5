@@ -33,3 +33,25 @@ class RoundLockView(APIView):
                 "message": {"updated": "rounds"},
             },
         )
+
+
+class QuestionRevealView(APIView):
+    authentication_classes = [JwtAuthentication]
+    permission_classes = [IsAdminUser]
+
+    # TOOD: csrf protect
+    def post(self, request, joincode):
+        print(request.data)
+        print(bool(request.data["value"]))
+
+        return Response({"message": "players notified"})
+
+
+class UpdateView(APIView):
+    authentication_classes = [JwtAuthentication]
+    permission_classes = [IsAdminUser]
+
+    def post(self, request, joincode):
+        print(request.data)
+
+        return Response({"message": "database updated" })
