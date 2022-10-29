@@ -107,7 +107,5 @@ export type StoreKey = 'userData' | 'eventData' | 'activeEventData' | 'responseD
 export type StoreType = Writable<AllStores>;
 export type StoreMap = Map<StoreKey, StoreType>
 
-// export type MessageHandler = Record<
-//     string,
-//     (message: SocketMessage['message'], store: StoreType) => unknown
-// >;
+/* eslint-disable-next-line @typescript-eslint/no-explicit-any*/
+export type MessageHandler = Record<string, (message: any, store: Writable<any>) => unknown>;
