@@ -7,6 +7,7 @@
 import type { Writable } from 'svelte/store';
 import type { MessageHandler, Response } from '$lib/types';
 
+/* eslint-disable-next-line @typescript-eslint/no-explicit-any*/
 const handlers: MessageHandler = {
     connected: () => console.log('connected!'), // undefined,
     log_me: (message) => console.log(message),
@@ -28,6 +29,7 @@ const handlers: MessageHandler = {
             return currentResponses;
         });
     },
+
     // TODO: event handlers maybe should be in a separate file
     event_question_reveal: (message: Record<string, string|boolean>) => {
         // TODO: popupData store
