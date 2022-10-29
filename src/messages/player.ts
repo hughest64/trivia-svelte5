@@ -1,17 +1,17 @@
 /**
- * Import and/or add websocket message handlers functions to this file and
- * export them in the handler object at the bottom. function names (or the key in the handler object)
- * should be in python style snake case and is equivalent to the "type" key in the websocket message
- * functions should take in a data param which is equivalent to the "message" key in the websocekt message.
+ * add websocket message handler functions to this file
+ * function names (or the key in the handler object) should be in python style snake case
+ * and correspond to the "type" key in the websocket message
+ * functions should take in a "message" param as well as an optional store to update
  */
 import type { Writable } from 'svelte/store';
-import type { Response } from '$lib/types';
+import type { MessageHandler, Response } from '$lib/types';
 
-/* eslint-disable-next-line @typescript-eslint/no-explicit-any*/
-const handlers: Record<string, (message: any, store: Writable<any>) => unknown> = {
+const handlers: MessageHandler = {
     connected: () => console.log('connected!'), // undefined,
     log_me: (message) => console.log(message),
     set_store: (message, store) => store.set(message),
+
     team_update_response: (message: Response, store: Writable<Response[]>) => {
         store.update((responses) => {
             const responseIndex = responses.findIndex((response) => response.key === message.key);
