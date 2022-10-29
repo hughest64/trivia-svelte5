@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { getContext, onDestroy } from 'svelte';
+    import { getContext } from 'svelte';
     import { getStore } from '$lib/utils';
     import Round from './Round.svelte';
     import type { ActiveEventData, EventData } from '$lib/types';
@@ -48,7 +48,6 @@
         //     body: ''
         // });
     };
-    onDestroy(() => socket?.close());
 </script>
 
 <h1>Host Game</h1>

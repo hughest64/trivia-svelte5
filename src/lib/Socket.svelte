@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { getAllContexts, setContext } from 'svelte';
+    import { getAllContexts, onDestroy, setContext } from 'svelte';
     import { browser } from '$app/environment';
     import { page } from '$app/stores';
     import handlers from '$messages/player';
@@ -62,7 +62,9 @@
         return webSocket;
     };
 
-    browser && setContext('socket', createSocket());
+    let socket: WebSocket;
+    if (browser) socket = setContext<WebSocket>('socket', createSocket());
+    onDestroy(() => socket?.close());
 </script>
 
 <slot />
