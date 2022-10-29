@@ -7,21 +7,20 @@
     $: questionRevealed = question.question_displayed;
 
     const handleRevealQuestion = async () => {
-        if (!updating) {
-            // questionRevealed = !questionRevealed;
-            updating = true;
-    
-            const data = new FormData();
-            // send and empty string for the false condition as the api will interperet that as false
-            data.set('value', questionRevealed ? 'true': '');
-            data.set('key', question.key);
-    
-            const response = await fetch('?/reveal', { method: 'POST', body: data });
-            // TODO: maybe if the response is not ok, reset the question value and set an error msg?
-            console.log(await response.json());
-            // make sure resp.ok and
-            updating = false;
-        };
+        // console.log(event);
+        // if (updating) return;
+        // updating = true;
+
+        questionRevealed = !questionRevealed;
+        const data = new FormData();
+        data.set('key', question.key);
+        data.set('value', questionRevealed ? 'revealed' : '');
+
+        const response = await fetch('?/reveal', { method: 'POST', body: data });
+        // TODO: maybe if the response is not ok, reset the question value and set an error msg?
+        console.log(await response.json());
+        // make sure resp.ok and
+        // updating = false;
     };
 
     // TODO: add this data to the question? or in a cookie?
@@ -31,18 +30,13 @@
 <div class="host-question-panel flex-column">
     <h3>{question.key}</h3>
     <div class="switch-container">
-        <label for={`reveal-${question.question_number}`} class="switch">
-            <input
-                type="checkbox"
-                id={`reveal-${question.question_number}`}
-                name={`reveal-${question.question_number}`}
-                checked={questionRevealed}
-                on:click={handleRevealQuestion}
-            />
-            <span class="slider" />
+        <label for={question.key} class="switch">
+            <input type="hidden" id={question.key} name={question.key} bind:value={questionRevealed} />
+            <button class="slider" class:revealed={questionRevealed} on:click|preventDefault={handleRevealQuestion} />
         </label>
         <p>{updating ? 'Updating' : questionRevealed ? 'Hide' : 'Reveal'} Question</p>
     </div>
+
     <p>{question.text}</p>
 
     <!-- TODO: qustion.host_notes -->

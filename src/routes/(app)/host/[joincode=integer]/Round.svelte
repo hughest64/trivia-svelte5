@@ -11,7 +11,7 @@
 <div class="host-question-panel flex-column">
     <h4>{activeRound.title}</h4>
     <p>{activeRound.description}</p>
-    <div class="switch-container">
+    <form class="switch-container" on:submit|preventDefault>
         <label for="reveal-all-questions" class="switch">
             <input
                 type="checkbox"
@@ -20,10 +20,10 @@
                 bind:checked={allQuestionsRevealed}
                 on:change={() =>  console.log('send msg to lock or unlock all questions for this round')}
             />
-            <span class="slider" />
+            <button type="submit" class="slider" />
         </label>
         <p>{allQuestionsRevealedText}</p>
-    </div>
+    </form>
 </div>
 
 {#each activeRound?.questions as question (question.question_number)}
