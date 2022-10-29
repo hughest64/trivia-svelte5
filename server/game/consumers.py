@@ -115,7 +115,8 @@ class SocketConsumer(JsonWebsocketConsumer):
     ######################
 
     def event_question_reveal(self, data):
-        print("team qustion reveal")
+        # print("team question reveal", data)
+        self.send_json(data)
 
     # if we do the db work in a view function and use the socket to update all clients:
     def update_round_locks(self, data):

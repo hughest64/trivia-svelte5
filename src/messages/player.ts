@@ -27,6 +27,13 @@ const handlers: Record<string, (message: any, store: Writable<any>) => unknown> 
 
             return currentResponses;
         });
+    },
+    // TODO: event handlers maybe should be in a separate file
+    event_question_reveal: (message: Record<string, string|boolean>) => {
+        // TODO: popupData store
+        console.log(message);
+        const revealed = message.value;
+        revealed && console.log('set data on the popup for', message.key);
     }
 };
 

@@ -42,15 +42,13 @@ class QuestionRevealView(APIView):
     # TOOD: csrf protect
     def post(self, request, joincode):
         data = request.data
-        print(data)
-
         # update players
         async_to_sync(channel_layer.group_send)(
             f"event_{joincode}",
             {
                 "type": "event_question_reveal",
-                "store": "eventData",
-                "message": {**request.data},
+                "store": "popupData",
+                "message": {"key": data.get("key"), "value": bool(data.get("value"))},
             },
         )
 
@@ -63,7 +61,7 @@ class UpdateView(APIView):
 
     # TOOD: csrf protect
     def post(self, request, joincode):
-        print(request.data)
+        # print(request.data)
 
         # TODO: lookup the question and set the revealed state
 

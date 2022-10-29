@@ -15,10 +15,9 @@
         data.set('key', question.key);
         data.set('value', questionRevealed ? 'revealed' : '');
 
-        const response = await fetch('?/reveal', { method: 'POST', body: data });
-        // TODO: maybe if the response is not ok, reset the question value and set an error msg?
-        console.log(await response.json());
-        // make sure resp.ok and
+        // const response = 
+        await fetch('?/reveal', { method: 'POST', body: data });
+        // TODO: !response is not ok reset the question value and set an error msg
         updating = false;
     };
 
@@ -43,6 +42,7 @@
     <button class="button button-white" on:click={() => (answerRevealed = !answerRevealed)}>
         Click To {answerRevealed ? 'Hide' : 'Reveal'} Answer
     </button>
+
     {#if answerRevealed}<h3>{question.answer}</h3>{/if}
 </div>
 
