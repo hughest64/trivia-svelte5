@@ -1,4 +1,4 @@
-import { PUBLIC_API_HOST as apiHost } from '$env/static/public';
+import { PUBLIC_API_HOST as apiHost, PUBLIC_QUESTION_REVEAL_TIMEOUT as updateDelay } from '$env/static/public';
 import type { Action } from './$types';
 
 async function asyncTimeout(ms=100): Promise<ReturnType<typeof setTimeout>> {
@@ -14,21 +14,17 @@ const reveal: Action = async ({ fetch, request, params }) => {
         body: JSON.stringify(data)
     });
 
-    const revealData = await revealResponse.json();
-    return revealData;
-};
-
-const update: Action = async ({ fetch, request, params }) => {
-    const formData = await request.formData();
-    const data = Object.fromEntries(formData.entries());
-    await asyncTimeout(5000);
+    // 5 seconds by default
+    await asyncTimeout(Number(updateDelay));
 
     const updateResponse = await fetch(`${apiHost}/host/${params.joincode}/update/`, {
         method: 'post',
         body: JSON.stringify(data)
     });
+
     const updateData = await updateResponse.json();
-    return updateData;
+    const revealData = await revealResponse.json();
+    return { revealData, updateData };
 };
 
-export const actions = { reveal, update };
+export const actions = { reveal };

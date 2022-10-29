@@ -8,8 +8,8 @@
 
     const handleRevealQuestion = async () => {
         // console.log(event);
-        // if (updating) return;
-        // updating = true;
+        if (updating) return;
+        updating = true;
 
         questionRevealed = !questionRevealed;
         const data = new FormData();
@@ -20,7 +20,7 @@
         // TODO: maybe if the response is not ok, reset the question value and set an error msg?
         console.log(await response.json());
         // make sure resp.ok and
-        // updating = false;
+        updating = false;
     };
 
     // TODO: add this data to the question? or in a cookie?
