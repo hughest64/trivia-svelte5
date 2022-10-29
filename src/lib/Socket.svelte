@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { onDestroy, getAllContexts, getContext, setContext } from 'svelte';
+    import { getAllContexts, setContext } from 'svelte';
     import { browser } from '$app/environment';
     import { page } from '$app/stores';
     import handlers from '$messages/player';
@@ -62,12 +62,7 @@
         return webSocket;
     };
 
-    // TODO: challenge! come up with a way to store a # of open connections, if > 0 either don't create a new one
-    // or close existing ones
-    const socket: WebSocket = getContext('socket');
-    socket?.readyState !== 1 && browser && setContext('socket', createSocket());
-
-    onDestroy(() => socket?.close());
+    browser && setContext('socket', createSocket());
 </script>
 
 <slot />
