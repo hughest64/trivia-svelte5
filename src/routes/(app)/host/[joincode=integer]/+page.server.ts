@@ -9,22 +9,26 @@ const reveal: Action = async ({ fetch, request, params }) => {
     const formData = await request.formData();
     const data = Object.fromEntries(formData.entries());
 
-    // notify players (no db update)
     const revealResponse = await fetch(`${apiHost}/host/${params.joincode}/reveal/`, {
         method: 'post',
         body: JSON.stringify(data)
     });
-    
-    await asyncTimeout(5000);
-    // update the db
-    const updateResponse = await fetch(`${apiHost}/host/${params.joincode}/update/`, {
-        method: 'post',
-        body: JSON.stringify({ data: 'lock the round' })
-    });
-    const updateData = await updateResponse.json();
-    
+
     const revealData = await revealResponse.json();
-    return { revealData, updateData };
+    return revealData;
 };
 
-export const actions = { reveal };
+const update: Action = async ({ fetch, request, params }) => {
+    const formData = await request.formData();
+    const data = Object.fromEntries(formData.entries());
+    await asyncTimeout(5000);
+
+    const updateResponse = await fetch(`${apiHost}/host/${params.joincode}/update/`, {
+        method: 'post',
+        body: JSON.stringify(data)
+    });
+    const updateData = await updateResponse.json();
+    return updateData;
+};
+
+export const actions = { reveal, update };

@@ -114,6 +114,9 @@ class SocketConsumer(JsonWebsocketConsumer):
     ### EVENT MESSAGES ###
     ######################
 
+    def event_question_reveal(self, data):
+        print("team qustion reveal")
+
     # if we do the db work in a view function and use the socket to update all clients:
     def update_round_locks(self, data):
         data.update({"type": "update_store"})

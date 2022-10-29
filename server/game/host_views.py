@@ -1,3 +1,5 @@
+import time
+
 from asgiref.sync import async_to_sync
 
 from channels.layers import get_channel_layer
@@ -40,9 +42,24 @@ class QuestionRevealView(APIView):
     permission_classes = [IsAdminUser]
 
     # TOOD: csrf protect
-    def post(self, request, joincode):
-        print(request.data)
-        print(bool(request.data["value"]))
+    async def post(self, request, joincode):
+        data = request.data
+        print(data)
+        print(bool(data["value"]))
+
+        # update players (websocket)
+        await channel_layer.group_send(f"event_{joincode}", {
+            "type": "event_question_reveal",
+            "store": "eventData",
+            "message": {
+                "key": data.get("key"),
+                "value": data.get("value") # bool?
+            }
+        })
+
+        time.sleep(5)
+        print('do db things')
+        # do db things
 
         return Response({"message": "players notified"})
 
