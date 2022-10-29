@@ -7,7 +7,6 @@
     $: questionRevealed = question.question_displayed;
 
     const handleRevealQuestion = async () => {
-        // console.log(event);
         if (updating) return;
         updating = true;
 

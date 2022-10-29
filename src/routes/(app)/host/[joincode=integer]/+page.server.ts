@@ -8,8 +8,9 @@ async function asyncTimeout(ms=100): Promise<ReturnType<typeof setTimeout>> {
 const reveal: Action = async ({ fetch, request, params }) => {
     const formData = await request.formData();
     const data = Object.fromEntries(formData.entries());
+    const baseUrl = `${apiHost}/host/${params.joincode}`;
 
-    const revealResponse = await fetch(`${apiHost}/host/${params.joincode}/reveal/`, {
+    const revealResponse = await fetch(`${baseUrl}/reveal/`, {
         method: 'post',
         body: JSON.stringify(data)
     });
@@ -17,7 +18,7 @@ const reveal: Action = async ({ fetch, request, params }) => {
     // 5 seconds by default
     await asyncTimeout(Number(updateDelay));
 
-    const updateResponse = await fetch(`${apiHost}/host/${params.joincode}/update/`, {
+    const updateResponse = await fetch(`${baseUrl}/update/`, {
         method: 'post',
         body: JSON.stringify(data)
     });
