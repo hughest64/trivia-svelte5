@@ -1,6 +1,7 @@
 <script lang="ts">
     import { getAllContexts, onDestroy, setContext } from 'svelte';
     import { browser } from '$app/environment';
+    import { goto } from '$app/navigation';
     import { page } from '$app/stores';
     import handlers from '$messages/player';
     import { PUBLIC_WEBSOCKET_HOST as apiHost } from '$env/static/public';
@@ -28,9 +29,9 @@
         webSocket.onclose = (event) => {
             // authentication issue remove the exisitng token if there is one by forcing a logout
             if (event.code === 4010) {
-                window.open('/user/logout', '_self');
-            }
-            if (!event.wasClean && event.code !== 4010 && reconnect && retries <= maxRetries) {
+                console.log('do the thing');
+                goto('/user/logout', { invalidateAll: true });
+            } else if (!event.wasClean && event.code !== 4010 && reconnect && retries <= maxRetries) {
                 retries++;
                 interval = setTimeout(createSocket, retryInterval);
             } else {
@@ -43,17 +44,14 @@
 
             // no active_team_id
             if (data.type === 'unauthorized') {
-                // TODO: set an errorMessage store?
-                // I think we can do better than window.open, but goto is behaving strangly        
-                window.open(`/team?next=${location.pathname}`, '_self');
+                // TODO: error message to user?
+                goto(`/team?next=${location.pathname}`, { invalidateAll: true });
 
-            // aononymous user in the socket connection
+                // aononymous user in the socket connection
             } else if (data.type === 'unauthenticated') {
                 webSocket.send(JSON.stringify({ type: 'authenticate', message: { token: $page.data.jwt } }));
-
             } else if (handlers[data.type]) {
                 handlers[data.type](data.message, <StoreType>stores.get(data.store));
-
             } else {
                 console.error(`message type ${data.type} does not have a handler function!`);
             }
