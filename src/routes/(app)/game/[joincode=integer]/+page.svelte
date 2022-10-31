@@ -52,7 +52,7 @@
     {/each}
 </div>
 
-<Round {activeRound} {activeData}>
+<Round {activeRound} {activeData} activeQuestionKey={activeQuestion.key}>
     <Question {activeQuestion} {activeResponse} />
     <Note activeRoundQuestion={activeQuestion.key} />
 </Round>

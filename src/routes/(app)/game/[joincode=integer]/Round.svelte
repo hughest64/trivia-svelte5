@@ -9,6 +9,7 @@
     const joincode = $page.params?.joincode;
     export let activeRound: EventRound;
     export let activeData: Writable<ActiveEventData>;
+    export let activeQuestionKey: string;
     $: activeQuestionNumber = $activeData?.activeQuestionNumber;
 
     $: questionNumbers = activeRound?.questions.map((q) => q.question_number);
@@ -56,7 +57,7 @@
     </div>
     <!-- TODO: transition params in a config object like { left: {...}, right: {...} } -->
     <div class="question-row">
-        {#key activeQuestionNumber}
+        {#key activeQuestionKey}
             <div
                 class="flex-column question"
                 in:fly={{
