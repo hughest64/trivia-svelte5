@@ -21,9 +21,7 @@
         updating = false;
     };
 
-    // TODO: add this data to the question? or in a cookie?
-    let answerRevealed = false;
-</script>
+    </script>
 
 <div class="host-question-panel flex-column">
     <h3>{question.key}</h3>
@@ -34,16 +32,17 @@
         </label>
         <p>{updating ? 'Updating' : questionRevealed ? 'Hide' : 'Reveal'} Question</p>
     </div>
-
+    
     <p>{question.text}</p>
-
+    
     <!-- TODO: qustion.host_notes -->
-
-    <button class="button button-white" on:click={() => (answerRevealed = !answerRevealed)}>
-        Click To {answerRevealed ? 'Hide' : 'Reveal'} Answer
+    
+    <!-- TODO: add this data to the question? or in a cookie? -->
+    <button class="button button-white" on:click={() => (question.answer_displayed = !question.answer_displayed)}>
+        Click To {question.answer_displayed ? 'Hide' : 'Reveal'} Answer
     </button>
 
-    {#if answerRevealed}<h3>{question.answer}</h3>{/if}
+    {#if question.answer_displayed}<h3>{question.answer}</h3>{/if}
 </div>
 
 <style lang="scss">
