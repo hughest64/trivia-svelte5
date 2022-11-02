@@ -2,9 +2,7 @@
     import '$lib/styles/app.scss';
 </script>
 
-<main>
-    <slot />
-</main>
+<slot />
 
 <style lang="scss">
     /* loading the font here prevents a delay in rendering the font when the page loads */
