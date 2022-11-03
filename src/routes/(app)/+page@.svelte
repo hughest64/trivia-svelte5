@@ -7,17 +7,19 @@
 
 <svelte:head><title>Trivia Mafia | Welcome</title></svelte:head>
 
-<div class="logo-container">
-    <img src="TM2021-Flat-Stacked-WhiteBackground.svg" alt="Trivia Mafia" />
-</div>
+<main>
+    <div class="logo-container">
+        <img src="TM2021-Flat-Stacked-WhiteBackground.svg" alt="Trivia Mafia" />
+    </div>
 
-{#if form?.error}<p>{form?.error}</p>{/if}
+    {#if form?.error}<p>{form?.error}</p>{/if}
 
-<a class="button button-red" href={`/user/login${$page.url.search}`}> Login/Create Account </a>
-<!-- TODO: button with a formAction? -->
-<form action="" method="POST">
-    <input class="button button-white" type="submit" value="Play as a Guest">
-</form>
+    <a class="button button-red" href={`/user/login${$page.url.search}`}> Login/Create Account </a>
+    <!-- TODO: button with a formAction? -->
+    <form action="" method="POST">
+        <input class="button button-white" type="submit" value="Play as a Guest">
+    </form>
+</main>
 
 <style lang="scss">
     a {
