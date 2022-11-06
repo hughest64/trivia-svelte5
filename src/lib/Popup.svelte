@@ -1,27 +1,21 @@
 <script lang="ts">
-
+    import '$lib/styles/popup.scss';
 </script>
 
 <div class="pop">
     <div class="pop-timer">
         <!-- if there is a counter -->
-        <div>
+        <h4>5</h4>
+        <!-- <div> -->
             <!-- svg.pop-timer-svg > g.pop-timer-circle > circle.pop-timer-path-elapsed + path#pop-timer-path-remaining -->
-            <span class="counter-value">5</span>
-        </div>
+            <!-- <span class="counter-value">5</span> -->
+        <!-- </div> -->
     </div>
     <div class="pop-content">
-        <h4>Title</h4>
-        <h4>Message - Bold</h4>
+        <!-- <h4>Title</h4> -->
+        <!-- <h4>Message - Bold</h4> -->
         <p>The Next Question Will Be Revealed in 5 seconds</p>
         <!-- button for cases that require use interaction -->
     </div>
-    <div class="dismiss-containter">
-        <!-- TODO: button! -->
-        <div class="dismiss"><h4>X</h4></div>
-    </div>
+    <button class="dismiss">X</button>
 </div>
-
-<style lang="scss">
-
-</style>

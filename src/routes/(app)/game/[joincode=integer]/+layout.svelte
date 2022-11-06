@@ -1,5 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
+    import Popup from '$lib/Popup.svelte';
     import Socket from '$lib/Socket.svelte';
 
     const joincode = $page.params.joincode;
@@ -10,6 +11,7 @@
 </svelte:head>
 
 <Socket>
+    <Popup />
     <slot />
 </Socket>
 
