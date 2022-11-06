@@ -17,5 +17,5 @@
         <p>The Next Question Will Be Revealed in 5 seconds</p>
         <!-- button for cases that require use interaction -->
     </div>
-    <button class="dismiss">X</button>
+    <button class="dismiss" on:click>X</button>
 </div>
