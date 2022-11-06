@@ -12,3 +12,9 @@
 <Socket>
     <slot />
 </Socket>
+
+<style lang="scss">
+    :global(main) {
+        max-height: calc(100vh - 6em);
+    }
+</style>

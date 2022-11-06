@@ -34,5 +34,6 @@
         border-bottom-left-radius: 3em;
         border-bottom-right-radius: 3em;
         background-color: #413f43;
+        z-index: 99;
     }
 </style>
