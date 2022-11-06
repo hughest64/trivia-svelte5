@@ -75,19 +75,12 @@ picutre {
 /* Elements            */
 /* ------------------- */
 
-// TODO: this doesn't seem to work here (at least the margin) it does work when applied
-// in the main layout, maybe :global is only available directly in components?
-// :global(body) {
-//     margin: 0;
-//     min-height: 100vh;
-// }
-
 main {
     display: flex;
     flex-direction: column;
     align-items: center;
     width: 100%;
-    // max-width: calc(100% - 2em);
+    margin-bottom: 5em;
 }
 
 form {

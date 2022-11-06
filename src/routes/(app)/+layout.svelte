@@ -27,7 +27,7 @@
     div {
         position: fixed;
         top: 0;
-        height: calc(100% - 10em);
+        height: calc(100% - 5.5em);
         width: 100%;
         overflow: hidden;
         margin: 0;
