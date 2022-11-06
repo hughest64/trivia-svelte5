@@ -1,7 +1,7 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { createStore } from '$lib/utils';
-    import type { ActiveEventData, EventData, Response, UserData } from './types';
+    import type { PopupData, ActiveEventData, EventData, Response, UserData } from './types';
 
     $: data = $page.data;
     $: userData = <UserData>data?.user_data;
@@ -21,6 +21,9 @@
 
     // TODO: get responses from the server
     $: createStore<Response[]>('responseData', responseData);
+
+    // create a generic popup store
+    $: createStore<PopupData>('popupData', { is_displayed: false });
 </script>
 
 <slot />

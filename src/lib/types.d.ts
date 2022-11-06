@@ -90,6 +90,11 @@ export interface Response {
     key: string // `${round_number}.${question_number}
 }
 
+export interface PopupData {
+    is_displayed: boolean
+    // TODO: other data
+}
+
 export interface ActiveEventData {
     activeRoundNumber: number;
     activeQuestionNumber: number;
@@ -103,7 +108,7 @@ export interface SocketMessage {
     message: AllStores
 }
 
-export type StoreKey = 'userData' | 'eventData' | 'activeEventData' | 'responseData';
+export type StoreKey = 'userData' | 'eventData' | 'activeEventData' | 'responseData' | 'popupData';
 export type StoreType = Writable<AllStores>;
 export type StoreMap = Map<StoreKey, StoreType>
 
