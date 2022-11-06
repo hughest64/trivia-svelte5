@@ -1,0 +1,92 @@
+.pop {
+    width: 100%;
+    background-color: #413f43;
+    color: #fcfcfc;
+    position: sticky;
+    top: 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    z-index: 16;
+    .dismiss-container {
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        padding: .5em 1.5em;
+    }
+    .dismiss {
+        width: 3em;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 3em;
+        height: 3em;
+        background-color: #dc0926;
+        cursor: pointer;
+        h4 {
+            font-size: 2rem;
+            margin: 0;
+        }  
+    }
+    .pop-timer {
+        width: 3em;
+        padding: .5em 1.5em;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        div {
+            position: relative;
+            height: 3em;
+            width: 3em;
+            .pop-timer-svg {
+                transform: scaleX(-1);
+            }
+            .pop-timer-circle {
+                fill: none;
+                stroke: none;
+                .pop-timer-path-elapsed {
+                    stroke-width: 5px;
+                    stroke: #828282;
+                }
+                .pop-timer-path-remaining {
+                    stroke-width: 5px;
+                    stroke-linecap: round;
+                    transform: rotate(90deg);
+                    transform-origin: center;
+                    transition: 1s linear all;
+                    stroke: #dc0926;
+                }
+            }
+            span {
+                position: absolute;
+                height: 3em;
+                width: 3em;
+                top: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+        }
+    }
+    .pop-content {
+        min-height: 3em;
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        max-width: calc(100% - 12em);
+        margin-bottom: .5em;
+        h4 {
+            margin: .25em auto;
+        }
+        * {
+            text-align: center;
+        }
+        p {
+            margin: 0 .5em;
+        }
+        a {
+            text-decoration: underline;
+            color: #fcfcfc;
+        }
+    }
+}
