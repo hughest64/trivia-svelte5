@@ -34,7 +34,7 @@ const handlers: MessageHandler = {
         // TODO: popupData store
         // console.log(message);
         const revealed = message.value;
-        revealed && store.set({ is_displayed: true, popup_type: 'question_reveal' });
+        revealed && store.set({ is_displayed: true, popup_type: 'question_reveal', timer_value: 5 });
     }
 };
 

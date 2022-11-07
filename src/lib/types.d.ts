@@ -92,8 +92,11 @@ export interface Response {
 
 export interface PopupData {
     is_displayed: boolean;
-    popup_type: string;
-    // TODO: other data
+    popup_type: string; // TODO: specific types?
+    timer_value?: number;
+    title?: string;
+    message?: string;
+    anchor?: string;
 }
 
 export interface ActiveEventData {

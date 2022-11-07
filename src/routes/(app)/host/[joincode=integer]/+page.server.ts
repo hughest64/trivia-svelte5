@@ -15,8 +15,8 @@ const reveal: Action = async ({ fetch, request, params }) => {
         body: JSON.stringify(data)
     });
 
-    // 5 seconds by default
-    await asyncTimeout(Number(updateDelay));
+    // 5 seconds by default on reveal only
+    data.value && await asyncTimeout(Number(updateDelay));
 
     const updateResponse = await fetch(`${baseUrl}/update/`, {
         method: 'post',

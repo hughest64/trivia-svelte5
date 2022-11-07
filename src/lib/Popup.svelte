@@ -7,25 +7,25 @@
     $: popupData = getStore<PopupData>('popupData');
     $: displayPopup = $popupData?.is_displayed;
     $: popupType = $popupData?.popup_type;
+    $: count = $popupData.timer_value || 0;
 
-    let interval: ReturnType<typeof setInterval>;
-    let count = 5;
+    let interval: ReturnType<typeof setTimeout>;
     const countDown = () => {
-        console.log('countdown', count);
-        // if (count > 0) {
-        count--;
-        // } 
+        if (count > 0) {
+            count--;
+            setTimeout(countDown, 1000);
+
+        } else {
+            clearTimeout(interval);
+            $popupData={ is_displayed: false, popup_type: '' };
+        }
     };
-    
-    $: popupType === 'question_reveal' && setInterval(countDown, 1000);
-    $: if (count < 1) {
-        console.log('clear me');
-        clearInterval(interval);
-    };
+    $: popupType === 'question_reveal' && setTimeout(countDown, 1000);
+
 </script>
 
 {#if displayPopup}
-    <div class="pop" transition:fly={{ y: -2000, duration: 800 }}>
+    <div class="pop" transition:fly={{ y: -200, duration: 800 }}>
         <div class="pop-timer">
             <!-- if there is a counter -->
             <h4>{count}</h4>
