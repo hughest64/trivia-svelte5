@@ -91,7 +91,8 @@ export interface Response {
 }
 
 export interface PopupData {
-    is_displayed: boolean
+    is_displayed: boolean;
+    popup_type: string;
     // TODO: other data
 }
 

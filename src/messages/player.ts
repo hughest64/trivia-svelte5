@@ -32,9 +32,9 @@ const handlers: MessageHandler = {
     // TODO: event handlers maybe should be in a separate file
     event_question_reveal: (message: Record<string, string|boolean>, store: Writable<PopupData>) => {
         // TODO: popupData store
-        console.log(message);
+        // console.log(message);
         const revealed = message.value;
-        revealed && store.set({ is_displayed: true });
+        revealed && store.set({ is_displayed: true, popup_type: 'question_reveal' });
     }
 };
 

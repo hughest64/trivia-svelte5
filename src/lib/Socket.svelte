@@ -29,7 +29,6 @@
         webSocket.onclose = (event) => {
             // authentication issue remove the exisitng token if there is one by forcing a logout
             if (event.code === 4010) {
-                console.log('do the thing');
                 goto('/user/logout', { invalidateAll: true });
             } else if (!event.wasClean && event.code !== 4010 && reconnect && retries <= maxRetries) {
                 retries++;
