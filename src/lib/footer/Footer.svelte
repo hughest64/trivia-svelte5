@@ -12,9 +12,9 @@
 
     const joinCode = $page.params?.joincode;
 
-    $: routeId = $page.routeId?.split('/')[2];
+    $: routeId = $page.route.id?.split('/')[2];
 
-    $: isEventRoute = reg.test($page.routeId || '');
+    $: isEventRoute = reg.test($page.route.id || '');
 
     $: setActive = (link: string) => $page.url.pathname.endsWith(link);
 </script>

@@ -118,7 +118,7 @@ test('round question cookies work properly', async({ page }) => {
 
     const questionThree = page.locator('.question-selector').locator('button:has-text("4")');
     await questionThree.click();
-    await asyncTimeout(200);
+    await asyncTimeout(300);
     expect(await page.textContent('h2')).toBe('3.4');
 
     await page.reload();
