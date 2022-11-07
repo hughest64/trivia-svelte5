@@ -114,11 +114,12 @@ test('round question cookies work properly', async({ page }) => {
     expect(await page.textContent('h2')).toBe('1.1');
 
     await page.locator('.round-selector').locator('button:has-text("3")').click();
+    await asyncTimeout();
     expect(await page.textContent('h2')).toBe('3.1');
 
     const questionThree = page.locator('.question-selector').locator('button:has-text("4")');
     await questionThree.click();
-    await asyncTimeout(300);
+    await asyncTimeout(200);
     expect(await page.textContent('h2')).toBe('3.4');
 
     await page.reload();
