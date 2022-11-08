@@ -14,8 +14,8 @@ export const load: LayoutServerLoad = async ({ locals, request, fetch }) => {
 
     let data = {};
     if (response.ok) {
-        const responseData = await response.json();
-        data = { ...responseData, ...locals };
+        const eventData = await response.json();
+        data = { ...eventData, ...locals };
     }
 
     // not authorized, redirect to log out to ensure cookies get deleted
