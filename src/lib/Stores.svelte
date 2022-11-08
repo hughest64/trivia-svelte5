@@ -23,7 +23,7 @@
     $: createStore<Response[]>('responseData', responseData);
 
     // create a generic popup store
-    $: createStore<PopupData>('popupData', { is_displayed: false });
+    $: createStore<PopupData>('popupData', { is_displayed: false, popup_type: '' });
 </script>
 
 <slot />
