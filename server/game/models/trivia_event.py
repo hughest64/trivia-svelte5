@@ -85,7 +85,7 @@ class GameQuestion(models.Model):
 class GameRound(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     title = models.CharField(max_length=128)
-    round_description = models.TextField(default="")
+    round_description = models.TextField(blank=True, default="")
     round_number = models.IntegerField()
     game = models.ForeignKey(
         "Game", related_name="game_rounds", on_delete=models.CASCADE
@@ -96,6 +96,7 @@ class GameRound(models.Model):
 
     def to_json(self):
         return {
+            "id": self.pk,
             "title": self.title,
             "round_description": self.round_description,
             "round_number": self.round_number,
@@ -122,9 +123,10 @@ class Game(models.Model):
     # TODO: this isn't a great representation for to_json as it doesn't contain all the things
     def to_json(self):
         return {
+            "game_id": self.pk,
             "block_code": self.block_code,
-            "title": self.title,
-            "description": self.description,
+            "game_title": self.title,
+            # "description": self.description,
         }
 
     def save(self, *args, **kwargs):
@@ -146,14 +148,20 @@ class TriviaEvent(models.Model):
     def to_json(self):
         return {
             "event_data": {
-                "date": self.date.strftime("%m/%d/%Y"),
+                "event_id": self.pk,
+                "game_id": self.pk,
+                "game_title": self.game.title,
                 "join_code": self.join_code,
-                **self.game.to_json(),
+                # TODO: add this
+                # "location": self.location.name
+                "block_code": self.game.block_code,
+                "current_round_number": self.current_round_number,
+                "current_question_number": self.current_question_number,
             },
+            "game_rounds": queryset_to_json(self.game.game_rounds.all()),
+            "game_questions": queryset_to_json(self.game.game_questions.all()),
             "round_states": queryset_to_json(self.round_states.all()),
             "question_states": queryset_to_json(self.question_states.all()),
-            "game_rounds": queryset_to_json(self.game.game_rounds.all()),
-            "game_questions": queryset_to_json(self.game.game_questions.all())
         }
 
 
