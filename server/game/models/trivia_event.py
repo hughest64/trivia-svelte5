@@ -3,40 +3,61 @@ from django.forms.models import model_to_dict
 from django.utils import timezone
 
 QUESTION_TYPE_GENERAL_KNOWLEDGE = 0
-QUESTION_TYPES = [(QUESTION_TYPE_GENERAL_KNOWLEDGE, "General Knowledge")]
+QUESTION_TYPE_THEMED_ROUND = 1
+QUESTION_TYPE_WORD_PLAY = 2
+QUESTION_TYPE_IMAGE_ROUND = 3
+QUESTION_TYPE_LIGHTNING_ROUND = 4
+QUESTION_TYPE_SOUND_ROUND = 5
+QUESTION_TYPE_TIE_BREAKER = 6
+
+QUESTION_TYPES = [
+    (QUESTION_TYPE_GENERAL_KNOWLEDGE, "General Knowledge"),
+    (QUESTION_TYPE_THEMED_ROUND, "Them Round"),
+    (QUESTION_TYPE_WORD_PLAY, "Word Play"),
+    (QUESTION_TYPE_IMAGE_ROUND, "Image Round"),
+    (QUESTION_TYPE_LIGHTNING_ROUND, "Lightning Round"),
+    (QUESTION_TYPE_SOUND_ROUND, "Sound Round"),
+    (QUESTION_TYPE_TIE_BREAKER, "Tiebreaker"),
+]
+
+question_type_dict = dict(QUESTION_TYPES)
 
 
 def queryset_to_json(qs):
     """Convert a queryset to a list of dictionaires. The model must implement a to_json method."""
-    try:
-        if not qs.exists():
-            return []
-        return [instance.to_json() for instance in qs]
+    if not qs.exists():
+        return []
 
-    except AttributeError:
-        raise NotImplementedError("The model must implement a to_json method")
+    return [instance.to_json() for instance in qs]
 
-
-# Basic immutable question, has no round or question number
 class Question(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
-    text = models.TextField()
-    answer = models.CharField(max_len=255)
-    notes = models.CharField(max_len=255)
     question_type = models.IntegerField(choices=QUESTION_TYPES, default=0)
-    question_url = models.CharField(max_len=255)
+    question_text = models.TextField()
+    question_url = models.CharField(max_length=255, blank=True, null=True)
+    display_answer = models.CharField(max_length=255)
+    # TODO: answers (ArrayField)
+    answer_notes = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
-        return self.text
+        return self.question_text[:30] + "..."
 
     def to_json(self):
-        return model_to_dict(self)
+        data = model_to_dict(self)
+        # get the text value
+        data.update({"question_type": question_type_dict[self.question_type]})
+        return data
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
 
 
-# a question that belongs to a specific game, but is immutable
 class GameQuestion(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
-    game = models.ForeignKey("Game", related_name="game_questions", on_delete=models.CASCADE)
+    game = models.ForeignKey(
+        "Game", related_name="game_questions", on_delete=models.CASCADE
+    )
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     round_number = models.IntegerField()
     question_number = models.IntegerField()
@@ -56,24 +77,33 @@ class GameQuestion(models.Model):
             "key": self.key,
         }
 
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
 
-# basic round information, immutable
+
 class GameRound(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
-    game = models.ForeignKey("Game", related_name="game_rounds", on_delete=models.CASCADE)
+    title = models.CharField(max_length=128)
+    round_description = models.TextField(default="")
     round_number = models.IntegerField()
-    title = models.CharField(max_len=128)
-    description: models.CharField(max_len=128)
+    game = models.ForeignKey(
+        "Game", related_name="game_rounds", on_delete=models.CASCADE
+    )
 
     def __str__(self):
         return f"Round {self.round_number}: {self.title}"
 
     def to_json(self):
         return {
-            "round_number": self.round_number,
             "title": self.title,
-            "description": self.description,
+            "round_description": self.round_description,
+            "round_number": self.round_number,
         }
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
 
 
 class Game(models.Model):
@@ -83,69 +113,67 @@ class Game(models.Model):
     description = models.TextField(blank=True, null=True)
     date_used = models.DateField(default=timezone.now)
 
+    class Meta:
+        ordering = ["-date_used", "title"]
+
     def __str__(self):
         return self.title  # TODO: block code?
 
-    # maybe use with caution, idk what the keys actually look like, or how it handles relations
-    def rounds(self, as_dict=False):
-        rounds = self.rounds.all()
-        return rounds if not as_dict else rounds.values()
-
-    def questions(self, as_dict=False):
-        questions = self.questions.all()
-        return questions if not as_dict else questions.values()
-
+    # TODO: this isn't a great representation for to_json as it doesn't contain all the things
     def to_json(self):
         return {
             "block_code": self.block_code,
             "title": self.title,
             "description": self.description,
-            "date_used": self.date_used,
         }
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
 
 
 class TriviaEvent(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     date = models.DateField()
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
-    join_code = models.CharField(max_len=64, unique=True, db_index=True)
+    join_code = models.CharField(max_length=64, unique=True, db_index=True)
 
     def __str__(self):
         return f"{self.game.title} on {self.date}"
 
-    # reverse lookup
-    def round_states(self):
-        return self.round_states.all()
-
-    def question_states(self):
-        return self.round_states.all()
-
     def to_json(self):
         return {
-            "event_data": {"join_code": self.join_code, **self.game.to_json()},
-            "round_states": queryset_to_json(self.round_states()),
-            "question_states": queryset_to_json(self.question_states()),
+            "event_data": {
+                "date": self.date.strftime("%m/%d/%Y"),
+                "join_code": self.join_code,
+                **self.game.to_json(),
+            },
+            "round_states": queryset_to_json(self.round_states.all()),
+            "question_states": queryset_to_json(self.question_states.all()),
             "game_rounds": queryset_to_json(self.game.game_rounds.all()),
             "game_questions": queryset_to_json(self.game.game_questions.all())
         }
 
 
-# a question on a trivia event, extend a game question and is mutible (q and a displayed)
 class EventQuestionState(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     event = models.ForeignKey(
-        TriviaEvent, related_name="questions", on_delete=models.CASCADE
+        TriviaEvent, related_name="question_states", on_delete=models.CASCADE
     )
     question_number = models.IntegerField()
     round_number = models.IntegerField()
     question_displayed = models.BooleanField()
     answer_displayed = models.BooleanField()
 
+    @property
+    def key(self):
+        return f"{self.round_number}.{self.question_number}"
+
     def to_json(self):
         return {
             "question_number": self.question_number,
             "round_number": self.round_number,
-            "key": self.question.key,
+            "key": self.key,
             "question_displayed": self.question_displayed,
             "answer_displayed": self.answer_displayed,
         }
@@ -155,7 +183,7 @@ class EventQuestionState(models.Model):
 class EventRoundState(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     event = models.ForeignKey(
-        TriviaEvent, related_name="rounds", on_delete=models.CASCADE
+        TriviaEvent, related_name="round_states", on_delete=models.CASCADE
     )
     round_number = models.IntegerField()
     locked = models.BooleanField()
@@ -167,36 +195,3 @@ class EventRoundState(models.Model):
             "locked": self.locked,
             "scored": self.scored,
         }
-
-
-# I think this is mostly what we are shooting for in an event payload
-event_payload = {
-    "event_data": {
-        # pulled from game
-        "title": "abcd",
-        # pulled from event
-        "location": "abc bar",
-        "join_code": 1234,
-    },
-    # pulled from specific game
-    "game_rounds": [
-        {"rond_number": 1, "description": "foo", "title": "bar"},
-    ],
-    "game_questions": [
-        {
-            "question_number": 1,
-            "key": "1.1",
-            "text": "qqq",
-            "answer": "bbb",
-            "notes": "ccc",
-            "url": "abc.com",
-        },
-    ],
-    # pulled specific event
-    "event_round_states": [
-        {"round_number": 1, "locked": False, "scored": False},
-    ],
-    "event_question_states": [
-        {"key": "1.1", "question_displayed": False, "answer_displayed": False}
-    ],
-}

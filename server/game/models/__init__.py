@@ -1,1 +1,2 @@
-from team import *
+from .team import *
+from .trivia_event import *

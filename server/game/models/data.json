@@ -1,0 +1,39 @@
+{
+    "event_data": {
+        "date": "11/09/2022",
+        "join_code": "1234",
+        "block_code": "Block A",
+        "title": "The First Game!",
+        "description": "This is not actually the first test."
+    },
+    "round_states": [{ "round_number": 1, "locked": false, "scored": false }],
+    "question_states": [
+        {
+            "question_number": 1,
+            "round_number": 1,
+            "key": "1.1",
+            "question_displayed": false,
+            "answer_displayed": false
+        }
+    ],
+    "game_rounds": [
+        {
+            "title": "General Knowledge",
+            "round_description": "Basic stuff",
+            "round_number": 1
+        }
+    ],
+    "game_questions": [
+        {
+            "id": 1,
+            "question_type": "General Knowledge",
+            "question_text": "Is this the first question?",
+            "question_url": null,
+            "display_answer": "No!",
+            "answer_notes": null,
+            "round_number": 1,
+            "question_number": 1,
+            "key": "1.1"
+        }
+    ]
+}
