@@ -3,11 +3,11 @@ from django.forms.models import model_to_dict
 from django.utils import timezone
 
 QUESTION_TYPE_GENERAL_KNOWLEDGE = 0
-QUESTION_TYPES = [(QUESTION_TYPE_GENERAL_KNOWLEDGE, "GeneralKnowledge")]
+QUESTION_TYPES = [(QUESTION_TYPE_GENERAL_KNOWLEDGE, "General Knowledge")]
 
 
 def queryset_to_json(qs):
-    """return a list of dictionaries from a queryset. the model must implement a to_json method"""
+    """Convert a queryset to a list of dictionaires. The model must implement a to_json method."""
     try:
         if not qs.exists():
             return []
@@ -36,7 +36,7 @@ class Question(models.Model):
 # a question that belongs to a specific game, but is immutable
 class GameQuestion(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
-    game = models.ForeignKey("Game", relate_name="questions", on_delete=models.CASCADE)
+    game = models.ForeignKey("Game", related_name="game_questions", on_delete=models.CASCADE)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     round_number = models.IntegerField()
     question_number = models.IntegerField()
@@ -60,7 +60,7 @@ class GameQuestion(models.Model):
 # basic round information, immutable
 class GameRound(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
-    game = models.ForeignKey("Game", related_name="rounds", on_delete=models.CASCADE)
+    game = models.ForeignKey("Game", related_name="game_rounds", on_delete=models.CASCADE)
     round_number = models.IntegerField()
     title = models.CharField(max_len=128)
     description: models.CharField(max_len=128)
@@ -86,6 +86,13 @@ class Game(models.Model):
     def __str__(self):
         return self.title  # TODO: block code?
 
+    # reverse lookup
+    def rounds(self):
+        return self.rounds.all()
+
+    def questions(self):
+        return self.questions.all()
+
     def to_json(self):
         return {
             "block_code": self.block_code,
@@ -104,6 +111,7 @@ class TriviaEvent(models.Model):
     def __str__(self):
         return f"{self.game.title} on {self.date}"
 
+    # reverse lookup
     def round_states(self):
         return self.round_states.all()
 
@@ -112,11 +120,11 @@ class TriviaEvent(models.Model):
 
     def to_json(self):
         return {
-            "event_data": { "join_code": self.join_code, **self.game.to_json() },
+            "event_data": {"join_code": self.join_code, **self.game.to_json()},
             "round_states": queryset_to_json(self.round_states()),
             "question_states": queryset_to_json(self.question_states()),
-            "rounds": queryset_to_json(self.game.round.all()),
-            "questions": queryset_to_json(self.game.questions.all())
+            "game_rounds": queryset_to_json(self.game.game_rounds.all()),
+            "game_questions": queryset_to_json(self.game.game_questions.all())
         }
 
 
@@ -126,12 +134,15 @@ class EventQuestionState(models.Model):
     event = models.ForeignKey(
         TriviaEvent, related_name="questions", on_delete=models.CASCADE
     )
-    question = models.ForeignKey(GameQuestion, on_delete=models.CASCADE)
+    question_number = models.IntegerField()
+    round_number = models.IntegerField()
     question_displayed = models.BooleanField()
     answer_displayed = models.BooleanField()
 
     def to_json(self):
         return {
+            "question_number": self.question_number,
+            "round_number": self.round_number,
             "key": self.question.key,
             "question_displayed": self.question_displayed,
             "answer_displayed": self.answer_displayed,
@@ -144,13 +155,13 @@ class EventRoundState(models.Model):
     event = models.ForeignKey(
         TriviaEvent, related_name="rounds", on_delete=models.CASCADE
     )
-    round = models.ForeignKey(GameRound, on_delete=models.CASCADE)
+    round_number = models.IntegerField()
     locked = models.BooleanField()
     scored = models.BooleanField()
 
     def to_json(self):
         return {
-            "round_number": self.round.round_number,
+            "round_number": self.round_number,
             "locked": self.locked,
             "scored": self.scored,
         }
