@@ -5,11 +5,16 @@ from game.models import Team
 class User(AbstractUser):
     active_team_id = models.IntegerField(blank=True, null=True)
 
-    def __str__(self):
-        return self.username
+    def teams_json(self):
+        return [team.to_json() for team in self.teams.all()]
 
-    def teams(self, as_dict=False):
-        return self.teams if not as_dict else self.teams.values
+    def to_json(self):
+        active_team_id = self.active_team_id if self.active_team_id else None
+        return {
+            "username": self.username,
+            "active_team_id": active_team_id,
+            "teams": self.teams_json()
+        }
 
     def clean(self):
         # ensure that whenever an active id is set, the user is added to the team
