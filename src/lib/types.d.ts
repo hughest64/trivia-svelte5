@@ -47,7 +47,7 @@ export interface HostSelectData {
     location_select_data: LocationSelectData[];
 }
 
-export interface EventQuestion {
+export interface GameQuestion {
     id: string | number;
     text: string;
     answer: string;
@@ -55,18 +55,26 @@ export interface EventQuestion {
     key: string;
     question_type: string;
     question_url: string;
+}
+
+interface EventQuestionState {
+    key: string;
     question_displayed: boolean;
     answer_displayed: boolean;
 }
 
-export interface EventRound {
+export interface GameRound {
     id: string | number;
     title: string;
     description: string;
     round_number: number;
+    // questions: EventQuestion[];
+}
+
+interface EventRound {
+    roundNumber: number;
     locked: boolean;
     scored: boolean;
-    questions: EventQuestion[];
 }
 
 export interface EventData {
