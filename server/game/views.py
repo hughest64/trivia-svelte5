@@ -5,7 +5,6 @@ from django.conf import settings
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 
-from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_404_NOT_FOUND
@@ -14,26 +13,10 @@ from rest_framework.views import APIView
 from user.authentication import JwtAuthentication
 from user.serializers import UserSerializer
 
-from .models import Team, Location, Game
-from .serializers import LocationSerializer, GameSerializer
+# TODO: fix all the broken things
+event_data = {}
 
-# TODO: dev data only, replace once models are in place
-with open(settings.BASE_DIR.parent / "data" / "event_setup_data.json", "r") as f2:
-    event_select_data = json.load(f2)
-location_classes = [Location(**data) for data in event_select_data.get("locations", [])]
-game_classes = [Game(**data) for data in event_select_data.get("games", [])]
 
-with open(
-    settings.BASE_DIR.parent / "data" / "game_data_merged.json", "r"
-) as event_file:
-    event_data = json.load(event_file)
-
-with open(
-    settings.BASE_DIR.parent / "data" / "response_data.json", "r"
-) as response_file:
-    response_data = json.load(response_file)
-
-# TODO: classes
 class TeamView(APIView):
     authentication_classes = [JwtAuthentication]
 
@@ -48,7 +31,7 @@ class TeamView(APIView):
         status = HTTP_200_OK
         if team_id:
             user = request.user
-            requested_team = Team.objects.filter(id=team_id)
+            requested_team = {} #  Team.objects.filter(id=team_id)
             if requested_team.exists():
                 user.active_team_id = requested_team.first().id
                 user.save()
@@ -66,13 +49,13 @@ class EventSetupView(APIView):
     def get(self, request):
         """get this weeks games and a list of locations"""
         user = request.user
-        locationSerializer = LocationSerializer(location_classes, many=True)
-        gameSerializer = GameSerializer(game_classes, many=True)
+        # locationSerializer = LocationSerializer(location_classes, many=True)
+        gameSerializer = [] # GameSerializer(game_classes, many=True)
         user_serializer = UserSerializer(user)
 
         return Response(
             {
-                "location_select_data": locationSerializer.data,
+                "location_select_data": [], #locationSerializer.data,
                 "game_select_data": gameSerializer.data,
                 "user_data": user_serializer.data,
             }
@@ -110,7 +93,7 @@ class EventView(APIView):
             {
                 "event_data": event_data,
                 "user_data": user_serializer.data,
-                "response_data": response_data,
+                "response_data": [],
             }
         )
 
