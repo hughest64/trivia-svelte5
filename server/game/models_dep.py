@@ -1,6 +1,6 @@
 from django.db import models
 
-# TODO: convert models to actual Django models!
+# TODO: deprecate this file! (keep the to_json method on Team though)
 
 
 class Team(models.Model):

@@ -134,9 +134,11 @@ class Game(models.Model):
 
 class TriviaEvent(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
-    date = models.DateField()
+    date = models.DateField(default=timezone.now)
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
     join_code = models.CharField(max_length=64, unique=True, db_index=True)
+    current_round_number = models.IntegerField(default=1)
+    current_question_number = models.IntegerField(default=1)
 
     def __str__(self):
         return f"{self.game.title} on {self.date}"
