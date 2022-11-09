@@ -5,6 +5,12 @@ from game.models import Team
 class User(AbstractUser):
     active_team_id = models.IntegerField(blank=True, null=True)
 
+    def __str__(self):
+        return self.username
+
+    def teams(self, as_dict=False):
+        return self.teams if not as_dict else self.teams.values
+
     def clean(self):
         # ensure that whenever an active id is set, the user is added to the team
         if self.active_team_id:

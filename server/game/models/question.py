@@ -86,12 +86,14 @@ class Game(models.Model):
     def __str__(self):
         return self.title  # TODO: block code?
 
-    # reverse lookup
-    def rounds(self):
-        return self.rounds.all()
+    # maybe use with caution, idk what the keys actually look like, or how it handles relations
+    def rounds(self, as_dict=False):
+        rounds = self.rounds.all()
+        return rounds if not as_dict else rounds.values()
 
-    def questions(self):
-        return self.questions.all()
+    def questions(self, as_dict=False):
+        questions = self.questions.all()
+        return questions if not as_dict else questions.values()
 
     def to_json(self):
         return {
