@@ -172,8 +172,8 @@ class EventQuestionState(models.Model):
     )
     question_number = models.IntegerField()
     round_number = models.IntegerField()
-    question_displayed = models.BooleanField()
-    answer_displayed = models.BooleanField()
+    question_displayed = models.BooleanField(default=False)
+    answer_displayed = models.BooleanField(default=False)
 
     @property
     def key(self):
@@ -196,8 +196,8 @@ class EventRoundState(models.Model):
         TriviaEvent, related_name="round_states", on_delete=models.CASCADE
     )
     round_number = models.IntegerField()
-    locked = models.BooleanField()
-    scored = models.BooleanField()
+    locked = models.BooleanField(default=False)
+    scored = models.BooleanField(defalut=False)
 
     def to_json(self):
         return {
