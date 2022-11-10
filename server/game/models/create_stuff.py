@@ -10,8 +10,10 @@ def get_question_type_value(string_value):
         if string == string_value:
             return value
 
-        return 0
+    return 0
 
+def q_types():
+    print (QUESTION_TYPES)
 
 def get_data():
     with open(settings.BASE_DIR.parent / "data" / "game_data_merged.json", 'r') as f:
@@ -50,11 +52,11 @@ def create_the_things():
         )
         EventRoundState.objects.create(
             event=event,
-            round_number=round.get("round_number", ""),
+            round_number=round.get("round_number", 1),
         )
         for question in round["questions"]:
             quest = Question.objects.create(
-                question_type = get_question_type_value(question.get("", "General Knowledge")),
+                question_type = get_question_type_value(question.get("question_type", "General Knowledge")),
                 question_text = question.get("text", ""),
                 question_url = question.get("questin_url", ""),
                 display_answer = question.get("answer", ""),
@@ -64,13 +66,14 @@ def create_the_things():
             GameQuestion.objects.create(
                 game=game,
                 question=quest,
-                round_number = question.get("round_number", ""),
-                question_number = question.get("question_number", "")
+                round_number = round.get("round_number", 1),
+                question_number = question.get("question_number", 1)
             )
             EventQuestionState.objects.create(
                 event=event,
-                round_number = question.get("round_number", ""),
-                question_number = question.get("question_number", ""),
+                round_number = round.get("round_number", 1),
+                question_number = question.get("question_number", 1),
             )
 
-    # write out event.to_json()?
+    with open(settings.BASE_DIR.parent / "data" / "event_data.json", "w") as f:
+        json.dump(event.to_json(), f, indent=4)

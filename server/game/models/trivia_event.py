@@ -10,9 +10,10 @@ QUESTION_TYPE_LIGHTNING_ROUND = 4
 QUESTION_TYPE_SOUND_ROUND = 5
 QUESTION_TYPE_TIE_BREAKER = 6
 
+# TODO: validate the string values here agaainst airtable
 QUESTION_TYPES = [
     (QUESTION_TYPE_GENERAL_KNOWLEDGE, "General Knowledge"),
-    (QUESTION_TYPE_THEMED_ROUND, "Them Round"),
+    (QUESTION_TYPE_THEMED_ROUND, "Themed Round"),
     (QUESTION_TYPE_WORD_PLAY, "Word Play"),
     (QUESTION_TYPE_IMAGE_ROUND, "Image Round"),
     (QUESTION_TYPE_LIGHTNING_ROUND, "Lightning Round"),
@@ -28,6 +29,7 @@ def queryset_to_json(qs):
     if not qs.exists():
         return []
 
+    # TODO: maybe check has_attr(qs.first(), 'to_json') and raise NotImplemented if False?
     return [instance.to_json() for instance in qs]
 
 class Question(models.Model):
@@ -197,7 +199,7 @@ class EventRoundState(models.Model):
     )
     round_number = models.IntegerField()
     locked = models.BooleanField(default=False)
-    scored = models.BooleanField(defalut=False)
+    scored = models.BooleanField(default=False)
 
     def to_json(self):
         return {
