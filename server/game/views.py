@@ -78,7 +78,7 @@ class EventSetupView(APIView):
 
 
 class EventView(APIView):
-    # authentication_classes = [JwtAuthentication]
+    authentication_classes = [JwtAuthentication]
 
     def get(self, request, joincode=None):
         """fetch a specific event from the joincode parsed from the url"""
