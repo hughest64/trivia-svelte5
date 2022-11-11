@@ -3,12 +3,13 @@
     import { sineInOut } from 'svelte/easing';
     import { page } from '$app/stores';
     import { swipeQuestion } from './swipe';
+    import { getStore } from '$lib/utils';
     import type { ActiveEventData, GameQuestion } from '$lib/types';
-    import type { Writable } from 'svelte/store';
 
     const joincode = $page.params?.joincode;
-    export let questions: GameQuestion[];
-    export let activeData: Writable<ActiveEventData>;
+    const questions: GameQuestion[] = $page.data.questions;
+    $: activeData = getStore<ActiveEventData>('activeEventData');
+
     export let activeQuestionKey: string;
     $: activeQuestionNumber = $activeData?.activeQuestionNumber;
     $: activeQuestions = questions.filter((q) => q.round_number === $activeData.activeRoundNumber);
@@ -40,7 +41,7 @@
         activeData.update((data) => ({
             ...data,
             activeQuestionNumber: nextQuestionNumber,
-            activeQuestionKey: `${$activeData.activeRoundNumber}.${activeQuestionNumber}`
+            activeQuestionKey: `${$activeData.activeRoundNumber}.${nextQuestionNumber}`
         }));
 
         // post to the game endpoint to set active round and question in a cookie

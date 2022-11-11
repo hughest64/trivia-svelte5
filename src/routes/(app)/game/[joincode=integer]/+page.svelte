@@ -6,18 +6,25 @@
     import Note from './Note.svelte';
     import type { GameQuestion, ActiveEventData, EventData, GameRound, Response } from '$lib/types';
 
-    $: activeData = getStore<ActiveEventData>('activeEventData');
+    // TODO: acitve round/question don't seem to survice HMR, not sure it that existed before
+
+    // TODO: this probably needs to be sourced from getStore cuz current_round_num, etc
     $: eventData = getStore<EventData>('eventData');
-    $: rounds = getStore<GameRound[]>('rounds');
-    $: questions = getStore<GameQuestion[]>('questions');
+    $: activeData = getStore<ActiveEventData>('activeEventData');
+    $: activeRound = $page.data.rounds?.find(
+        (round: GameRound) => round.round_number === $activeData.activeRoundNumber
+    );
+    
+    $: activeQuestion = $page.data.questions.find(
+        (question: GameQuestion) => question.key === $activeData.activeQuestionKey
+    );
+    // TODO: should this move to the question?
     $: responseStore = getStore<Response[]>('responseData');
-    $: activeRound = $rounds?.find((round) => round.round_number === $activeData.activeRoundNumber) || $rounds[0];
-    $: activeQuestion = $questions.find((question) => question.key === $activeData.activeQuestionKey) || $questions[0];
     $: activeResponse = $responseStore.find((response) => response.key === activeQuestion.key);
-    $: roundNumbers = $rounds.map((round) => round.round_number);
-
+    
     $: joincode = $page.params?.joincode;
-
+    
+    const roundNumbers = $page.data.rounds.map((round: GameRound) => round.round_number);
     const handleRoundSelect = async (event: MouseEvent) => {
         const target = <HTMLButtonElement>event.target;
 
@@ -50,7 +57,9 @@
     {/each}
 </div>
 
-<Round questions={$questions} {activeData} activeQuestionKey={activeQuestion.key}>
+<!-- TODO: could use activeData.activeQuestionKey here so we don't need active question -->
+<Round activeQuestionKey={activeQuestion.key}>
+    <!-- TODO: could probably get both of these right in the Question -->
     <Question {activeQuestion} {activeResponse} />
     <Note activeQuestionKey={activeQuestion.key} />
 </Round>

@@ -21,9 +21,10 @@ export const handle: Handle = async ({ event, resolve }) => {
 
     const activeData = cookies.get(`event-${params.joincode}`);
     if (activeData) {
-        const { activeRoundNumber, activeQuestionNumber } = JSON.parse(activeData);
+        const { activeRoundNumber, activeQuestionNumber, activeQuestionKey } = JSON.parse(activeData);
         event.locals.activeRoundNumber = activeRoundNumber || '';
         event.locals.activeQuestionNumber = activeQuestionNumber || '';
+        event.locals.activeQuestionKey = activeQuestionKey || '';
     }
     const response = await resolve(event);
 

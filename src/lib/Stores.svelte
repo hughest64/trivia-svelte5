@@ -8,8 +8,6 @@
 
     $: createStore('userData', data?.user_data || {});
     $: createStore('eventData', eventData || {});
-    $: createStore('rounds', data?.rounds || []);
-    $: createStore('questions', data?.questions || []);
     $: createStore('roundStates', data?.round_states || []);
     $: createStore('questionStates', data?.question_states || []);
 

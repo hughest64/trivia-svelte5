@@ -10,6 +10,7 @@ declare namespace App {
         staffuser?: boolean
         activeRoundNumber?: string | number
         activeQuestionNumber?: string | number
+        activeQuestionKey?: string
     }
     interface PageData {
         user_data?: import('$lib/types').UserData;
