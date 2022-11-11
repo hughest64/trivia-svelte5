@@ -24,7 +24,7 @@
         $activeData = {
             activeQuestionNumber: 1,
             activeRoundNumber: Number(target.id),
-            activeQuestionKey: activeQuestion.key
+            activeQuestionKey: `${target.id}.1`
         };
 
         // post to the game endpoint to set active round and question in a cookie
