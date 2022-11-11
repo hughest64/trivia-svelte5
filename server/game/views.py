@@ -111,6 +111,7 @@ class EventJoinView(APIView):
         return Response({"user_data": serializer.data})
 
 
+# TODO: do we need this? The data isn't any different from the player view
 class EventHostView(APIView):
     authentication_classes = [JwtAuthentication]
     permission_classes = [IsAdminUser]

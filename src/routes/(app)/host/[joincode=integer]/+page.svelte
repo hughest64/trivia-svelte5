@@ -3,25 +3,27 @@
     import { getContext } from 'svelte';
     import { getStore } from '$lib/utils';
     import Round from './Round.svelte';
-    import type { ActiveEventData, EventData } from '$lib/types';
+    import type { ActiveEventData, EventData, GameRound } from '$lib/types';
 
     const socket = <WebSocket>getContext('socket');
 
     $: activeData = getStore<ActiveEventData>('activeEventData');
     $: eventData = getStore<EventData>('eventData');
+    const rounds = $page.data.rounds;
 
-    $: activeRound =
-        $eventData?.rounds.find((round) => round.round_number === $activeData.activeRoundNumber) ||
-        $eventData?.rounds[0];
-
-    $: roundNumbers = $eventData?.rounds.map((round) => round.round_number);
+    $: activeRound = rounds.find((round: GameRound) => round.round_number === $activeData.activeRoundNumber);
+    $: roundNumbers = rounds.map((round: GameRound) => round.round_number);
 
     $: joincode = $page.params?.joincode;
 
     const handleRoundSelect = async (event: MouseEvent) => {
         const target = <HTMLButtonElement>event.target;
 
-        $activeData = { activeQuestionNumber: 1, activeRoundNumber: Number(target.id) };
+        $activeData = {
+            activeQuestionNumber: 1,
+            activeRoundNumber: Number(target.id),
+            activeQuestionKey: `1.${target.id}`
+        };
 
         // post to the game endpoint to set active round and question in a cookie
         await fetch('/update', {
@@ -32,14 +34,16 @@
 
     const handleLockRound = async () => {
         // send a socket message?
-        socket.send(JSON.stringify({
-            type: 'lock_round',
-            message: {
-                event_id: $eventData.event_id,
-                round_number: activeRound.round_number,
-                lock_status: !activeRound.locked
-            }
-        }));
+        socket.send(
+            JSON.stringify({
+                type: 'lock_round',
+                message: {
+                    event_id: $eventData.event_id,
+                    round_number: activeRound.round_number,
+                    lock_status: !activeRound.locked
+                }
+            })
+        );
         // TODO: or do we post?
         // const response = await fetch('some url', {
         //     method: 'POST',

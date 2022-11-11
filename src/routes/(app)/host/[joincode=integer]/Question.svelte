@@ -1,10 +1,13 @@
 <script lang="ts">
-    import type { EventQuestion } from '$lib/types';
+    import type { GameQuestion } from '$lib/types';
 
-    export let question: EventQuestion;
+    export let question: GameQuestion;
     let updating = false;
 
-    $: questionRevealed = question.question_displayed;
+    // TODO: fix me
+    $: questionRevealed = false; // question.question_displayed;
+    // TODO: we need to import the questionState store
+    let answerDisplayed = false;
 
     const handleRevealQuestion = async () => {
         if (updating) return;
@@ -17,7 +20,7 @@
 
         // const response = 
         await fetch('?/reveal', { method: 'POST', body: data });
-        // TODO: !response is not ok reset the question value and set an error msg
+        // TODO: this can be local for the host, but should respect whether or not it's revealed to players
         updating = false;
     };
 
@@ -33,16 +36,16 @@
         <p>{updating ? 'Updating' : questionRevealed ? 'Hide' : 'Reveal'} Question</p>
     </div>
     
-    <p>{question.text}</p>
+    <p>{question.question_text}</p>
     
     <!-- TODO: qustion.host_notes -->
     
     <!-- TODO: add this data to the question? or in a cookie? -->
-    <button class="button button-white" on:click={() => (question.answer_displayed = !question.answer_displayed)}>
-        Click To {question.answer_displayed ? 'Hide' : 'Reveal'} Answer
+    <button class="button button-white" on:click={() => (answerDisplayed = !answerDisplayed)}>
+        Click To {answerDisplayed ? 'Hide' : 'Reveal'} Answer
     </button>
 
-    {#if question.answer_displayed}<h3>{question.answer}</h3>{/if}
+    {#if answerDisplayed}<h3>{question.display_answer}</h3>{/if}
 </div>
 
 <style lang="scss">

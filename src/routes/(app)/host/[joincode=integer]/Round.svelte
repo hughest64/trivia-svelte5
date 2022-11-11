@@ -1,16 +1,18 @@
 <script lang="ts">
     import Question from './Question.svelte';
-    import type { EventRound } from '$lib/types';
+    import { page } from '$app/stores';
+    import type { GameRound, GameQuestion } from '$lib/types';
 
-    export let activeRound: EventRound;
-
+    export let activeRound: GameRound;
+    const questions: GameQuestion[]  = $page.data.questions;
+    const roundQuestions = questions.filter((question) => question.round_number === activeRound.round_number);
     let allQuestionsRevealed = false;
     $: allQuestionsRevealedText = allQuestionsRevealed ? 'All Questions Revealed' : 'Reveal All Questions';
 </script>
 
 <div class="host-question-panel flex-column">
     <h4>{activeRound.title}</h4>
-    <p>{activeRound.description}</p>
+    <p>{activeRound.round_description}</p>
     <form class="switch-container" on:submit|preventDefault>
         <label for="reveal-all-questions" class="switch">
             <input
@@ -26,7 +28,7 @@
     </form>
 </div>
 
-{#each activeRound?.questions as question (question.question_number)}
+{#each roundQuestions as question (question.question_number)}
     <Question {question} />
 {/each}
 
