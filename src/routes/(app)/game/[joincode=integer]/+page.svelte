@@ -4,30 +4,28 @@
     import Round from './Round.svelte';
     import Question from './Question.svelte';
     import Note from './Note.svelte';
-    import type { ActiveEventData, EventData, Response } from '$lib/types';
+    import type { GameQuestion, ActiveEventData, EventData, GameRound, Response } from '$lib/types';
 
     $: activeData = getStore<ActiveEventData>('activeEventData');
     $: eventData = getStore<EventData>('eventData');
+    $: rounds = getStore<GameRound[]>('rounds');
+    $: questions = getStore<GameQuestion[]>('questions');
     $: responseStore = getStore<Response[]>('responseData');
-
-    $: activeRound =
-        $eventData?.rounds.find((round) => round.round_number === $activeData.activeRoundNumber) ||
-        $eventData.rounds[0];
-
-    $: activeQuestion =
-        activeRound.questions.find((question) => question.question_number === $activeData.activeQuestionNumber) ||
-        activeRound?.questions[0];
-
-    $: activeRoundQuestion = `${activeRound.round_number}.${activeQuestion.question_number}`;
-    $: activeResponse = $responseStore.find((response) => response.key === activeRoundQuestion);
-    $: roundNumbers = $eventData?.rounds.map((round) => round.round_number);
+    $: activeRound = $rounds?.find((round) => round.round_number === $activeData.activeRoundNumber) || $rounds[0];
+    $: activeQuestion = $questions.find((question) => question.key === $activeData.activeQuestionKey) || $questions[0];
+    $: activeResponse = $responseStore.find((response) => response.key === activeQuestion.key);
+    $: roundNumbers = $rounds.map((round) => round.round_number);
 
     $: joincode = $page.params?.joincode;
 
     const handleRoundSelect = async (event: MouseEvent) => {
         const target = <HTMLButtonElement>event.target;
 
-        $activeData = { activeQuestionNumber: 1, activeRoundNumber: Number(target.id) };
+        $activeData = {
+            activeQuestionNumber: 1,
+            activeRoundNumber: Number(target.id),
+            activeQuestionKey: activeQuestion.key
+        };
 
         // post to the game endpoint to set active round and question in a cookie
         await fetch('/update', {
@@ -52,9 +50,9 @@
     {/each}
 </div>
 
-<Round {activeRound} {activeData} activeQuestionKey={activeQuestion.key}>
+<Round questions={$questions} {activeData} activeQuestionKey={activeQuestion.key}>
     <Question {activeQuestion} {activeResponse} />
-    <Note activeRoundQuestion={activeQuestion.key} />
+    <Note activeQuestionKey={activeQuestion.key} />
 </Round>
 
 <style lang="scss">

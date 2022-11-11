@@ -13,6 +13,8 @@ from rest_framework.views import APIView
 from user.authentication import JwtAuthentication
 from user.serializers import UserSerializer
 
+from game.models import Team, TriviaEvent
+
 # TODO: fix all the broken things
 event_data = {}
 
@@ -31,7 +33,7 @@ class TeamView(APIView):
         status = HTTP_200_OK
         if team_id:
             user = request.user
-            requested_team = {} #  Team.objects.filter(id=team_id)
+            requested_team = Team.objects.filter(id=team_id)
             if requested_team.exists():
                 user.active_team_id = requested_team.first().id
                 user.save()
@@ -76,26 +78,27 @@ class EventSetupView(APIView):
 
 
 class EventView(APIView):
-    authentication_classes = [JwtAuthentication]
+    # authentication_classes = [JwtAuthentication]
 
     def get(self, request, joincode=None):
         """fetch a specific event from the joincode parsed from the url"""
-        # use the join code to look up event data
-        event_data["join_code"] = joincode
-        # raise if it's a bad join code
         user_serializer = UserSerializer(request.user)
+        
+        try:
+            event = TriviaEvent.objects.get(join_code=1234)
+        except TriviaEvent.DoesNotExist:
+            return Response({"detail": "an event with that join code does not exist"}, status=HTTP_404_NOT_FOUND)
 
-        # TOOD: get responses for this event via the user's active team
+        # event_data, game_questions, game_rounds, question_states, round_states
+        data = event.to_json()
+        # TODO: temporary!
+        data["event_data"]["join_code"] = joincode
+
+        # TODO: get responses for this event via the user's active team
         # if they do not have an active team respond with a 400 and a message
         # kit will need to handle the response accordingly
 
-        return Response(
-            {
-                "event_data": event_data,
-                "user_data": user_serializer.data,
-                "response_data": [],
-            }
-        )
+        return Response({**data, "user_data": user_serializer.data, "response_data": []})
 
 
 class EventJoinView(APIView):

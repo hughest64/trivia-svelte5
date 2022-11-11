@@ -3,9 +3,9 @@
     import { applyAction, enhance } from '$app/forms';
     import { getStore } from '$lib/utils';
     import type { ActionData } from './$types';
-    import type { EventQuestion, Response, UserData } from '$lib/types';
+    import type { GameQuestion, Response, UserData } from '$lib/types';
 
-    export let activeQuestion: EventQuestion;
+    export let activeQuestion: GameQuestion;
     export let activeResponse: Response | undefined;
     $: responseText = activeResponse?.recorded_answer || '';
 
@@ -23,7 +23,7 @@
 
 <h2>{activeQuestion.key}</h2>
 
-<p class="question-text">{activeQuestion.text}</p>
+<p class="question-text">{activeQuestion.question_text}</p>
 
 <!-- TODO it would be nice to stop submission if the value has not changed, on:submit = () => preventDefault isn't working-->
 <form

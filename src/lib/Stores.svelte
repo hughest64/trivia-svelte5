@@ -1,26 +1,25 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { createStore } from '$lib/utils';
-    import type { PopupData, ActiveEventData, EventData, Response, UserData } from './types';
+    import type { PopupData, ActiveEventData, EventData } from './types';
 
     $: data = $page.data;
-    $: userData = <UserData>data?.user_data;
     $: eventData = <EventData>data?.event_data;
-    $: responseData = <Response[]>data?.response_data || [];
 
-    $: createStore<UserData>('userData', userData);
-
-    // event data
-    $: createStore<EventData>('eventData', eventData);
+    $: createStore('userData', data?.user_data || {});
+    $: createStore('eventData', eventData || {});
+    $: createStore('rounds', data?.rounds || []);
+    $: createStore('questions', data?.questions || []);
+    $: createStore('roundStates', data?.round_states || []);
+    $: createStore('questionStates', data?.question_states || []);
 
     // active event data
     $: createStore<ActiveEventData>('activeEventData', {
         activeQuestionNumber: data?.activeQuestionNumber || eventData?.current_question_number || 1,
-        activeRoundNumber: data?.activeRoundNumber || eventData?.current_question_number || 1
+        activeRoundNumber: data?.activeRoundNumber || eventData?.current_question_number || 1,
+        activeQuestionKey: data?.activeQuestionKey || '1.1'
     });
-
-    // TODO: get responses from the server
-    $: createStore<Response[]>('responseData', responseData);
+    $: createStore('responseData', data?.response_data || []);
 
     // create a generic popup store
     $: createStore<PopupData>('popupData', { is_displayed: false, popup_type: '' });

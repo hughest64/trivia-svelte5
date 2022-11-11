@@ -125,7 +125,7 @@ class Game(models.Model):
     # TODO: this isn't a great representation for to_json as it doesn't contain all the things
     def to_json(self):
         return {
-            "game_id": self.pk,
+            # "game_id": self.pk,
             "block_code": self.block_code,
             "game_title": self.title,
             # "description": self.description,
@@ -150,8 +150,8 @@ class TriviaEvent(models.Model):
     def to_json(self):
         return {
             "event_data": {
-                "event_id": self.pk,
-                "game_id": self.pk,
+                "id": self.pk,
+                # "game_id": self.pk,
                 "game_title": self.game.title,
                 "join_code": self.join_code,
                 # TODO: add this
@@ -160,11 +160,15 @@ class TriviaEvent(models.Model):
                 "current_round_number": self.current_round_number,
                 "current_question_number": self.current_question_number,
             },
-            "game_rounds": queryset_to_json(self.game.game_rounds.all()),
-            "game_questions": queryset_to_json(self.game.game_questions.all()),
+            "rounds": queryset_to_json(self.game.game_rounds.all()),
+            "questions": queryset_to_json(self.game.game_questions.all()),
             "round_states": queryset_to_json(self.round_states.all()),
             "question_states": queryset_to_json(self.question_states.all()),
         }
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
 
 
 class EventQuestionState(models.Model):
@@ -190,6 +194,10 @@ class EventQuestionState(models.Model):
             "answer_displayed": self.answer_displayed,
         }
 
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
 
 # round for an event extends a game round with mutable boolean fields (locked and scored)
 class EventRoundState(models.Model):
@@ -207,3 +215,7 @@ class EventRoundState(models.Model):
             "locked": self.locked,
             "scored": self.scored,
         }
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)

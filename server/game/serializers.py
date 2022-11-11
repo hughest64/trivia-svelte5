@@ -10,14 +10,3 @@ class TeamSerializer(serializers.ModelSerializer):
     class Meta:
         model = Team
         exclude = ["created_at"]
-
-
-# TODO, ModelSerialzer
-class LocationSerializer(serializers.Serializer):
-    location_id = serializers.IntegerField()
-    location_name = serializers.CharField(max_length=200)
-
-
-class GameSerializer(serializers.Serializer):
-    game_id = serializers.IntegerField()
-    game_title = serializers.CharField(max_length=200)
