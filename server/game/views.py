@@ -118,10 +118,16 @@ class EventHostView(APIView):
 
     def get(self, request, joincode=None):
         """fetch a specific event from the joincode parsed from the url"""
-        user = request.user
-        # use the join code to look up event data
-        # raise if it's a bad join code
-        event_data["join_code"] = joincode
-        user_serializer = UserSerializer(user)
+        user_serializer = UserSerializer(request.user)
+        
+        try:
+            event = TriviaEvent.objects.get(join_code=1234)
+        except TriviaEvent.DoesNotExist:
+            return Response({"detail": "an event with that join code does not exist"}, status=HTTP_404_NOT_FOUND)
 
-        return Response({"event_data": event_data, "user_data": user_serializer.data})
+        # event_data, game_questions, game_rounds, question_states, round_states
+        data = event.to_json()
+        # TODO: temporary!
+        data["event_data"]["join_code"] = joincode
+
+        return Response({**data, "user_data": user_serializer.data})
