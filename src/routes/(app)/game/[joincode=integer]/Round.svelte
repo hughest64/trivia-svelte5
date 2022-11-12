@@ -4,15 +4,15 @@
     import { page } from '$app/stores';
     import { swipeQuestion } from './swipe';
     import { getStore } from '$lib/utils';
-    import type { ActiveEventData, GameQuestion } from '$lib/types';
+    import type { ActiveEventData, CurrentEventData, GameQuestion } from '$lib/types';
 
     const joincode = $page.params?.joincode;
-    const questions: GameQuestion[] = $page.data.questions;
-    $: activeData = getStore<ActiveEventData>('activeEventData');
+    const questions: GameQuestion[] = $page.data.questions || [];
 
-    export let activeQuestionKey: string;
-    $: activeQuestionNumber = $activeData?.activeQuestionNumber;
-    $: activeQuestions = questions.filter((q) => q.round_number === $activeData.activeRoundNumber);
+    $: currentEventData = getStore<CurrentEventData>('currentEventData');
+    $: activeEventData = getStore<ActiveEventData>('activeEventData');
+    $: activeQuestionNumber = $activeEventData?.activeQuestionNumber;
+    $: activeQuestions = questions.filter((q) => q.round_number === $activeEventData.activeRoundNumber);
     $: questionNumbers = <number[]>activeQuestions.map((q) => q.question_number);
     $: lastQuestionNumber = Math.max(...questionNumbers);
 
@@ -38,16 +38,16 @@
 
         swipeDirection = nextQuestionNumber < activeQuestionNumber ? 'left' : 'right';
 
-        activeData.update((data) => ({
+        activeEventData.update((data) => ({
             ...data,
             activeQuestionNumber: nextQuestionNumber,
-            activeQuestionKey: `${$activeData.activeRoundNumber}.${nextQuestionNumber}`
+            activeQuestionKey: `${$activeEventData.activeRoundNumber}.${nextQuestionNumber}`
         }));
 
         // post to the game endpoint to set active round and question in a cookie
         await fetch('/update', {
             method: 'POST',
-            body: JSON.stringify({ activeData: $activeData, joincode })
+            body: JSON.stringify({ activeEventData: $activeEventData, joincode })
         });
     };
 </script>
@@ -57,12 +57,19 @@
 <div class="question-box flex-column">
     <div class="question-selector">
         {#each questionNumbers as num}
-            <button class="button-white" id={String(num)} on:click={handleQuestionSelect}>{num}</button>
+            <!-- TODO: the logic for current isn't quite good enough, we need to condisder the current round as well. -->
+            <button
+                class="button-white"
+                class:current={num === $currentEventData.question_number}
+                id={String(num)} on:click={handleQuestionSelect}
+            >
+                {num}
+            </button>
         {/each}
     </div>
     <!-- TODO: transition params in a config object like { left: {...}, right: {...} } -->
     <div class="question-row">
-        {#key activeQuestionKey}
+        {#key $activeEventData.activeQuestionKey}
             <div
                 class="flex-column question"
                 in:fly={{
@@ -115,4 +122,7 @@
     .question {
         width: 100%;
     }
+    button.current {
+            border-color: var(--color-current);
+        }
 </style>

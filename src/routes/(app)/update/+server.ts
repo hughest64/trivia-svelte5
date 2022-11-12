@@ -5,7 +5,7 @@ export const POST: RequestHandler = async ({ cookies, request }) => {
     const data = await request.json();
 
     if (data) {
-        cookies.set(`event-${data.joincode}`, JSON.stringify({ ...data.activeData }), {
+        cookies.set(`event-${data.joincode}`, JSON.stringify({ ...data.activeEventData }), {
             path: '/',
             httpOnly: true,
             maxAge: Number(PUBLIC_COOKIE_MAX_AGE) || 60 * 60

@@ -144,6 +144,10 @@ class TriviaEvent(models.Model):
     current_round_number = models.IntegerField(default=1)
     current_question_number = models.IntegerField(default=1)
 
+    @property
+    def current_question_key(self):
+        return f"{self.current_round_number}.{self.current_question_number}"
+
     def __str__(self):
         return f"{self.game.title} on {self.date}"
 
@@ -157,9 +161,12 @@ class TriviaEvent(models.Model):
                 # TODO: add this
                 # "location": self.location.name
                 "block_code": self.game.block_code,
-                "current_round_number": self.current_round_number,
-                "current_question_number": self.current_question_number,
             },
+            "current_event_data": {
+                "round_number": self.current_round_number,
+                "question_number": self.current_question_number,
+                "quesion_key": self.current_question_key,
+            },                
             "rounds": queryset_to_json(self.game.game_rounds.all()),
             "questions": queryset_to_json(self.game.game_questions.all()),
             "round_states": queryset_to_json(self.round_states.all()),

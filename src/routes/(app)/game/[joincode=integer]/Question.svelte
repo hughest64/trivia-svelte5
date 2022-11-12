@@ -3,10 +3,14 @@
     import { applyAction, enhance } from '$app/forms';
     import { getStore } from '$lib/utils';
     import type { ActionData } from './$types';
-    import type { GameQuestion, Response, UserData } from '$lib/types';
+    import type { GameQuestion, QuestionState, Response, UserData } from '$lib/types';
 
     export let activeQuestion: GameQuestion;
     export let activeResponse: Response | undefined;
+
+    const questionStates = getStore<QuestionState[]>('questionStates');
+    $: questionState = $questionStates.find((qs) => qs.key === activeQuestion.key);
+
     $: responseText = activeResponse?.recorded_answer || '';
 
     $: form = <ActionData>$page.form;
@@ -23,7 +27,9 @@
 
 <h2>{activeQuestion.key}</h2>
 
-<p class="question-text">{activeQuestion.question_text}</p>
+<p class="question-text">
+    {questionState?.question_displayed ? activeQuestion.question_text : 'Please Wait for the Host to Reveal This Question'}
+</p>
 
 <!-- TODO it would be nice to stop submission if the value has not changed, on:submit = () => preventDefault isn't working-->
 <form
