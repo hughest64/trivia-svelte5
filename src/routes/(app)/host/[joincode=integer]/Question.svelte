@@ -1,18 +1,23 @@
 <script lang="ts">
-    import type { GameQuestion } from '$lib/types';
+    import { getStore } from '$lib/utils';
+    import type { GameQuestion, QuestionState } from '$lib/types';
 
     export let question: GameQuestion;
-    let updating = false;
-
-    // TODO: fix me
-    $: questionRevealed = false; // question.question_displayed;
-    // TODO: we need to import the questionState store
+    $: questionStates = getStore<QuestionState[]>('questionStates') || [];
+    $: questionRevealed = $questionStates.find((qs) => qs.key === question.key)?.question_displayed;
+    
+    // TODO: used locally for the host, but we should respect answers being revealed to players
+    // we could maybe also use the event cookie to store locally for the host
     let answerDisplayed = false;
-
+    
+    let updating = false;
     const handleRevealQuestion = async () => {
         if (updating) return;
         updating = true;
 
+        // TODO: this updates locally, but it does not update the actual store, which is maybe ok?
+        // to update the store we'd need to do something like:
+        // questionStates.update((states) => /** make a copy, find the index, update the copy, rturn the copy*/ states );
         questionRevealed = !questionRevealed;
         const data = new FormData();
         data.set('key', question.key);
@@ -20,7 +25,6 @@
 
         // const response = 
         await fetch('?/reveal', { method: 'POST', body: data });
-        // TODO: this can be local for the host, but should respect whether or not it's revealed to players
         updating = false;
     };
 

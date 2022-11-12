@@ -114,8 +114,15 @@ class SocketConsumer(JsonWebsocketConsumer):
     ### EVENT MESSAGES ###
     ######################
 
+    # TODO: we want a single generic handler here (event_update or similiar)
+    # each payload should have a message_type key to pass to the front end
+
     def event_question_reveal(self, data):
         # print("team question reveal", data)
+        self.send_json(data)
+
+    def event_question_update(self, data):
+        # print("team question update", data)
         self.send_json(data)
 
     # if we do the db work in a view function and use the socket to update all clients:

@@ -61,8 +61,15 @@ class UpdateView(APIView):
 
     # TOOD: csrf protect
     def post(self, request, joincode):
-        # print(request.data)
-
+        data = request.data
         # TODO: lookup the question and set the revealed state
+        async_to_sync(channel_layer.group_send)(
+            f"event_{joincode}",
+            {
+                "type": "event_question_update",
+                "store": "questionStates",
+                "message": {"key": data.get("key"), "value": bool(data.get("value"))},
+            },
+        )
 
         return Response({"message": "database updated"})

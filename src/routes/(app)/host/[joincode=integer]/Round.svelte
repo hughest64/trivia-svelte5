@@ -5,12 +5,11 @@
 
     export let activeRound: GameRound;
     const questions: GameQuestion[]  = $page.data.questions || [];
-    const roundQuestions = questions.filter((question) => question.round_number === activeRound.round_number);
     let allQuestionsRevealed = false;
+    $: roundQuestions = questions.filter((question) => question.round_number === activeRound.round_number);
     $: allQuestionsRevealedText = allQuestionsRevealed ? 'All Questions Revealed' : 'Reveal All Questions';
 </script>
 
-<!-- I'm a comment! -->
 <div class="host-question-panel flex-column">
     <h4>{activeRound.title}</h4>
     <p>{activeRound.round_description}</p>

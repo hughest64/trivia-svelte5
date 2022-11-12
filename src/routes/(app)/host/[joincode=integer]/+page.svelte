@@ -1,11 +1,8 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { getContext } from 'svelte';
     import { getStore } from '$lib/utils';
     import Round from './Round.svelte';
-    import type { ActiveEventData, EventData, EventRound, GameRound } from '$lib/types';
-
-    const socket = <WebSocket>getContext('socket');
+    import type { ActiveEventData, EventData, GameRound } from '$lib/types';
 
     $: activeData = getStore<ActiveEventData>('activeEventData');
     $: eventData = getStore<EventData>('eventData');
@@ -32,19 +29,10 @@
         });
     };
 
+    // TODO: fix when actually locking rounds
+    let checked = false;
     const handleLockRound = async () => {
-        // send a socket message?
-        socket.send(
-            JSON.stringify({
-                type: 'lock_round',
-                message: {
-                    event_id: $eventData.event_id,
-                    round_number: activeRound.round_number,
-                    lock_status: !activeRound.locked
-                }
-            })
-        );
-        // TODO: or do we post?
+        checked = !checked;
         // const response = await fetch('some url', {
         //     method: 'POST',
         //     // we should have the proper headers in $page.data (I think) if we need them
@@ -73,11 +61,12 @@
 
 <div class="lock-container">
     <label for="round-lock" class="lock">
+        <!-- TODO: update checked when ready -->
         <input
             type="checkbox"
             name="round-lock"
             id="round-lock"
-            checked={activeRound.locked}
+            checked
             on:click|preventDefault={handleLockRound}
         />
         <span />
