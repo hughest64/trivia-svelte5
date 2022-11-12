@@ -10,6 +10,7 @@
     $: allQuestionsRevealedText = allQuestionsRevealed ? 'All Questions Revealed' : 'Reveal All Questions';
 </script>
 
+<!-- I'm a comment! -->
 <div class="host-question-panel flex-column">
     <h4>{activeRound.title}</h4>
     <p>{activeRound.round_description}</p>
