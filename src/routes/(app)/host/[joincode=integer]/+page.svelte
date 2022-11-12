@@ -3,15 +3,15 @@
     import { getContext } from 'svelte';
     import { getStore } from '$lib/utils';
     import Round from './Round.svelte';
-    import type { ActiveEventData, EventData, GameRound } from '$lib/types';
+    import type { ActiveEventData, EventData, EventRound, GameRound } from '$lib/types';
 
     const socket = <WebSocket>getContext('socket');
 
     $: activeData = getStore<ActiveEventData>('activeEventData');
     $: eventData = getStore<EventData>('eventData');
-    const rounds = $page.data.rounds;
+    const rounds = $page.data.rounds || [];
 
-    $: activeRound = rounds.find((round: GameRound) => round.round_number === $activeData.activeRoundNumber);
+    $: activeRound = <GameRound>rounds.find((round: GameRound) => round.round_number === $activeData.activeRoundNumber);
     $: roundNumbers = rounds.map((round: GameRound) => round.round_number);
 
     $: joincode = $page.params?.joincode;

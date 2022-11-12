@@ -4,7 +4,7 @@
     import type { GameRound, GameQuestion } from '$lib/types';
 
     export let activeRound: GameRound;
-    const questions: GameQuestion[]  = $page.data.questions;
+    const questions: GameQuestion[]  = $page.data.questions || [];
     const roundQuestions = questions.filter((question) => question.round_number === activeRound.round_number);
     let allQuestionsRevealed = false;
     $: allQuestionsRevealedText = allQuestionsRevealed ? 'All Questions Revealed' : 'Reveal All Questions';
