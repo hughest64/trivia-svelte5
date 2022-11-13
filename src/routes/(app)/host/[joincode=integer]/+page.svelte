@@ -2,10 +2,11 @@
     import { page } from '$app/stores';
     import { getStore } from '$lib/utils';
     import Round from './Round.svelte';
-    import type { ActiveEventData, EventData, GameRound } from '$lib/types';
+    import type { ActiveEventData, CurrentEventData, GameRound } from '$lib/types';
 
     $: activeData = getStore<ActiveEventData>('activeEventData');
-    $: eventData = getStore<EventData>('eventData');
+    $: currentEventData = getStore<CurrentEventData>('currentEventData');
+    const eventData = $page.data.event_data;
     const rounds = $page.data.rounds || [];
 
     $: activeRound = <GameRound>rounds.find((round: GameRound) => round.round_number === $activeData.activeRoundNumber);
@@ -44,7 +45,7 @@
 
 <h1>Host Game</h1>
 <p>Event Join Code: <strong>{joincode}</strong></p>
-<p>Details: <strong>{$eventData.location}, {$eventData.game_title}</strong></p>
+<p>Details: <strong>{eventData?.location}, {eventData?.game_title}</strong></p>
 
 <div class="round-selector">
     {#each roundNumbers as roundNum}
@@ -52,7 +53,7 @@
             id={String(roundNum)}
             on:click={handleRoundSelect}
             class:active={$activeData.activeRoundNumber === roundNum}
-            class:current={$eventData.current_round_number === roundNum}
+            class:current={$currentEventData.round_number === roundNum}
         >
             {roundNum}
         </button>
