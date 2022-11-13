@@ -30,12 +30,12 @@ const handlers: MessageHandler = {
     },
 
     // TODO: event handlers maybe should be in a separate file
-    event_question_reveal: (message: Record<string, string|boolean>, store: Writable<PopupData>) => {
+    question_reveal: (message: Record<string, string|boolean>, store: Writable<PopupData>) => {
         const revealed = message.value;
         revealed && store.set({ is_displayed: true, popup_type: 'question_reveal', timer_value: 5 });
     },
 
-    event_question_update: (message: Record<string, string | boolean>, store: Writable<QuestionState[]>) => {
+    question_update: (message: Record<string, string | boolean>, store: Writable<QuestionState[]>) => {
         store.update((states) => {
             const newStates = [...states];
             const updateIndex = states.findIndex((state) => state.key === message.key);
