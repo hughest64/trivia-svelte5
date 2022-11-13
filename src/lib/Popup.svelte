@@ -12,6 +12,12 @@
     $: popupType = $popupData?.popup_type;
     $: count = $popupData.timer_value || 0;
 
+    // TODO:
+    // - helper to create round and quesiton from key
+    // - bring in active event data
+    // - if !host route and auto_reveal === true
+    // - set active data
+    // - post to /update w/ active data
     let interval: ReturnType<typeof setTimeout>;
     const countDown = () => {
         if (count > 0) {
@@ -19,7 +25,10 @@
             setTimeout(countDown, 1000);
         } else {
             clearTimeout(interval);
-            console.log(`auto reveal? ${userData?.auto_reveal_questions}, if so, go to ${$popupData.data?.key}`);
+            console.log(
+                `auto reveal? ${userData?.auto_reveal_questions},
+                 if so, go to ${$popupData.data?.key} if ${$page.url.pathname} does not contain 'host'`
+            );
             $popupData = { is_displayed: false, popup_type: '' };
         }
     };
