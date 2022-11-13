@@ -2,7 +2,7 @@ import { getContext, setContext } from 'svelte';
 import { writable, type Writable } from 'svelte/store';
 import jwt_decode from 'jwt-decode';
 import type { Cookies } from '@sveltejs/kit';
-import type { JwtPayload, StoreKey, UserTeam } from './types';
+import type { CurrentEventData, JwtPayload, StoreKey, UserTeam } from './types';
 
 /**
  * take one or many cookie keys and invalidate them by creating new cookies with an exipiration
@@ -45,4 +45,15 @@ export const sortUserTeams = (userTeams: UserTeam[], activeTeamId: number): User
     const activeTeam = updatedTeams.splice(activeTeamIndex, 1)[0];
 
     return [activeTeam, ...updatedTeams];
+};
+
+
+export const getCurrentFromKey = (key: string): CurrentEventData=> {
+    const split = key.split('.');
+
+    return {
+        round_number: Number(split[0]),
+        question_number: Number(split.slice(-1)),
+        question_key: key
+    };
 };

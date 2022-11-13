@@ -2,33 +2,36 @@
     import '$lib/styles/popup.scss';
     import { page } from '$app/stores';
     import { fly } from 'svelte/transition';
-    import { getStore } from '$lib/utils';
-    import type { PopupData } from '$lib/types';
+    import { getStore, getCurrentFromKey } from '$lib/utils';
+    import type { ActiveEventData, PopupData } from '$lib/types';
 
     const userData = $page.data.user_data;
 
+    $: activeEventData = getStore<ActiveEventData>('activeEventData');
     $: popupData = getStore<PopupData>('popupData');
     $: displayPopup = $popupData?.is_displayed;
     $: popupType = $popupData?.popup_type;
     $: count = $popupData.timer_value || 0;
 
-    // TODO:
-    // - helper to create round and quesiton from key
-    // - bring in active event data
-    // - if !host route and auto_reveal === true
-    // - set active data
-    // - post to /update w/ active data
     let interval: ReturnType<typeof setTimeout>;
-    const countDown = () => {
+    const countDown = async () => {
         if (count > 0) {
             count--;
             setTimeout(countDown, 1000);
         } else {
             clearTimeout(interval);
-            console.log(
-                `auto reveal? ${userData?.auto_reveal_questions},
-                 if so, go to ${$popupData.data?.key} if ${$page.url.pathname} does not contain 'host'`
-            );
+            if (userData?.auto_reveal_questions && !$page.url.pathname.startsWith('/host')) {
+                const updatedData = getCurrentFromKey($popupData.data?.key);
+                $activeEventData = {
+                    activeQuestionKey: updatedData.question_key,
+                    activeRoundNumber: updatedData.round_number,
+                    activeQuestionNumber: updatedData.question_number
+                };
+                await fetch('/update', {
+                    method: 'post',
+                    body: JSON.stringify({ activeData: $activeEventData, joincode: $page.params.joincode })
+                });
+            }
             $popupData = { is_displayed: false, popup_type: '' };
         }
     };
