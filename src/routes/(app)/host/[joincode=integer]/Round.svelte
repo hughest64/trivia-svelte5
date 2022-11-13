@@ -4,7 +4,7 @@
     import type { GameRound, GameQuestion } from '$lib/types';
 
     export let activeRound: GameRound;
-    const questions: GameQuestion[]  = $page.data.questions || [];
+    const questions: GameQuestion[] = $page.data.questions || [];
     let allQuestionsRevealed = false;
     $: roundQuestions = questions.filter((question) => question.round_number === activeRound.round_number);
     $: allQuestionsRevealedText = allQuestionsRevealed ? 'All Questions Revealed' : 'Reveal All Questions';
@@ -20,7 +20,7 @@
                 id="reveal-all-questions"
                 name="reveal-all-questions"
                 bind:checked={allQuestionsRevealed}
-                on:change={() =>  console.log('send msg to lock or unlock all questions for this round')}
+                on:change={() => console.log('send msg to lock or unlock all questions for this round')}
             />
             <button type="submit" class="slider" />
         </label>

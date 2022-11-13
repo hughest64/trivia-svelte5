@@ -8,7 +8,6 @@
 
     const userData = <UserData>$page.data?.user_data;
     $: activeTeam = userData?.teams.find((team) => team.id === userData?.active_team_id);
-
 </script>
 
 <svelte:head><title>Trivia Mafia | Join</title></svelte:head>

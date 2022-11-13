@@ -5,20 +5,19 @@
 
     export let form: ActionData;
 
-    $: gameSelectData =  <GameSelectData[]>$page.data?.game_select_data || [];
+    $: gameSelectData = <GameSelectData[]>$page.data?.game_select_data || [];
     $: locationSelectData = <LocationSelectData[]>$page.data?.location_select_data || [];
 
     // TODO: set to the host's "home" location
-    let selectLocation: string; 
+    let selectLocation: string;
     let selectedGame: string;
-
 </script>
 
 <svelte:head><title>Trivia Mafia | Event Setup</title></svelte:head>
 
 <h1>Choose a Trivia Event</h1>
 
-<form action='?/fetchEventData' method="POST">
+<form action="?/fetchEventData" method="POST">
     {#if form?.error}<p class="error">{form?.error}</p>{/if}
     <label class="select-label" for="game-select">Choose your Game</label>
     <select class="select" name="game-select" id="game-select" bind:value={selectedGame}>

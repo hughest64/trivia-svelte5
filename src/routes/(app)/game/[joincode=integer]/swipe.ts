@@ -2,9 +2,9 @@
  * compare the x coordinate from mousedown and mouseup and fire the custom "swipe" event if the distance
  * traveled is greater than theshold.
  *
- * @param {HTMLElement} node html element that uses this function
- * @param {number} threshold distance in pixels from mouse down to mouse up required in order to fire the event
- * @returns {Object} object containing a destroy method which removes the event listeners from the node
+ * @param node html element that uses this function
+ * @param threshold distance in pixels from mouse down to mouse up required in order to fire the event
+ * @returns object containing a destroy method which removes the event listeners from the node
  */
 export const swipeQuestion = (node: HTMLElement, threshold = 10) => {
     let startPostion = -1;

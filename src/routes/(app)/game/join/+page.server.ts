@@ -5,7 +5,7 @@ import type { Action } from './$types';
 const joinevent: Action = async ({ fetch, request }) => {
     const formData = await request.formData();
     const joincode = formData.get('joincode');
-    
+
     if (!joincode) {
         return { errors: { message: 'Please Enter a Join Code' } };
     }

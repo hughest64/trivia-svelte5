@@ -32,7 +32,6 @@ export const handle: Handle = async ({ event, resolve }) => {
 };
 
 export const handleFetch: HandleFetch = async ({ event, request }) => {
-
     for (const [key, value] of Object.entries(<Record<string, string>>event.locals.fetchHeaders)) {
         request.headers.set(key, value);
     }

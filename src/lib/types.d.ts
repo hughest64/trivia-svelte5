@@ -93,7 +93,7 @@ export interface EventData {
 export interface CurrentEventData {
     round_number: number;
     question_number: number;
-    question_key: key
+    question_key: key;
 }
 
 // TODO: many more fields to add here
@@ -129,7 +129,7 @@ export type AllStores =
     | RoundState[]
     | UserData
     | Response[]
-    | CurrentEventData
+    | CurrentEventData;
 
 export interface SocketMessage {
     type: string;
@@ -147,7 +147,7 @@ export type StoreKey =
     | 'roundStates'
     | 'questionStates'
     | 'responseData'
-    | 'popupData'
+    | 'popupData';
 
 export type StoreType = Writable<AllStores>;
 export type StoreMap = Map<StoreKey, StoreType>;

@@ -10,18 +10,18 @@
 
     $: currentEventData = getStore<CurrentEventData>('currentEventData');
     $: activeEventData = getStore<ActiveEventData>('activeEventData');
-    $: activeRound = <GameRound>$page.data.rounds?.find(
-        (round: GameRound) => round.round_number === $activeEventData.activeRoundNumber
+    $: activeRound = <GameRound>(
+        $page.data.rounds?.find((round: GameRound) => round.round_number === $activeEventData.activeRoundNumber)
     );
-    $: activeQuestion = <GameQuestion>$page.data.questions?.find(
-        (question: GameQuestion) => question.key === $activeEventData.activeQuestionKey
+    $: activeQuestion = <GameQuestion>(
+        $page.data.questions?.find((question: GameQuestion) => question.key === $activeEventData.activeQuestionKey)
     );
     // TODO: should this move to the question?
     $: responseStore = getStore<Response[]>('responseData');
     $: activeResponse = $responseStore.find((response) => response.key === activeQuestion?.key);
-    
+
     $: joincode = $page.params?.joincode;
-    
+
     const roundNumbers = $page.data.rounds?.map((round: GameRound) => round.round_number) || [];
     const handleRoundSelect = async (event: MouseEvent) => {
         const target = <HTMLButtonElement>event.target;

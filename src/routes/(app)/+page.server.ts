@@ -4,7 +4,6 @@ import { PUBLIC_API_HOST as apiHost } from '$env/static/public';
 import type { Action, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ cookies, locals }) => {
-    
     if (locals.validtoken) throw redirect(302, '/team');
 
     // get a csrf token from the api

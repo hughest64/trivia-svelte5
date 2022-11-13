@@ -4,7 +4,6 @@ import { PUBLIC_API_HOST as apiHost } from '$env/static/public';
 import type { Action, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ cookies, locals }) => {
-
     if (locals.validtoken) throw redirect(302, '/team');
 
     // get a csrf token from the api
@@ -56,9 +55,8 @@ const login: Action = async ({ cookies, request, url }) => {
     throw redirect(302, next);
 };
 
-
 export const actions = {
-    default: login,
+    default: login
     // TODO: we won't be able to use default once we enable these, and thugh the querysting issue will likely come back
     // github, // (and google?),
     // google,

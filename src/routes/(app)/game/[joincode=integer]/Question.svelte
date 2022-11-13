@@ -15,7 +15,7 @@
 
     $: form = <ActionData>$page.form;
     $: userData = getStore<UserData>('userData');
-    
+
     $: notsubmitted = responseText && activeResponse?.recorded_answer !== responseText;
     // event types are rough
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
@@ -28,20 +28,24 @@
 <h2>{activeQuestion.key}</h2>
 
 <p class="question-text">
-    {questionState?.question_displayed ? activeQuestion.question_text : 'Please Wait for the Host to Reveal This Question'}
+    {questionState?.question_displayed
+        ? activeQuestion.question_text
+        : 'Please Wait for the Host to Reveal This Question'}
 </p>
 
 <!-- TODO it would be nice to stop submission if the value has not changed, on:submit = () => preventDefault isn't working-->
 <form
     action="?/response"
-    use:enhance={() => async ({ result }) => await applyAction(result)}
+    use:enhance={() =>
+        async ({ result }) =>
+            await applyAction(result)}
 >
     <input type="hidden" name="team_id" value={$userData?.active_team_id || ''} />
     <input type="hidden" name="response_id" value={activeResponse?.id || ''} />
     <input type="hidden" name="key" value={activeQuestion.key} />
 
     <div class="input-element" class:notsubmitted>
-        <input required name="response_text" type="text" on:input={handleResponseInput} value={responseText}/>
+        <input required name="response_text" type="text" on:input={handleResponseInput} value={responseText} />
         <label for="response_text">Enter Answer</label>
     </div>
 

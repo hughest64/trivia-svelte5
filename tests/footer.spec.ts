@@ -31,7 +31,7 @@ test.describe('footer links display and navigate correctly for players', async (
         await expect(page).toHaveURL('/team');
         const visibleLinks = ['Menu'];
         const linkPromises = createSelectorPromises(page, visibleLinks, footerLinks);
-        
+
         await Promise.all(linkPromises);
     });
 
@@ -40,7 +40,7 @@ test.describe('footer links display and navigate correctly for players', async (
         await expect(page).toHaveURL('/game/join');
         const visibleLinks = ['Menu'];
         const linkPromises = createSelectorPromises(page, visibleLinks, footerLinks);
-        
+
         await Promise.all(linkPromises);
     });
 
@@ -49,10 +49,10 @@ test.describe('footer links display and navigate correctly for players', async (
         await expect(page).toHaveURL('/game/1234');
         const visibleLinks = footerLinks.filter((link) => link !== 'Scoring');
         const linkPromises = createSelectorPromises(page, visibleLinks, footerLinks);
-        
+
         await Promise.all(linkPromises);
     });
-    
+
     test('Leaderboard link connects to the correct endpoint', async () => {
         await page.locator('p:has-text("Leaderboard")').click();
         await expect(page).toHaveURL('/game/1234/leaderboard');
@@ -72,7 +72,7 @@ test.describe('footer links display and navigate correctly for players', async (
         await page.locator('p:has-text("Quiz")').click();
         await expect(page).toHaveURL('/game/1234');
     });
-    
+
     test('Menu opens when the icon is clicked', async () => {
         await page.locator('p:has-text("Menu")').click();
         await expect(page.locator('a:has-text("Logout")')).toBeVisible();
@@ -138,7 +138,7 @@ test.describe('footer links display and navigate correctly for hosts', async () 
         await page.locator('p:has-text("Quiz")').click();
         await expect(page).toHaveURL('/host/1234');
     });
-    
+
     test('Menu opens when the icon is clicked', async () => {
         await page.locator('p:has-text("Menu")').click();
         await expect(page.locator('a:has-text("Logout")')).toBeVisible();

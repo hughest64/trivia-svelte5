@@ -48,6 +48,6 @@ export const createSelectorPromises = (page: Page, visibleLinks: string[], foote
     return linkPromises;
 };
 
-export async function asyncTimeout(ms=100): Promise<ReturnType<typeof setTimeout>> {
+export async function asyncTimeout(ms = 100): Promise<ReturnType<typeof setTimeout>> {
     return new Promise((resolve) => setTimeout(resolve, ms));
-};
+}

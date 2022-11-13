@@ -16,7 +16,6 @@ const response: Action = async ({ fetch, request, params }) => {
         return invalid(response.status, { error: resposeData.detail });
     }
     return data;
-
 };
 
 export const actions = { response };

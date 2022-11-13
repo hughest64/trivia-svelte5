@@ -17,11 +17,11 @@
         color: var(--color-white);
         cursor: pointer;
         font-size: 2rem;
-        margin: .25em .5em;
+        margin: 0.25em 0.5em;
     }
     .pop-timer {
         width: 3em;
-        padding: .5em 1.5em;
+        padding: 0.5em 1.5em;
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -65,15 +65,15 @@
         justify-content: center;
         flex-direction: column;
         max-width: calc(100% - 12em);
-        margin-bottom: .5em;
+        margin-bottom: 0.5em;
         h4 {
-            margin: .25em auto;
+            margin: 0.25em auto;
         }
         * {
             text-align: center;
         }
         p {
-            margin: 0 .5em;
+            margin: 0 0.5em;
         }
         a {
             text-decoration: underline;

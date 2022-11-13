@@ -14,14 +14,12 @@
         if (count > 0) {
             count--;
             setTimeout(countDown, 1000);
-
         } else {
             clearTimeout(interval);
-            $popupData={ is_displayed: false, popup_type: '' };
+            $popupData = { is_displayed: false, popup_type: '' };
         }
     };
     $: popupType === 'question_reveal' && setTimeout(countDown, 1000);
-
 </script>
 
 {#if displayPopup}

@@ -61,7 +61,8 @@
             <button
                 class="button-white"
                 class:current={num === $currentEventData.question_number}
-                id={String(num)} on:click={handleQuestionSelect}
+                id={String(num)}
+                on:click={handleQuestionSelect}
             >
                 {num}
             </button>
@@ -123,6 +124,6 @@
         width: 100%;
     }
     button.current {
-            border-color: var(--color-current);
-        }
+        border-color: var(--color-current);
+    }
 </style>

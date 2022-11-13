@@ -13,7 +13,7 @@
     $: createStore('currentEventData', {
         round_number: data?.current_event_data?.round_number || 1,
         question_number: data?.current_event_data?.question_number || 1,
-        question_key: data?.current_event_data?.question_key || '1.1',
+        question_key: data?.current_event_data?.question_key || '1.1'
     });
     $: createStore('activeEventData', {
         activeQuestionNumber: data?.activeQuestionNumber || data.current_event_data?.question_number || 1,

@@ -1,9 +1,9 @@
 import { PUBLIC_API_HOST as apiHost, PUBLIC_QUESTION_REVEAL_TIMEOUT as updateDelay } from '$env/static/public';
 import type { Action } from './$types';
 
-async function asyncTimeout(ms=100): Promise<ReturnType<typeof setTimeout>> {
+async function asyncTimeout(ms = 100): Promise<ReturnType<typeof setTimeout>> {
     return new Promise((resolve) => setTimeout(resolve, ms));
-};
+}
 
 const reveal: Action = async ({ fetch, request, params }) => {
     const formData = await request.formData();
@@ -16,7 +16,7 @@ const reveal: Action = async ({ fetch, request, params }) => {
     });
 
     // 5 seconds by default on reveal only
-    data.value && await asyncTimeout(Number(updateDelay));
+    data.value && (await asyncTimeout(Number(updateDelay)));
 
     const updateResponse = await fetch(`${baseUrl}/update/`, {
         method: 'post',

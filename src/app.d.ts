@@ -4,13 +4,13 @@
 // for information about these interfaces
 declare namespace App {
     interface Locals {
-        fetchHeaders?: Record<string, string>
-        jwt?: string
-        validtoken?: boolean
-        staffuser?: boolean
-        activeRoundNumber?: string | number
-        activeQuestionNumber?: string | number
-        activeQuestionKey?: string
+        fetchHeaders?: Record<string, string>;
+        jwt?: string;
+        validtoken?: boolean;
+        staffuser?: boolean;
+        activeRoundNumber?: string | number;
+        activeQuestionNumber?: string | number;
+        activeQuestionKey?: string;
     }
     interface PageData {
         user_data?: import('$lib/types').UserData;

@@ -5,11 +5,11 @@
     export let question: GameQuestion;
     $: questionStates = getStore<QuestionState[]>('questionStates') || [];
     $: questionRevealed = $questionStates.find((qs) => qs.key === question.key)?.question_displayed;
-    
+
     // TODO: used locally for the host, but we should respect answers being revealed to players
     // we could maybe also use the event cookie to store locally for the host
     let answerDisplayed = false;
-    
+
     let updating = false;
     const handleRevealQuestion = async () => {
         if (updating) return;
@@ -23,12 +23,11 @@
         data.set('key', question.key);
         data.set('value', questionRevealed ? 'revealed' : '');
 
-        // const response = 
+        // const response =
         await fetch('?/reveal', { method: 'POST', body: data });
         updating = false;
     };
-
-    </script>
+</script>
 
 <div class="host-question-panel flex-column">
     <h3>{question.key}</h3>
@@ -39,11 +38,11 @@
         </label>
         <p>{updating ? 'Updating' : questionRevealed ? 'Hide' : 'Reveal'} Question</p>
     </div>
-    
+
     <p>{question.question_text}</p>
-    
+
     <!-- TODO: qustion.host_notes -->
-    
+
     <!-- TODO: add this data to the question? or in a cookie? -->
     <button class="button button-white" on:click={() => (answerDisplayed = !answerDisplayed)}>
         Click To {answerDisplayed ? 'Hide' : 'Reveal'} Answer

@@ -29,18 +29,18 @@
 <h1>Or Play with an Existing Team</h1>
 
 {#if userData?.teams.length > 0}
-<form method='POST'>
-    {#if form?.error}<p class="error">{form?.error}</p>{/if}
-    
-    <label class="select-label" for="team-select">Choose A Team</label>
-    <select class="select" id="team-select" name="selectedteam">
-        {#each userData.teams as team (team.id)}
-            <option value={team.id}>{team.name}</option>
-        {/each}
-    </select>
-    <input type="hidden" name="currentteam" value={userData?.active_team?.id}>
-    <button class="button button-red" type="submit" id="team-select-submit">Choose This Team</button>
-</form>
+    <form method="POST">
+        {#if form?.error}<p class="error">{form?.error}</p>{/if}
+
+        <label class="select-label" for="team-select">Choose A Team</label>
+        <select class="select" id="team-select" name="selectedteam">
+            {#each userData.teams as team (team.id)}
+                <option value={team.id}>{team.name}</option>
+            {/each}
+        </select>
+        <input type="hidden" name="currentteam" value={userData?.active_team?.id} />
+        <button class="button button-red" type="submit" id="team-select-submit">Choose This Team</button>
+    </form>
 {/if}
 
 <button
