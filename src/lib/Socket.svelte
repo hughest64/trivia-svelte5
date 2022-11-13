@@ -59,6 +59,7 @@
         return webSocket;
     };
 
+    // TODO: still ocasionally getting multiple connections with HMR
     let socket: WebSocket;
     if (browser) socket = setContext<WebSocket>('socket', createSocket());
     onDestroy(() => socket?.close());

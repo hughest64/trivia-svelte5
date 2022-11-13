@@ -4,6 +4,7 @@ from game.models import Team
 
 class User(AbstractUser):
     active_team_id = models.IntegerField(blank=True, null=True)
+    auto_reveal_questions = models.BooleanField(default=False)
 
     def teams_json(self):
         return [team.to_json() for team in self.teams.all()]

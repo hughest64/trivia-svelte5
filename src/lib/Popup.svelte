@@ -1,8 +1,11 @@
 <script lang="ts">
     import '$lib/styles/popup.scss';
+    import { page } from '$app/stores';
     import { fly } from 'svelte/transition';
     import { getStore } from '$lib/utils';
     import type { PopupData } from '$lib/types';
+
+    const userData = $page.data.user_data;
 
     $: popupData = getStore<PopupData>('popupData');
     $: displayPopup = $popupData?.is_displayed;
@@ -16,6 +19,7 @@
             setTimeout(countDown, 1000);
         } else {
             clearTimeout(interval);
+            console.log(`auto reveal? ${userData?.auto_reveal_questions}, if so, go to ${$popupData.data?.key}`);
             $popupData = { is_displayed: false, popup_type: '' };
         }
     };

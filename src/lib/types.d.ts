@@ -17,6 +17,7 @@ export interface UserData {
     id: number;
     username: string;
     is_staff: boolean;
+    auto_reveal_questions: boolean;
     email?: string;
     active_team_id?: number | null;
     active_team?: UserTeam | undefined;
@@ -102,7 +103,7 @@ export interface Response {
     recorded_answer: string;
     round_number: string | number;
     question_number: string | number;
-    key: string; // `${round_number}.${question_number}
+    key: string; // like: `${round_number}.${question_number}
 }
 
 export interface PopupData {
@@ -111,6 +112,8 @@ export interface PopupData {
     timer_value?: number;
     title?: string;
     message?: string;
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any*/
+    data?: Record<string, any>;
     anchor?: string;
 }
 

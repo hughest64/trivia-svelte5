@@ -8,5 +8,12 @@ class Team(models.Model):
     # TODO: change model ref to get_user_model()?
     members = models.ManyToManyField( "user.User", related_name="teams" )
 
+    def to_json(self):
+        return {
+            "name": self.name,
+            "password": self.password,
+            "members": [member.username for member in self.members.all()]
+        }
+
     def __str__(self):
         return self.name

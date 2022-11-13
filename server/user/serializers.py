@@ -29,6 +29,7 @@ class UserSerializer(serializers.ModelSerializer):
             "email",
             "password",
             "is_staff",
+            "auto_reveal_questions",
             "active_team_id",
             "teams",
         ]

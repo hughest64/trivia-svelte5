@@ -32,7 +32,14 @@ const handlers: MessageHandler = {
     // TODO: event handlers maybe should be in a separate file
     question_reveal: (message: Record<string, string | boolean>, store: Writable<PopupData>) => {
         const revealed = message.value;
-        revealed && store.set({ is_displayed: true, popup_type: 'question_reveal', timer_value: 5 });
+        console.log(message);
+        revealed &&
+            store.set({
+                is_displayed: true,
+                popup_type: 'question_reveal',
+                timer_value: 5,
+                data: { key: message.key }
+            });
     },
 
     question_update: (message: Record<string, string | boolean>, store: Writable<QuestionState[]>) => {

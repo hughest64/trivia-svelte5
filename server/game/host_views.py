@@ -9,7 +9,7 @@ from rest_framework.views import APIView
 
 from user.authentication import JwtAuthentication
 
-from .models import EventQuestionState, get_rq_from_key
+from .models import EventQuestionState, TriviaEvent, get_rq_from_key
 
 channel_layer = get_channel_layer()
 
@@ -73,9 +73,9 @@ class UpdateView(APIView):
         revealed = bool(data.get("value"))
 
         try:
-            # TODO: remove joincode here once we have more than one event!
+             # TODO: remove joincode here once we have more than one event!
             joincode = 1234
-            questionState = EventQuestionState.objects.get(
+            questionState = EventQuestionState.objects.select_related("event").get(
                 event__join_code=joincode,
                 round_number=round_number,
                 question_number=question_number,
@@ -85,6 +85,13 @@ class UpdateView(APIView):
                 data={"detail": f"Question State for Key {key} Does Not Exist"},
                 status=HTTP_404_NOT_FOUND,
             )
+
+        # only update current values if the trivia event has been advanced
+        event = questionState.event
+        if revealed and key > event.current_question_key:
+            event.current_round_number = round_number
+            event.current_question_number = question_number
+            event.save()
 
         questionState.question_displayed = revealed
         questionState.save()
