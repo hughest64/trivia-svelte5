@@ -24,6 +24,13 @@ QUESTION_TYPES = [
 question_type_dict = dict(QUESTION_TYPES)
 
 
+# TODO: move these to utils.py
+def get_rq_from_key(key):
+    """return a tuple of round_number, question_number from a key like '1.1'"""
+    split = key.split('.')
+    return (int(split[0]), int(split[1]))
+
+
 def queryset_to_json(qs):
     """Convert a queryset to a list of dictionaires. The model must implement a to_json method."""
     if not qs.exists():
@@ -31,6 +38,7 @@ def queryset_to_json(qs):
 
     # TODO: maybe check has_attr(qs.first(), 'to_json') and raise NotImplemented if False?
     return [instance.to_json() for instance in qs]
+
 
 class Question(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)

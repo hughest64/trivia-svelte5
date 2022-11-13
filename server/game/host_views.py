@@ -4,10 +4,12 @@ from channels.layers import get_channel_layer
 
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
-from rest_framework.status import HTTP_200_OK, HTTP_404_NOT_FOUND
+from rest_framework.status import HTTP_200_OK, HTTP_404_NOT_FOUND, HTTP_400_BAD_REQUEST
 from rest_framework.views import APIView
 
 from user.authentication import JwtAuthentication
+
+from .models import EventQuestionState, get_rq_from_key
 
 channel_layer = get_channel_layer()
 
@@ -41,18 +43,22 @@ class QuestionRevealView(APIView):
 
     # TOOD: csrf protect
     def post(self, request, joincode):
-        data = request.data
-        async_to_sync(channel_layer.group_send)(
-            f"event_{joincode}",
-            {
-                "type": "event_update",
-                "msg_type": "question_reveal",
-                "store": "popupData",
-                "message": {"key": data.get("key"), "value": bool(data.get("value"))},
-            },
-        )
+        try:
+            data = request.data
+            async_to_sync(channel_layer.group_send)(
+                f"event_{joincode}",
+                {
+                    "type": "event_update",
+                    "msg_type": "question_reveal",
+                    "store": "popupData",
+                    "message": {"key": data.get("key"), "value": bool(data.get("value"))},
+                },
+            )
+        except Exception as e:
+            # TODO: log e
+            return Response({"detail": "An Error Occured"}, status=HTTP_400_BAD_REQUEST)
 
-        return Response({"message": "players notified"})
+        return Response({"success": True})
 
 
 class UpdateView(APIView):
@@ -62,14 +68,34 @@ class UpdateView(APIView):
     # TOOD: csrf protect
     def post(self, request, joincode):
         data = request.data
-        # TODO: lookup the question and set the revealed state
+        key = data.get("key")
+        round_number, question_number = get_rq_from_key(key)
+        revealed = bool(data.get("value"))
+
+        try:
+            # TODO: remove joincode here once we have more than one event!
+            joincode = 1234
+            questionState = EventQuestionState.objects.get(
+                event__join_code=joincode,
+                round_number=round_number,
+                question_number=question_number,
+            )
+        except EventQuestionState.DoesNotExist:
+            return Response(
+                data={"detail": f"Question State for Key {key} Does Not Exist"},
+                status=HTTP_404_NOT_FOUND,
+            )
+
+        questionState.question_displayed = revealed
+        questionState.save()
+
         async_to_sync(channel_layer.group_send)(
             f"event_{joincode}",
-            {   
+            {
                 "type": "event_update",
                 "msg_type": "question_update",
                 "store": "questionStates",
-                "message": {"key": data.get("key"), "value": bool(data.get("value"))},
+                "message": {"key": key, "value": revealed},
             },
         )
 

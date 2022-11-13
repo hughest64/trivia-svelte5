@@ -3,6 +3,8 @@
     import type { GameQuestion, QuestionState } from '$lib/types';
 
     export let question: GameQuestion;
+    let formError: string;
+
     $: questionStates = getStore<QuestionState[]>('questionStates') || [];
     $: questionRevealed = $questionStates.find((qs) => qs.key === question.key)?.question_displayed;
 
@@ -14,23 +16,29 @@
     const handleRevealQuestion = async () => {
         if (updating) return;
         updating = true;
+        formError = '';
 
-        // TODO: this updates locally, but it does not update the actual store, which is maybe ok?
-        // to update the store we'd need to do something like:
-        // questionStates.update((states) => /** make a copy, find the index, update the copy, rturn the copy*/ states );
+        // update the state locally only, the store value is updated from the web socket response
         questionRevealed = !questionRevealed;
         const data = new FormData();
         data.set('key', question.key);
         data.set('value', questionRevealed ? 'revealed' : '');
 
-        // const response =
-        await fetch('?/reveal', { method: 'POST', body: data });
+        const response = await fetch('?/reveal', { method: 'POST', body: data });
+        const result = await response.json();
+        if (result.type === 'invalid') {
+            formError = result.data.error;
+            questionRevealed = !questionRevealed;
+        }
         updating = false;
     };
 </script>
 
 <div class="host-question-panel flex-column">
+    {#if formError}<p>{formError}</p>{/if}
+
     <h3>{question.key}</h3>
+
     <div class="switch-container">
         <label for={question.key} class="switch">
             <input type="hidden" id={question.key} name={question.key} bind:value={questionRevealed} />
@@ -41,9 +49,8 @@
 
     <p>{question.question_text}</p>
 
-    <!-- TODO: qustion.host_notes -->
+    {#if question.answer_notes}<p>question.answer_notes</p>{/if}
 
-    <!-- TODO: add this data to the question? or in a cookie? -->
     <button class="button button-white" on:click={() => (answerDisplayed = !answerDisplayed)}>
         Click To {answerDisplayed ? 'Hide' : 'Reveal'} Answer
     </button>

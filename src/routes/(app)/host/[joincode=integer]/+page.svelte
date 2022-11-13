@@ -4,11 +4,11 @@
     import Round from './Round.svelte';
     import type { ActiveEventData, CurrentEventData, GameRound } from '$lib/types';
 
-    $: activeData = getStore<ActiveEventData>('activeEventData');
-    $: currentEventData = getStore<CurrentEventData>('currentEventData');
     const eventData = $page.data.event_data;
     const rounds = $page.data.rounds || [];
 
+    $: activeData = getStore<ActiveEventData>('activeEventData');
+    $: currentEventData = getStore<CurrentEventData>('currentEventData');
     $: activeRound = <GameRound>rounds.find((round: GameRound) => round.round_number === $activeData.activeRoundNumber);
     $: roundNumbers = rounds.map((round: GameRound) => round.round_number);
 

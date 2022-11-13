@@ -1,3 +1,4 @@
+import { invalid } from '@sveltejs/kit';
 import { PUBLIC_API_HOST as apiHost, PUBLIC_QUESTION_REVEAL_TIMEOUT as updateDelay } from '$env/static/public';
 import type { Action } from './$types';
 
@@ -15,6 +16,11 @@ const reveal: Action = async ({ fetch, request, params }) => {
         body: JSON.stringify(data)
     });
 
+    if (!revealResponse.ok) {
+        const revealData = await revealResponse.json();
+        return invalid(revealResponse.status, { error: revealData.detail });
+    }
+
     // 5 seconds by default on reveal only
     data.value && (await asyncTimeout(Number(updateDelay)));
 
@@ -24,8 +30,11 @@ const reveal: Action = async ({ fetch, request, params }) => {
     });
 
     const updateData = await updateResponse.json();
-    const revealData = await revealResponse.json();
-    return { revealData, updateData };
+    if (!updateResponse.ok) {
+        return invalid(updateResponse.status, { error: updateData.detail });
+    }
+
+    return { success: true };
 };
 
 export const actions = { reveal };
