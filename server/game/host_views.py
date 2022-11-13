@@ -51,7 +51,10 @@ class QuestionRevealView(APIView):
                     "type": "event_update",
                     "msg_type": "question_reveal",
                     "store": "popupData",
-                    "message": {"key": data.get("key"), "value": bool(data.get("value"))},
+                    "message": {
+                        "key": data.get("key"),
+                        "value": bool(data.get("value")),
+                    },
                 },
             )
         except Exception as e:
@@ -73,7 +76,7 @@ class UpdateView(APIView):
         revealed = bool(data.get("value"))
 
         try:
-             # TODO: remove joincode here once we have more than one event!
+            # TODO: remove joincode here once we have more than one event!
             joincode = 1234
             questionState = EventQuestionState.objects.select_related("event").get(
                 event__join_code=joincode,
@@ -87,11 +90,13 @@ class UpdateView(APIView):
             )
 
         # only update current values if the trivia event has been advanced
+        updated = False
         event = questionState.event
         if revealed and key > event.current_question_key:
             event.current_round_number = round_number
             event.current_question_number = question_number
             event.save()
+            updated = True
 
         questionState.question_displayed = revealed
         questionState.save()
@@ -105,5 +110,20 @@ class UpdateView(APIView):
                 "message": {"key": key, "value": revealed},
             },
         )
+
+        if updated:
+            async_to_sync(channel_layer.group_send)(
+                f"event_{joincode}",
+                {
+                    "type": "event_update",
+                    "msg_type": "current_data_update",
+                    "store": "currentEventData",
+                    "message": {
+                        "qustion_key": key,
+                        "question_number": question_number,
+                        "round_number": round_number,
+                    },
+                },
+            )
 
         return Response({"message": "database updated"})

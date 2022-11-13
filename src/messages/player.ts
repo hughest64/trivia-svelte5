@@ -5,7 +5,7 @@
  * functions should take in a "message" param as well as an optional store to update
  */
 import type { Writable } from 'svelte/store';
-import type { MessageHandler, PopupData, Response, QuestionState } from '$lib/types';
+import type { CurrentEventData, MessageHandler, PopupData, Response, QuestionState } from '$lib/types';
 
 const handlers: MessageHandler = {
     connected: () => console.log('connected!'), // undefined,
@@ -28,7 +28,6 @@ const handlers: MessageHandler = {
             return currentResponses;
         });
     },
-
     // TODO: event handlers maybe should be in a separate file
     question_reveal: (message: Record<string, string | boolean>, store: Writable<PopupData>) => {
         const revealed = message.value;
@@ -41,7 +40,6 @@ const handlers: MessageHandler = {
                 data: { key: message.key }
             });
     },
-
     question_update: (message: Record<string, string | boolean>, store: Writable<QuestionState[]>) => {
         store.update((states) => {
             const newStates = [...states];
@@ -49,6 +47,9 @@ const handlers: MessageHandler = {
             if (updateIndex > -1) newStates[updateIndex].question_displayed = Boolean(message.value);
             return newStates;
         });
+    },
+    current_data_update: (message: CurrentEventData, store: Writable<CurrentEventData>) => {
+        store.set(message);
     }
 };
 
