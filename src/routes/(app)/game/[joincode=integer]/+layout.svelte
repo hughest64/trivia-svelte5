@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import Popup from '$lib/Popup.svelte';
+    import Popup from '$lib/popup/Popup.svelte';
     import Socket from '$lib/Socket.svelte';
 
     const joincode = $page.params.joincode;

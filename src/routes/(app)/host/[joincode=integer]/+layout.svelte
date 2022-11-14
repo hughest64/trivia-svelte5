@@ -1,7 +1,7 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import Socket from '$lib/Socket.svelte';
-    import Popup from '$lib/Popup.svelte';
+    import Popup from '$lib/popup/Popup.svelte';
 </script>
 
 <svelte:head>

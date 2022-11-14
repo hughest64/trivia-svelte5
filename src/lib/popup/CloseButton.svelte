@@ -1,0 +1,1 @@
+<button class="dismiss" on:click>X</button>
