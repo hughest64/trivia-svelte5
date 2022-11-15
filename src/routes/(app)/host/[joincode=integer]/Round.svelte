@@ -1,31 +1,49 @@
 <script lang="ts">
     import Question from './Question.svelte';
     import { page } from '$app/stores';
-    import type { GameRound, GameQuestion } from '$lib/types';
+    import { getStore } from '$lib/utils';
+    import type { QuestionState, GameRound, GameQuestion } from '$lib/types';
 
     export let activeRound: GameRound;
     const questions: GameQuestion[] = $page.data.questions || [];
-    let allQuestionsRevealed = false;
     $: roundQuestions = questions.filter((question) => question.round_number === activeRound.round_number);
+
+    $: questionStates = getStore<QuestionState[]>('questionStates');
+    $: roundQuestionStates = $questionStates.filter((qs) => qs.round_number === activeRound.round_number);
+
+    $: allQuestionsRevealed = roundQuestionStates.every((q) => q.question_displayed);
     $: allQuestionsRevealedText = allQuestionsRevealed ? 'All Questions Revealed' : 'Reveal All Questions';
+
+    let updating = false;
+    const handleRevalAll = async () => {
+        if (updating) return;
+        updating = true;
+
+        allQuestionsRevealed = !allQuestionsRevealed;
+
+        const data = new FormData();
+        data.set('key', `${activeRound.round_number}.all`);
+        data.set('value', allQuestionsRevealed ? 'revealed' : '');
+
+        const response = await fetch('?/reveal', { method: 'POST', body: data });
+        const result = await response.json();
+        if (result.type === 'invalid') {
+            console.log('TODO: set a form error');
+            allQuestionsRevealed = !allQuestionsRevealed;
+        }
+    };
 </script>
 
 <div class="host-question-panel flex-column">
     <h4>{activeRound.title}</h4>
     <p>{activeRound.round_description}</p>
-    <form class="switch-container" on:submit|preventDefault>
-        <label for="reveal-all-questions" class="switch">
-            <input
-                type="checkbox"
-                id="reveal-all-questions"
-                name="reveal-all-questions"
-                bind:checked={allQuestionsRevealed}
-                on:change={() => console.log('send msg to lock or unlock all questions for this round')}
-            />
-            <button type="submit" class="slider" />
+    <div class="switch-container">
+        <label for="all" class="switch">
+            <input type="hidden" id="all" name="all" bind:value={allQuestionsRevealed} />
+            <button class="slider" class:revealed={allQuestionsRevealed} on:click|preventDefault={handleRevalAll} />
         </label>
         <p>{allQuestionsRevealedText}</p>
-    </form>
+    </div>
 </div>
 
 {#each roundQuestions as question (question.question_number)}

@@ -14,27 +14,14 @@ from .models import EventQuestionState, TriviaEvent, get_rq_from_key
 channel_layer = get_channel_layer()
 
 
-class RoundLockView(APIView):
-    authentication_classes = [JwtAuthentication]
-    permission_classes = [IsAdminUser]
+def parse_reveal_payload(data):
+    """"""
+    # TODO: error handling
+    key = data.get("key", "")
+    round, question = key.split(".")
+    revealed = bool(data.get("value", ""))
 
-    def post(self, request, joincode):
-        print(request.user)
-        # lookup the event
-        # use request.data.get("round_number") and request.data.get("locked")
-        # to update the db
-
-        # if something goes wrong, send back a standard response
-
-        # if successfull:
-        async_to_sync(channel_layer.group_send)(
-            f"event_{joincode}",
-            {
-                "type": "update_round_locks",
-                "store": "eventData",
-                "message": {"updated": "rounds"},
-            },
-        )
+    return {"key": key, "round": round, "question": question, "revealed": revealed}
 
 
 class QuestionRevealView(APIView):
@@ -44,7 +31,9 @@ class QuestionRevealView(APIView):
     # TOOD: csrf protect
     def post(self, request, joincode):
         try:
-            data = request.data
+            print(request.data)
+            print(bool(request.data.get("value")))
+            data = parse_reveal_payload(request.data)
             async_to_sync(channel_layer.group_send)(
                 f"event_{joincode}",
                 {
@@ -53,7 +42,7 @@ class QuestionRevealView(APIView):
                     "store": "popupData",
                     "message": {
                         "key": data.get("key"),
-                        "value": bool(data.get("value")),
+                        "value": data.get("revealed"),
                     },
                 },
             )
@@ -70,10 +59,11 @@ class UpdateView(APIView):
 
     # TOOD: csrf protect
     def post(self, request, joincode):
-        data = request.data
+        data = parse_reveal_payload(request.data)
         key = data.get("key")
-        round_number, question_number = get_rq_from_key(key)
-        revealed = bool(data.get("value"))
+        round_number = data.get("round")
+        question_number = data.get("question")
+        revealed = data.get("revealed")
 
         try:
             # TODO: remove joincode here once we have more than one event!
@@ -126,4 +116,85 @@ class UpdateView(APIView):
                 },
             )
 
-        return Response({"message": "database updated"})
+        return Response({"success": True})
+
+
+class UpdateAllView(APIView):
+    authentication_classes = [JwtAuthentication]
+    permission_classes = [IsAdminUser]
+
+    def post(self, request, joincode):
+        data = parse_reveal_payload(request.data)
+        key = data.get("key")
+        round_number = data.get("round")
+        question_number = data.get("question_number")
+        revealed = data.get("revealed")
+
+        # cannot reveal a single qustion at this endpoint
+        if question_number != "all":
+            return Response({"detail": "bad request"}, status=HTTP_400_BAD_REQUEST)
+
+        # TODO: remove
+        joincode = 1234
+        event_states = EventQuestionState.objects.filter(
+            event__joincode=joincode, round_number=round_number
+        ).update({"question_revealed": revealed})
+
+        updated = False
+        event = event_states.first().event
+        max_key = max(*[state.key for state in event_states])
+        max_question_number = max(*[state.question_number for state in event_states])
+        if revealed and max_key > event.current_question_key:
+            event.current_round_number = round_number
+            event.current_question_number = max_question_number
+            event.save()
+            updated = True
+
+        async_to_sync(channel_layer.group_send)(
+            f"event_{joincode}",
+            {
+                "type": "event_update",
+                "msg_type": "question_update",
+                "store": "questionStates",
+                "message": {"key": key, "value": revealed},
+            },
+        )
+
+        if updated:
+            async_to_sync(channel_layer.group_send)(
+                f"event_{joincode}",
+                {
+                    "type": "event_update",
+                    "msg_type": "current_data_update",
+                    "store": "currentEventData",
+                    "message": {
+                        "qustion_key": key,
+                        "question_number": max_question_number,
+                        "round_number": round_number,
+                    },
+                },
+            )
+
+        return Response({"success": True})
+
+class RoundLockView(APIView):
+    authentication_classes = [JwtAuthentication]
+    permission_classes = [IsAdminUser]
+
+    def post(self, request, joincode):
+        print(request.user)
+        # lookup the event
+        # use request.data.get("round_number") and request.data.get("locked")
+        # to update the db
+
+        # if something goes wrong, send back a standard response
+
+        # if successfull:
+        async_to_sync(channel_layer.group_send)(
+            f"event_{joincode}",
+            {
+                "type": "update_round_locks",
+                "store": "eventData",
+                "message": {"updated": "rounds"},
+            },
+        )
