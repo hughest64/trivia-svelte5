@@ -7,9 +7,11 @@
     const eventData = $page.data.event_data;
     const rounds = $page.data.rounds || [];
 
-    $: activeData = getStore<ActiveEventData>('activeEventData');
+    $: activeEventData = getStore<ActiveEventData>('activeEventData');
     $: currentEventData = getStore<CurrentEventData>('currentEventData');
-    $: activeRound = <GameRound>rounds.find((round: GameRound) => round.round_number === $activeData.activeRoundNumber);
+    $: activeRound = <GameRound>(
+        rounds.find((round: GameRound) => round.round_number === $activeEventData.activeRoundNumber)
+    );
     $: roundNumbers = rounds.map((round: GameRound) => round.round_number);
 
     $: joincode = $page.params?.joincode;
@@ -17,7 +19,7 @@
     const handleRoundSelect = async (event: MouseEvent) => {
         const target = <HTMLButtonElement>event.target;
 
-        $activeData = {
+        $activeEventData = {
             activeQuestionNumber: 1,
             activeRoundNumber: Number(target.id),
             activeQuestionKey: `1.${target.id}`
@@ -26,7 +28,7 @@
         // post to the game endpoint to set active round and question in a cookie
         await fetch('/update', {
             method: 'POST',
-            body: JSON.stringify({ activeData: $activeData, joincode })
+            body: JSON.stringify({ activeEventData: $activeEventData, joincode })
         });
     };
 
@@ -52,7 +54,7 @@
         <button
             id={String(roundNum)}
             on:click={handleRoundSelect}
-            class:active={$activeData.activeRoundNumber === roundNum}
+            class:active={$activeEventData.activeRoundNumber === roundNum}
             class:current={$currentEventData.round_number === roundNum}
         >
             {roundNum}
