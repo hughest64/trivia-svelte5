@@ -3,13 +3,17 @@
     import { applyAction, enhance } from '$app/forms';
     import { getStore } from '$lib/utils';
     import type { ActionData } from './$types';
-    import type { GameQuestion, QuestionState, Response, UserData } from '$lib/types';
+    import type { GameQuestion, QuestionState, RoundState, Response, UserData } from '$lib/types';
 
     export let activeQuestion: GameQuestion;
     export let activeResponse: Response | undefined;
 
     const questionStates = getStore<QuestionState[]>('questionStates');
     $: questionState = $questionStates.find((qs) => qs.key === activeQuestion.key);
+
+    const roundStates = getStore<RoundState[]>('roundStates');
+    $: activeRoundState = $roundStates.find((rs) => rs.round_number === activeQuestion.round_number);
+    $: console.log(activeRoundState);
 
     $: responseText = activeResponse?.recorded_answer || '';
 
@@ -45,13 +49,19 @@
     <input type="hidden" name="key" value={activeQuestion?.key} />
 
     <div class="input-element" class:notsubmitted>
-        <input required name="response_text" type="text" on:input={handleResponseInput} value={responseText} />
+        <input disabled={activeRoundState?.locked} required name="response_text" type="text" on:input={handleResponseInput} value={responseText} />
         <label for="response_text">Enter Answer</label>
     </div>
 
     {#if form?.error}<p>{form.error}</p>{/if}
 
-    <button class="button button-red">Submit</button>
+    <button
+        class:disabled={activeRoundState?.locked}
+        class="button button-red"
+        disabled={activeRoundState?.locked}
+    >
+        Submit
+    </button>
 </form>
 
 <style lang="scss">
@@ -70,5 +80,8 @@
         label {
             background-color: var(--color-red);
         }
+    }
+    .disabled {
+        cursor: not-allowed;
     }
 </style>

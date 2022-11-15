@@ -76,7 +76,7 @@ export interface GameRound {
 }
 
 export interface RoundState {
-    roundNumber: number;
+    round_number: number;
     locked: boolean;
     scored: boolean;
 }

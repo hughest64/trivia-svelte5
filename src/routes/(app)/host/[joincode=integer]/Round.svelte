@@ -2,11 +2,16 @@
     import Question from './Question.svelte';
     import { page } from '$app/stores';
     import { getStore } from '$lib/utils';
-    import type { QuestionState, GameRound, GameQuestion } from '$lib/types';
+    import type { QuestionState, RoundState, GameRound, GameQuestion } from '$lib/types';
 
     export let activeRound: GameRound;
     const questions: GameQuestion[] = $page.data.questions || [];
+    
     $: roundQuestions = questions.filter((question) => question.round_number === activeRound.round_number);
+
+    $: roundStates = getStore<RoundState[]>('roundStates');
+    $: activeRoundState = $roundStates.find((state) => state.round_number === activeRound.round_number);
+    $: console.log('locked?', activeRoundState?.locked);
 
     $: questionStates = getStore<QuestionState[]>('questionStates');
     $: roundQuestionStates = $questionStates.filter((qs) => qs.round_number === activeRound.round_number);
