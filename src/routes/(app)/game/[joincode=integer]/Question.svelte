@@ -13,7 +13,6 @@
 
     const roundStates = getStore<RoundState[]>('roundStates');
     $: activeRoundState = $roundStates.find((rs) => rs.round_number === activeQuestion.round_number);
-    $: console.log(activeRoundState);
 
     $: responseText = activeResponse?.recorded_answer || '';
 
