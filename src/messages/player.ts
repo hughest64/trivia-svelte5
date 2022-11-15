@@ -47,7 +47,19 @@ const handlers: MessageHandler = {
             return newStates;
         });
     },
-    // TODO: handler question_update_all
+    question_update_all: (message: Record<string, number | boolean>, store: Writable<QuestionState[]>) => {
+        store.update((states) => {
+            console.log(message);
+            const newStates = [...states];
+            newStates.forEach((state) => {
+                if (state.round_number === Number(message.round_number)) {
+                    state.question_displayed = Boolean(message.value);
+                }
+                return state;
+            });
+            return newStates;
+        });
+    },
     current_data_update: (message: CurrentEventData, store: Writable<CurrentEventData>) => {
         store.set(message);
     }

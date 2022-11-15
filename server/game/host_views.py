@@ -39,7 +39,7 @@ class QuestionRevealView(APIView):
                     "msg_type": "question_reveal",
                     "store": "popupData",
                     "message": {
-                        "key": data.get("key"),
+                        "key": data.get("key", "").replace("all", "1"),
                         "value": data.get("revealed"),
                     },
                 },
@@ -128,6 +128,7 @@ class UpdateAllView(APIView):
         question_number = data.get("number")
         revealed = data.get("revealed")
         
+        # TODO: why does this not work? (always a bad request)
         # cannot reveal a single qustion at this endpoint
         # if question_number != "all":
         #     return Response({"detail": "Bad Request"}, status=HTTP_400_BAD_REQUEST)
@@ -141,38 +142,39 @@ class UpdateAllView(APIView):
 
         updated = False
         event = event_states.first().event
-        max_key = max(*[state.key for state in event_states])
-        max_question_number = max(*[state.question_number for state in event_states])
-        if revealed and max_key > event.current_question_key:
+        # TODO: we may not need to calculate these (just use 1)
+        min_key = min(*[state.key for state in event_states])
+        min_question_number = min(*[state.question_number for state in event_states])
+        if revealed and min_key > event.current_question_key:
             event.current_round_number = round_number
-            event.current_question_number = max_question_number
+            event.current_question_number = min_question_number
             event.save()
             updated = True
 
-        # async_to_sync(channel_layer.group_send)(
-        #     f"event_{joincode}",
-        #     {
-        #         "type": "event_update",
-        #         "msg_type": "question_update_all",
-        #         "store": "questionStates",
-        #         "message": {"round": round_number, "value": revealed},
-        #     },
-        # )
+        async_to_sync(channel_layer.group_send)(
+            f"event_{joincode}",
+            {
+                "type": "event_update",
+                "msg_type": "question_update_all",
+                "store": "questionStates",
+                "message": {"round_number": round_number, "value": revealed},
+            },
+        )
 
-        # if updated:
-        #     async_to_sync(channel_layer.group_send)(
-        #         f"event_{joincode}",
-        #         {
-        #             "type": "event_update",
-        #             "msg_type": "current_data_update",
-        #             "store": "currentEventData",
-        #             "message": {
-        #                 "question_key": key,
-        #                 "question_number": max_question_number,
-        #                 "round_number": round_number,
-        #             },
-        #         },
-        #     )
+        if updated:
+            async_to_sync(channel_layer.group_send)(
+                f"event_{joincode}",
+                {
+                    "type": "event_update",
+                    "msg_type": "current_data_update",
+                    "store": "currentEventData",
+                    "message": {
+                        "question_key": min_key,
+                        "question_number": min_question_number,
+                        "round_number": round_number,
+                    },
+                },
+            )
 
         return Response({"success": True})
 

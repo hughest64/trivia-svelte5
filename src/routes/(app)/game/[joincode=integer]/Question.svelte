@@ -42,7 +42,7 @@
 >
     <input type="hidden" name="team_id" value={$userData?.active_team_id || ''} />
     <input type="hidden" name="response_id" value={activeResponse?.id || ''} />
-    <input type="hidden" name="key" value={activeQuestion.key} />
+    <input type="hidden" name="key" value={activeQuestion?.key} />
 
     <div class="input-element" class:notsubmitted>
         <input required name="response_text" type="text" on:input={handleResponseInput} value={responseText} />
