@@ -108,8 +108,8 @@ class UpdateView(APIView):
                     "store": "currentEventData",
                     "message": {
                         "qustion_key": key,
-                        "question_number": question_number,
-                        "round_number": round_number,
+                        "question_number": int(question_number),
+                        "round_number": int(round_number),
                     },
                 },
             )
