@@ -2,7 +2,7 @@
     import { page } from '$app/stores';
     import { getStore } from '$lib/utils';
     import Round from './Round.svelte';
-    import type { ActiveEventData, CurrentEventData, GameRound } from '$lib/types';
+    import type { ActiveEventData, CurrentEventData, GameRound, RoundState } from '$lib/types';
 
     const eventData = $page.data.event_data;
     const rounds = $page.data.rounds || [];
@@ -14,6 +14,9 @@
     );
     $: roundNumbers = rounds.map((round: GameRound) => round.round_number);
 
+    $: roundStates = getStore<RoundState[]>('roundStates');
+    $: activeRoundState = $roundStates.find((state) => state.round_number === activeRound.round_number);
+    $: locked = activeRoundState?.locked;
     $: joincode = $page.params?.joincode;
 
     const handleRoundSelect = async (event: MouseEvent) => {
@@ -32,10 +35,8 @@
         });
     };
 
-    // TODO: fix when actually locking rounds
-    let checked = false;
     const handleLockRound = async () => {
-        checked = !checked;
+        locked = !locked;
         // const response = await fetch('some url', {
         //     method: 'POST',
         //     // we should have the proper headers in $page.data (I think) if we need them
@@ -68,10 +69,10 @@
             type="checkbox"
             name="round-lock"
             id="round-lock"
-            bind:checked
+            bind:checked={locked}
             on:click|preventDefault={handleLockRound}
         />
-        <span class:checked />
+        <span class:checked={locked} />
     </label>
 </div>
 

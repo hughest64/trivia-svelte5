@@ -11,7 +11,6 @@
 
     $: roundStates = getStore<RoundState[]>('roundStates');
     $: activeRoundState = $roundStates.find((state) => state.round_number === activeRound.round_number);
-    $: console.log('locked?', activeRoundState?.locked);
 
     $: questionStates = getStore<QuestionState[]>('questionStates');
     $: roundQuestionStates = $questionStates.filter((qs) => qs.round_number === activeRound.round_number);
