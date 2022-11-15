@@ -31,8 +31,6 @@ class QuestionRevealView(APIView):
     # TOOD: csrf protect
     def post(self, request, joincode):
         try:
-            print(request.data)
-            print(bool(request.data.get("value")))
             data = parse_reveal_payload(request.data)
             async_to_sync(channel_layer.group_send)(
                 f"event_{joincode}",
@@ -127,18 +125,19 @@ class UpdateAllView(APIView):
         data = parse_reveal_payload(request.data)
         key = data.get("key")
         round_number = data.get("round")
-        question_number = data.get("question_number")
+        question_number = data.get("number")
         revealed = data.get("revealed")
-
+        
         # cannot reveal a single qustion at this endpoint
-        if question_number != "all":
-            return Response({"detail": "bad request"}, status=HTTP_400_BAD_REQUEST)
+        # if question_number != "all":
+        #     return Response({"detail": "Bad Request"}, status=HTTP_400_BAD_REQUEST)
 
         # TODO: remove
         joincode = 1234
         event_states = EventQuestionState.objects.filter(
-            event__joincode=joincode, round_number=round_number
-        ).update({"question_revealed": revealed})
+            event__join_code=joincode, round_number=round_number
+        )
+        event_states.update(question_displayed=revealed)
 
         updated = False
         event = event_states.first().event
@@ -150,30 +149,30 @@ class UpdateAllView(APIView):
             event.save()
             updated = True
 
-        async_to_sync(channel_layer.group_send)(
-            f"event_{joincode}",
-            {
-                "type": "event_update",
-                "msg_type": "question_update",
-                "store": "questionStates",
-                "message": {"key": key, "value": revealed},
-            },
-        )
+        # async_to_sync(channel_layer.group_send)(
+        #     f"event_{joincode}",
+        #     {
+        #         "type": "event_update",
+        #         "msg_type": "question_update_all",
+        #         "store": "questionStates",
+        #         "message": {"round": round_number, "value": revealed},
+        #     },
+        # )
 
-        if updated:
-            async_to_sync(channel_layer.group_send)(
-                f"event_{joincode}",
-                {
-                    "type": "event_update",
-                    "msg_type": "current_data_update",
-                    "store": "currentEventData",
-                    "message": {
-                        "qustion_key": key,
-                        "question_number": max_question_number,
-                        "round_number": round_number,
-                    },
-                },
-            )
+        # if updated:
+        #     async_to_sync(channel_layer.group_send)(
+        #         f"event_{joincode}",
+        #         {
+        #             "type": "event_update",
+        #             "msg_type": "current_data_update",
+        #             "store": "currentEventData",
+        #             "message": {
+        #                 "question_key": key,
+        #                 "question_number": max_question_number,
+        #                 "round_number": round_number,
+        #             },
+        #         },
+        #     )
 
         return Response({"success": True})
 

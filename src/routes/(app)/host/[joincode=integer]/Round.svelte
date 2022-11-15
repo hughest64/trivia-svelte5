@@ -31,6 +31,7 @@
             console.log('TODO: set a form error');
             allQuestionsRevealed = !allQuestionsRevealed;
         }
+        updating = false;
     };
 </script>
 

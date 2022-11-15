@@ -7,6 +7,7 @@ urlpatterns = [
     # update trivia events
     re_path(r"^host/(?P<joincode>\d+)/lock-round/?$", views.EventHostView.as_view()),
     re_path(r"^host/(?P<joincode>\d+)/reveal/?$", host_views.QuestionRevealView.as_view()),
+    re_path(r"^host/(?P<joincode>\d+)/update-all/?$", host_views.UpdateAllView.as_view()),
     re_path(r"^host/(?P<joincode>\d+)/update/?$", host_views.UpdateView.as_view()),
 
     # host endpoints
