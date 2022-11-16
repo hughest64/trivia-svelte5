@@ -9,7 +9,7 @@ from rest_framework.views import APIView
 
 from user.authentication import JwtAuthentication
 
-from .models import EventQuestionState, TriviaEvent, get_rq_from_key
+from .models import EventRoundState, EventQuestionState
 
 channel_layer = get_channel_layer()
 
@@ -127,7 +127,7 @@ class UpdateAllView(APIView):
         round_number = data.get("round")
         question_number = data.get("number")
         revealed = data.get("revealed")
-        
+
         # TODO: why does this not work? (always a bad request)
         # cannot reveal a single qustion at this endpoint
         # if question_number != "all":
@@ -178,24 +178,36 @@ class UpdateAllView(APIView):
 
         return Response({"success": True})
 
+
 class RoundLockView(APIView):
     authentication_classes = [JwtAuthentication]
     permission_classes = [IsAdminUser]
 
     def post(self, request, joincode):
-        print(request.user)
-        # lookup the event
-        # use request.data.get("round_number") and request.data.get("locked")
-        # to update the db
+        data = request.data
+        round_number = int(data.get("round_number"))
+        locked: bool(data.get("value"))
 
-        # if something goes wrong, send back a standard response
+        try:
+            # TODO: remove
+            joincode = 1234
+            round_state = EventRoundState.objects.get(
+                event__join_code=joincode, round_number=round_number
+            )
+        except EventRoundState.DoesNotExist:
+            return Response(
+                {"detail": f"Round state for round {round_number} does not exist"}
+            )
 
-        # if successfull:
+        round_state.locked = locked
+        round_state.save()
+
         async_to_sync(channel_layer.group_send)(
             f"event_{joincode}",
             {
-                "type": "update_round_locks",
-                "store": "eventData",
-                "message": {"updated": "rounds"},
+                "type": "event_update",
+                "msg_type": "round_update",
+                "store": "roundStates",
+                "message": {"round_number": round_number, "value": locked},
             },
         )

@@ -39,4 +39,21 @@ const reveal: Action = async ({ fetch, request, params }) => {
     return { success: true };
 };
 
-export const actions = { reveal };
+const lock: Action = async ({ fetch, params, request }) => {
+    const formData = await request.formData();
+    const data = Object.fromEntries(formData.entries());
+
+    const response = await fetch(`${apiHost}/host/${params.joincode}/lock`, {
+        method: 'post',
+        body: JSON.stringify(data)
+    });
+
+    const responseData = await response.json();
+    if (!response.ok) {
+        return invalid(response.status, { error: responseData.detail });
+    }
+
+    return { success: true };
+};
+
+export const actions = { reveal, lock };

@@ -5,7 +5,7 @@
  * functions should take in a "message" param as well as an optional store to update
  */
 import type { Writable } from 'svelte/store';
-import type { CurrentEventData, MessageHandler, PopupData, Response, QuestionState } from '$lib/types';
+import type { CurrentEventData, MessageHandler, PopupData, Response, RoundState, QuestionState } from '$lib/types';
 
 const handlers: MessageHandler = {
     connected: () => console.log('connected!'), // undefined,
@@ -28,7 +28,16 @@ const handlers: MessageHandler = {
             return currentResponses;
         });
     },
-    // TODO: event handlers maybe should be in a separate file
+    // TODO: event handlers should be in a separate file
+    round_update: (message: Record<string, number | boolean>, store: Writable<RoundState[]>) => {
+        store.update((states) => {
+            const newStates = [...states];
+            const roundState = <RoundState>newStates.find((rs) => rs.round_number === message.round_number);
+            roundState.locked = Boolean(message.value);
+
+            return newStates;
+        });
+    },
     question_reveal: (message: Record<string, string | boolean>, store: Writable<PopupData>) => {
         const revealed = message.value;
         revealed &&
@@ -44,12 +53,12 @@ const handlers: MessageHandler = {
             const newStates = [...states];
             const updateIndex = states.findIndex((state) => state.key === message.key);
             if (updateIndex > -1) newStates[updateIndex].question_displayed = Boolean(message.value);
+
             return newStates;
         });
     },
     question_update_all: (message: Record<string, number | boolean>, store: Writable<QuestionState[]>) => {
         store.update((states) => {
-            console.log(message);
             const newStates = [...states];
             newStates.forEach((state) => {
                 if (state.round_number === Number(message.round_number)) {
