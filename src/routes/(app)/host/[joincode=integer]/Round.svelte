@@ -9,6 +9,7 @@
     
     $: roundQuestions = questions.filter((question) => question.round_number === activeRound.round_number);
 
+    // TODO: why did I do this when it isn't used?
     $: roundStates = getStore<RoundState[]>('roundStates');
     $: activeRoundState = $roundStates.find((state) => state.round_number === activeRound.round_number);
 

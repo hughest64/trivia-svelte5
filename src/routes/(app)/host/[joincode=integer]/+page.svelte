@@ -16,6 +16,7 @@
 
     $: roundStates = getStore<RoundState[]>('roundStates');
     $: activeRoundState = $roundStates.find((state) => state.round_number === activeRound.round_number);
+    // TODO: remove in favor of just using activeRoundState?.locked throughout
     $: locked = activeRoundState?.locked;
     $: joincode = $page.params?.joincode;
 
