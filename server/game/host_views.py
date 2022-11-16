@@ -186,7 +186,7 @@ class RoundLockView(APIView):
     def post(self, request, joincode):
         data = request.data
         round_number = int(data.get("round_number"))
-        locked: bool(data.get("value"))
+        locked = bool(data.get("value"))
 
         try:
             # TODO: remove
@@ -211,3 +211,5 @@ class RoundLockView(APIView):
                 "message": {"round_number": round_number, "value": locked},
             },
         )
+
+        return Response({ "success": True })

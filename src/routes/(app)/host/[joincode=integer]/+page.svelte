@@ -37,12 +37,18 @@
 
     const handleLockRound = async () => {
         locked = !locked;
-        // const response = await fetch('some url', {
-        //     method: 'POST',
-        //     // we should have the proper headers in $page.data (I think) if we need them
-        //     // headers: {}
-        //     body: ''
-        // });
+
+        const data = new FormData();
+        data.set('round_number', String(activeRound.round_number));
+        data.set('value', locked ? 'locked' : '');
+
+
+        const response = await fetch ('?/lock', { method: 'post', body: data });
+        if (!response.ok) {
+            // TOODO: handle error 
+            console.log(response.json());
+            locked = !locked;
+        }
     };
 </script>
 
