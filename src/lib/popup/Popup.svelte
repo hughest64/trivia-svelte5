@@ -1,6 +1,7 @@
 <script lang="ts">
     import { fly } from 'svelte/transition';
     import QuestionReveal from './QuestionReveal.svelte';
+    import ConfirmRoundUnlock from './ConfirmRoundUnlock.svelte';
     import { getStore } from '$lib/utils';
     import type { SvelteComponent } from 'svelte';
     import type { PopupData } from '$lib/types';
@@ -9,7 +10,8 @@
 
     type PopupMap = Record<string, typeof SvelteComponent>;
     const components: PopupMap = {
-        'question_reveal': QuestionReveal
+        'question_reveal': QuestionReveal,
+        'round_unlock': ConfirmRoundUnlock
     };
 
 </script>
