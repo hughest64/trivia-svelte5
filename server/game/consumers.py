@@ -114,8 +114,6 @@ class SocketConsumer(JsonWebsocketConsumer):
     ### EVENT MESSAGES ###
     ######################
 
-    # message types:
-    # event_question_reveal, event_question_update
     def event_update(self, data):
         # print(data)
         msg_type = data.pop("msg_type")
@@ -123,22 +121,3 @@ class SocketConsumer(JsonWebsocketConsumer):
             data["type"] = msg_type
 
         self.send_json(data)
-
-    # if we do the db work in a view function and use the socket to update all clients:
-    def update_round_locks(self, data):
-        data.update({"type": "update_store"})
-        self.send_json(data)
-
-    def lock_round(self, data):
-        print(data)
-        # load the event from datq["message"]["event_id"]
-        # set the round lock
-        # send all rounds back via:
-        self.send_json(
-            {
-                # "type": "update_store",
-                "type": "log_me",
-                "store": "eventData",
-                "message": {"rounds": ["updated Rounds"]},
-            }
-        )
