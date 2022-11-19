@@ -1,5 +1,3 @@
-import random
-
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 
@@ -73,12 +71,12 @@ class EventSetupView(APIView):
         """create a new event or fetch an existing one with a specified game/location combo"""
         user = request.user
         # TODO: get or create
-        event = event.objects.get(join_code=DEMO_EVENT_JOIN_CODE)
+        event = TriviaEvent.objects.get(join_code=DEMO_EVENT_JOIN_CODE)
         user_serializer = UserSerializer(user)
 
         # TODO: this could just return the join code since the data won't be loaded from this response
         return Response(
-            {"event_data": event.to_json(), "user_data": user_serializer.data}
+            {"event_data": event.to_json()["event_data"], "user_data": user_serializer.data}
         )
 
 
@@ -133,7 +131,7 @@ class EventHostView(APIView):
         user_serializer = UserSerializer(request.user)
 
         try:
-            event = TriviaEvent.objects.get(join_code=joincode)
+            event = TriviaEvent.objects.get(join_code=joincode or DEMO_EVENT_JOIN_CODE)
         except TriviaEvent.DoesNotExist:
             return Response(
                 {"detail": "an event with that join code does not exist"},

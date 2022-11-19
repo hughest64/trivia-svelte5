@@ -87,7 +87,7 @@ test.describe('proper response handling during an event', async () => {
         expect(await playerTwoResponseInput.inputValue()).toBe(submissionOne);
     });
 
-    test('members of the same team at different events should not share responses', async () => {
+    test.skip('members of the same team at different events should not share responses', async () => {
         await playerTwoPage.goto('/game/9999');
         await expect(playerTwoPage).toHaveURL('/game/9999');
         await expect(playerOnePage).toHaveURL(gamePage);
@@ -133,7 +133,7 @@ test('arrow keys change the active question', async ({ page }) => {
     expect(await page.textContent('h2')).toBe('1.2');
 });
 
-test('unsubmitted class is applied properly', async ({ page }) => {
+test.skip('unsubmitted class is applied properly', async ({ page }) => {
     const responseInput = page.locator('input[name="response_text"]');
     // expect the class not be to applied
     expect(await responseInput.inputValue()).toBeFalsy();
