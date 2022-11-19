@@ -13,7 +13,7 @@ from rest_framework.views import APIView
 from user.authentication import JwtAuthentication
 from user.serializers import UserSerializer
 
-from game.models import Team, TriviaEvent
+from game.models import Location, Team, TriviaEvent, Game, queryset_to_json
 
 # TODO: fix all the broken things
 event_data = {}
@@ -51,14 +51,15 @@ class EventSetupView(APIView):
     def get(self, request):
         """get this weeks games and a list of locations"""
         user = request.user
-        # locationSerializer = LocationSerializer(location_classes, many=True)
-        gameSerializer = [] # GameSerializer(game_classes, many=True)
+        locations = queryset_to_json(Location.objects.filter(active=True))
+        # TODO: a filter of some sort to limit avialable games (should there be an active pram on the model?)
+        games = queryset_to_json(Game.objects.all())
         user_serializer = UserSerializer(user)
 
         return Response(
             {
-                "location_select_data": [], #locationSerializer.data,
-                "game_select_data": gameSerializer.data,
+                "location_select_data": locations,
+                "game_select_data": games,
                 "user_data": user_serializer.data,
             }
         )

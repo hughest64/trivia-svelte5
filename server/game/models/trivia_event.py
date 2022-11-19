@@ -27,7 +27,7 @@ question_type_dict = dict(QUESTION_TYPES)
 # TODO: move these to utils.py
 def get_rq_from_key(key):
     """return a tuple of round_number, question_number from a key like '1.1'"""
-    split = key.split('.')
+    split = key.split(".")
     return (int(split[0]), int(split[1]))
 
 
@@ -130,12 +130,11 @@ class Game(models.Model):
     def __str__(self):
         return self.title  # TODO: block code?
 
-    # TODO: this isn't a great representation for to_json as it doesn't contain all the things
     def to_json(self):
         return {
-            # "game_id": self.pk,
-            "block_code": self.block_code,
+            "game_id": self.pk,
             "game_title": self.title,
+            # "block_code": self.block_code,
             # "description": self.description,
         }
 
@@ -148,6 +147,9 @@ class TriviaEvent(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     date = models.DateField(default=timezone.now)
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
+    location = models.ForeignKey(
+        "Location", blank=True, null=True, on_delete=models.SET_NULL
+    )
     join_code = models.CharField(max_length=64, unique=True, db_index=True)
     current_round_number = models.IntegerField(default=1)
     current_question_number = models.IntegerField(default=1)
@@ -166,15 +168,14 @@ class TriviaEvent(models.Model):
                 # "game_id": self.pk,
                 "game_title": self.game.title,
                 "join_code": self.join_code,
-                # TODO: add this
-                # "location": self.location.name
+                "location": self.location.name if self.location else "",
                 "block_code": self.game.block_code,
             },
             "current_event_data": {
                 "round_number": self.current_round_number,
                 "question_number": self.current_question_number,
-                "quesion_key": self.current_question_key,
-            },                
+                "question_key": self.current_question_key,
+            },
             "rounds": queryset_to_json(self.game.game_rounds.all()),
             "questions": queryset_to_json(self.game.game_questions.all()),
             "round_states": queryset_to_json(self.round_states.all()),
