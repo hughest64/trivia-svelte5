@@ -13,7 +13,14 @@ from rest_framework.views import APIView
 from user.authentication import JwtAuthentication
 from user.serializers import UserSerializer
 
-from game.models import Location, Team, TriviaEvent, Game, queryset_to_json
+from game.models import (
+    Location,
+    Team,
+    TriviaEvent,
+    Game,
+    Response as QuestionResponse,
+    queryset_to_json,
+)
 
 # TODO: fix all the broken things
 event_data = {}
@@ -84,11 +91,14 @@ class EventView(APIView):
     def get(self, request, joincode=None):
         """fetch a specific event from the joincode parsed from the url"""
         user_serializer = UserSerializer(request.user)
-        
+
         try:
             event = TriviaEvent.objects.get(join_code=1234)
         except TriviaEvent.DoesNotExist:
-            return Response({"detail": "an event with that join code does not exist"}, status=HTTP_404_NOT_FOUND)
+            return Response(
+                {"detail": "an event with that join code does not exist"},
+                status=HTTP_404_NOT_FOUND,
+            )
 
         # event_data, game_questions, game_rounds, question_states, round_states
         data = event.to_json()
@@ -98,8 +108,17 @@ class EventView(APIView):
         # TODO: get responses for this event via the user's active team
         # if they do not have an active team respond with a 400 and a message
         # kit will need to handle the response accordingly
+        question_responses = QuestionResponse.objects.filter(
+            event__join_code=1234, team_id=request.user.active_team_id
+        )
 
-        return Response({**data, "user_data": user_serializer.data, "response_data": []})
+        return Response(
+            {
+                **data,
+                "user_data": user_serializer.data,
+                "response_data": queryset_to_json(question_responses),
+            }
+        )
 
 
 class EventJoinView(APIView):
@@ -120,11 +139,14 @@ class EventHostView(APIView):
     def get(self, request, joincode=None):
         """fetch a specific event from the joincode parsed from the url"""
         user_serializer = UserSerializer(request.user)
-        
+
         try:
             event = TriviaEvent.objects.get(join_code=1234)
         except TriviaEvent.DoesNotExist:
-            return Response({"detail": "an event with that join code does not exist"}, status=HTTP_404_NOT_FOUND)
+            return Response(
+                {"detail": "an event with that join code does not exist"},
+                status=HTTP_404_NOT_FOUND,
+            )
 
         # event_data, game_questions, game_rounds, question_states, round_states
         data = event.to_json()

@@ -4,7 +4,7 @@ import type { Action } from './$types';
 
 const response: Action = async ({ fetch, request, params }) => {
     const data = Object.fromEntries((await request.formData()).entries());
-    const apiEndpoint = `${apiHost}/game/${params.joincode}/response/${data.response_id}`;
+    const apiEndpoint = `${apiHost}/game/${params.joincode}/response`;
 
     const response = await fetch(apiEndpoint, {
         method: 'POST',

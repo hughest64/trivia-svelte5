@@ -77,10 +77,11 @@ class GameQuestion(models.Model):
         return f"{self.round_number}.{self.question_number}"
 
     def __str__(self):
-        return self.key
+        return f"Question {self.key} for game {self.game}"
 
     def to_json(self):
         return {
+            "id": self.pk,
             **self.question.to_json(),
             "round_number": self.round_number,
             "question_number": self.question_number,
@@ -102,7 +103,7 @@ class GameRound(models.Model):
     )
 
     def __str__(self):
-        return f"Round {self.round_number}: {self.title}"
+        return f"Round {self.round_number}: {self.title} for game {self.game}"
 
     def to_json(self):
         return {

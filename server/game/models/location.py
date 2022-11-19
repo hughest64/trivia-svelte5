@@ -1,8 +1,7 @@
 from django.db import models
-from django.forms.models import model_to_dict
-
 
 class Location(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
     name = models.CharField(max_length=128)
     address = models.TextField(blank=True, null=True)
     active = models.BooleanField(default=True)

@@ -13,9 +13,11 @@ class Command(BaseCommand):
         TriviaEvent.objects.filter(join_code=1234).update(
             current_question_number=1, current_round_number=1
         )
-        EventQuestionState.objects.all().update(
+        EventQuestionState.objects.filter(event__join_code=1234).update(
             question_displayed=False, answer_displayed=False
         )
-        EventRoundState.objects.all().update(scored=False, locked=False)
-        # delete all responses (not yet a table)
+        EventRoundState.objects.filter(event__join_code=1234).update(
+            scored=False, locked=False
+        )
+        Response.objects.filter(event__join_code=1234).delete()
         self.stdout.write("finished resetting event data")

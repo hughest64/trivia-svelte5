@@ -9,44 +9,50 @@ from rest_framework.views import APIView
 
 from user.authentication import JwtAuthentication
 
+from game.models import Response as QuestionResponse, TriviaEvent
+
 channel_layer = get_channel_layer()
 
 
 class ResponseView(APIView):
     authentication_classes = [JwtAuthentication]
 
-    def post(self, request, joincode, id):
+    def post(self, request, joincode):
         team_id = request.data.get("team_id")
-        response_id = request.data.get("response_id")
-        new_id = "".join(request.data.get("key", "").split("."))
+        question_id = request.data.get("question_id")
         response_text = request.data.get("response_text")
 
         # TODO: permission class for this?
         # if request.user.active_team_id != request.data.get("team_id"):
         #     return Response(code=400, data={ "detail": "you are not on the right team"})
 
-        # lock the transaction to prevent race conditions?
         try:
-            "lookup up the object with id"
-        except AttributeError:  # Response.DoesNotExist, not AttributeError
-            "create the object"
-
-        except Exception as e:  # if something goes wrong:
-            # TODO: probably want better messaging back to the user
-            return Response(status=400, data={"error": e})
-        else:
-            # no need to send anything back, could event use a 201 code
-            async_to_sync(channel_layer.group_send)(
-                f"team_{team_id}_event_{joincode}",  # TODO: make this tie to a team an event
-                {
-                    "type": "team_update",
-                    "msg_type": "team_response_update",
-                    "store": "responseData",
-                    "message": {
-                        "response_id": response_id or new_id,
-                        "recorded_answer": response_text,
-                        "key": request.data.get("key", ""),
-                    },
-                },
+            question_response = QuestionResponse.objects.get(
+                team_id=team_id,
+                event__join_code=joincode,
+                game_question_id=question_id,
             )
-            return Response()
+            question_response.recorded_answer = response_text
+            question_response.save()
+
+        except QuestionResponse.DoesNotExist:
+            # TODO: can we look this up more efficiently?
+            event = TriviaEvent.objects.filter(join_code=1234).first()
+            question_response = QuestionResponse.objects.create(
+                team_id=team_id,
+                event=event,
+                game_question_id=question_id,
+                recorded_answer=response_text 
+            )
+
+        async_to_sync(channel_layer.group_send)(
+            f"team_{team_id}_event_{joincode}",
+            {
+                "type": "team_update",
+                "msg_type": "team_response_update",
+                "store": "responseData",
+                "message": question_response.to_json(),
+            },
+        )
+
+        return Response({"success": True})

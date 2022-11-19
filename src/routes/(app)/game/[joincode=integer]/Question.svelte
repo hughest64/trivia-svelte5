@@ -43,8 +43,8 @@
         async ({ result }) =>
             await applyAction(result)}
 >
+    <input type="hidden" name="question_id" value={activeQuestion?.id} />
     <input type="hidden" name="team_id" value={$userData?.active_team_id || ''} />
-    <input type="hidden" name="response_id" value={activeResponse?.id || ''} />
     <input type="hidden" name="key" value={activeQuestion?.key} />
 
     <div class="input-element" class:notsubmitted>
