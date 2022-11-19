@@ -197,9 +197,15 @@ class EventQuestionState(models.Model):
     question_displayed = models.BooleanField(default=False)
     answer_displayed = models.BooleanField(default=False)
 
+    class Meta:
+        ordering = ["event", "round_number", "question_number"]
+
     @property
     def key(self):
         return f"{self.round_number}.{self.question_number}"
+
+    def __str__(self):
+        return f"Question {self.key} for event {self.event}"
 
     def to_json(self):
         return {
@@ -224,6 +230,12 @@ class EventRoundState(models.Model):
     round_number = models.IntegerField()
     locked = models.BooleanField(default=False)
     scored = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ["event", "round_number"]
+    
+    def __str__(self):
+        return f"Round {self.round_number} for event {self.event}"
 
     def to_json(self):
         return {
