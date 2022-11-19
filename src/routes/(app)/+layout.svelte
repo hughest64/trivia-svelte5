@@ -1,14 +1,14 @@
 <script lang="ts">
     import Footer from '$lib/footer/Footer.svelte';
     import Menu from '$lib/Menu.svelte';
-    import { fly } from 'svelte/transition';
+    import { slide } from 'svelte/transition';
     import Stores from '$lib/Stores.svelte';
 
     let displayMenu = false;
 </script>
 
 {#if displayMenu}
-    <div transition:fly={{ y: -2000, duration: 800 }}>
+    <div transition:slide={{ duration: 500 }}>
         <Menu on:click={() => (displayMenu = false)} />
     </div>
 {/if}
