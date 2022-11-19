@@ -133,7 +133,7 @@ test('arrow keys change the active question', async ({ page }) => {
     expect(await page.textContent('h2')).toBe('1.2');
 });
 
-test('unsubmitted clss is applied properly', async ({ page }) => {
+test('unsubmitted class is applied properly', async ({ page }) => {
     const responseInput = page.locator('input[name="response_text"]');
     // expect the class not be to applied
     expect(await responseInput.inputValue()).toBeFalsy();

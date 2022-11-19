@@ -37,7 +37,7 @@ class ResponseView(APIView):
 
         except QuestionResponse.DoesNotExist:
             # TODO: can we look this up more efficiently?
-            event = TriviaEvent.objects.filter(join_code=1234).first()
+            event = TriviaEvent.objects.filter(join_code=joincode).first()
             question_response = QuestionResponse.objects.create(
                 team_id=team_id,
                 event=event,
