@@ -80,9 +80,12 @@ class GameQuestion(models.Model):
         return f"Question {self.key} for game {self.game}"
 
     def to_json(self):
+        question_data = self.question.to_json()
+        # remove the question id
+        question_data.pop("id")
         return {
             "id": self.pk,
-            **self.question.to_json(),
+            **question_data,
             "round_number": self.round_number,
             "question_number": self.question_number,
             "key": self.key,

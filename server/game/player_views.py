@@ -2,7 +2,6 @@ from asgiref.sync import async_to_sync
 
 from channels.layers import get_channel_layer
 
-from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_404_NOT_FOUND
 from rest_framework.views import APIView
@@ -34,6 +33,7 @@ class ResponseView(APIView):
             )
             question_response.recorded_answer = response_text
             question_response.save()
+            print("updated")
 
         except QuestionResponse.DoesNotExist:
             # TODO: can we look this up more efficiently?
@@ -44,6 +44,7 @@ class ResponseView(APIView):
                 game_question_id=question_id,
                 recorded_answer=response_text 
             )
+            print("created")
 
         async_to_sync(channel_layer.group_send)(
             f"team_{team_id}_event_{joincode}",

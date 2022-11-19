@@ -8,23 +8,22 @@
     export let activeQuestion: GameQuestion;
     export let activeResponse: Response | undefined;
 
+    $: form = <ActionData>$page.form;
+    $: userData = getStore<UserData>('userData');
+
     const questionStates = getStore<QuestionState[]>('questionStates');
     $: questionState = $questionStates.find((qs) => qs.key === activeQuestion.key);
 
     const roundStates = getStore<RoundState[]>('roundStates');
     $: activeRoundState = $roundStates.find((rs) => rs.round_number === activeQuestion.round_number);
 
+    // TODO: this is an awful lot just to get a different class applied
     $: responseText = activeResponse?.recorded_answer || '';
-
-    $: form = <ActionData>$page.form;
-    $: userData = getStore<UserData>('userData');
-
-    $: notsubmitted = responseText && activeResponse?.recorded_answer !== responseText;
-    // event types are rough
-    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-    const handleResponseInput = async (event: any) => {
-        const target = <HTMLInputElement>event.target;
-        notsubmitted = target.value !== responseText;
+    $: updatedInputText = responseText;
+    $: notsubmitted = updatedInputText !== responseText;
+    const syncInputText = (e: Event) => {
+        const target = <HTMLInputElement> e.target;
+        updatedInputText = target.value;
     };
 </script>
 
@@ -48,17 +47,20 @@
     <input type="hidden" name="key" value={activeQuestion?.key} />
 
     <div class="input-element" class:notsubmitted>
-        <input disabled={activeRoundState?.locked} required name="response_text" type="text" on:input={handleResponseInput} value={responseText} />
+        <input
+            disabled={activeRoundState?.locked}
+            required
+            name="response_text"
+            type="text"
+            value={responseText}
+            on:input={syncInputText}
+        />
         <label for="response_text">Enter Answer</label>
     </div>
 
     {#if form?.error}<p>{form.error}</p>{/if}
 
-    <button
-        class:disabled={activeRoundState?.locked}
-        class="button button-red"
-        disabled={activeRoundState?.locked}
-    >
+    <button class:disabled={activeRoundState?.locked} class="button button-red" disabled={activeRoundState?.locked}>
         Submit
     </button>
 </form>
