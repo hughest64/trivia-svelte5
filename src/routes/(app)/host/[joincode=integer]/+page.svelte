@@ -2,11 +2,12 @@
     import { page } from '$app/stores';
     import { getStore } from '$lib/utils';
     import Round from './Round.svelte';
-    import type { ActiveEventData, CurrentEventData, GameRound, RoundState } from '$lib/types';
+    import type { ActiveEventData, CurrentEventData, GameRound, PopupData, RoundState } from '$lib/types';
 
     const eventData = $page.data.event_data;
     const rounds = $page.data.rounds || [];
 
+    $: popupData = getStore<PopupData>('popupData');
     $: activeEventData = getStore<ActiveEventData>('activeEventData');
     $: currentEventData = getStore<CurrentEventData>('currentEventData');
     $: activeRound = <GameRound>(
@@ -37,12 +38,23 @@
     };
 
     const handleLockRound = async () => {
-        locked = !locked;
+        if (locked) {
+            $popupData = {
+                popup_type: 'round_unlock',
+                is_displayed: true,
+                data: { roundNumber: activeRound.round_number }
+            };
+        } else {
+            postLockStatus();
+        }
+    };
 
+    const postLockStatus = async() => {
+        locked = !locked;
+    
         const data = new FormData();
         data.set('round_number', String(activeRound.round_number));
         data.set('value', locked ? 'locked' : '');
-
 
         const response = await fetch ('?/lock', { method: 'post', body: data });
         if (!response.ok) {
@@ -51,6 +63,8 @@
             locked = !locked;
         }
     };
+
+    $: $popupData.data?.unlock === activeRound.round_number && postLockStatus();
 </script>
 
 <h1>Host Game</h1>

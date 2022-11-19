@@ -64,10 +64,10 @@ class UpdateView(APIView):
         revealed = data.get("revealed")
 
         try:
-            # TODO: remove joincode here once we have more than one event!
-            joincode = 1234
+            # TODO: remove temp_join_code here once we have more than one event!
+            temp_join_code = 1234
             questionState = EventQuestionState.objects.select_related("event").get(
-                event__join_code=joincode,
+                event__join_code=temp_join_code,
                 round_number=round_number,
                 question_number=question_number,
             )
@@ -134,9 +134,9 @@ class UpdateAllView(APIView):
         #     return Response({"detail": "Bad Request"}, status=HTTP_400_BAD_REQUEST)
 
         # TODO: remove
-        joincode = 1234
+        temp_join_code = 1234
         event_states = EventQuestionState.objects.filter(
-            event__join_code=joincode, round_number=round_number
+            event__join_code=temp_join_code, round_number=round_number
         )
         event_states.update(question_displayed=revealed)
 
@@ -190,9 +190,9 @@ class RoundLockView(APIView):
 
         try:
             # TODO: remove
-            joincode = 1234
+            temp_join_code = 1234
             round_state = EventRoundState.objects.get(
-                event__join_code=joincode, round_number=round_number
+                event__join_code=temp_join_code, round_number=round_number
             )
         except EventRoundState.DoesNotExist:
             return Response(
