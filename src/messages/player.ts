@@ -12,20 +12,15 @@ const handlers: MessageHandler = {
     log_me: (message) => console.log(message),
     set_store: (message, store) => store.set(message),
 
-    team_update_response: (message: Response, store: Writable<Response[]>) => {
+    team_response_update: (message: Response, store: Writable<Response[]>) => {
         store.update((responses) => {
-            const responseIndex = responses.findIndex((response) => response.key === message.key);
-            const currentResponses = [...responses];
+            const newResponses = [...responses];
+            const updateIndex = newResponses.findIndex((response) => response.key === message.key);
+            updateIndex > -1
+                ? (newResponses[updateIndex] = { ...newResponses[updateIndex], ...message })
+                : newResponses.push(message);
 
-            if (responseIndex > -1) {
-                // keep the original index if the response exists
-                currentResponses.splice(responseIndex, 1, { ...currentResponses[responseIndex], ...message });
-            } else {
-                // otherwise add to the end of the list
-                currentResponses.push(message);
-            }
-
-            return currentResponses;
+            return newResponses;
         });
     },
     // TODO: event handlers should be in a separate file
@@ -38,7 +33,7 @@ const handlers: MessageHandler = {
             return newStates;
         });
     },
-    question_reveal: (message: Record<string, string | boolean>, store: Writable<PopupData>) => {
+    question_reveal_popup: (message: Record<string, string | boolean>, store: Writable<PopupData>) => {
         const revealed = message.value;
         revealed &&
             store.set({

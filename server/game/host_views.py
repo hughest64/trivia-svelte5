@@ -36,7 +36,7 @@ class QuestionRevealView(APIView):
                 f"event_{joincode}",
                 {
                     "type": "event_update",
-                    "msg_type": "question_reveal",
+                    "msg_type": "question_reveal_popup",
                     "store": "popupData",
                     "message": {
                         "key": data.get("key", "").replace("all", "1"),

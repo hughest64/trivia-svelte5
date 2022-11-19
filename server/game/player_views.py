@@ -40,7 +40,8 @@ class ResponseView(APIView):
             async_to_sync(channel_layer.group_send)(
                 f"team_{team_id}_event_{joincode}",  # TODO: make this tie to a team an event
                 {
-                    "type": "team_update_response",
+                    "type": "team_update",
+                    "msg_type": "team_response_update",
                     "store": "responseData",
                     "message": {
                         "response_id": response_id or new_id,
