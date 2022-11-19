@@ -9,7 +9,6 @@
 
     $: activeEventData = getStore<ActiveEventData>('activeEventData');
     $: popupData = getStore<PopupData>('popupData');
-    $: popupType = $popupData?.popup_type;
     $: count = $popupData.timer_value || 0;
 
     const resetPopup = () => $popupData = { is_displayed: false, popup_type: '' };
@@ -40,7 +39,7 @@
         }
     };
 
-    $: popupType === 'question_reveal' && setTimeout(countDown, 1000);
+    $: $popupData?.popup_type === 'question_reveal' && setTimeout(countDown, 1000);
 </script>
 
 <div class="pop-timer">

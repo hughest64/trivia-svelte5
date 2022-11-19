@@ -10,15 +10,16 @@
     $: popupData = getStore<PopupData>('popupData');
     $: activeEventData = getStore<ActiveEventData>('activeEventData');
     $: currentEventData = getStore<CurrentEventData>('currentEventData');
+
     $: activeRound = <GameRound>(
         rounds.find((round: GameRound) => round.round_number === $activeEventData.activeRoundNumber)
     );
     $: roundNumbers = rounds.map((round: GameRound) => round.round_number);
-
+    
     $: roundStates = getStore<RoundState[]>('roundStates');
     $: activeRoundState = $roundStates.find((state) => state.round_number === activeRound.round_number);
-    // TODO: remove in favor of just using activeRoundState?.locked throughout
     $: locked = activeRoundState?.locked;
+
     $: joincode = $page.params?.joincode;
 
     const handleRoundSelect = async (event: MouseEvent) => {
@@ -97,9 +98,7 @@
     </label>
 </div>
 
-<!-- TODO: should this be an anchor or do we have actions to execute here?
-this is also conditionally displayed based on lock status and the text needs updating -->
-<button class="button button-red" on:click|preventDefault>Score/Edit This Round</button>
+<!-- <button class="button button-red" on:click|preventDefault>Score/Edit This Round</button> -->
 
 <Round {activeRound} />
 

@@ -10,7 +10,6 @@
     // TODO: this should be import form a reusable place, or have a default on the Popup container
     const resetPopup = () => $popupData = { is_displayed: false, popup_type: '' };
     const unlock = () => $popupData = { is_displayed: false, popup_type: '', data: { unlock: roundNumber } };
-   
 </script>
 
 <div class="pop-timer"></div>

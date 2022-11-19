@@ -73,13 +73,13 @@
         {#key $activeEventData.activeQuestionKey}
             <div
                 class="flex-column question"
-                in:fly={{
+                in:fly|local={{
                     easing: sineInOut,
                     opacity: 100,
                     x: swipeXValue,
                     duration: inSwipeDuration
                 }}
-                out:fly={{ easing: sineInOut, x: swipeXValue * -1, duration: outSwipeDuration }}
+                out:fly|local={{ easing: sineInOut, x: swipeXValue * -1, duration: outSwipeDuration }}
                 use:swipeQuestion
                 on:swipe={handleQuestionSelect}
             >
