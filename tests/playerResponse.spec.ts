@@ -5,6 +5,7 @@ import { asyncTimeout, login } from './utils.js';
 /**
  * TODO:
  * - test swiping (how to do this?)
+ * - DEPRECATE THIS FILE WHEN THE GAME-PAGE CLASS IS BUILT
  */
 
 const gamePage = '/game/1234';
