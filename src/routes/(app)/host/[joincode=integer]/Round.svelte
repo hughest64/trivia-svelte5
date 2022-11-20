@@ -2,16 +2,13 @@
     import Question from './Question.svelte';
     import { page } from '$app/stores';
     import { getStore } from '$lib/utils';
-    import type { QuestionState, RoundState, GameRound, GameQuestion } from '$lib/types';
+    import type { QuestionState, GameRound, GameQuestion } from '$lib/types';
 
     export let activeRound: GameRound;
     const questions: GameQuestion[] = $page.data.questions || [];
+    let formError: string;
     
     $: roundQuestions = questions.filter((question) => question.round_number === activeRound.round_number);
-
-    // TODO: why did I do this when it isn't used?
-    $: roundStates = getStore<RoundState[]>('roundStates');
-    $: activeRoundState = $roundStates.find((state) => state.round_number === activeRound.round_number);
 
     $: questionStates = getStore<QuestionState[]>('questionStates');
     $: roundQuestionStates = $questionStates.filter((qs) => qs.round_number === activeRound.round_number);
@@ -23,6 +20,7 @@
     const handleRevalAll = async () => {
         if (updating) return;
         updating = true;
+        formError = '';
 
         allQuestionsRevealed = !allQuestionsRevealed;
 
@@ -33,7 +31,7 @@
         const response = await fetch('?/reveal', { method: 'POST', body: data });
         const result = await response.json();
         if (result.type === 'invalid') {
-            console.log('TODO: set a form error');
+            formError = JSON.parse(result.data)?.slice(-1)[0];
             allQuestionsRevealed = !allQuestionsRevealed;
         }
         updating = false;
@@ -43,6 +41,7 @@
 <div class="host-question-panel flex-column">
     <h4>{activeRound.title}</h4>
     <p>{activeRound.round_description}</p>
+    {#if formError}<p>{formError}</p>{/if}
     <div class="switch-container">
         <label for="all" class="switch">
             <input type="hidden" id="all" name="all" bind:value={allQuestionsRevealed} />

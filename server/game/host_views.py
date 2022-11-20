@@ -122,15 +122,12 @@ class UpdateAllView(APIView):
 
     def post(self, request, joincode):
         data = parse_reveal_payload(request.data)
-        key = data.get("key")
         round_number = data.get("round")
-        question_number = data.get("number")
+        question_number = data.get("question")
         revealed = data.get("revealed")
 
-        # TODO: why does this not work? (always a bad request)
-        # cannot reveal a single qustion at this endpoint
-        # if question_number != "all":
-        #     return Response({"detail": "Bad Request"}, status=HTTP_400_BAD_REQUEST)
+        if question_number != "all":
+            return Response({"detail": "Bad Request"}, status=HTTP_400_BAD_REQUEST)
 
         event_states = EventQuestionState.objects.filter(
             event__join_code=joincode, round_number=round_number
