@@ -19,5 +19,5 @@ class Command(BaseCommand):
         EventRoundState.objects.filter(event__join_code=1234).update(
             scored=False, locked=False
         )
-        Response.objects.filter(event__join_code=1234).delete()
+        Response.objects.all().delete()
         self.stdout.write("finished resetting event data")

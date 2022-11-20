@@ -87,17 +87,20 @@ test.describe('proper response handling during an event', async () => {
         expect(await playerTwoResponseInput.inputValue()).toBe(submissionOne);
     });
 
-    test.skip('members of the same team at different events should not share responses', async () => {
+    test('members of the same team at different events should not share responses', async () => {
         await playerTwoPage.goto('/game/9999');
         await expect(playerTwoPage).toHaveURL('/game/9999');
         await expect(playerOnePage).toHaveURL(gamePage);
 
         const playerOneResponseInput = playerOnePage.locator('input[name="response_text"]');
         const playerTwoResponseInput = playerTwoPage.locator('input[name="response_text"]');
+        // a different game should not have the same input
+        expect(await playerTwoResponseInput.inputValue()).toBeFalsy();
         await playerTwoResponseInput.fill('response for game 9999');
         await playerTwoPage.locator('button:has-text("Submit")').click();
         await asyncTimeout();
-        expect(await playerOneResponseInput.inputValue()).toBeFalsy();
+        // This is becuase player one has recorded this response in game/1234
+        expect(await playerOneResponseInput.inputValue()).toBe(submissionOne);
     });
 });
 
@@ -133,10 +136,9 @@ test('arrow keys change the active question', async ({ page }) => {
     expect(await page.textContent('h2')).toBe('1.2');
 });
 
-test.skip('unsubmitted class is applied properly', async ({ page }) => {
+test('unsubmitted class is applied properly', async ({ page }) => {
     const responseInput = page.locator('input[name="response_text"]');
     // expect the class not be to applied
-    expect(await responseInput.inputValue()).toBeFalsy();
     await expect(page.locator('div.notsubmitted')).not.toBeVisible();
     await responseInput.fill(submissionTwo);
     // expect the class to be applied
