@@ -1,4 +1,4 @@
-import { expect } from '@playwright/test';
+import { expect, request } from '@playwright/test';
 import type { Browser, Page } from '@playwright/test';
 
 export interface TestConfig {
@@ -59,4 +59,15 @@ export async function asyncTimeout(ms = 100): Promise<ReturnType<typeof setTimeo
  */
 export const getBrowserPage = async (browser: Browser): Promise<Page> => {
     return browser.newContext().then((context) => context.newPage());
+};
+
+export const resetEventData = async () => {
+    const context = await request.newContext({
+        baseURL: 'http://localhost:8000' // TODO: process.env?
+    });
+    const response = await context.post('/reset-event-data', {
+        headers: { 'content-type': 'application/json', accept: 'application/json' },
+        data: { secret: 'todd is great' }
+    });
+    expect(response.status()).toBe(200);
 };

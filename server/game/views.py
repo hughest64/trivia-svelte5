@@ -3,13 +3,15 @@ from django.views.decorators.csrf import csrf_protect
 
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
-from rest_framework.status import HTTP_200_OK, HTTP_404_NOT_FOUND
+from rest_framework.status import HTTP_200_OK, HTTP_404_NOT_FOUND, HTTP_400_BAD_REQUEST
 from rest_framework.views import APIView
 
 from user.authentication import JwtAuthentication
 from user.serializers import UserSerializer
 
 from game.models import (
+    EventQuestionState,
+    EventRoundState,
     Location,
     Team,
     TriviaEvent,
@@ -20,6 +22,7 @@ from game.models import (
 
 # TODO: remove once creating event is implemented
 DEMO_EVENT_JOIN_CODE = 1234
+
 
 class TeamView(APIView):
     authentication_classes = [JwtAuthentication]
@@ -76,7 +79,10 @@ class EventSetupView(APIView):
 
         # TODO: this could just return the join code since the data won't be loaded from this response
         return Response(
-            {"event_data": event.to_json()["event_data"], "user_data": user_serializer.data}
+            {
+                "event_data": event.to_json()["event_data"],
+                "user_data": user_serializer.data,
+            }
         )
 
 
@@ -94,7 +100,7 @@ class EventView(APIView):
                 {"detail": "an event with that join code does not exist"},
                 status=HTTP_404_NOT_FOUND,
             )
-      
+
         # TODO: get responses for this event via the user's active team
         # if they do not have an active team respond with a 400 and a message
         # kit will need to handle the response accordingly
@@ -139,3 +145,28 @@ class EventHostView(APIView):
             )
 
         return Response({**event.to_json(), "user_data": user_serializer.data})
+
+
+class ClearEventDataView(APIView):
+    # NOTE: for resetting post data only!
+    def post(self, request):
+        secret = request.data.get("secret")
+        if secret != "todd is great":
+            return Response(
+                {"detail": "ah ah ah, you didn't say the magic word"},
+                status=HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            TriviaEvent.objects.all().update(
+                current_question_number=1, current_round_number=1
+            )
+            EventQuestionState.objects.all().update(
+                question_displayed=False, answer_displayed=False
+            )
+            EventRoundState.objects.all().update(scored=False, locked=False)
+            QuestionResponse.objects.all().delete()
+        except Exception as e:
+            return Response({"detail": ""}, status=HTTP_400_BAD_REQUEST)
+
+        return Response({"success": True})

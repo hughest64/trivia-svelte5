@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { PlayerGamePage } from './gamePages.js';
-import { asyncTimeout, getBrowserPage } from './utils.js';
+import { asyncTimeout, getBrowserPage, resetEventData } from './utils.js';
 import type { TestConfig } from './utils.js';
 
 const triviaEventOne = '/game/1234';
@@ -13,7 +13,7 @@ const testconfigs: Record<string, TestConfig> = {
     p1: { pageUrl: triviaEventOne },
     p2: { pageUrl: triviaEventOne, username: 'player_two', password: 'player_two' },
     p3: { pageUrl: triviaEventOne, username: 'player_three', password: 'player_three' },
-    p4: { pageUrl: triviaEventTwo, username: 'player_four', password: 'player_four' },
+    p4: { pageUrl: triviaEventTwo, username: 'player_four', password: 'player_four' }
 };
 
 test.describe('simulate two trivia events simeltaneously', () => {
@@ -34,11 +34,13 @@ test.describe('simulate two trivia events simeltaneously', () => {
         await p2.logout();
         await p3.logout();
         await p4.logout();
+
+        // TODO: hit the api directly to run reset manage cmd?
+        // https://playwright.dev/docs/test-api-testing
     });
 
     test.afterAll(async () => {
-        // TODO: hit the api directly to run reset manage cmd?
-        // https://playwright.dev/docs/test-api-testing
+        await resetEventData();
     });
 
     test('responses only update for the same team on the same event', async () => {
@@ -73,7 +75,6 @@ test.describe('simulate two trivia events simeltaneously', () => {
         await p2.expectInputValueToBe(submissionOne);
         await p3.expectInputValueToBeFalsy();
         await p4.expectInputValueToBe(submissionTwo);
-
     });
 });
 

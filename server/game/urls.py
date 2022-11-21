@@ -20,4 +20,5 @@ urlpatterns = [
     re_path(r"^game/(?P<joincode>\d+)[/\w]*/?$", views.EventView.as_view()),
     re_path(r"^teamselect/?$", views.TeamView.as_view()),
     re_path(r"^team/?$", views.TeamView.as_view()),
+    re_path(r"^reset-event-data/?$", views.ClearEventDataView.as_view()),
 ]

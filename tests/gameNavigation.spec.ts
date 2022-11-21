@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { asyncTimeout, login } from './utils.js';
+import { asyncTimeout, login, resetEventData } from './utils.js';
 
 /**
  * TODO:
@@ -16,6 +16,10 @@ test.beforeEach(async ({ page }) => {
 
 test.afterEach(async ({ page }) => {
     await page.goto('/user/logout');
+});
+
+test.afterAll(async () => {
+    await resetEventData();
 });
 
 test('round question cookies work properly', async ({ page }) => {
