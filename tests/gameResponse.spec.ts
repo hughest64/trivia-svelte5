@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { PlayerGamePage } from './eventPages.js';
+import { PlayerGamePage } from './gamePages.js';
 import { asyncTimeout, getBrowserPage } from './utils.js';
 import type { TestConfig } from './utils.js';
 
@@ -9,7 +9,6 @@ const triviaEventTwo = '/game/9999';
 const submissionOne = 'answer for question';
 const submissionTwo = 'a different answer';
 
-// credentials object?
 const testconfigs: Record<string, TestConfig> = {
     p1: { pageUrl: triviaEventOne },
     p2: { pageUrl: triviaEventOne, username: 'player_two', password: 'player_two' },
