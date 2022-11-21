@@ -16,67 +16,55 @@ const testconfigs: Record<string, TestConfig> = {
     p4: { pageUrl: triviaEventTwo, username: 'player_four', password: 'player_four' }
 };
 
-test.describe('simulate two trivia events simeltaneously', () => {
-    let p1: PlayerGamePage;
-    let p2: PlayerGamePage; // same event and team as p1
-    let p3: PlayerGamePage; // same event different team as p1, p2
-    let p4: PlayerGamePage; // different event same team as p3
+let p1: PlayerGamePage; // same event and teams as p2
+let p2: PlayerGamePage; // same event and team as p1
+let p3: PlayerGamePage; // same event different team as p1, p2
+let p4: PlayerGamePage; // different event same team as p3
 
-    test.beforeEach(async ({ browser }) => {
-        p1 = new PlayerGamePage(await getBrowserPage(browser), testconfigs.p1);
-        p2 = new PlayerGamePage(await getBrowserPage(browser), testconfigs.p2);
-        p3 = new PlayerGamePage(await getBrowserPage(browser), testconfigs.p3);
-        p4 = new PlayerGamePage(await getBrowserPage(browser), testconfigs.p4);
-    });
-
-    test.afterEach(async () => {
-        await p1.logout();
-        await p2.logout();
-        await p3.logout();
-        await p4.logout();
-
-        // TODO: hit the api directly to run reset manage cmd?
-        // https://playwright.dev/docs/test-api-testing
-    });
-
-    test.afterAll(async () => {
-        await resetEventData();
-    });
-
-    test('responses only update for the same team on the same event', async () => {
-        // everyone on the correct page/question
-        await expect(p1.page).toHaveURL(triviaEventOne);
-        await expect(p1.questionHeading('1.1')).toHaveText('1.1');
-        await expect(p2.page).toHaveURL(triviaEventOne);
-        await expect(p2.questionHeading('1.1')).toHaveText('1.1');
-        await expect(p3.page).toHaveURL(triviaEventOne);
-        await expect(p3.questionHeading('1.1')).toHaveText('1.1');
-        await expect(p4.page).toHaveURL(triviaEventTwo);
-        await expect(p4.questionHeading('1.1')).toHaveText('1.1');
-
-        // no answers filled in for 1.1
-        await p1.expectInputValueToBeFalsy();
-        await p2.expectInputValueToBeFalsy();
-        await p3.expectInputValueToBeFalsy();
-        await p4.expectInputValueToBeFalsy();
-
-        // player one submits a response
-        await p1.setResponse(submissionOne, { submit: true });
-        await asyncTimeout(200);
-        await p1.expectInputValueToBe(submissionOne);
-        await p2.expectInputValueToBe(submissionOne);
-        await p3.expectInputValueToBeFalsy();
-        await p4.expectInputValueToBeFalsy();
-
-        // player 4 submits a response
-        await p4.setResponse(submissionTwo, { submit: true });
-        await asyncTimeout(200);
-        await p1.expectInputValueToBe(submissionOne);
-        await p2.expectInputValueToBe(submissionOne);
-        await p3.expectInputValueToBeFalsy();
-        await p4.expectInputValueToBe(submissionTwo);
-    });
+test.beforeEach(async ({ browser }) => {
+    p1 = new PlayerGamePage(await getBrowserPage(browser), testconfigs.p1);
+    p2 = new PlayerGamePage(await getBrowserPage(browser), testconfigs.p2);
+    p3 = new PlayerGamePage(await getBrowserPage(browser), testconfigs.p3);
+    p4 = new PlayerGamePage(await getBrowserPage(browser), testconfigs.p4);
 });
 
-// tests for question reveal, auto reveal, round lock, etc (probably a separate file)
-// will need host for game 1234, one player for game 1234, one player for game 9999
+test.afterEach(async () => {
+    await p1.logout();
+    await p2.logout();
+    await p3.logout();
+    await p4.logout();
+});
+
+test.afterAll(async () => {
+    await resetEventData();
+});
+
+test('responses only update for the same team on the same event', async () => {
+    // everyone on the correct page/question
+    await p1.expectCorrectQuestionHeading('1.1');
+    await p2.expectCorrectQuestionHeading('1.1');
+    await p3.expectCorrectQuestionHeading('1.1');
+    await p4.expectCorrectQuestionHeading('1.1');
+
+    // no answers filled in for 1.1
+    await p1.expectInputValueToBeFalsy();
+    await p2.expectInputValueToBeFalsy();
+    await p3.expectInputValueToBeFalsy();
+    await p4.expectInputValueToBeFalsy();
+
+    // player one submits a response
+    await p1.setResponse(submissionOne, { submit: true });
+    await asyncTimeout(200);
+    await p1.expectInputValueToBe(submissionOne);
+    await p2.expectInputValueToBe(submissionOne);
+    await p3.expectInputValueToBeFalsy();
+    await p4.expectInputValueToBeFalsy();
+
+    // player 4 submits a response
+    await p4.setResponse(submissionTwo, { submit: true });
+    await asyncTimeout(200);
+    await p1.expectInputValueToBe(submissionOne);
+    await p2.expectInputValueToBe(submissionOne);
+    await p3.expectInputValueToBeFalsy();
+    await p4.expectInputValueToBe(submissionTwo);
+});

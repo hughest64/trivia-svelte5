@@ -25,6 +25,10 @@ class BasePage {
     async logout() {
         await this.page.goto('/user/logout');
     }
+
+    async expectToLandOnGameUrl() {
+        await expect(this.page).toHaveURL(this.testConfig?.pageUrl as string);
+    }
 }
 
 export class PlayerGamePage extends BasePage {
@@ -36,10 +40,15 @@ export class PlayerGamePage extends BasePage {
         this.responseInput = page.locator('input[name="response_text"]');
         this.submitButton = page.locator('button', { hasText: 'Submit' });
         this.login();
+        this.expectToLandOnGameUrl();
     }
 
     questionHeading(text: string): Locator {
         return this.page.locator('h2', { hasText: text });
+    }
+
+    async expectCorrectQuestionHeading(text: string): Promise<void> {
+        await expect(this.questionHeading(text)).toHaveText(text);
     }
 
     async expectInputValueToBe(text: string): Promise<void>{

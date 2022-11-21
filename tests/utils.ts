@@ -70,4 +70,5 @@ export const resetEventData = async () => {
         data: { secret: 'todd is great' }
     });
     expect(response.status()).toBe(200);
+    context.dispose();
 };
