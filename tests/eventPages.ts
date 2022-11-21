@@ -5,15 +5,34 @@ import { defaultTestConfig } from './utils.js';
 import type { Locator, Page } from '@playwright/test';
 import type { TestConfig } from './utils.js';
 
-export class PlayerGamePage {
+class BasePage {
     readonly page: Page;
     readonly testConfig?: TestConfig;
-    readonly responseInput: Locator;
-    readonly submitButton: Locator;
 
     constructor(page: Page, testConfig: TestConfig = {}) {
         this.page = page;
         this.testConfig = { ...defaultTestConfig, ...testConfig };
+    }
+
+    async login() {
+        await this.page.goto(this.testConfig?.pageUrl as string);
+        await this.page.locator('a', { hasText: 'Login' }).click();
+        await this.page.locator('input[name="username"]').fill(this.testConfig?.username as string);
+        await this.page.locator('input[name="password"]').fill(this.testConfig?.password as string);
+        await this.page.locator('input[value="Submit"]').click();
+    }
+
+    async logout() {
+        await this.page.goto('/user/logout');
+    }
+}
+
+export class PlayerGamePage extends BasePage {
+    readonly responseInput: Locator;
+    readonly submitButton: Locator;
+
+    constructor(page: Page, testConfig: TestConfig = {}) {
+        super(page, testConfig);
         this.responseInput = page.locator('input[name="response_text"]');
         this.submitButton = page.locator('button', { hasText: 'Submit' });
         this.login();
@@ -31,21 +50,13 @@ export class PlayerGamePage {
         expect(await this.responseInput.inputValue()).toBeFalsy();
     }
 
-    async setResponse(text: string, submit = false): Promise<void> {
+    async setResponse(text: string, opts={ submit: false }): Promise<void> {
         await this.responseInput.fill(text);
-        if (submit) await this.submitButton.click();
+        if (opts.submit) await this.submitButton.click();
     }
 
-    async login() {
-        await this.page.goto(this.testConfig?.pageUrl as string);
-        await this.page.locator('a', { hasText: 'Login' }).click();
-        await this.page.locator('input[name="username"]').fill(this.testConfig?.username as string);
-        await this.page.locator('input[name="password"]').fill(this.testConfig?.password as string);
-        await this.page.locator('input[value="Submit"]').click();
-    }
-
-    async logout() {
-        await this.page.goto('/user/logout');
+    async submitResponse(): Promise<void> {
+        await this.submitButton.click();
     }
 
     // METHODS (all async)
@@ -55,4 +66,12 @@ export class PlayerGamePage {
     // locator(s) for checking classes (current round, current question, active... notsubmtted, etc)
     // locator for question text (revealed vs. not)
     // locator for round locks
+}
+
+// TODO
+export class HostPage extends BasePage {
+    constructor(page: Page, testConfig: TestConfig) {
+        super(page, testConfig);
+        this.login();
+    }
 }
