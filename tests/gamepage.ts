@@ -1,20 +1,18 @@
 // see https://playwright.dev/docs/pom for information on this
 
-// import { expect } from '@playwright/test';
-import { defaultTestConfig, login as userLogin } from './utils.js';
+import { expect } from '@playwright/test';
+import { defaultTestConfig } from './utils.js';
 import type { Locator, Page } from '@playwright/test';
 import type { TestConfig } from './utils.js';
 
 export class PlayerGamePage {
     readonly page: Page;
-    readonly gamePage: string;
     readonly testConfig?: TestConfig;
     readonly responseInput: Locator;
     readonly submitButton: Locator;
 
-    constructor(page: Page, gamePage: string, testConfig: TestConfig = {}) {
+    constructor(page: Page, testConfig: TestConfig = {}) {
         this.page = page;
-        this.gamePage = gamePage;
         this.testConfig = { ...defaultTestConfig, ...testConfig };
         this.responseInput = page.locator('input[name="response_text"]');
         this.submitButton = page.locator('button', { hasText: 'Submit' });
@@ -25,14 +23,25 @@ export class PlayerGamePage {
         return this.page.locator('h2', { hasText: text });
     }
 
+    async expectInputValueToBe(text: string): Promise<void>{
+        expect(await this.responseInput.inputValue()).toBe(text);
+    }
+
+    async expectInputValueToBeFalsy(): Promise<void> {
+        expect(await this.responseInput.inputValue()).toBeFalsy();
+    }
+
     async setResponse(text: string, submit = false): Promise<void> {
         await this.responseInput.fill(text);
         if (submit) await this.submitButton.click();
     }
 
     async login() {
-        await userLogin(this.page, this.testConfig);
-        await this.page.goto(this.gamePage);
+        await this.page.goto(this.testConfig?.pageUrl as string);
+        await this.page.locator('a', { hasText: 'Login' }).click();
+        await this.page.locator('input[name="username"]').fill(this.testConfig?.username as string);
+        await this.page.locator('input[name="password"]').fill(this.testConfig?.password as string);
+        await this.page.locator('input[value="Submit"]').click();
     }
 
     async logout() {

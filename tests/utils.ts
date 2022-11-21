@@ -1,5 +1,5 @@
 import { expect } from '@playwright/test';
-import type { Page } from '@playwright/test';
+import type { Browser, Page } from '@playwright/test';
 
 export interface TestConfig {
     username?: string;
@@ -51,3 +51,12 @@ export const createSelectorPromises = (page: Page, visibleLinks: string[], foote
 export async function asyncTimeout(ms = 100): Promise<ReturnType<typeof setTimeout>> {
     return new Promise((resolve) => setTimeout(resolve, ms));
 }
+
+/**
+ * Returnt a Page object from the Browser context
+ * @param browser 
+ * @returns page
+ */
+export const getBrowserPage = async (browser: Browser): Promise<Page> => {
+    return browser.newContext().then((context) => context.newPage());
+};
