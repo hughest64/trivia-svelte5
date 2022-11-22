@@ -9,11 +9,13 @@ class BasePage {
     readonly page: Page;
     readonly testConfig?: TestConfig;
     readonly defaultQuestonText: string;
+    readonly dismissButton: Locator;
 
     constructor(page: Page, testConfig: TestConfig = {}) {
         this.page = page;
         this.testConfig = { ...defaultTestConfig, ...testConfig };
         this.defaultQuestonText = 'Please Wait for the Host to Reveal This Question';
+        this.dismissButton = page.locator('button', { hasText: 'X' });
     }
 
     async login() {
@@ -72,24 +74,39 @@ export class PlayerGamePage extends BasePage {
         await this.submitButton.click();
     }
 
-    // METHODS (all async)
-    // url helper?
-    // team select helper? (maybe not, players should have pre-set teams there) team testing is elsewhere
-    // method for changing round numbers, question numbers
+    // METHODS
     // locator(s) for checking classes (current round, current question, active... notsubmtted, etc)
-    // locator for question text (revealed vs. not)
     // locator for round locks
 }
 
-// TODO
 export class HostGamePage extends BasePage {
     constructor(page: Page, testConfig: TestConfig) {
         super(page, testConfig);
         this.login();
     }
 
-    roundButton (text: string) {
+    roundButton (text: string): Locator {
         return this.page.locator('.round-selector').locator('button', { hasText: text });
+    }
+
+    questionSlider(text: string): Locator {
+        return this.page.locator(`label[for="${text}"]`);
+    }
+
+    revealedClass(text: string): Locator {
+        return this.questionSlider(text).locator('.revealed');
+    }
+
+    async revealQuestion(text: string): Promise<void> {
+        await this.questionSlider(text).click();
+    }
+
+    async expectQuestionToBeRevealed(text: string): Promise<void> {
+        await expect(this.revealedClass(text)).toBeVisible();
+    }
+
+    async expectQuestionToNotBeRevealed(text: string): Promise<void> {
+        await expect(this.revealedClass(text)).not.toBeVisible();
     }
 
     async expectRoundToBe(text: string) {

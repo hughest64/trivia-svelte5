@@ -1,6 +1,6 @@
-import { /* expect, */ expect, test } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 import { PlayerGamePage, HostGamePage } from './gamePages.js';
-import { /* asyncTimeout, */ getBrowserPage, resetEventData } from './utils.js';
+import { asyncTimeout, getBrowserPage, resetEventData } from './utils.js';
 import type { TestConfig } from './utils.js';
 
 // TODO future:
@@ -15,9 +15,10 @@ const testconfigs: Record<string, TestConfig> = {
     host: { pageUrl: '/host/1234', username: 'sample_admin', password: 'sample_admin' }
 };
 
-let p1: PlayerGamePage;
-let p2: PlayerGamePage;
-let host: HostGamePage;
+let p1: PlayerGamePage; // game 1234 w/ auto reveal
+let p2: PlayerGamePage; // game 9999 no auto reveal
+// let p3: PlayerGamePage; // game 1234 no auto reveal
+let host: HostGamePage; // game 1234
 
 test.beforeEach(async ({ browser }) => {
     p1 = new PlayerGamePage(await getBrowserPage(browser), testconfigs.p1);
@@ -35,6 +36,8 @@ test.afterAll(async () => {
     await resetEventData();
 });
 
+// TODO: if we ensure we are using the env var for reveal timeout properly,
+// we could set process.env here so that the reveal delay is much shorter for testing
 test('question text reveals properly for players', async () => {
     // everyone is on the right question
     await p1.expectCorrectQuestionHeading('1.1');
@@ -46,18 +49,21 @@ test('question text reveals properly for players', async () => {
     await expect(p2.questionTextField).toHaveText(p2.defaultQuestonText);
 
     // host reveals 1.1
-    const q = host.page.locator('label[for="1.1"]');
-    await expect(q).toBeVisible();
-    await expect(q.locator('.revealed')).not.toBeVisible();
-    await q.locator('button').click();
-    await expect(q.locator('.revealed')).toBeVisible();
+    await host.expectQuestionToNotBeRevealed('1.1');
+    await host.revealQuestion('1.1');
+    await host.expectQuestionToBeRevealed('1.1');
 
-
-    // asyncTimeout(1000) // checkout https://playwright.dev/docs/test-timeouts
-    // test popup (just that it exists)
-    // asyncTimeout(4000) (ick)
+    // popup should be displayed for p1 and host
+    await expect(p1.dismissButton).toBeVisible();
+    await expect(p2.dismissButton).not.toBeVisible();
+    await expect(host.dismissButton).toBeVisible();
+    await asyncTimeout(5000);
     // check question text
+    await expect(p1.questionTextField).not.toHaveText(p1.defaultQuestonText);
+    await expect(p2.questionTextField).toHaveText(p2.defaultQuestonText);
     // test that the popup has closed
+    await expect(p1.dismissButton).not.toBeVisible();
+    await expect(host.dismissButton).not.toBeVisible();
 });
 
 test('auto reveal respects player settings', async () => {
