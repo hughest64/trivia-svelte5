@@ -64,22 +64,38 @@ test('question text reveals properly for players', async () => {
     // test that the popup has closed
     await expect(p1.dismissButton).not.toBeVisible();
     await expect(host.dismissButton).not.toBeVisible();
+    // test that no api error occured that would reset the reveal status
+    await host.expectQuestionToBeRevealed('1.1');
 });
 
 test('auto reveal respects player settings', async () => {
     // host got to 1.2
     await host.expectRoundToBe('1');
+
+    // both players should be on 1.1
+    await p1.expectCorrectQuestionHeading('1.1');
+    await p2.expectCorrectQuestionHeading('1.1');
+
+    // host reveals 1.2
+    await host.revealQuestion('1.2');
+    await asyncTimeout(5000);
+    await host.expectQuestionToBeRevealed('1.2');
+    await p1.expectCorrectQuestionHeading('1.2');
+    await p2.expectCorrectQuestionHeading('1.1');
+
+    // TODO: current round/question classes (separate test?)
+});
+
+test('reveal all reveals all questions for a round', async () => {
+    // everyone is on the right question
+    await p1.expectCorrectQuestionHeading('1.2'); // p1 advanced in the preveious test
+    await p2.expectCorrectQuestionHeading('1.1'); // p2 did not
+    await host.expectRoundToBe('1');
+
+    // host reveals all for round 2
     await host.roundButton('2').click();
     await host.expectRoundToBe('2');
 
-    // host reveals 1.2
-    // check slider for host
-    // check 1.2 for all
-    // current round/question classes
-});
-
-test.skip('reveal all reveals all questions for a round', async () => {
-    // host reveals all for 1.1
     // check all questions for host and player (a helper or forEach seems in order here)
 });
 

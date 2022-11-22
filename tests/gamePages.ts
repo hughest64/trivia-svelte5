@@ -15,7 +15,7 @@ class BasePage {
         this.page = page;
         this.testConfig = { ...defaultTestConfig, ...testConfig };
         this.defaultQuestonText = 'Please Wait for the Host to Reveal This Question';
-        this.dismissButton = page.locator('button', { hasText: 'X' });
+        this.dismissButton = page.locator('.pop').locator('button', { hasText: 'X' });
     }
 
     async login() {
