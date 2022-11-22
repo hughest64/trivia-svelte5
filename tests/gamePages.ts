@@ -8,10 +8,12 @@ import type { TestConfig } from './utils.js';
 class BasePage {
     readonly page: Page;
     readonly testConfig?: TestConfig;
+    readonly defaultQuestonText: string;
 
     constructor(page: Page, testConfig: TestConfig = {}) {
         this.page = page;
         this.testConfig = { ...defaultTestConfig, ...testConfig };
+        this.defaultQuestonText = 'Please Wait for the Host to Reveal This Question';
     }
 
     async login() {
@@ -34,11 +36,13 @@ class BasePage {
 export class PlayerGamePage extends BasePage {
     readonly responseInput: Locator;
     readonly submitButton: Locator;
+    readonly questionTextField: Locator;
 
     constructor(page: Page, testConfig: TestConfig = {}) {
         super(page, testConfig);
         this.responseInput = page.locator('input[name="response_text"]');
         this.submitButton = page.locator('button', { hasText: 'Submit' });
+        this.questionTextField = page.locator('p.question-text');
         this.login();
         this.expectToLandOnGameUrl();
     }
@@ -78,9 +82,17 @@ export class PlayerGamePage extends BasePage {
 }
 
 // TODO
-export class HostPage extends BasePage {
+export class HostGamePage extends BasePage {
     constructor(page: Page, testConfig: TestConfig) {
         super(page, testConfig);
         this.login();
+    }
+
+    roundButton (text: string) {
+        return this.page.locator('.round-selector').locator('button', { hasText: text });
+    }
+
+    async expectRoundToBe(text: string) {
+        await expect(this.roundButton(text)).toHaveText(text);
     }
 }

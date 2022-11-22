@@ -1,5 +1,5 @@
-import { /* expect, */ test } from '@playwright/test';
-import { PlayerGamePage } from './gamePages.js';
+import { /* expect, */ expect, test } from '@playwright/test';
+import { PlayerGamePage, HostGamePage } from './gamePages.js';
 import { /* asyncTimeout, */ getBrowserPage, resetEventData } from './utils.js';
 import type { TestConfig } from './utils.js';
 
@@ -12,43 +12,60 @@ const triviaEventTwo = '/game/9999';
 const testconfigs: Record<string, TestConfig> = {
     p1: { pageUrl: triviaEventOne },
     p2: { pageUrl: triviaEventTwo, username: 'player_two', password: 'player_two' },
-    host: { pageUrl: triviaEventOne, username: 'sample_admin', password: 'sample_admin' }
+    host: { pageUrl: '/host/1234', username: 'sample_admin', password: 'sample_admin' }
 };
 
 let p1: PlayerGamePage;
 let p2: PlayerGamePage;
-// let host: HostGamePage;
+let host: HostGamePage;
 
 test.beforeEach(async ({ browser }) => {
     p1 = new PlayerGamePage(await getBrowserPage(browser), testconfigs.p1);
     p2 = new PlayerGamePage(await getBrowserPage(browser), testconfigs.p2);
-    // host = 
+    host = new HostGamePage(await getBrowserPage(browser), testconfigs.host);
 });
 
 test.afterEach(async () => {
-    p1.logout();
-    p2.logout();
+    await p1.logout();
+    await p2.logout();
+    await host.logout();
 });
 
 test.afterAll(async () => {
     await resetEventData();
 });
 
-// tests for question reveal, auto reveal, round lock, etc (probably a separate file)
-// will need host for game 1234, one player for game 1234, one player for game 9999
-
-test.skip('question text reveals properly for players', async () => {
-    // everyone is on the right page and question
+test('question text reveals properly for players', async () => {
+    // everyone is on the right question
+    await p1.expectCorrectQuestionHeading('1.1');
+    await p2.expectCorrectQuestionHeading('1.1');
+    await host.expectRoundToBe('1');
 
     // check 1.1 question text
+    await expect(p1.questionTextField).toHaveText(p1.defaultQuestonText);
+    await expect(p2.questionTextField).toHaveText(p2.defaultQuestonText);
 
     // host reveals 1.1
+    const q = host.page.locator('label[for="1.1"]');
+    await expect(q).toBeVisible();
+    await expect(q.locator('.revealed')).not.toBeVisible();
+    await q.locator('button').click();
+    await expect(q.locator('.revealed')).toBeVisible();
+
+
+    // asyncTimeout(1000) // checkout https://playwright.dev/docs/test-timeouts
+    // test popup (just that it exists)
+    // asyncTimeout(4000) (ick)
     // check question text
+    // test that the popup has closed
 });
 
-test.skip('auto reveal respects player settings', async () => {
+test('auto reveal respects player settings', async () => {
     // host got to 1.2
-    // check host is on 1.2
+    await host.expectRoundToBe('1');
+    await host.roundButton('2').click();
+    await host.expectRoundToBe('2');
+
     // host reveals 1.2
     // check slider for host
     // check 1.2 for all
