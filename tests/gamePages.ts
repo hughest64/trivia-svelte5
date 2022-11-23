@@ -5,16 +5,16 @@ import { defaultTestConfig } from './utils.js';
 import type { Locator, Page } from '@playwright/test';
 import type { TestConfig } from './utils.js';
 
+export const defaultQuestionText = 'Please Wait for the Host to Reveal This Question';
+
 class BasePage {
     readonly page: Page;
     readonly testConfig?: TestConfig;
-    readonly defaultQuestonText: string;
     readonly dismissButton: Locator;
 
     constructor(page: Page, testConfig: TestConfig = {}) {
         this.page = page;
         this.testConfig = { ...defaultTestConfig, ...testConfig };
-        this.defaultQuestonText = 'Please Wait for the Host to Reveal This Question';
         this.dismissButton = page.locator('.pop').locator('button', { hasText: 'X' });
     }
 
@@ -67,7 +67,7 @@ export class PlayerGamePage extends BasePage {
         // a value exists
         expect(this.questionTextField(text)).toBeTruthy();
         // but it's not the unrevealed value
-        await expect(this.questionTextField(text)).not.toHaveText(this.defaultQuestonText);
+        await expect(this.questionTextField(text)).not.toHaveText(defaultQuestionText);
     }
 
     async expectCorrectQuestionHeading(text: string): Promise<void> {

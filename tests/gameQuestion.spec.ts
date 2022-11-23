@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { PlayerGamePage, HostGamePage } from './gamePages.js';
+import { defaultQuestionText, PlayerGamePage, HostGamePage } from './gamePages.js';
 import { asyncTimeout, getBrowserPage, resetEventData } from './utils.js';
 import type { TestConfig } from './utils.js';
 
@@ -61,9 +61,9 @@ test.skip('active round and question classes are applied properly', async () => 
 
 test('question text reveals properly for players', async () => {
     // check 1.1 question text
-    await expect(p1.questionTextField('1.1')).toHaveText(p1.defaultQuestonText);
-    await expect(p2.questionTextField('1.1')).toHaveText(p2.defaultQuestonText);
-    await expect(p3.questionTextField('1.1')).toHaveText(p3.defaultQuestonText);
+    await expect(p1.questionTextField('1.1')).toHaveText(defaultQuestionText);
+    await expect(p2.questionTextField('1.1')).toHaveText(defaultQuestionText);
+    await expect(p3.questionTextField('1.1')).toHaveText(defaultQuestionText);
 
     // host reveals 1.1
     await host.expectQuestionToNotBeRevealed('1.1');
@@ -78,9 +78,9 @@ test('question text reveals properly for players', async () => {
 
     // check question text
     await asyncTimeout(revealDelay);
-    await expect(p1.questionTextField('1.1')).not.toHaveText(p1.defaultQuestonText);
-    await expect(p2.questionTextField('1.1')).not.toHaveText(p2.defaultQuestonText);
-    await expect(p3.questionTextField('1.1')).toHaveText(p3.defaultQuestonText);
+    await expect(p1.questionTextField('1.1')).not.toHaveText(defaultQuestionText);
+    await expect(p2.questionTextField('1.1')).not.toHaveText(defaultQuestionText);
+    await expect(p3.questionTextField('1.1')).toHaveText(defaultQuestionText);
 
     // test that the popup has closed
     await expect(p1.dismissButton).not.toBeVisible();
