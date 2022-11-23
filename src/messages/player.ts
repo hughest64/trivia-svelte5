@@ -4,6 +4,7 @@
  * and correspond to the "type" key in the websocket message
  * functions should take in a "message" param as well as an optional store to update
  */
+import { PUBLIC_QUESTION_REVEAL_TIMEOUT as updateDelay } from '$env/static/public';
 import type { Writable } from 'svelte/store';
 import type { CurrentEventData, MessageHandler, PopupData, Response, RoundState, QuestionState } from '$lib/types';
 
@@ -39,7 +40,7 @@ const handlers: MessageHandler = {
             store.set({
                 is_displayed: true,
                 popup_type: 'question_reveal',
-                timer_value: 5,
+                timer_value: Math.round(Number(updateDelay) / 1000),
                 data: { key: message.key }
             });
     },
