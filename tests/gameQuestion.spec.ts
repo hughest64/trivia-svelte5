@@ -107,9 +107,24 @@ test('reveal all reveals all questions for a round', async () => {
     await host.expectRoundToBe('2');
 
     // host find and click reveal all
+    await host.revealQuestion('all');
 
+    await asyncTimeout(revealDelay);
+    await p1.expectCorrectQuestionHeading('2.1');
+    await p2.expectCorrectQuestionHeading('1.1');
     // advance p2 to round 2 should be on 2.1
-    // check p1 is on should be 2.1
+    await p2.roundButton('2').click();
+    await p2.expectCorrectQuestionHeading('2.1');
+
+    const questionHeaders = ['1', '2', '3', '4', '5'];
+    questionHeaders.forEach(async (header) => {
+        await host.expectQuestionToBeRevealed('2.' + header);
+        // const btn =  p1.page.locator('.question-selector').locator('button', { hasText: header });
+        // await btn.click();
+        // await expect (p1.questionTextField).not.toHaveText(p1.defaultQuestonText);
+        // await expect (p2.questionTextField).not.toHaveText(p2.defaultQuestonText);
+        return true;
+    });
 
     // check all questions for host and player (a helper or forEach seems in order here)
 });
