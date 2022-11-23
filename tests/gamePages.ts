@@ -33,6 +33,10 @@ class BasePage {
     async expectToLandOnGameUrl() {
         await expect(this.page).toHaveURL(this.testConfig?.pageUrl as string);
     }
+
+    roundButton (text: string): Locator {
+        return this.page.locator('.round-selector').locator('button', { hasText: text });
+    }
 }
 
 export class PlayerGamePage extends BasePage {
@@ -84,11 +88,6 @@ export class HostGamePage extends BasePage {
         super(page, testConfig);
         this.login();
     }
-
-    roundButton (text: string): Locator {
-        return this.page.locator('.round-selector').locator('button', { hasText: text });
-    }
-
     questionSlider(text: string): Locator {
         return this.page.locator(`label[for="${text}"]`);
     }

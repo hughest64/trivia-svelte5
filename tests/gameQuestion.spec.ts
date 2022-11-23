@@ -42,19 +42,25 @@ test.afterEach(async () => {
     await resetEventData();
 });
 
-// test.afterAll(async () => {
-//     await resetEventData();
-// });
-
-// TODO: if we ensure we are using the env var for reveal timeout properly,
-// we could set process.env here so that the reveal delay is much shorter for testing
-test('question text reveals properly for players', async () => {
+test('all players start on round one question one', async () => {
     // everyone is on the right question
     await p1.expectCorrectQuestionHeading('1.1');
     await p2.expectCorrectQuestionHeading('1.1');
     await p3.expectCorrectQuestionHeading('1.1');
     await host.expectRoundToBe('1');
+});
 
+test.skip('active round and question classes are applied properly', async () => {
+    // TODO
+
+    // TODO: failing test idea, currently active question will apply to any round,
+    // but maybe should only apply for the current round?
+
+    // TODO: test revealing a later question then going back?
+    // (should not reset active to the lower value)
+});
+
+test('question text reveals properly for players', async () => {
     // check 1.1 question text
     await expect(p1.questionTextField).toHaveText(p1.defaultQuestonText);
     await expect(p2.questionTextField).toHaveText(p2.defaultQuestonText);
@@ -70,9 +76,9 @@ test('question text reveals properly for players', async () => {
     await expect(p2.dismissButton).toBeVisible();
     await expect(p3.dismissButton).not.toBeVisible();
     await expect(host.dismissButton).toBeVisible();
-    await asyncTimeout(revealDelay);
-
+    
     // check question text
+    await asyncTimeout(revealDelay);
     await expect(p1.questionTextField).not.toHaveText(p1.defaultQuestonText);
     await expect(p2.questionTextField).not.toHaveText(p2.defaultQuestonText);
     await expect(p3.questionTextField).toHaveText(p3.defaultQuestonText);
@@ -86,35 +92,24 @@ test('question text reveals properly for players', async () => {
 });
 
 test('auto reveal respects player settings', async () => {
-    // host got to 1.2
-    await host.expectRoundToBe('1');
-
-    // both players should be on 1.1
-    await p1.expectCorrectQuestionHeading('1.1');
-    await p2.expectCorrectQuestionHeading('1.1');
-    // await p3.expectCorrectQuestionHeading('1.1');
-
     // host reveals 1.2
     await host.revealQuestion('1.2');
     await asyncTimeout(revealDelay);
     await host.expectQuestionToBeRevealed('1.2');
     await p1.expectCorrectQuestionHeading('1.2');
     await p2.expectCorrectQuestionHeading('1.1');
-    // await p3.expectCorrectQuestionHeading('1.1');
-
-    // TODO: current round/question classes (separate test?)
+    await p3.expectCorrectQuestionHeading('1.1');
 });
 
 test('reveal all reveals all questions for a round', async () => {
-    // everyone is on the right question
-    await p1.expectCorrectQuestionHeading('1.1');
-    await p2.expectCorrectQuestionHeading('1.1');
-    await p3.expectCorrectQuestionHeading('1.1');
-    await host.expectRoundToBe('1');
-
     // host reveals all for round 2
     await host.roundButton('2').click();
     await host.expectRoundToBe('2');
+
+    // host find and click reveal all
+
+    // advance p2 to round 2 should be on 2.1
+    // check p1 is on should be 2.1
 
     // check all questions for host and player (a helper or forEach seems in order here)
 });
