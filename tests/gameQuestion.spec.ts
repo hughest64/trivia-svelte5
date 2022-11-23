@@ -4,10 +4,11 @@ import { asyncTimeout, getBrowserPage, resetEventData } from './utils.js';
 import type { TestConfig } from './utils.js';
 
 // TODO future:
-// test image and sound rounds should be auto-revealed
+// test image and sound rounds should be auto-revealed,
+// this is probably part of testing event creation when we get to that
 
 // allow some time to pass before checking question revale states,
-// it's worth noting that we use a 2 seconds for the app in test mode
+// it's worth noting that we use a 1 second delay for the app in test mode
 // and tests here may pass without any delay
 const revealDelay = 1000;
 
@@ -52,19 +53,17 @@ test('all players start on round one question one', async () => {
 
 test.skip('active round and question classes are applied properly', async () => {
     // TODO
-
     // TODO: failing test idea, currently active question will apply to any round,
     // but maybe should only apply for the current round?
-
     // TODO: test revealing a later question then going back?
     // (should not reset active to the lower value)
 });
 
 test('question text reveals properly for players', async () => {
     // check 1.1 question text
-    await expect(p1.questionTextField).toHaveText(p1.defaultQuestonText);
-    await expect(p2.questionTextField).toHaveText(p2.defaultQuestonText);
-    await expect(p3.questionTextField).toHaveText(p3.defaultQuestonText);
+    await expect(p1.questionTextField('1.1')).toHaveText(p1.defaultQuestonText);
+    await expect(p2.questionTextField('1.1')).toHaveText(p2.defaultQuestonText);
+    await expect(p3.questionTextField('1.1')).toHaveText(p3.defaultQuestonText);
 
     // host reveals 1.1
     await host.expectQuestionToNotBeRevealed('1.1');
@@ -76,12 +75,12 @@ test('question text reveals properly for players', async () => {
     await expect(p2.dismissButton).toBeVisible();
     await expect(p3.dismissButton).not.toBeVisible();
     await expect(host.dismissButton).toBeVisible();
-    
+
     // check question text
     await asyncTimeout(revealDelay);
-    await expect(p1.questionTextField).not.toHaveText(p1.defaultQuestonText);
-    await expect(p2.questionTextField).not.toHaveText(p2.defaultQuestonText);
-    await expect(p3.questionTextField).toHaveText(p3.defaultQuestonText);
+    await expect(p1.questionTextField('1.1')).not.toHaveText(p1.defaultQuestonText);
+    await expect(p2.questionTextField('1.1')).not.toHaveText(p2.defaultQuestonText);
+    await expect(p3.questionTextField('1.1')).toHaveText(p3.defaultQuestonText);
 
     // test that the popup has closed
     await expect(p1.dismissButton).not.toBeVisible();
@@ -116,22 +115,30 @@ test('reveal all reveals all questions for a round', async () => {
     await p2.roundButton('2').click();
     await p2.expectCorrectQuestionHeading('2.1');
 
-    const questionHeaders = ['1', '2', '3', '4', '5'];
-    questionHeaders.forEach(async (header) => {
-        await host.expectQuestionToBeRevealed('2.' + header);
-        // const btn =  p1.page.locator('.question-selector').locator('button', { hasText: header });
-        // await btn.click();
-        // await expect (p1.questionTextField).not.toHaveText(p1.defaultQuestonText);
-        // await expect (p2.questionTextField).not.toHaveText(p2.defaultQuestonText);
-        return true;
-    });
-
-    // check all questions for host and player (a helper or forEach seems in order here)
+    const questionNumbers = ['1', '2', '3', '4', '5'];
+    for (const num of questionNumbers) {
+        const key = '2.' + num;
+        await host.expectQuestionToBeRevealed(key);
+    
+        // player 1
+        await p1.goToQuestion(num);
+        await p1.expectCorrectQuestionHeading(key);
+        await p1.expectQuestionTextNotToBeDefault(key);
+    
+        // player 2
+        await p2.goToQuestion(num);
+        await p2.expectCorrectQuestionHeading(key);
+        await p2.expectQuestionTextNotToBeDefault(key);
+    }
 });
 
 test.skip('round locks work properly', async () => {
+    // player 1 input not disabled
+    // player 3 input not disabled
+    // host lock class not applied
+
     // host locks round 1
     // lock class should be applied for host
     // input and submit button should be disabled for player one
-    // but on for player two
+    // but not for player three
 });

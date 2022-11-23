@@ -29,7 +29,7 @@
 
 <h2>{activeQuestion.key}</h2>
 
-<p class="question-text">
+<p id={`${activeQuestion.key}-text`} class="question-text">
     {questionState?.question_displayed
         ? activeQuestion.question_text
         : 'Please Wait for the Host to Reveal This Question'}

@@ -42,19 +42,32 @@ class BasePage {
 export class PlayerGamePage extends BasePage {
     readonly responseInput: Locator;
     readonly submitButton: Locator;
-    readonly questionTextField: Locator;
 
     constructor(page: Page, testConfig: TestConfig = {}) {
         super(page, testConfig);
         this.responseInput = page.locator('input[name="response_text"]');
         this.submitButton = page.locator('button', { hasText: 'Submit' });
-        this.questionTextField = page.locator('p.question-text');
         this.login();
         this.expectToLandOnGameUrl();
     }
 
     questionHeading(text: string): Locator {
         return this.page.locator('h2', { hasText: text });
+    }
+
+    questionTextField(text: string): Locator {
+        return this.page.locator(`id=${text}-text`);
+    }
+
+    async goToQuestion(text: string): Promise<void> {
+        await this.page.locator('.question-selector').locator('button', { hasText: text }).click();
+    }
+
+    async expectQuestionTextNotToBeDefault(text: string): Promise<void> {
+        // a value exists
+        expect(this.questionTextField(text)).toBeTruthy();
+        // but it's not the unrevealed value
+        await expect(this.questionTextField(text)).not.toHaveText(this.defaultQuestonText);
     }
 
     async expectCorrectQuestionHeading(text: string): Promise<void> {
