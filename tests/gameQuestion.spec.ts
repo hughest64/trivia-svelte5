@@ -132,13 +132,37 @@ test('reveal all reveals all questions for a round', async () => {
     }
 });
 
-test.skip('round locks work properly', async () => {
-    // player 1 input not disabled
-    // player 3 input not disabled
-    // host lock class not applied
+test('round locks work properly', async () => {
+    await expect (p1.responseInput).toBeEditable();
+    await expect (p3.responseInput).toBeEditable();
 
-    // host locks round 1
-    // lock class should be applied for host
-    // input and submit button should be disabled for player one
-    // but not for player three
+    const lockIconLabel = host.lockIconLabel('1');
+    await host.expectLockedIconNotToBeVisible('1');
+    await lockIconLabel.click();
+
+    await host.expectLockedIconToBeVisible('1');
+    await expect (p1.responseInput).toBeDisabled();
+    await expect (p3.responseInput).toBeEditable();
+});
+
+test('unlocking a round requires host confirmation', async () => {
+    // goto round 3
+    await host.roundButton('3').click();
+    await host.expectRoundToBe('3');
+    
+    // lock the round 
+    const lockIconLabel = host.lockIconLabel('3');
+    await host.expectLockedIconNotToBeVisible('3');
+    await lockIconLabel.click();
+    await host.expectLockedIconToBeVisible('3');
+
+    // try to unlock the round
+    await lockIconLabel.click();
+    await host.expectLockedIconToBeVisible('3');
+
+    // confirm the unlock
+    const btn = host.page.locator('.pop-content').locator('button');
+    await btn.click();
+    await expect(btn).not.toBeVisible();
+    await host.expectLockedIconNotToBeVisible('3');
 });

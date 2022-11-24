@@ -86,7 +86,7 @@
 </div>
 
 <div class="lock-container">
-    <label for="round-lock" class="lock">
+    <label id={`rd-${activeRound.round_number}`} for='round-lock' class="lock">
         <input
             type="checkbox"
             name="round-lock"

@@ -93,7 +93,6 @@ export class PlayerGamePage extends BasePage {
 
     // METHODS
     // locator(s) for checking classes (current round, current question, active... notsubmtted, etc)
-    // locator for round locks
 }
 
 export class HostGamePage extends BasePage {
@@ -107,6 +106,22 @@ export class HostGamePage extends BasePage {
 
     revealedClass(text: string): Locator {
         return this.questionSlider(text).locator('.revealed');
+    }
+
+    lockIconLabel(text: string): Locator {
+        return this.page.locator(`id=rd-${text}`);
+    }
+
+    lockIcon(text: string): Locator {
+        return this.lockIconLabel(text).locator('span.checked');
+    }
+
+    async expectLockedIconToBeVisible(text: string): Promise<void> {
+        await expect(this.lockIcon(text)).toBeVisible();
+    }
+
+    async expectLockedIconNotToBeVisible(text: string): Promise<void> {
+        await expect(this.lockIcon(text)).not.toBeVisible();
     }
 
     async revealQuestion(text: string): Promise<void> {
