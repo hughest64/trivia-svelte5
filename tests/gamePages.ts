@@ -59,8 +59,12 @@ export class PlayerGamePage extends BasePage {
         return this.page.locator(`id=${text}-text`);
     }
 
+    questionSelector(text: string): Locator {
+        return this.page.locator('.question-selector').locator(`id=${text}`);
+    }
+
     async goToQuestion(text: string): Promise<void> {
-        await this.page.locator('.question-selector').locator('button', { hasText: text }).click();
+        await this.questionSelector(text).click();
     }
 
     async expectQuestionTextNotToBeDefault(text: string): Promise<void> {

@@ -12,6 +12,8 @@ import type { TestConfig } from './utils.js';
 // and tests here may pass without any delay
 const revealDelay = 1000;
 
+const current = /current/;
+
 const triviaEventOne = '/game/1234';
 const triviaEventTwo = '/game/9999';
 
@@ -51,12 +53,34 @@ test('all players start on round one question one', async () => {
     await host.expectRoundToBe('1');
 });
 
-test.skip('active round and question classes are applied properly', async () => {
-    // TODO
+test('active round and question classes are applied properly', async () => {
+    // check for current class on 1.1
+    await expect(host.roundButton('1')).toHaveClass(current);
+    await expect(p1.roundButton('1')).toHaveClass(current);
+    await expect(p1.questionSelector('1.1')).toHaveClass(current);
+
+    // host got to rd 2, reveal question2
+    await host.roundButton('2').click();
+    await host.revealQuestion('2.1');
+
+    // 2.1 should be current
+    await expect(host.roundButton('2')).toHaveClass(current);
+    await expect(p1.roundButton('2')).toHaveClass(current);
+    await expect(p1.questionSelector('2.1')).toHaveClass(current);
+
+    // host go back to rd 1, reveal q5
+    // 1.5 should not be set as current
+    await host.roundButton('1').click();
+    await host.revealQuestion('1.5');
+
+    await expect(host.roundButton('1')).not.toHaveClass(current);
+
+    // p1 should not be directed backwards? (not sure about this)
+    await expect(p1.roundButton('2')).toHaveClass(current);
+    await expect(p1.questionSelector('2.1')).toHaveClass(current);
+
     // TODO: failing test idea, currently active question will apply to any round,
     // but maybe should only apply for the current round?
-    // TODO: test revealing a later question then going back?
-    // (should not reset active to the lower value)
 });
 
 test('question text reveals properly for players', async () => {
@@ -115,18 +139,17 @@ test('reveal all reveals all questions for a round', async () => {
     await p2.roundButton('2').click();
     await p2.expectCorrectQuestionHeading('2.1');
 
-    const questionNumbers = ['1', '2', '3', '4', '5'];
-    for (const num of questionNumbers) {
-        const key = '2.' + num;
+    const questionNumbers = ['2.1', '2.2', '2.3', '2.4', '2.5'];
+    for (const key of questionNumbers) {
         await host.expectQuestionToBeRevealed(key);
     
         // player 1
-        await p1.goToQuestion(num);
+        await p1.goToQuestion(key);
         await p1.expectCorrectQuestionHeading(key);
         await p1.expectQuestionTextNotToBeDefault(key);
     
         // player 2
-        await p2.goToQuestion(num);
+        await p2.goToQuestion(key);
         await p2.expectCorrectQuestionHeading(key);
         await p2.expectQuestionTextNotToBeDefault(key);
     }
