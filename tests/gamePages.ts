@@ -94,9 +94,6 @@ export class PlayerGamePage extends BasePage {
     async submitResponse(): Promise<void> {
         await this.submitButton.click();
     }
-
-    // METHODS
-    // locator(s) for checking classes (current round, current question, active... notsubmtted, etc)
 }
 
 export class HostGamePage extends BasePage {
