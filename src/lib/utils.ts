@@ -57,3 +57,18 @@ export const getCurrentFromKey = (key: string): CurrentEventData=> {
         question_key: key
     };
 };
+
+interface RoundQuestion {
+    round: string;
+    question: string;
+}
+/**
+ * uses simple regex to split a question key into an object
+ * @param key a string of roundnumber.questionnumber like 1.1
+ * @returns an object containing the round and question numbers as strings
+ */
+export const splitQuestionKey = (key: string): RoundQuestion => {
+    const keyReg = /^(?<r>\d+).(?<q>\d+)$/;
+    const groups = key.match(keyReg)?.groups;
+    return { round: groups?.r || '', question: groups?.q || '' };
+};

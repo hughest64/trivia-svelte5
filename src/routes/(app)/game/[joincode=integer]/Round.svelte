@@ -3,7 +3,7 @@
     import { sineInOut } from 'svelte/easing';
     import { page } from '$app/stores';
     import { swipeQuestion } from './swipe';
-    import { getStore } from '$lib/utils';
+    import { getStore, splitQuestionKey } from '$lib/utils';
     import type { ActiveEventData, CurrentEventData, GameQuestion } from '$lib/types';
 
     const joincode = $page.params?.joincode;
@@ -16,6 +16,12 @@
     $: questionNumbers = <number[]>activeQuestions.map((q) => q.question_number);
     $: lastQuestionNumber = Math.max(...questionNumbers);
 
+    interface QuestionKeyMap {
+        num: number;
+        key: string;
+    }
+    $: questionKeys = <QuestionKeyMap[]>activeQuestions.map((q) => ({ num: q.question_number, key: q.key }));
+
     let swipeDirection = 'right'; // or 'left'
     $: swipeXValue = swipeDirection === 'right' ? 1000 : -4000;
 
@@ -24,6 +30,7 @@
 
     const handleQuestionSelect = async (event: MouseEvent | CustomEvent | KeyboardEvent) => {
         const target = <HTMLElement>event.target;
+        const rq  = splitQuestionKey(target.id);
         const eventDirection = event.detail?.direction;
         const keyCode = (event as KeyboardEvent).code;
         let nextQuestionNumber = activeQuestionNumber;
@@ -32,8 +39,8 @@
             nextQuestionNumber = Math.min(lastQuestionNumber, activeQuestionNumber + 1);
         } else if (eventDirection === 'left' || keyCode === 'ArrowLeft') {
             nextQuestionNumber = Math.max(1, activeQuestionNumber - 1);
-        } else if (!!target.id) {
-            nextQuestionNumber = Number(target.id);
+        } else if (target.id) {
+            nextQuestionNumber = Number(rq?.question);
         }
 
         swipeDirection = nextQuestionNumber < activeQuestionNumber ? 'left' : 'right';
@@ -56,12 +63,12 @@
 
 <div class="question-box flex-column">
     <div class="question-selector">
-        {#each questionNumbers as num}
+        {#each questionKeys as {num, key}}
             <!-- TODO: the logic for current isn't quite good enough, we need to condisder the current round as well. -->
             <button
                 class="button-white"
                 class:current={num === $currentEventData.question_number}
-                id={String(num)}
+                id={key}
                 on:click={handleQuestionSelect}
             >
                 {num}
@@ -116,8 +123,12 @@
         display: flex;
         gap: 0.5em;
         button {
+            width: 2.5em;
+            height: 2.5em;
             font-weight: bold;
             border: 2px solid var(--color-black);
+            border-radius: 50%;
+            cursor: pointer;
         }
     }
     .question {
