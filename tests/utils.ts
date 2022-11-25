@@ -1,6 +1,9 @@
 import { expect, request } from '@playwright/test';
 import type { Browser, Page } from '@playwright/test';
 
+const api_port = '7000';
+console.log(process.env);
+
 export interface TestConfig {
     username?: string;
     password?: string;
@@ -63,7 +66,7 @@ export const getBrowserPage = async (browser: Browser): Promise<Page> => {
 
 export const resetEventData = async () => {
     const context = await request.newContext({
-        baseURL: 'http://localhost:8000' // TODO: process.env?
+        baseURL: `http://localhost:${api_port}`
     });
     const response = await context.post('/reset-event-data', {
         headers: { 'content-type': 'application/json', accept: 'application/json' },
