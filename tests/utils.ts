@@ -1,8 +1,7 @@
 import { expect, request } from '@playwright/test';
 import type { Browser, Page } from '@playwright/test';
 
-const api_port = '7000';
-console.log(process.env);
+const api_port = process.env.API_PORT || '8000';
 
 export interface TestConfig {
     username?: string;

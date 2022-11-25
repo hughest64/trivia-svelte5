@@ -8,19 +8,56 @@
 			"label": "kit-dev",
 			"detail": "sveltekit dev server"
 		},
-		// django-dev
-		// django-test python manage.py testserver ./fixtures/dbdump.json --addrport 7000
+		{
+			"label": "django-dev",
+			"type": "shell",
+			"detail": "run a Django development server",
+			"command": "${command:python.interpreterPath}",
+			"args": [
+				"manage.py",
+				"runserver"
+			],
+			"options": {
+				"cwd": "${cwd}/server"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "django-test",
+			"type": "shell",
+			"detail": "run a Django development server",
+			"command": "${command:python.interpreterPath}",
+			"args": [
+				"manage.py",
+				"testserver",
+				"fixtures/dbdump.json",
+				"--addrport",
+				"7000"
+			],
+			"options": {
+				"cwd": "${cwd}/server"
+			},
+			"problemMatcher": []
+		},
 		{
 			"type": "npm",
-			"script": "test",
+			"script": "test-db",
 			"group": {
 				"kind": "test",
 				"isDefault": true
 			},
 			"problemMatcher": [],
-			"label": "npm: test",
+			"label": "test-db",
 			"detail": "playwright test"
-			// add dependsOn django-test
+		},
+		{
+			"label": "run-tests",
+			"dependsOn": [
+				"django-test",
+				"test-db"
+			],
+			"problemMatcher": []
 		}
+
 	]
 }
