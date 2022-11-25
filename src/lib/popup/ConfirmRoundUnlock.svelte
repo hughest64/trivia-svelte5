@@ -8,11 +8,11 @@
     $: roundNumber = $popupData.data?.roundNumber;
 
     // TODO: this should be import form a reusable place, or have a default on the Popup container
-    const resetPopup = () => $popupData = { is_displayed: false, popup_type: '' };
-    const unlock = () => $popupData = { is_displayed: false, popup_type: '', data: { unlock: roundNumber } };
+    const resetPopup = () => ($popupData = { is_displayed: false, popup_type: '' });
+    const unlock = () => ($popupData = { is_displayed: false, popup_type: '', data: { unlock: roundNumber } });
 </script>
 
-<div class="pop-timer"></div>
+<div class="pop-timer" />
 <div class="pop-content">
     <h4>Confirm Round Unlock</h4>
     <p>Your Are about to unlock round {roundNumber}. Please confirm using the button below.</p>
@@ -23,6 +23,6 @@
 
 <style lang="scss">
     .pop-content {
-        padding-top: .75em;
+        padding-top: 0.75em;
     }
 </style>

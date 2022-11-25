@@ -22,7 +22,7 @@
     $: updatedInputText = responseText;
     $: notsubmitted = updatedInputText !== responseText;
     const syncInputText = (e: Event) => {
-        const target = <HTMLInputElement> e.target;
+        const target = <HTMLInputElement>e.target;
         updatedInputText = target.value;
     };
 </script>

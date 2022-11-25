@@ -34,7 +34,7 @@ class BasePage {
         await expect(this.page).toHaveURL(this.testConfig?.pageUrl as string);
     }
 
-    roundButton (text: string): Locator {
+    roundButton(text: string): Locator {
         return this.page.locator('.round-selector').locator('button', { hasText: text });
     }
 }
@@ -78,7 +78,7 @@ export class PlayerGamePage extends BasePage {
         await expect(this.questionHeading(text)).toHaveText(text);
     }
 
-    async expectInputValueToBe(text: string): Promise<void>{
+    async expectInputValueToBe(text: string): Promise<void> {
         expect(await this.responseInput.inputValue()).toBe(text);
     }
 
@@ -86,7 +86,7 @@ export class PlayerGamePage extends BasePage {
         expect(await this.responseInput.inputValue()).toBeFalsy();
     }
 
-    async setResponse(text: string, opts={ submit: false }): Promise<void> {
+    async setResponse(text: string, opts = { submit: false }): Promise<void> {
         await this.responseInput.fill(text);
         if (opts.submit) await this.submitButton.click();
     }

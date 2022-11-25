@@ -15,7 +15,7 @@
         rounds.find((round: GameRound) => round.round_number === $activeEventData.activeRoundNumber)
     );
     $: roundNumbers = rounds.map((round: GameRound) => round.round_number);
-    
+
     $: roundStates = getStore<RoundState[]>('roundStates');
     $: activeRoundState = $roundStates.find((state) => state.round_number === activeRound.round_number);
     $: locked = activeRoundState?.locked;
@@ -50,16 +50,16 @@
         }
     };
 
-    const postLockStatus = async() => {
+    const postLockStatus = async () => {
         locked = !locked;
-    
+
         const data = new FormData();
         data.set('round_number', String(activeRound.round_number));
         data.set('value', locked ? 'locked' : '');
 
-        const response = await fetch ('?/lock', { method: 'post', body: data });
+        const response = await fetch('?/lock', { method: 'post', body: data });
         if (!response.ok) {
-            // TOODO: handle error 
+            // TOODO: handle error
             console.log(response.json());
             locked = !locked;
         }
@@ -86,7 +86,7 @@
 </div>
 
 <div class="lock-container">
-    <label id={`rd-${activeRound.round_number}`} for='round-lock' class="lock">
+    <label id={`rd-${activeRound.round_number}`} for="round-lock" class="lock">
         <input
             type="checkbox"
             name="round-lock"

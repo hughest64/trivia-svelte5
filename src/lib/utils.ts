@@ -47,8 +47,7 @@ export const sortUserTeams = (userTeams: UserTeam[], activeTeamId: number): User
     return [activeTeam, ...updatedTeams];
 };
 
-
-export const getCurrentFromKey = (key: string): CurrentEventData=> {
+export const getCurrentFromKey = (key: string): CurrentEventData => {
     const split = key.split('.');
 
     return {

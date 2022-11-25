@@ -7,7 +7,7 @@
     export let activeRound: GameRound;
     const questions: GameQuestion[] = $page.data.questions || [];
     let formError: string;
-    
+
     $: roundQuestions = questions.filter((question) => question.round_number === activeRound.round_number);
 
     $: questionStates = getStore<QuestionState[]>('questionStates');

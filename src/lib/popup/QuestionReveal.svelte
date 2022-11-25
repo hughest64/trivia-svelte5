@@ -11,7 +11,7 @@
     $: popupData = getStore<PopupData>('popupData');
     $: count = $popupData.timer_value || 0;
 
-    const resetPopup = () => $popupData = { is_displayed: false, popup_type: '' };
+    const resetPopup = () => ($popupData = { is_displayed: false, popup_type: '' });
     const gotoQuestion = async () => {
         if (userData?.auto_reveal_questions && !$page.url.pathname.startsWith('/host')) {
             const updatedData = getCurrentFromKey($popupData.data?.key);
@@ -50,4 +50,4 @@
     <p>The Next Question Will Be Revealed in {count} second{count > 1 ? 's' : ''}</p>
 </div>
 
-<CloseButton on:click={() => count = 0} />
+<CloseButton on:click={() => (count = 0)} />

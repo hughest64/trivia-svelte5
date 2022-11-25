@@ -142,12 +142,12 @@ test('reveal all reveals all questions for a round', async () => {
     const questionNumbers = ['2.1', '2.2', '2.3', '2.4', '2.5'];
     for (const key of questionNumbers) {
         await host.expectQuestionToBeRevealed(key);
-    
+
         // player 1
         await p1.goToQuestion(key);
         await p1.expectCorrectQuestionHeading(key);
         await p1.expectQuestionTextNotToBeDefault(key);
-    
+
         // player 2
         await p2.goToQuestion(key);
         await p2.expectCorrectQuestionHeading(key);
@@ -156,24 +156,24 @@ test('reveal all reveals all questions for a round', async () => {
 });
 
 test('round locks work properly', async () => {
-    await expect (p1.responseInput).toBeEditable();
-    await expect (p3.responseInput).toBeEditable();
+    await expect(p1.responseInput).toBeEditable();
+    await expect(p3.responseInput).toBeEditable();
 
     const lockIconLabel = host.lockIconLabel('1');
     await host.expectLockedIconNotToBeVisible('1');
     await lockIconLabel.click();
 
     await host.expectLockedIconToBeVisible('1');
-    await expect (p1.responseInput).toBeDisabled();
-    await expect (p3.responseInput).toBeEditable();
+    await expect(p1.responseInput).toBeDisabled();
+    await expect(p3.responseInput).toBeEditable();
 });
 
 test('unlocking a round requires host confirmation', async () => {
     // goto round 3
     await host.roundButton('3').click();
     await host.expectRoundToBe('3');
-    
-    // lock the round 
+
+    // lock the round
     const lockIconLabel = host.lockIconLabel('3');
     await host.expectLockedIconNotToBeVisible('3');
     await lockIconLabel.click();

@@ -30,7 +30,7 @@
 
     const handleQuestionSelect = async (event: MouseEvent | CustomEvent | KeyboardEvent) => {
         const target = <HTMLElement>event.target;
-        const rq  = splitQuestionKey(target.id);
+        const rq = splitQuestionKey(target.id);
         const eventDirection = event.detail?.direction;
         const keyCode = (event as KeyboardEvent).code;
         let nextQuestionNumber = activeQuestionNumber;
@@ -63,7 +63,7 @@
 
 <div class="question-box flex-column">
     <div class="question-selector">
-        {#each questionKeys as {num, key}}
+        {#each questionKeys as { num, key }}
             <!-- TODO: the logic for current isn't quite good enough, we need to condisder the current round as well. -->
             <button
                 class="button-white"

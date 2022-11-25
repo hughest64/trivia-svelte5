@@ -56,7 +56,7 @@ export async function asyncTimeout(ms = 100): Promise<ReturnType<typeof setTimeo
 
 /**
  * Returnt a Page object from the Browser context
- * @param browser 
+ * @param browser
  * @returns page
  */
 export const getBrowserPage = async (browser: Browser): Promise<Page> => {
