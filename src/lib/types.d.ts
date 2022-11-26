@@ -172,4 +172,4 @@ export type StoreType = Writable<AllStores>;
 export type StoreMap = Map<StoreKey, StoreType>;
 
 /* eslint-disable-next-line @typescript-eslint/no-explicit-any*/
-export type MessageHandler = Record<string, (message: any, store: Writable<any>) => unknown>;
+export type MessageHandler = Record<string, (message: any) => unknown>;
