@@ -4,35 +4,28 @@
     import { page } from '$app/stores';
     import { swipeQuestion } from './swipe';
     import { getStore, splitQuestionKey } from '$lib/utils';
-    import type { ActiveEventData, CurrentEventData, EventPageData, GameQuestion } from '$lib/types';
+    import type { ActiveEventData, EventPageData, GameQuestion } from '$lib/types';
 
     const joincode = $page.params?.joincode;
     const questions: GameQuestion[] = $page.data.questions || [];
 
-    $: eventPageData = getStore<EventPageData>('eventPageData');
-    $: currentEventData = getStore<CurrentEventData>('currentEventData');
     $: activeEventData = getStore<ActiveEventData>('activeEventData');
-
-    interface QuestionKeyMap {
-        num: number;
-        key: string;
-    }
-    $: activeQuestions = questions.filter((q) => q.round_number === $activeEventData.activeRoundNumber);
-    $: questionKeys = <QuestionKeyMap[]>activeQuestions.map((q) => ({ num: q.question_number, key: q.key }));
+    $: eventPageData = getStore<EventPageData>('eventPageData');
+    $: questionKeys = $eventPageData.questionKeys;
 
     let swipeDirection = 'right'; // or 'left'
     $: swipeXValue = swipeDirection === 'right' ? 1000 : -4000;
     const inSwipeDuration = 600;
     $: outSwipeDuration = swipeDirection === 'right' ? 100 : 350;
 
-    const allQuestionKeys: string[] = questions.map((q) => q.key); // .sort();
+    const allQuestionKeys: string[] = questions.map((q) => q.key);
     const handleQuestionSelect = async (event: MouseEvent | CustomEvent | KeyboardEvent) => {
         const target = <HTMLElement>event.target;
         const eventDirection = event.detail?.direction;
         const keyCode = (event as KeyboardEvent).code;
 
         let nextQuestionKey = $eventPageData.activeQuestionKey;
-        let currentIndex = allQuestionKeys.findIndex((key) => key === $eventPageData.activeQuestionKey);
+        let currentIndex = allQuestionKeys.findIndex((key) => key === nextQuestionKey);
         let nextIndex = -1;
 
         if (eventDirection === 'right' || keyCode === 'ArrowRight') {
@@ -70,15 +63,15 @@
 
 <div class="question-box flex-column">
     <div class="question-selector">
-        {#each questionKeys as { num, key }}
+        {#each questionKeys as key}
             <!-- TODO: the logic for current isn't quite good enough, we need to condisder the current round as well. -->
             <button
                 class="button-white"
-                class:current={num === $currentEventData.question_number}
+                class:current={key === $eventPageData.currentQuestionKey}
                 id={key}
                 on:click={handleQuestionSelect}
             >
-                {num}
+                {splitQuestionKey(key).question}
             </button>
         {/each}
     </div>

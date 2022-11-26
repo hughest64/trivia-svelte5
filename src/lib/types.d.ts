@@ -126,7 +126,7 @@ export interface ActiveEventData {
 export interface EventPageData {
     roundNumbers: number[],
     activeRound?: GameRound,
-    questionNumbers: number[],
+    questionKeys: string[],
     activeRoundState?: RoundState,
     activeQuestion?: GameQuestion,
     activeQuestionState?: QuestionState,

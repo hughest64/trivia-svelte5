@@ -38,10 +38,10 @@
     $: eventPageData.set({
         roundNumbers: data.rounds?.map((rd) => rd.round_number) || [],
         activeRound: data.rounds?.find((rd) => rd.round_number === $activeEventData.activeRoundNumber),
-        questionNumbers:
+        questionKeys:
             data.questions
                 ?.filter((q) => q.round_number === $activeEventData.activeRoundNumber)
-                .map((q) => q.question_number) || [],
+                .map((q) => q.key) || [],
         activeRoundState: $roundStates.find((rs) => rs.round_number === $activeEventData.activeRoundNumber),
         activeQuestion: data.questions?.find((q) => q.key === $activeEventData.activeQuestionKey),
         activeQuestionState: $questionStates.find((qs) => qs.key === $activeEventData.activeQuestionKey),
