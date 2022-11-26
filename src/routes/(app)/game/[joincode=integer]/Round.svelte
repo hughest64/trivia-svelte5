@@ -34,7 +34,7 @@
                 nextQuestionKey = allQuestionKeys[nextIndex];
             }
         } else if (eventDirection === 'left' || keyCode === 'ArrowLeft') {
-            nextIndex = currentIndex -1;
+            nextIndex = currentIndex - 1;
             if (nextIndex > -1) {
                 nextQuestionKey = allQuestionKeys[nextIndex];
             }

@@ -20,7 +20,6 @@
         } else {
             console.log('TODO: handel the error');
         }
-
     };
 </script>
 

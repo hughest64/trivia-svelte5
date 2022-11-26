@@ -27,7 +27,7 @@
         data.set('key', activeQuestion?.key || '');
         data.set('response_text', responseText);
 
-        const response = await fetch ('?/response', { method: 'post', body: data });
+        const response = await fetch('?/response', { method: 'post', body: data });
         // TODO: error handling
         console.log(await response.json());
     };
