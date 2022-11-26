@@ -10,47 +10,52 @@
     const questions: GameQuestion[] = $page.data.questions || [];
 
     $: eventPageData = getStore<EventPageData>('eventPageData');
-
     $: currentEventData = getStore<CurrentEventData>('currentEventData');
     $: activeEventData = getStore<ActiveEventData>('activeEventData');
-    $: activeQuestionNumber = $activeEventData?.activeQuestionNumber;
-    $: activeQuestions = questions.filter((q) => q.round_number === $activeEventData.activeRoundNumber);
-    $: questionNumbers = <number[]>activeQuestions.map((q) => q.question_number);
-    $: lastQuestionNumber = Math.max(...questionNumbers);
 
     interface QuestionKeyMap {
         num: number;
         key: string;
     }
+    $: activeQuestions = questions.filter((q) => q.round_number === $activeEventData.activeRoundNumber);
     $: questionKeys = <QuestionKeyMap[]>activeQuestions.map((q) => ({ num: q.question_number, key: q.key }));
 
     let swipeDirection = 'right'; // or 'left'
     $: swipeXValue = swipeDirection === 'right' ? 1000 : -4000;
-
     const inSwipeDuration = 600;
     $: outSwipeDuration = swipeDirection === 'right' ? 100 : 350;
 
+    const allQuestionKeys: string[] = questions.map((q) => q.key); // .sort();
     const handleQuestionSelect = async (event: MouseEvent | CustomEvent | KeyboardEvent) => {
         const target = <HTMLElement>event.target;
-        const rq = splitQuestionKey(target.id);
         const eventDirection = event.detail?.direction;
         const keyCode = (event as KeyboardEvent).code;
-        let nextQuestionNumber = activeQuestionNumber;
+
+        let nextQuestionKey = $eventPageData.activeQuestionKey;
+        let currentIndex = allQuestionKeys.findIndex((key) => key === $eventPageData.activeQuestionKey);
+        let nextIndex = -1;
 
         if (eventDirection === 'right' || keyCode === 'ArrowRight') {
-            nextQuestionNumber = Math.min(lastQuestionNumber, activeQuestionNumber + 1);
+            nextIndex = currentIndex + 1;
+            if (nextIndex < allQuestionKeys.length) {
+                nextQuestionKey = allQuestionKeys[nextIndex];
+            }
         } else if (eventDirection === 'left' || keyCode === 'ArrowLeft') {
-            nextQuestionNumber = Math.max(1, activeQuestionNumber - 1);
+            nextIndex = currentIndex -1;
+            if (nextIndex > -1) {
+                nextQuestionKey = allQuestionKeys[nextIndex];
+            }
         } else if (target.id) {
-            nextQuestionNumber = Number(rq?.question);
+            nextQuestionKey = target.id;
         }
+        swipeDirection = nextIndex < currentIndex ? 'left' : 'right';
 
-        swipeDirection = nextQuestionNumber < activeQuestionNumber ? 'left' : 'right';
-
+        const { round, question } = splitQuestionKey(nextQuestionKey);
         activeEventData.update((data) => ({
             ...data,
-            activeQuestionNumber: nextQuestionNumber,
-            activeQuestionKey: `${$activeEventData.activeRoundNumber}.${nextQuestionNumber}`
+            activeRoundNumber: Number(round),
+            activeQuestionNumber: Number(question),
+            activeQuestionKey: nextQuestionKey
         }));
 
         // post to the game endpoint to set active round and question in a cookie
