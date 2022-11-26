@@ -123,7 +123,19 @@ export interface ActiveEventData {
     activeQuestionKey: string;
 }
 
-// TODO: an interface that extends ActiveEventData
+export interface EventPageData {
+    roundNumbers: number[],
+    activeRound?: GameRound,
+    questionNumbers: number[],
+    activeRoundState?: RoundState,
+    activeQuestion?: GameQuestion,
+    activeQuestionState?: QuestionState,
+    activeResponse?: Response;
+    activeRoundNumber: number;
+    activeQuestionKey: string;
+    currentRoundNumber: number;
+    currentQuestionKey: string;
+}
 
 export type AllStores =
     | EventData
@@ -134,8 +146,8 @@ export type AllStores =
     | RoundState[]
     | UserData
     | Response[]
-    | CurrentEventData;
-    // TODO: the new Active?Data
+    | CurrentEventData
+    | EventPageData
 
 export interface SocketMessage {
     type: string;
@@ -153,8 +165,8 @@ export type StoreKey =
     | 'roundStates'
     | 'questionStates'
     | 'responseData'
-    | 'popupData';
-    // TODO: the new Active?Data
+    | 'popupData'
+    | 'eventPageData';
 
 export type StoreType = Writable<AllStores>;
 export type StoreMap = Map<StoreKey, StoreType>;

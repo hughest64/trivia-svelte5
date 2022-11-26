@@ -4,10 +4,12 @@
     import { page } from '$app/stores';
     import { swipeQuestion } from './swipe';
     import { getStore, splitQuestionKey } from '$lib/utils';
-    import type { ActiveEventData, CurrentEventData, GameQuestion } from '$lib/types';
+    import type { ActiveEventData, CurrentEventData, EventPageData, GameQuestion } from '$lib/types';
 
     const joincode = $page.params?.joincode;
     const questions: GameQuestion[] = $page.data.questions || [];
+
+    $: eventPageData = getStore<EventPageData>('eventPageData');
 
     $: currentEventData = getStore<CurrentEventData>('currentEventData');
     $: activeEventData = getStore<ActiveEventData>('activeEventData');
@@ -90,7 +92,7 @@
                 use:swipeQuestion
                 on:swipe={handleQuestionSelect}
             >
-                <!-- slot represeents the question and note components -->
+                <!-- slot represents the question and note components -->
                 <slot />
             </div>
         {/key}

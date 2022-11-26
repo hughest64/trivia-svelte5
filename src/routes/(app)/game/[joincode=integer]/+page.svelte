@@ -4,25 +4,15 @@
     import Round from './Round.svelte';
     import Question from './Question.svelte';
     import Note from './Note.svelte';
-    import type { CurrentEventData, GameQuestion, ActiveEventData, GameRound, Response } from '$lib/types';
+    import type { EventPageData, ActiveEventData } from '$lib/types';
 
     // TODO: acitve round/question don't seem to survice HMR, not sure it that existed before
 
-    $: currentEventData = getStore<CurrentEventData>('currentEventData');
+    $: eventPageData = getStore<EventPageData>('eventPageData');
     $: activeEventData = getStore<ActiveEventData>('activeEventData');
-    $: activeRound = <GameRound>(
-        $page.data.rounds?.find((round: GameRound) => round.round_number === $activeEventData.activeRoundNumber)
-    );
-    $: activeQuestion = <GameQuestion>(
-        $page.data.questions?.find((question: GameQuestion) => question.key === $activeEventData.activeQuestionKey)
-    );
-    // TODO: should this move to the question?
-    $: responseStore = getStore<Response[]>('responseData');
-    $: activeResponse = $responseStore.find((response) => response.key === activeQuestion?.key);
 
     $: joincode = $page.params?.joincode;
 
-    const roundNumbers = $page.data.rounds?.map((round: GameRound) => round.round_number) || [];
     const handleRoundSelect = async (event: MouseEvent) => {
         const target = <HTMLButtonElement>event.target;
 
@@ -40,13 +30,13 @@
     };
 </script>
 
-<h3>{activeRound.title}</h3>
+<h3>{$eventPageData?.activeRound?.title}</h3>
 
 <div class="round-selector">
-    {#each roundNumbers as roundNum}
+    {#each $eventPageData.roundNumbers as roundNum}
         <button
-            class:active={$activeEventData.activeRoundNumber === roundNum}
-            class:current={$currentEventData.round_number === roundNum}
+            class:active={$eventPageData.activeRoundNumber === roundNum}
+            class:current={$eventPageData.currentRoundNumber === roundNum}
             id={String(roundNum)}
             on:click={handleRoundSelect}
         >
@@ -56,9 +46,8 @@
 </div>
 
 <Round>
-    <!-- TODO: could probably get both of these right in the Question -->
-    <Question {activeQuestion} {activeResponse} />
-    <Note activeQuestionKey={activeQuestion.key} />
+    <Question />
+    <Note />
 </Round>
 
 <style lang="scss">

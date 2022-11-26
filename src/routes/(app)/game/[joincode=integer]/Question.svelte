@@ -3,19 +3,17 @@
     import { applyAction, enhance } from '$app/forms';
     import { getStore } from '$lib/utils';
     import type { ActionData } from './$types';
-    import type { GameQuestion, QuestionState, RoundState, Response, UserData } from '$lib/types';
+    import type { EventPageData, UserData } from '$lib/types';
 
-    export let activeQuestion: GameQuestion;
-    export let activeResponse: Response | undefined;
+    $: eventPageData = getStore<EventPageData>('eventPageData');
+    $: activeQuestion = $eventPageData?.activeQuestion;
+    $: activeResponse = $eventPageData?.activeResponse;
 
     $: form = <ActionData>$page.form;
     $: userData = getStore<UserData>('userData');
 
-    const questionStates = getStore<QuestionState[]>('questionStates');
-    $: questionState = $questionStates.find((qs) => qs.key === activeQuestion.key);
-
-    const roundStates = getStore<RoundState[]>('roundStates');
-    $: activeRoundState = $roundStates.find((rs) => rs.round_number === activeQuestion.round_number);
+    $: questionState = $eventPageData.activeQuestionState;
+    $: activeRoundState = $eventPageData.activeRoundState;
 
     // TODO: this is an awful lot just to get a different class applied
     $: responseText = activeResponse?.recorded_answer || '';
@@ -27,15 +25,16 @@
     };
 </script>
 
-<h2>{activeQuestion.key}</h2>
+<h2>{activeQuestion?.key}</h2>
 
-<p id={`${activeQuestion.key}-text`} class="question-text">
+<p id={`${activeQuestion?.key}-text`} class="question-text">
     {questionState?.question_displayed
-        ? activeQuestion.question_text
+        ? activeQuestion?.question_text
         : 'Please Wait for the Host to Reveal This Question'}
 </p>
 
 <!-- TODO it would be nice to stop submission if the value has not changed, on:submit = () => preventDefault isn't working-->
+<!-- TODO: change this to preveDefault w/ a handle function like host side, I think native behavior is problematic here -->
 <form
     action="?/response"
     use:enhance={() =>

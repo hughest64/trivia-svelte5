@@ -1,11 +1,14 @@
 <script lang="ts">
-    export let activeQuestionKey: string;
+    import { getStore } from '$lib/utils';
+    import type { EventPageData } from '$lib/types';
+
+    $: eventPageData = getStore<EventPageData>('eventPageData');
     let hidden = true;
 </script>
 
 <div class="notes-container flex-column">
     <button class="button disabled" on:click={() => (hidden = !hidden)}>
-        Notes for {activeQuestionKey}
+        Notes for {$eventPageData?.activeQuestion?.key}
     </button>
 
     <form class:hidden on:submit|preventDefault>
