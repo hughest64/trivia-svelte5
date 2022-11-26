@@ -2,17 +2,16 @@
     import Question from './Question.svelte';
     import { page } from '$app/stores';
     import { getStore } from '$lib/utils';
-    import type { QuestionState, GameRound, GameQuestion } from '$lib/types';
+    import type { QuestionState, EventPageData, GameQuestion } from '$lib/types';
 
-    export let activeRound: GameRound;
     const questions: GameQuestion[] = $page.data.questions || [];
     let formError: string;
 
-    $: roundQuestions = questions.filter((question) => question.round_number === activeRound.round_number);
-
+    $: eventPageData = getStore<EventPageData>('eventPageData');
+    $: activeRound = $eventPageData.activeRound;
+    $: roundQuestions = questions.filter((question) => question.round_number === activeRound?.round_number);
     $: questionStates = getStore<QuestionState[]>('questionStates');
-    $: roundQuestionStates = $questionStates.filter((qs) => qs.round_number === activeRound.round_number);
-
+    $: roundQuestionStates = $questionStates.filter((qs) => qs.round_number === activeRound?.round_number);
     $: allQuestionsRevealed = roundQuestionStates.every((q) => q.question_displayed);
     $: allQuestionsRevealedText = allQuestionsRevealed ? 'All Questions Revealed' : 'Reveal All Questions';
 
@@ -25,7 +24,7 @@
         allQuestionsRevealed = !allQuestionsRevealed;
 
         const data = new FormData();
-        data.set('key', `${activeRound.round_number}.all`);
+        data.set('key', `${activeRound?.round_number}.all`);
         data.set('value', allQuestionsRevealed ? 'revealed' : '');
 
         const response = await fetch('?/reveal', { method: 'POST', body: data });
@@ -39,9 +38,12 @@
 </script>
 
 <div class="host-question-panel flex-column">
-    <h4>{activeRound.title}</h4>
-    <p>{activeRound.round_description}</p>
+    <h4>{activeRound?.title}</h4>
+
+    <p>{activeRound?.round_description}</p>
+
     {#if formError}<p>{formError}</p>{/if}
+
     <div class="switch-container">
         <label for="all" class="switch">
             <input type="hidden" id="all" name="all" bind:value={allQuestionsRevealed} />

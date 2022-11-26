@@ -2,22 +2,15 @@
     import { page } from '$app/stores';
     import { getStore } from '$lib/utils';
     import Round from './Round.svelte';
-    import type { ActiveEventData, CurrentEventData, GameRound, PopupData, RoundState } from '$lib/types';
+    import type { ActiveEventData, EventPageData, PopupData } from '$lib/types';
 
     const eventData = $page.data.event_data;
-    const rounds = $page.data.rounds || [];
 
+    $: eventPageData = getStore<EventPageData>('eventPageData');
     $: popupData = getStore<PopupData>('popupData');
     $: activeEventData = getStore<ActiveEventData>('activeEventData');
-    $: currentEventData = getStore<CurrentEventData>('currentEventData');
-
-    $: activeRound = <GameRound>(
-        rounds.find((round: GameRound) => round.round_number === $activeEventData.activeRoundNumber)
-    );
-    $: roundNumbers = rounds.map((round: GameRound) => round.round_number);
-
-    $: roundStates = getStore<RoundState[]>('roundStates');
-    $: activeRoundState = $roundStates.find((state) => state.round_number === activeRound.round_number);
+    $: activeRound = $eventPageData.activeRound;
+    $: activeRoundState = $eventPageData.activeRoundState;
     $: locked = activeRoundState?.locked;
 
     $: joincode = $page.params?.joincode;
@@ -43,7 +36,7 @@
             $popupData = {
                 popup_type: 'round_unlock',
                 is_displayed: true,
-                data: { roundNumber: activeRound.round_number }
+                data: { roundNumber: activeRound?.round_number }
             };
         } else {
             postLockStatus();
@@ -54,7 +47,7 @@
         locked = !locked;
 
         const data = new FormData();
-        data.set('round_number', String(activeRound.round_number));
+        data.set('round_number', String(activeRound?.round_number));
         data.set('value', locked ? 'locked' : '');
 
         const response = await fetch('?/lock', { method: 'post', body: data });
@@ -65,7 +58,7 @@
         }
     };
 
-    $: $popupData.data?.unlock === activeRound.round_number && postLockStatus();
+    $: $popupData.data?.unlock === activeRound?.round_number && postLockStatus();
 </script>
 
 <h1>Host Game</h1>
@@ -73,12 +66,12 @@
 <p>Details: <strong>{eventData?.location}, {eventData?.game_title}</strong></p>
 
 <div class="round-selector">
-    {#each roundNumbers as roundNum}
+    {#each $eventPageData.roundNumbers as roundNum}
         <button
             id={String(roundNum)}
             on:click={handleRoundSelect}
             class:active={$activeEventData.activeRoundNumber === roundNum}
-            class:current={$currentEventData.round_number === roundNum}
+            class:current={$eventPageData.currentRoundNumber === roundNum}
         >
             {roundNum}
         </button>
@@ -86,7 +79,7 @@
 </div>
 
 <div class="lock-container">
-    <label id={`rd-${activeRound.round_number}`} for="round-lock" class="lock">
+    <label id={`rd-${activeRound?.round_number}`} for="round-lock" class="lock">
         <input
             type="checkbox"
             name="round-lock"
@@ -100,7 +93,7 @@
 
 <!-- <button class="button button-red" on:click|preventDefault>Score/Edit This Round</button> -->
 
-<Round {activeRound} />
+<Round />
 
 <style lang="scss">
     h1 {
