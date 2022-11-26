@@ -39,26 +39,20 @@
                 data: { roundNumber: activeRound?.round_number }
             };
         } else {
-            postLockStatus();
-        }
-    };
-
-    const postLockStatus = async () => {
-        locked = !locked;
-
-        const data = new FormData();
-        data.set('round_number', String(activeRound?.round_number));
-        data.set('value', locked ? 'locked' : '');
-
-        const response = await fetch('?/lock', { method: 'post', body: data });
-        if (!response.ok) {
-            // TOODO: handle error
-            console.log(response.json());
             locked = !locked;
+
+            const data = new FormData();
+            data.set('round_number', String(activeRound?.round_number));
+            data.set('value', locked ? 'locked' : '');
+
+            const response = await fetch('?/lock', { method: 'post', body: data });
+            if (!response.ok) {
+                // TOODO: handle error
+                console.log(response.json());
+                locked = !locked;
+            }
         }
     };
-
-    $: $popupData.data?.unlock === activeRound?.round_number && postLockStatus();
 </script>
 
 <h1>Host Game</h1>

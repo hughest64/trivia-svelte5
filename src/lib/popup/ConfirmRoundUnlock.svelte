@@ -9,7 +9,19 @@
 
     // TODO: this should be import form a reusable place, or have a default on the Popup container
     const resetPopup = () => ($popupData = { is_displayed: false, popup_type: '' });
-    const unlock = () => ($popupData = { is_displayed: false, popup_type: '', data: { unlock: roundNumber } });
+    const unlock = async () => {
+        const data = new FormData();
+        data.set('round_number', roundNumber);
+        data.set('value', '');
+
+        const response = await fetch('?/lock', { method: 'post', body: data });
+        if (response.ok) {
+            resetPopup();
+        } else {
+            console.log('TODO: handel the error');
+        }
+
+    };
 </script>
 
 <div class="pop-timer" />
