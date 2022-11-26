@@ -1,4 +1,4 @@
-import type { Writable } from 'svelte/store';
+/* eslint-disable @typescript-eslint/no-explicit-any*/
 
 export interface JwtPayload {
     // user.id
@@ -97,7 +97,6 @@ export interface CurrentEventData {
     question_key: key;
 }
 
-// TODO: many more fields to add here
 export interface Response {
     id: number;
     recorded_answer: string;
@@ -112,7 +111,6 @@ export interface PopupData {
     timer_value?: number;
     title?: string;
     message?: string;
-    /* eslint-disable-next-line @typescript-eslint/no-explicit-any*/
     data?: Record<string, any>;
     anchor?: string;
 }
@@ -124,12 +122,12 @@ export interface ActiveEventData {
 }
 
 export interface EventPageData {
-    roundNumbers: number[],
-    activeRound?: GameRound,
-    questionKeys: string[],
-    activeRoundState?: RoundState,
-    activeQuestion?: GameQuestion,
-    activeQuestionState?: QuestionState,
+    roundNumbers: number[];
+    activeRound?: GameRound;
+    questionKeys: string[];
+    activeRoundState?: RoundState;
+    activeQuestion?: GameQuestion;
+    activeQuestionState?: QuestionState;
     activeResponse?: Response;
     activeRoundNumber: number;
     activeQuestionKey: string;
@@ -137,22 +135,10 @@ export interface EventPageData {
     currentQuestionKey: string;
 }
 
-export type AllStores =
-    | EventData
-    | ActiveEventData
-    | GameQuestion[]
-    | GameRound[]
-    | QuestionState[]
-    | RoundState[]
-    | UserData
-    | Response[]
-    | CurrentEventData
-    | EventPageData
-
 export interface SocketMessage {
     type: string;
     store: StoreKey;
-    message: AllStores;
+    message: any;
 }
 
 export type StoreKey =
@@ -168,8 +154,4 @@ export type StoreKey =
     | 'popupData'
     | 'eventPageData';
 
-export type StoreType = Writable<AllStores>;
-export type StoreMap = Map<StoreKey, StoreType>;
-
-/* eslint-disable-next-line @typescript-eslint/no-explicit-any*/
 export type MessageHandler = Record<string, (message: any) => unknown>;
