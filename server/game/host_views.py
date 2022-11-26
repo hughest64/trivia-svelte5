@@ -106,7 +106,7 @@ class UpdateView(APIView):
                     "msg_type": "current_data_update",
                     "store": "currentEventData",
                     "message": {
-                        "qustion_key": key,
+                        "question_key": key,
                         "question_number": int(question_number),
                         "round_number": int(round_number),
                     },
@@ -164,8 +164,8 @@ class UpdateAllView(APIView):
                     "store": "currentEventData",
                     "message": {
                         "question_key": min_key,
-                        "question_number": min_question_number,
-                        "round_number": round_number,
+                        "question_number": int(min_question_number),
+                        "round_number": int(round_number),
                     },
                 },
             )
