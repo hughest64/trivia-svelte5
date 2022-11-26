@@ -1,27 +1,35 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { applyAction, enhance } from '$app/forms';
     import { getStore } from '$lib/utils';
     import type { ActionData } from './$types';
     import type { EventPageData, UserData } from '$lib/types';
 
-    $: eventPageData = getStore<EventPageData>('eventPageData');
-    $: activeQuestion = $eventPageData?.activeQuestion;
-    $: activeResponse = $eventPageData?.activeResponse;
-
     $: form = <ActionData>$page.form;
     $: userData = getStore<UserData>('userData');
 
+    $: eventPageData = getStore<EventPageData>('eventPageData');
+    $: activeQuestion = $eventPageData?.activeQuestion;
+    $: activeResponse = $eventPageData?.activeResponse;
     $: questionState = $eventPageData.activeQuestionState;
     $: activeRoundState = $eventPageData.activeRoundState;
 
-    // TODO: this is an awful lot just to get a different class applied
-    $: responseText = activeResponse?.recorded_answer || '';
-    $: updatedInputText = responseText;
-    $: notsubmitted = updatedInputText !== responseText;
+    let responseText = '';
+    $: notsubmitted = responseText && responseText !== activeResponse?.recorded_answer;
     const syncInputText = (e: Event) => {
         const target = <HTMLInputElement>e.target;
-        updatedInputText = target.value;
+        responseText = target.value;
+    };
+
+    const handleSubmitResponse = async () => {
+        const data = new FormData();
+        data.set('question_id', String(activeQuestion?.id));
+        data.set('team_id', String($userData.active_team_id));
+        data.set('key', activeQuestion?.key || '');
+        data.set('response_text', responseText);
+
+        const response = await fetch ('?/response', { method: 'post', body: data });
+        // TODO: error handling
+        console.log(await response.json());
     };
 </script>
 
@@ -33,25 +41,14 @@
         : 'Please Wait for the Host to Reveal This Question'}
 </p>
 
-<!-- TODO it would be nice to stop submission if the value has not changed, on:submit = () => preventDefault isn't working-->
-<!-- TODO: change this to preveDefault w/ a handle function like host side, I think native behavior is problematic here -->
-<form
-    action="?/response"
-    use:enhance={() =>
-        async ({ result }) =>
-            await applyAction(result)}
->
-    <input type="hidden" name="question_id" value={activeQuestion?.id} />
-    <input type="hidden" name="team_id" value={$userData?.active_team_id || ''} />
-    <input type="hidden" name="key" value={activeQuestion?.key} />
-
+<form on:submit|preventDefault={handleSubmitResponse}>
     <div class="input-element" class:notsubmitted>
         <input
             disabled={activeRoundState?.locked}
             required
             name="response_text"
             type="text"
-            value={responseText}
+            value={activeResponse?.recorded_answer || ''}
             on:input={syncInputText}
         />
         <label for="response_text">Enter Answer</label>
