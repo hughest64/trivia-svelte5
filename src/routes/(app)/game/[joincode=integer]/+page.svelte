@@ -6,8 +6,6 @@
     import Note from './Note.svelte';
     import type { EventPageData, ActiveEventData } from '$lib/types';
 
-    // TODO: acitve round/question don't seem to survive HMR, not sure it that existed before
-
     $: eventPageData = getStore<EventPageData>('eventPageData');
     $: activeEventData = getStore<ActiveEventData>('activeEventData');
 
