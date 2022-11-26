@@ -53,7 +53,7 @@ test('all players start on round one question one', async () => {
     await host.expectRoundToBe('1');
 });
 
-test('active round and question classes are applied properly', async () => {
+test.skip('active round and question classes are applied properly', async () => {
     // check for current class on 1.1
     await expect(host.roundButton('1')).toHaveClass(current);
     await expect(p1.roundButton('1')).toHaveClass(current);
@@ -78,9 +78,6 @@ test('active round and question classes are applied properly', async () => {
     // p1 should not be directed backwards? (not sure about this)
     await expect(p1.roundButton('2')).toHaveClass(current);
     await expect(p1.questionSelector('2.1')).toHaveClass(current);
-
-    // TODO: failing test idea, currently active question will apply to any round,
-    // but maybe should only apply for the current round?
 });
 
 test('question text reveals properly for players', async () => {
