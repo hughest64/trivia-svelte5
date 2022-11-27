@@ -6,7 +6,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 
 from rest_framework.response import Response
-from rest_framework.status import HTTP_200_OK, HTTP_404_NOT_FOUND
+from rest_framework.status import HTTP_200_OK, HTTP_403_FORBIDDEN, HTTP_404_NOT_FOUND
 from rest_framework.views import APIView
 
 from user.authentication import JwtAuthentication
@@ -24,8 +24,12 @@ class EventView(APIView):
         """fetch a specific event from the joincode parsed from the url"""
         user_data = request.user.to_json()
 
-        # TODO: check that the user has an active team id and that it exists
-        # return 403(?), if not
+        active_team_qs = Team.objects.filter(id=request.user.active_team_id)
+        if not active_team_qs.exists:
+            return Response(
+                {"detail": "You must be on a team to view this page"},
+                status=HTTP_403_FORBIDDEN,
+            )
 
         try:
             event = TriviaEvent.objects.get(join_code=joincode)
@@ -92,27 +96,30 @@ class ResponseView(APIView):
         question_id = request.data.get("question_id")
         response_text = request.data.get("response_text")
 
-        # TODO: check that the user has an active team id (and that they are a meber) and that it exists
-        # return 403(?), if not
+        active_team_qs = Team.objects.filter(id=request.user.active_team_id)
+        if not active_team_qs.exists:
+            return Response(
+                {"detail": "You must be on a team to view this page"},
+                status=HTTP_403_FORBIDDEN,
+            )
 
         try:
-            question_response = QuestionResponse.objects.get(
-                team_id=team_id,
-                event__join_code=joincode,
-                game_question_id=question_id,
+            event = TriviaEvent.objects.get(join_code=joincode)
+        except TriviaEvent.DoesNotExist:
+            return Response(
+                {"deail": f"event with join code {joincode} not found"},
+                status=HTTP_404_NOT_FOUND,
             )
+
+        question_response, created = QuestionResponse.objects.get_or_create(
+            team_id=team_id,
+            event=event,
+            game_question_id=question_id,
+            defaults={"recorded_answer": response_text}
+        )
+        if not created:
             question_response.recorded_answer = response_text
             question_response.save()
-
-        except QuestionResponse.DoesNotExist:
-            # TODO: move this event call to the top and use it for validation, return 404 if it doesn't exist
-            event = TriviaEvent.objects.filter(join_code=joincode).first()
-            question_response = QuestionResponse.objects.create(
-                team_id=team_id,
-                event=event,
-                game_question_id=question_id,
-                recorded_answer=response_text 
-            )
 
         async_to_sync(channel_layer.group_send)(
             f"team_{team_id}_event_{joincode}",

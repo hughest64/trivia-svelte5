@@ -3,5 +3,7 @@ def queryset_to_json(qs):
     if not qs.exists():
         return []
 
-    # TODO: maybe check has_attr(qs.first(), 'to_json') and raise NotImplemented if False?
+    if not hasattr(qs.first(), "to_json"):
+        raise NotImplementedError("This method requires that a to_json method be implemented on the model class")
+
     return [instance.to_json() for instance in qs]

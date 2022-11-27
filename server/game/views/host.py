@@ -22,8 +22,6 @@ DEMO_EVENT_JOIN_CODE = 1234
 
 
 def parse_reveal_payload(data):
-    """"""
-    # TODO: error handling and move to utils
     key = data.get("key", "")
     round, question = key.split(".")
     revealed = bool(data.get("value", ""))
@@ -58,7 +56,7 @@ class EventSetupView(APIView):
         """get this weeks games and a list of locations"""
         user = request.user
         locations = queryset_to_json(Location.objects.filter(active=True))
-        # TODO: a filter of some sort to limit avialable games (should there be an active param on the model?)
+        # TODO: add active param to game model, possibly use celery to update the attr
         games = queryset_to_json(Game.objects.all())
         user_data = request.user.to_json()
 
