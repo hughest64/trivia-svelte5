@@ -18,7 +18,7 @@ test.afterEach(async ({ page }) => {
     await page.goto('/user/logout');
 });
 
-test.afterAll(async () => {
+test.afterEach(async () => {
     await resetEventData();
 });
 
@@ -54,4 +54,16 @@ test('unsubmitted class is applied properly', async ({ page }) => {
 
     await page.locator('button:has-text("Submit")').click();
     await expect(page.locator('div.notsubmitted')).not.toBeVisible();
+});
+
+test('navigating away from the event page and back retains the active question', async ({ page }) => {
+    expect(await page.textContent('h2')).toBe('1.1');
+    await page.locator('.question-selector').locator('id=1.3').click();
+    asyncTimeout();
+    expect(await page.textContent('h2')).toBe('1.3');
+    // navigate to another page
+    await page.locator('p', { hasText: 'Chat' }).click();
+    asyncTimeout(50);
+    await page.locator('p', { hasText: 'Quiz' }).click();
+    expect(await page.textContent('h2')).toBe('1.3');
 });
