@@ -11,7 +11,8 @@ from rest_framework.views import APIView
 
 from user.authentication import JwtAuthentication
 
-from game.models import Team, Response as QuestionResponse, TriviaEvent, queryset_to_json
+from game.models import Team, Response as QuestionResponse, TriviaEvent
+from game.models.utils import queryset_to_json
 
 channel_layer = get_channel_layer()
 

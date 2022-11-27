@@ -2,6 +2,8 @@ from django.db import models
 from django.forms.models import model_to_dict
 from django.utils import timezone
 
+from .utils import queryset_to_json
+
 QUESTION_TYPE_GENERAL_KNOWLEDGE = 0
 QUESTION_TYPE_THEMED_ROUND = 1
 QUESTION_TYPE_WORD_PLAY = 2
@@ -21,16 +23,6 @@ QUESTION_TYPES = [
 ]
 
 question_type_dict = dict(QUESTION_TYPES)
-
-
-# TODO: move these to utils.py
-def queryset_to_json(qs):
-    """Convert a queryset to a list of dictionaires. The model must implement a to_json method."""
-    if not qs.exists():
-        return []
-
-    # TODO: maybe check has_attr(qs.first(), 'to_json') and raise NotImplemented if False?
-    return [instance.to_json() for instance in qs]
 
 
 class Question(models.Model):

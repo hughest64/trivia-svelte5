@@ -12,7 +12,8 @@ from rest_framework.views import APIView
 
 from user.authentication import JwtAuthentication
 
-from ..models import Game, Location, EventRoundState, EventQuestionState, TriviaEvent, queryset_to_json
+from game.models import Game, Location, EventRoundState, EventQuestionState, TriviaEvent
+from game.models.utils import queryset_to_json
 
 channel_layer = get_channel_layer()
 
