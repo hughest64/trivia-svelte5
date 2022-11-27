@@ -2,16 +2,23 @@ from asgiref.sync import async_to_sync
 
 from channels.layers import get_channel_layer
 
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_protect
+
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_404_NOT_FOUND, HTTP_400_BAD_REQUEST
 from rest_framework.views import APIView
 
 from user.authentication import JwtAuthentication
+from user.serializers import UserSerializer
 
-from .models import EventRoundState, EventQuestionState
+from ..models import Game, Location, EventRoundState, EventQuestionState, TriviaEvent, queryset_to_json
 
 channel_layer = get_channel_layer()
+
+# TODO: remove once creating event is implemented
+DEMO_EVENT_JOIN_CODE = 1234
 
 
 def parse_reveal_payload(data):
@@ -22,6 +29,62 @@ def parse_reveal_payload(data):
     revealed = bool(data.get("value", ""))
 
     return {"key": key, "round": round, "question": question, "revealed": revealed}
+
+
+class EventHostView(APIView):
+    authentication_classes = [JwtAuthentication]
+    permission_classes = [IsAdminUser]
+
+    def get(self, request, joincode):
+        """fetch a specific event from the joincode parsed from the url"""
+        user_serializer = UserSerializer(request.user)
+
+        try:
+            event = TriviaEvent.objects.get(join_code=joincode or DEMO_EVENT_JOIN_CODE)
+        except TriviaEvent.DoesNotExist:
+            return Response(
+                {"detail": "an event with that join code does not exist"},
+                status=HTTP_404_NOT_FOUND,
+            )
+
+        return Response({**event.to_json(), "user_data": user_serializer.data})
+
+
+class EventSetupView(APIView):
+    authentication_classes = [JwtAuthentication]
+    permission_classes = [IsAdminUser]
+
+    def get(self, request):
+        """get this weeks games and a list of locations"""
+        user = request.user
+        locations = queryset_to_json(Location.objects.filter(active=True))
+        # TODO: a filter of some sort to limit avialable games (should there be an active pram on the model?)
+        games = queryset_to_json(Game.objects.all())
+        user_serializer = UserSerializer(user)
+
+        return Response(
+            {
+                "location_select_data": locations,
+                "game_select_data": games,
+                "user_data": user_serializer.data,
+            }
+        )
+
+    @method_decorator(csrf_protect)
+    def post(self, request):
+        """create a new event or fetch an existing one with a specified game/location combo"""
+        user = request.user
+        # TODO: get or create
+        event = TriviaEvent.objects.get(join_code=DEMO_EVENT_JOIN_CODE)
+        user_serializer = UserSerializer(user)
+
+        # TODO: this could just return the join code since the data won't be loaded from this response
+        return Response(
+            {
+                "event_data": event.to_json()["event_data"],
+                "user_data": user_serializer.data,
+            }
+        )
 
 
 class QuestionRevealView(APIView):

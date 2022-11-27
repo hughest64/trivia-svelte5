@@ -1,24 +1,27 @@
 from django.urls import path, re_path
-from . import host_views, player_views, views
+
+from .views import common, host, player
 
 
 urlpatterns = [
     # TODO: we may not keep this, needs experimentation
     # update trivia events
-    re_path(r"^host/(?P<joincode>\d+)/lock/?$", host_views.RoundLockView.as_view()),
-    re_path(r"^host/(?P<joincode>\d+)/reveal/?$", host_views.QuestionRevealView.as_view()),
-    re_path(r"^host/(?P<joincode>\d+)/update-all/?$", host_views.UpdateAllView.as_view()),
-    re_path(r"^host/(?P<joincode>\d+)/update/?$", host_views.UpdateView.as_view()),
+    re_path(r"^host/(?P<joincode>\d+)/lock/?$", host.RoundLockView.as_view()),
+    re_path(r"^host/(?P<joincode>\d+)/reveal/?$", host.QuestionRevealView.as_view()),
+    re_path(r"^host/(?P<joincode>\d+)/update-all/?$", host.UpdateAllView.as_view()),
+    re_path(r"^host/(?P<joincode>\d+)/update/?$", host.UpdateView.as_view()),
 
     # host endpoints
-    re_path(r"^host/event-setup/?$", views.EventSetupView.as_view()),
-    re_path(r"^host/(?P<joincode>\d+)[/\w]*/?$", views.EventHostView.as_view()),
+    re_path(r"^host/event-setup/?$", host.EventSetupView.as_view()),
+    re_path(r"^host/(?P<joincode>\d+)[/\w]*/?$", host.EventHostView.as_view()),
 
     # player endpoints
-    re_path(r"^game/join/?$", views.EventJoinView.as_view()),
-    re_path(r"^game/(?P<joincode>\d+)/response/?$", player_views.ResponseView.as_view()),
-    re_path(r"^game/(?P<joincode>\d+)[/\w]*/?$", views.EventView.as_view()),
-    re_path(r"^teamselect/?$", views.TeamView.as_view()),
-    re_path(r"^team/?$", views.TeamView.as_view()),
-    re_path(r"^reset-event-data/?$", views.ClearEventDataView.as_view()),
+    re_path(r"^game/join/?$", player.EventJoinView.as_view()),
+    re_path(r"^game/(?P<joincode>\d+)/response/?$", player.ResponseView.as_view()),
+    re_path(r"^game/(?P<joincode>\d+)[/\w]*/?$", player.EventView.as_view()),
+    re_path(r"^teamselect/?$", player.TeamView.as_view()),
+    re_path(r"^team/?$", player.TeamView.as_view()),
+
+    # for testing only!
+    re_path(r"^reset-event-data/?$", common.ClearEventDataView.as_view()),
 ]
