@@ -86,7 +86,7 @@ class UserView(APIView):
         return Response({"user_data": user_data})
 
 
-# TODO: maybe don't need to do this since the cookies are controlled in SvelteKit
+# NOTE: not currently used as cookies are controlled in SvelteKit
 class LogoutView(APIView):
     def post(self, request):
 
