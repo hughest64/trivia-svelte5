@@ -64,7 +64,6 @@
 <div class="question-box flex-column">
     <div class="question-selector">
         {#each questionKeys as key}
-            <!-- TODO: the logic for current isn't quite good enough, we need to condisder the current round as well. -->
             <button
                 class="button-white"
                 class:current={key === $eventPageData.currentQuestionKey}
@@ -75,7 +74,6 @@
             </button>
         {/each}
     </div>
-    <!-- TODO: transition params in a config object like { left: {...}, right: {...} } -->
     <div class="question-row">
         {#key $activeEventData.activeQuestionKey}
             <div

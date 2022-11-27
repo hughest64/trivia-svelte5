@@ -57,8 +57,4 @@ const login: Action = async ({ cookies, request, url }) => {
 
 export const actions = {
     default: login
-    // TODO: we won't be able to use default once we enable these, and thugh the querysting issue will likely come back
-    // github, // (and google?),
-    // google,
-    // create // (new account)
 };

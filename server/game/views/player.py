@@ -23,6 +23,9 @@ class EventView(APIView):
         """fetch a specific event from the joincode parsed from the url"""
         user_data = request.user.to_json()
 
+        # TODO: check that the user has an active team id and that it exists
+        # return 403(?), if not
+
         try:
             event = TriviaEvent.objects.get(join_code=joincode)
         except TriviaEvent.DoesNotExist:
@@ -31,9 +34,6 @@ class EventView(APIView):
                 status=HTTP_404_NOT_FOUND,
             )
 
-        # TODO: get responses for this event via the user's active team
-        # if they do not have an active team respond with a 400 and a message
-        # kit will need to handle the response accordingly
         question_responses = QuestionResponse.objects.filter(
             event__join_code=joincode, team_id=request.user.active_team_id
         )
@@ -91,9 +91,8 @@ class ResponseView(APIView):
         question_id = request.data.get("question_id")
         response_text = request.data.get("response_text")
 
-        # TODO: permission class for this?
-        # if request.user.active_team_id != request.data.get("team_id"):
-        #     return Response(code=400, data={ "detail": "you are not on the right team"})
+        # TODO: check that the user has an active team id (and that they are a meber) and that it exists
+        # return 403(?), if not
 
         try:
             question_response = QuestionResponse.objects.get(
@@ -105,7 +104,7 @@ class ResponseView(APIView):
             question_response.save()
 
         except QuestionResponse.DoesNotExist:
-            # TODO: can we look this up more efficiently?
+            # TODO: move this event call to the top and use it for validation, return 404 if it doesn't exist
             event = TriviaEvent.objects.filter(join_code=joincode).first()
             question_response = QuestionResponse.objects.create(
                 team_id=team_id,

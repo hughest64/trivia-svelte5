@@ -3,7 +3,6 @@ from django.core.management.base import BaseCommand
 from game.models import *
 
 
-# TODO: error handling, arg for join code, more output feedback
 class Command(BaseCommand):
     help = "reset event related data for the demo app"
 

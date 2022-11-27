@@ -22,7 +22,7 @@ DEMO_EVENT_JOIN_CODE = 1234
 
 def parse_reveal_payload(data):
     """"""
-    # TODO: error handling
+    # TODO: error handling and move to utils
     key = data.get("key", "")
     round, question = key.split(".")
     revealed = bool(data.get("value", ""))
@@ -57,7 +57,7 @@ class EventSetupView(APIView):
         """get this weeks games and a list of locations"""
         user = request.user
         locations = queryset_to_json(Location.objects.filter(active=True))
-        # TODO: a filter of some sort to limit avialable games (should there be an active pram on the model?)
+        # TODO: a filter of some sort to limit avialable games (should there be an active param on the model?)
         games = queryset_to_json(Game.objects.all())
         user_data = request.user.to_json()
 
@@ -72,12 +72,9 @@ class EventSetupView(APIView):
     @method_decorator(csrf_protect)
     def post(self, request):
         """create a new event or fetch an existing one with a specified game/location combo"""
-        user = request.user
-        # TODO: get or create
         event = TriviaEvent.objects.get(join_code=DEMO_EVENT_JOIN_CODE)
         user_data = request.user.to_json()
 
-        # TODO: this could just return the join code since the data won't be loaded from this response
         return Response(
             {
                 "event_data": event.to_json()["event_data"],
@@ -107,7 +104,6 @@ class QuestionRevealView(APIView):
                 },
             )
         except Exception as e:
-            # TODO: log e
             return Response({"detail": "An Error Occured"}, status=HTTP_400_BAD_REQUEST)
 
         return Response({"success": True})
@@ -198,7 +194,6 @@ class UpdateAllView(APIView):
 
         updated = False
         event = event_states.first().event
-        # TODO: we may not need to calculate these (just use 1)
         min_key = min(*[state.key for state in event_states])
         min_question_number = min(*[state.question_number for state in event_states])
         if revealed and min_key > event.current_question_key:

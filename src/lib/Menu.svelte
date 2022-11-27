@@ -1,9 +1,7 @@
 <script>
 </script>
 
-<!-- TODO: conditional elements based on $userdata.is_staff -->
 <ul>
-    <!-- TODO: anchors -->
     <li>Rules and FAQ</li>
     <li>Manage Profile</li>
     <li>Manage Team</li>

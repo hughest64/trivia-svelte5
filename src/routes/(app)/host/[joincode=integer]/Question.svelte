@@ -8,8 +8,7 @@
     $: questionStates = getStore<QuestionState[]>('questionStates') || [];
     $: questionRevealed = $questionStates.find((qs) => qs.key === question.key)?.question_displayed;
 
-    // TODO: used locally for the host, but we should respect answers being revealed to players
-    // we could maybe also use the event cookie to store locally for the host
+    // TODO: default should be set based on whether or not answers are revealed for all
     let answerDisplayed = false;
 
     let updating = false;

@@ -7,15 +7,11 @@
     import MenuIcon from './icons/MenuIcon.svelte';
     import ScoringIcon from './icons/ScoringIcon.svelte';
 
-    // TODO: better regex
     const reg = /^\/\(\w+\)\/(game|host)\/[[=\w]+]\/?/;
-
     const joinCode = $page.params?.joincode;
 
     $: routeId = $page.route.id?.split('/')[2];
-
     $: isEventRoute = reg.test($page.route.id || '');
-
     $: setActive = (link: string) => $page.url.pathname.endsWith(link);
 </script>
 

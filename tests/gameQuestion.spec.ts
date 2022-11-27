@@ -121,7 +121,6 @@ test('auto reveal respects player settings', async () => {
     await p3.expectCorrectQuestionHeading('1.1');
 });
 
-// TODO: skipping slow and flaky test
 test('reveal all reveals all questions for a round', async () => {
     // host reveals all for round 2
     await host.roundButton('2').click();

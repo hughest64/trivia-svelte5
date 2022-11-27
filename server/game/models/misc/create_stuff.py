@@ -1,6 +1,11 @@
 import json
 from django.conf import settings
-from .trivia_event import *
+from ..trivia_event import *
+
+"""
+NOTE: Keeping this for now just for reference, it may be useful when creating utititles
+such as creating events
+"""
 
 
 def get_question_type_value(string_value):

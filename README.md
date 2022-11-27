@@ -38,5 +38,3 @@ All commands need to be run from the server dirctory with `pipenv` active.
 -   SvelteKit - from the root run `npm run dev`
 
 ## Testing
-
--   TODO

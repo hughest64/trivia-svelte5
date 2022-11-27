@@ -10,7 +10,6 @@ QUESTION_TYPE_LIGHTNING_ROUND = 4
 QUESTION_TYPE_SOUND_ROUND = 5
 QUESTION_TYPE_TIE_BREAKER = 6
 
-# TODO: validate the string values here agaainst airtable
 QUESTION_TYPES = [
     (QUESTION_TYPE_GENERAL_KNOWLEDGE, "General Knowledge"),
     (QUESTION_TYPE_THEMED_ROUND, "Themed Round"),
@@ -25,12 +24,6 @@ question_type_dict = dict(QUESTION_TYPES)
 
 
 # TODO: move these to utils.py
-def get_rq_from_key(key):
-    """return a tuple of round_number, question_number from a key like '1.1'"""
-    split = key.split(".")
-    return (int(split[0]), int(split[1]))
-
-
 def queryset_to_json(qs):
     """Convert a queryset to a list of dictionaires. The model must implement a to_json method."""
     if not qs.exists():
@@ -132,7 +125,7 @@ class Game(models.Model):
         ordering = ["-date_used", "title"]
 
     def __str__(self):
-        return self.title  # TODO: block code?
+        return self.title
 
     def to_json(self):
         return {

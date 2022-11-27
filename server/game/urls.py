@@ -4,7 +4,6 @@ from .views import common, host, player
 
 
 urlpatterns = [
-    # TODO: we may not keep this, needs experimentation
     # update trivia events
     re_path(r"^host/(?P<joincode>\d+)/lock/?$", host.RoundLockView.as_view()),
     re_path(r"^host/(?P<joincode>\d+)/reveal/?$", host.QuestionRevealView.as_view()),
