@@ -75,9 +75,10 @@ class JwtAuthentication(authentication.BaseAuthentication):
         except jwt.ExpiredSignatureError:
             raise AuthenticationFailed("You need to log in!")
 
-        # TODO: handle bad id? Is that possible at this point?
-        # should we just return AnonymousUser?
-        user = User.objects.get(id=payload["id"])
+        try:
+            user = User.objects.get(id=payload["id"])
+        except User.DoesNotExist:
+            raise AuthenticationFailed("User not found")
 
         return (user, None)
 
