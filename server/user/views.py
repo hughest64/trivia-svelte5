@@ -6,21 +6,18 @@ from django.views.decorators.csrf import ensure_csrf_cookie, csrf_protect
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.status import HTTP_404_NOT_FOUND
 
 from .authentication import create_token, decode_token, JwtAuthentication
-from .serializers import UserSerializer
 
 User = get_user_model()
 
 
-# TODO: update as necessary
+# TODO: implement for user creation
 class RegisterView(APIView):
     def post(self, request):
-        serializer = UserSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
 
-        return Response(serializer.data)
+        return Response({"detail": "Not Found"}, code=HTTP_404_NOT_FOUND)
 
 
 class GuestView(APIView):
@@ -40,8 +37,8 @@ class GuestView(APIView):
             user = User.objects.get(username="guest")
             valid_token = False
 
-        serializer = UserSerializer(user)
-        response = Response({"user_data": serializer.data})
+        user_data = user.to_json()
+        response = Response({"user_data": user_data})
 
         # TODO: should we "refresh" the token if it is valid?
         if not valid_token:
@@ -70,10 +67,10 @@ class LoginView(APIView):
         if not user.check_password(password):
             raise AuthenticationFailed("Invalid Username or Password")
 
-        serializer = UserSerializer(user)
+        user_data = user.to_json()
         token = create_token(user)
 
-        response = Response({"user_data": serializer.data})
+        response = Response({"user_data": user_data})
         response.set_cookie(key="jwt", value=token, httponly=True)
 
         return response
@@ -84,9 +81,9 @@ class UserView(APIView):
 
     @method_decorator(csrf_protect)
     def get(self, request):
-        serializer = UserSerializer(request.user)
+        user_data = request.user.to_json()
 
-        return Response({"user_data": serializer.data})
+        return Response({"user_data": user_data})
 
 
 # TODO: maybe don't need to do this since the cookies are controlled in SvelteKit

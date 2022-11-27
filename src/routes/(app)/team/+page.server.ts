@@ -17,7 +17,6 @@ export const load: PageServerLoad = async ({ parent }) => {
 
 export const selectTeam: Action = async ({ fetch, request, url }) => {
     const { selectedteam, currentteam } = Object.fromEntries((await request.formData()).entries());
-
     if (selectedteam !== currentteam) {
         const response = await fetch(`${apiHost}/teamselect/`, {
             method: 'POST',

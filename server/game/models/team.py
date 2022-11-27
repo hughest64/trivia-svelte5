@@ -10,6 +10,7 @@ class Team(models.Model):
 
     def to_json(self):
         return {
+            "id": self.pk,
             "name": self.name,
             "password": self.password,
             "members": [member.username for member in self.members.all()]

@@ -38,7 +38,7 @@
                 <option value={team.id}>{team.name}</option>
             {/each}
         </select>
-        <input type="hidden" name="currentteam" value={userData?.active_team?.id} />
+        <input type="hidden" name="currentteam" value={userData?.active_team_id} />
         <button class="button button-red" type="submit" id="team-select-submit">Choose This Team</button>
     </form>
 {/if}

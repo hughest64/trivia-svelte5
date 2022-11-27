@@ -12,7 +12,6 @@ from rest_framework.views import APIView
 from user.authentication import JwtAuthentication
 
 from game.models import Team, Response as QuestionResponse, TriviaEvent, queryset_to_json
-from user.serializers import UserSerializer
 
 channel_layer = get_channel_layer()
 
@@ -22,7 +21,7 @@ class EventView(APIView):
 
     def get(self, request, joincode):
         """fetch a specific event from the joincode parsed from the url"""
-        user_serializer = UserSerializer(request.user)
+        user_data = request.user.to_json()
 
         try:
             event = TriviaEvent.objects.get(join_code=joincode)
@@ -42,7 +41,7 @@ class EventView(APIView):
         return Response(
             {
                 **event.to_json(),
-                "user_data": user_serializer.data,
+                "user_data": user_data,
                 "response_data": queryset_to_json(question_responses),
             }
         )
@@ -53,21 +52,22 @@ class EventJoinView(APIView):
 
     def get(self, request):
         """return user data to /game/join"""
-        serializer = UserSerializer(request.user)
+        user_data = request.user.to_json()
 
-        return Response({"user_data": serializer.data})
+        return Response({"user_data": user_data})
 
 
 class TeamView(APIView):
     authentication_classes = [JwtAuthentication]
 
     def get(self, request):
-        serializer = UserSerializer(request.user)
+        user_data = request.user.to_json()
 
-        return Response({"user_data": serializer.data})
+        return Response({"user_data": user_data})
 
     @method_decorator(csrf_protect)
     def post(self, request):
+        print(request.data)
         team_id = request.data.get("team_id")
         status = HTTP_200_OK
         if team_id:

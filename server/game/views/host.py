@@ -11,7 +11,6 @@ from rest_framework.status import HTTP_200_OK, HTTP_404_NOT_FOUND, HTTP_400_BAD_
 from rest_framework.views import APIView
 
 from user.authentication import JwtAuthentication
-from user.serializers import UserSerializer
 
 from ..models import Game, Location, EventRoundState, EventQuestionState, TriviaEvent, queryset_to_json
 
@@ -37,7 +36,7 @@ class EventHostView(APIView):
 
     def get(self, request, joincode):
         """fetch a specific event from the joincode parsed from the url"""
-        user_serializer = UserSerializer(request.user)
+        user_data = request.user.to_json()
 
         try:
             event = TriviaEvent.objects.get(join_code=joincode or DEMO_EVENT_JOIN_CODE)
@@ -47,7 +46,7 @@ class EventHostView(APIView):
                 status=HTTP_404_NOT_FOUND,
             )
 
-        return Response({**event.to_json(), "user_data": user_serializer.data})
+        return Response({**event.to_json(), "user_data": user_data})
 
 
 class EventSetupView(APIView):
@@ -60,13 +59,13 @@ class EventSetupView(APIView):
         locations = queryset_to_json(Location.objects.filter(active=True))
         # TODO: a filter of some sort to limit avialable games (should there be an active pram on the model?)
         games = queryset_to_json(Game.objects.all())
-        user_serializer = UserSerializer(user)
+        user_data = request.user.to_json()
 
         return Response(
             {
                 "location_select_data": locations,
                 "game_select_data": games,
-                "user_data": user_serializer.data,
+                "user_data": user_data,
             }
         )
 
@@ -76,13 +75,13 @@ class EventSetupView(APIView):
         user = request.user
         # TODO: get or create
         event = TriviaEvent.objects.get(join_code=DEMO_EVENT_JOIN_CODE)
-        user_serializer = UserSerializer(user)
+        user_data = request.user.to_json()
 
         # TODO: this could just return the join code since the data won't be loaded from this response
         return Response(
             {
                 "event_data": event.to_json()["event_data"],
-                "user_data": user_serializer.data,
+                "user_data": user_data,
             }
         )
 
