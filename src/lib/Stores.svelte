@@ -29,6 +29,8 @@
         activeQuestionKey: data?.activeQuestionKey || data.current_event_data?.question_key || '1.1'
     });
 
+    // $: console.log($activeEventData);
+
     $: roundStates = createStore<RoundState[]>('roundStates', data?.round_states || []);
     $: questionStates = createStore<QuestionState[]>('questionStates', data?.question_states || []);
     $: responses = createStore<Response[]>('responseData', data?.response_data || []);
@@ -50,6 +52,7 @@
         currentRoundNumber: $currentEventData.round_number,
         currentQuestionKey: $currentEventData.question_key
     });
+    // $: console.log($eventPageData);
 </script>
 
 <slot />

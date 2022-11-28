@@ -1,5 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
+    import { invalidate } from '$app/navigation';
     import QuizIcon from '$lib/footer/icons/QuizIcon.svelte';
     import ChatIcon from './icons/ChatIcon.svelte';
     import LeaderboardIcon from './icons/LeaderboardIcon.svelte';
@@ -13,25 +14,27 @@
     $: routeId = $page.route.id?.split('/')[2];
     $: isEventRoute = reg.test($page.route.id || '');
     $: setActive = (link: string) => $page.url.pathname.endsWith(link);
+
+    const setActiveData = () => invalidate('active:data');
 </script>
 
 <nav>
     <ul id="nav-links" class:justify-nav={!isEventRoute}>
         {#if isEventRoute}
             <li class:active={setActive(joinCode)}>
-                <a href={`/${routeId}/${joinCode}`}>
+                <a href={`/${routeId}/${joinCode}`} on:click={setActiveData}>
                     <QuizIcon class="svg" />
                     <p>Quiz</p>
                 </a>
             </li>
             <li class:active={setActive('leaderboard')}>
-                <a href={`/${routeId}/${joinCode}/leaderboard`}>
+                <a href={`/${routeId}/${joinCode}/leaderboard`} on:click={setActiveData}>
                     <LeaderboardIcon class="svg" />
                     <p>Leaderboard</p>
                 </a>
             </li>
             <li class:active={setActive('chat')}>
-                <a href={`/${routeId}/${joinCode}/chat`}>
+                <a href={`/${routeId}/${joinCode}/chat`} on:click={setActiveData}>
                     <ChatIcon class="svg" />
                     <p>Chat</p>
                 </a>
@@ -39,14 +42,14 @@
         {/if}
         {#if routeId === 'game' && isEventRoute}
             <li class:active={setActive('megaround')}>
-                <a href={`/game/${joinCode}/megaround`}>
+                <a href={`/game/${joinCode}/megaround`} on:click={setActiveData}>
                     <MegaroundIcon class="svg" />
                     <p>Megaround</p>
                 </a>
             </li>
         {:else if routeId === 'host' && isEventRoute}
             <li class:active={setActive('score')}>
-                <a href={`/host/${joinCode}/score`}>
+                <a href={`/host/${joinCode}/score`} on:click={setActiveData}>
                     <ScoringIcon class="svg" />
                     <p>Scoring</p>
                 </a>
