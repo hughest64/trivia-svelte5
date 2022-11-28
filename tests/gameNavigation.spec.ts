@@ -66,4 +66,8 @@ test('navigating away from the event page and back retains the active question',
     asyncTimeout(50);
     await page.locator('p', { hasText: 'Quiz' }).click();
     expect(await page.textContent('h2')).toBe('1.3');
+    // try to move again
+    await page.locator('.question-selector').locator('id=1.4').click();
+    asyncTimeout();
+    expect(await page.textContent('h2')).toBe('1.4');
 });

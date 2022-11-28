@@ -25,7 +25,7 @@ class EventView(APIView):
         user_data = request.user.to_json()
 
         active_team_qs = Team.objects.filter(id=request.user.active_team_id)
-        if not active_team_qs.exists:
+        if not request.user.active_team_id or not active_team_qs.exists:
             return Response(
                 {"detail": "You must be on a team to view this page"},
                 status=HTTP_403_FORBIDDEN,
@@ -97,7 +97,7 @@ class ResponseView(APIView):
         response_text = request.data.get("response_text")
 
         active_team_qs = Team.objects.filter(id=request.user.active_team_id)
-        if not active_team_qs.exists:
+        if not request.user.active_team_id or not active_team_qs.exists:
             return Response(
                 {"detail": "You must be on a team to view this page"},
                 status=HTTP_403_FORBIDDEN,
