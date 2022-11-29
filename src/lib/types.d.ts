@@ -121,20 +121,6 @@ export interface ActiveEventData {
     activeQuestionKey: string;
 }
 
-export interface EventPageData {
-    roundNumbers: number[];
-    activeRound?: GameRound;
-    questionKeys: string[];
-    activeRoundState?: RoundState;
-    activeQuestion?: GameQuestion;
-    activeQuestionState?: QuestionState;
-    activeResponse?: Response;
-    activeRoundNumber: number;
-    activeQuestionKey: string;
-    currentRoundNumber: number;
-    currentQuestionKey: string;
-}
-
 export interface SocketMessage {
     type: string;
     store: StoreKey;
