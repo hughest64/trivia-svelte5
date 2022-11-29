@@ -1,14 +1,16 @@
 <script lang="ts">
+    import { page } from '$app/stores';
     import { getStore } from '$lib/utils';
-    import type { EventPageData } from '$lib/types';
+    import type { ActiveEventData } from '$lib/types';
 
-    $: eventPageData = getStore<EventPageData>('eventPageData');
+    $: activeEventData = getStore<ActiveEventData>('activeEventData');
+    $: activeQuestion = $page.data.questions?.find((q) => q.key === $activeEventData.activeQuestionKey);
     let hidden = true;
 </script>
 
 <div class="notes-container flex-column">
     <button class="button disabled" on:click={() => (hidden = !hidden)}>
-        Notes for {$eventPageData?.activeQuestion?.key}
+        Notes for {activeQuestion?.key}
     </button>
 
     <form class:hidden on:submit|preventDefault>

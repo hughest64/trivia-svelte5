@@ -2,7 +2,7 @@ import { getContext, setContext } from 'svelte';
 import { writable, type Writable } from 'svelte/store';
 import jwt_decode from 'jwt-decode';
 import type { Cookies } from '@sveltejs/kit';
-import type { CurrentEventData, JwtPayload, StoreKey, UserTeam } from './types';
+import type { CurrentEventData, GameQuestion, GameRound, JwtPayload, StoreKey, UserTeam } from './types';
 
 /**
  * take one or many cookie keys and invalidate them by creating new cookies with an exipiration
@@ -70,4 +70,14 @@ export const splitQuestionKey = (key: string): RoundQuestion => {
     const keyReg = /^(?<r>\d+).(?<q>\d+)$/;
     const groups = key.match(keyReg)?.groups;
     return { round: groups?.r || '', question: groups?.q || '' };
+};
+
+export const getQuestionKeys = (questions: GameQuestion[], activeRound: GameRound): string[] => {
+    const qNums = [];
+    for (const q of questions) {
+        if (q.round_number === activeRound.round_number) {
+            qNums.push(q.key);
+        }
+    }
+    return qNums;
 };

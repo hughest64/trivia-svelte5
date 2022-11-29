@@ -4,10 +4,12 @@
     import Round from './Round.svelte';
     import Question from './Question.svelte';
     import Note from './Note.svelte';
-    import type { EventPageData, ActiveEventData } from '$lib/types';
+    import type { CurrentEventData, ActiveEventData, GameRound } from '$lib/types';
 
-    $: eventPageData = getStore<EventPageData>('eventPageData');
+    const roundNumbers = $page.data?.rounds?.map((rd) => rd.round_number) || []; 
     $: activeEventData = getStore<ActiveEventData>('activeEventData');
+    $: currentEventData = getStore<CurrentEventData>('currentEventData');
+    $: activeRound = $page.data?.rounds?.find((rd) => rd.round_number === $activeEventData.activeRoundNumber) as GameRound;
 
     $: joincode = $page.params?.joincode;
 
@@ -28,13 +30,13 @@
     };
 </script>
 
-<h3>{$eventPageData?.activeRound?.title}</h3>
+<h3>{activeRound?.title}</h3>
 
 <div class="round-selector">
-    {#each $eventPageData.roundNumbers as roundNum}
+    {#each roundNumbers as roundNum}
         <button
-            class:active={$eventPageData.activeRoundNumber === roundNum}
-            class:current={$eventPageData.currentRoundNumber === roundNum}
+            class:active={$activeEventData.activeRoundNumber === roundNum}
+            class:current={$currentEventData.round_number === roundNum}
             id={String(roundNum)}
             on:click={handleRoundSelect}
         >
@@ -43,7 +45,7 @@
     {/each}
 </div>
 
-<Round>
+<Round {activeRound}>
     <Question />
     <Note />
 </Round>

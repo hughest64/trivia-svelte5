@@ -2,16 +2,19 @@
     import { page } from '$app/stores';
     import { getStore } from '$lib/utils';
     import type { ActionData } from './$types';
-    import type { EventPageData, UserData } from '$lib/types';
+    import type { ActiveEventData, Response, RoundState, QuestionState, UserData } from '$lib/types';
 
     $: form = <ActionData>$page.form;
     $: userData = getStore<UserData>('userData');
+    $: activeEventData = getStore<ActiveEventData>('activeEventData');
+    $: responses = getStore<Response[]>('responseData') || [];
+    $: roundStates = getStore<RoundState[]>('roundStates') || [];
+    $: questionStates = getStore<QuestionState[]>('questionStates') || [];
 
-    $: eventPageData = getStore<EventPageData>('eventPageData');
-    $: activeQuestion = $eventPageData?.activeQuestion;
-    $: activeResponse = $eventPageData?.activeResponse;
-    $: questionState = $eventPageData.activeQuestionState;
-    $: activeRoundState = $eventPageData.activeRoundState;
+    $: activeQuestion = $page.data.questions?.find((q) => q.key === $activeEventData.activeQuestionKey);
+    $: activeResponse = $responses.find((resp) => resp.key === $activeEventData.activeQuestionKey);
+    $: questionState = $questionStates.find((qs) => qs.key === $activeEventData.activeQuestionKey);
+    $: activeRoundState = $roundStates.find((rs) => rs.round_number === $activeEventData.activeRoundNumber);
 
     let responseText = '';
     $: notsubmitted = responseText && responseText !== activeResponse?.recorded_answer;

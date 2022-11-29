@@ -3,15 +3,17 @@
     import { sineInOut } from 'svelte/easing';
     import { page } from '$app/stores';
     import { swipeQuestion } from './swipe';
-    import { getStore, splitQuestionKey } from '$lib/utils';
-    import type { ActiveEventData, EventPageData, GameQuestion } from '$lib/types';
+    import { getStore, getQuestionKeys, splitQuestionKey } from '$lib/utils';
+    import type { CurrentEventData, ActiveEventData, GameQuestion, GameRound } from '$lib/types';
 
     const joincode = $page.params?.joincode;
     const questions: GameQuestion[] = $page.data.questions || [];
 
+    export let activeRound: GameRound;
+
     $: activeEventData = getStore<ActiveEventData>('activeEventData');
-    $: eventPageData = getStore<EventPageData>('eventPageData');
-    $: questionKeys = $eventPageData.questionKeys;
+    $: currentEventData = getStore<CurrentEventData>('currentEventData');
+    $: questionKeys = getQuestionKeys($page.data.questions || [], activeRound);
 
     let swipeDirection = 'right'; // or 'left'
     $: swipeXValue = swipeDirection === 'right' ? 1000 : -4000;
@@ -24,7 +26,7 @@
         const eventDirection = event.detail?.direction;
         const keyCode = (event as KeyboardEvent).code;
 
-        let nextQuestionKey = $eventPageData.activeQuestionKey;
+        let nextQuestionKey = $activeEventData.activeQuestionKey;
         let currentIndex = allQuestionKeys.findIndex((key) => key === nextQuestionKey);
         let nextIndex = -1;
 
@@ -66,7 +68,7 @@
         {#each questionKeys as key}
             <button
                 class="button-white"
-                class:current={key === $eventPageData.currentQuestionKey}
+                class:current={key === $currentEventData.question_key}
                 id={key}
                 on:click={handleQuestionSelect}
             >
