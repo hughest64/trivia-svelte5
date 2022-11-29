@@ -1,7 +1,6 @@
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
-from asgiref.sync import async_to_sync
 
-from user.authentication import decode_token, get_user
+from user.authentication import get_user
 
 
 class SocketConsumer(AsyncJsonWebsocketConsumer):

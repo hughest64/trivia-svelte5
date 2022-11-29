@@ -3,7 +3,7 @@ from django.conf import settings
 from ..trivia_event import *
 
 """
-NOTE: Keeping this for now just for reference, it may be useful when creating utititles
+NOTE: Keeping this for now just for reference, it may be useful when creating utilities
 such as creating events
 """
 

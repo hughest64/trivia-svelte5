@@ -46,7 +46,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # packages
     'corsheaders',
-    'rest_framework',
+    # I don't think this needs to be included unless we use their UI
+    # 'rest_framework',
     'channels',
     # apps
     'user',
@@ -138,6 +139,7 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# TODO: probably get rid of this
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         # 'user.authentication.JwtAuthentication'

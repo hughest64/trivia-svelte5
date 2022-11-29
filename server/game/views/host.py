@@ -7,7 +7,7 @@ from django.views.decorators.csrf import csrf_protect
 
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
-from rest_framework.status import HTTP_200_OK, HTTP_404_NOT_FOUND, HTTP_400_BAD_REQUEST
+from rest_framework.status import HTTP_404_NOT_FOUND, HTTP_400_BAD_REQUEST
 from rest_framework.views import APIView
 
 from user.authentication import JwtAuthentication
@@ -54,7 +54,6 @@ class EventSetupView(APIView):
 
     def get(self, request):
         """get this weeks games and a list of locations"""
-        user = request.user
         locations = queryset_to_json(Location.objects.filter(active=True))
         # TODO: add active param to game model, possibly use celery to update the attr
         games = queryset_to_json(Game.objects.all())
@@ -86,7 +85,7 @@ class QuestionRevealView(APIView):
     authentication_classes = [JwtAuthentication]
     permission_classes = [IsAdminUser]
 
-    # TOOD: csrf protect
+    # TODO: csrf protect
     def post(self, request, joincode):
         try:
             data = parse_reveal_payload(request.data)
@@ -121,7 +120,6 @@ class UpdateView(APIView):
         revealed = data.get("revealed")
 
         try:
-
             questionState = EventQuestionState.objects.select_related("event").get(
                 event__join_code=joincode,
                 round_number=round_number,
