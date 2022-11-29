@@ -16,7 +16,12 @@ export const load: PageServerLoad = async ({ cookies, locals }) => {
     const csrfCookie = cookie.parse(getResponse.headers.get('set-cookie') || '');
     const csrftoken = csrfCookie?.csrftoken || '';
 
-    cookies.set('csrftoken', csrftoken, { expires: new Date(csrfCookie.expires), path: '/', sameSite: 'lax' });
+    cookies.set('csrftoken', csrftoken, {
+        expires: new Date(csrfCookie.expires),
+        path: '/',
+        secure: false,
+        sameSite: 'lax'
+    });
 };
 
 const login: Action = async ({ cookies, request, url }) => {
@@ -49,7 +54,7 @@ const login: Action = async ({ cookies, request, url }) => {
     const responseCookies = response.headers.get('set-cookie') || '';
     const jwt = cookie.parse(responseCookies)?.jwt;
     // TODO: set secure based on prod mode (eventually)
-    jwt && cookies.set('jwt', jwt, { path: '/', httpOnly: true, sameSite: 'strict', secure: Boolean(secureCookie) });
+    jwt && cookies.set('jwt', jwt, { path: '/', httpOnly: true, secure: Boolean(secureCookie) });
 
     const next = url.searchParams.get('next') || (responseData?.user_data?.is_staff ? '/host/choice' : '/team');
 

@@ -15,7 +15,7 @@ export const invalidateCookies = (cookies: Cookies, keys: string | string[]): vo
         keys = [keys];
     }
     keys.forEach((key) => {
-        cookies.set(key, '', { path: '/', expires: new Date(0) });
+        cookies.set(key, '', { path: '/', httpOnly: true, secure: false, expires: new Date(0) });
     });
 };
 

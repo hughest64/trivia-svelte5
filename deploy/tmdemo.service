@@ -1,0 +1,18 @@
+# service file for the Trivia Mafia SvelteKit demo
+
+[Unit]
+Description=TM SvelteKit
+
+[Service]
+Type=simple
+Group=todd
+User=todd
+Environment="HOST=10.0.0.135"
+Environment="ORIGIN=http://10.0.0.135:3000"
+WorkingDirectory=/home/todd/dev/tm-svelte/build
+ExecStart=node index.js
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
