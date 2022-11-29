@@ -4,7 +4,6 @@
     import type { ActionData } from './$types';
 
     export let form: ActionData;
-    export let joincode: string;
 
     const userData = <UserData>$page.data?.user_data;
     $: activeTeam = userData?.teams.find((team) => team.id === userData?.active_team_id);
@@ -19,7 +18,7 @@
 <form action="?/joinevent" method="POST">
     {#if form?.error}<p class="error">{form?.error}</p>{/if}
     <div class="input-element">
-        <input type="text" name="joincode" placeholder="Enter Code" bind:value={joincode} />
+        <input type="text" name="joincode" placeholder="Enter Code" />
     </div>
     <button class="button button-red" type="submit">Join Game!</button>
 </form>
