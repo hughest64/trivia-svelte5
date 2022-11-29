@@ -1,6 +1,6 @@
 import * as cookie from 'cookie';
 import { invalid, redirect } from '@sveltejs/kit';
-import { PUBLIC_API_HOST as apiHost } from '$env/static/public';
+import { PUBLIC_API_HOST as apiHost, PUBLIC_SECURE_COOKIE as secureCookie } from '$env/static/public';
 import type { Action, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ cookies, locals }) => {
@@ -48,7 +48,8 @@ const login: Action = async ({ cookies, request, url }) => {
 
     const responseCookies = response.headers.get('set-cookie') || '';
     const jwt = cookie.parse(responseCookies)?.jwt;
-    jwt && cookies.set('jwt', jwt, { path: '/' });
+    // TODO: set secure based on prod mode (eventually)
+    jwt && cookies.set('jwt', jwt, { path: '/', httpOnly: true, sameSite: 'strict', secure: Boolean(secureCookie) });
 
     const next = url.searchParams.get('next') || (responseData?.user_data?.is_staff ? '/host/choice' : '/team');
 
