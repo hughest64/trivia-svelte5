@@ -7,8 +7,13 @@ Description=TM SvelteKit
 Type=simple
 Group=todd
 User=todd
-Environment="HOST=10.0.0.135"
-Environment="ORIGIN=http://10.0.0.135:3000"
+
+# match the proxy_pass host in the nginx config (default port is already 3000)
+Environment="HOST=127.0.0.1"
+
+# match the server_name in the ngnix config
+Environment="ORIGIN=http://10.0.0.135"
+
 WorkingDirectory=/home/todd/dev/tm-svelte/build
 ExecStart=node index.js
 Restart=always
