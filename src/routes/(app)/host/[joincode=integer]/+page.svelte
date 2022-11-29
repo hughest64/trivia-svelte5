@@ -2,15 +2,18 @@
     import { page } from '$app/stores';
     import { getStore } from '$lib/utils';
     import Round from './Round.svelte';
-    import type { ActiveEventData, EventPageData, PopupData } from '$lib/types';
+    import type { ActiveEventData, CurrentEventData, GameRound, RoundState, PopupData } from '$lib/types';
 
     const eventData = $page.data.event_data;
+    const roundNumbers = $page.data.rounds?.map((rd) => rd.round_number) || [];
 
-    $: eventPageData = getStore<EventPageData>('eventPageData');
     $: popupData = getStore<PopupData>('popupData');
     $: activeEventData = getStore<ActiveEventData>('activeEventData');
-    $: activeRound = $eventPageData.activeRound;
-    $: activeRoundState = $eventPageData.activeRoundState;
+    $: currentEventData = getStore<CurrentEventData>('currentEventData');
+    $: roundStates = getStore<RoundState[]>('roundStates') || [];
+
+    $: activeRound = $page.data.rounds?.find((rd) => rd. round_number === $activeEventData.activeRoundNumber) as GameRound;
+    $: activeRoundState = $roundStates.find((rs) => rs.round_number === $activeEventData.activeRoundNumber);
     $: locked = activeRoundState?.locked;
 
     $: joincode = $page.params?.joincode;
@@ -60,12 +63,12 @@
 <p>Details: <strong>{eventData?.location}, {eventData?.game_title}</strong></p>
 
 <div class="round-selector">
-    {#each $eventPageData.roundNumbers as roundNum}
+    {#each roundNumbers as roundNum}
         <button
             id={String(roundNum)}
             on:click={handleRoundSelect}
             class:active={$activeEventData.activeRoundNumber === roundNum}
-            class:current={$eventPageData.currentRoundNumber === roundNum}
+            class:current={$currentEventData.round_number === roundNum}
         >
             {roundNum}
         </button>
@@ -87,7 +90,7 @@
 
 <!-- <button class="button button-red" on:click|preventDefault>Score/Edit This Round</button> -->
 
-<Round />
+<Round {activeRound} />
 
 <style lang="scss">
     h1 {

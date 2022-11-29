@@ -2,13 +2,12 @@
     import Question from './Question.svelte';
     import { page } from '$app/stores';
     import { getStore } from '$lib/utils';
-    import type { QuestionState, EventPageData, GameQuestion } from '$lib/types';
+    import type { QuestionState, GameQuestion, GameRound } from '$lib/types';
 
-    const questions: GameQuestion[] = $page.data.questions || [];
+    export let activeRound: GameRound;
     let formError: string;
+    const questions: GameQuestion[] = $page.data.questions || [];
 
-    $: eventPageData = getStore<EventPageData>('eventPageData');
-    $: activeRound = $eventPageData.activeRound;
     $: roundQuestions = questions.filter((question) => question.round_number === activeRound?.round_number);
     $: questionStates = getStore<QuestionState[]>('questionStates');
     $: roundQuestionStates = $questionStates.filter((qs) => qs.round_number === activeRound?.round_number);
