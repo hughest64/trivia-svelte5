@@ -1,0 +1,20 @@
+# service file for the Trivia Mafia Django API
+
+[Unit]
+Description=TM Django API
+# is this necessary?
+After=network.target
+
+[Service]
+Type=simple
+Group=todd
+User=todd
+
+WorkingDirectory=/home/todd/dev/tm-svelte/server
+# runs on 127.0.0.1:8000 by defualt, fine for now, use a socket later
+ExecStart=/home/todd/.local/virtualenvs/share/trivia-mafia-game-app-6q-2R7-M/bin/gunicorn server.asgi:application -w 4 -k uvicorn.workers.UvicornWorker
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
