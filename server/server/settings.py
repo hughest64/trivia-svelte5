@@ -140,28 +140,28 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # TODO: probably get rid of this
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        # 'user.authentication.JwtAuthentication'
-        'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.BasicAuthentication',
-    ]
-}
+# REST_FRAMEWORK = {
+#     'DEFAULT_AUTHENTICATION_CLASSES': [
+#         # 'user.authentication.JwtAuthentication'
+#         'rest_framework.authentication.SessionAuthentication',
+#         'rest_framework.authentication.BasicAuthentication',
+#     ]
+# }
 
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',
     'http://127.0.0.1:5173',
-    'http://10.0.0.135:5173',
-    'http://10.0.0.135:3000',
     'http://127.0.0.1:3000',
+    'http://10.0.0.135:3000',
+    'http://10.0.0.135:5173',
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
     'http://127.0.0.1:5173',
-    'http://10.0.0.135:5173',
-    'http://10.0.0.135:3000',
     'http://127.0.0.1:3000',
+    'http://10.0.0.135:3000',
+    'http://10.0.0.135:5173',
 ]
 
 CORS_ALLOW_CREDENTIALS = True
