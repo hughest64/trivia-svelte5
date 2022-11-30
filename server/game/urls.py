@@ -1,9 +1,16 @@
 from django.urls import path, re_path
+from django.shortcuts import redirect
 
 from .views import common, host, player
 
+def redirect_to_admin(_):
+    return redirect('/admin/')
+
 
 urlpatterns = [
+    # nothing at the root, go to the admin
+    path('', redirect_to_admin, name="redirect_to_admin"),
+
     # update trivia events
     re_path(r"^host/(?P<joincode>\d+)/lock/?$", host.RoundLockView.as_view()),
     re_path(r"^host/(?P<joincode>\d+)/reveal/?$", host.QuestionRevealView.as_view()),
