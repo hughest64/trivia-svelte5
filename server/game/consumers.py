@@ -99,7 +99,7 @@ class SocketConsumer(AsyncJsonWebsocketConsumer):
 
     async def team_update(self, data):
         """Pass a single response object back to a team group."""
-        # print("updating response", self.team_group)
+        print("updating response", self.team_group)
         msg_type = data.pop("msg_type")
         if msg_type:
             data["type"] = msg_type
@@ -110,7 +110,7 @@ class SocketConsumer(AsyncJsonWebsocketConsumer):
     ######################
 
     async def event_update(self, data):
-        # print(data)
+        print(data)
         msg_type = data.pop("msg_type")
         if msg_type:
             data["type"] = msg_type

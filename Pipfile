@@ -9,6 +9,9 @@ djangorestframework = "*"
 django-cors-headers = "*"
 pyjwt = "*"
 channels = "*"
+gunicorn = "*"
+uvicorn = "*"
+hypercorn = "*"
 
 [dev-packages]
 black = "*"

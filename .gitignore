@@ -10,6 +10,6 @@ node_modules
 # python
 __pycache__/
 # built static files from Django
-staticfiles
+server/static/
 migrations/
 db.sqlite3
