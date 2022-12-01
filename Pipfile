@@ -8,7 +8,8 @@ django = "*"
 djangorestframework = "*"
 django-cors-headers = "*"
 pyjwt = "*"
-channels = "*"
+channels = {extras = ["daphne"], version = "*"}
+channels-redis = "*"
 
 [dev-packages]
 black = "*"
