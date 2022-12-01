@@ -47,8 +47,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # packages
     'corsheaders',
-    # I don't think this needs to be included unless we use their UI
-    # 'rest_framework',
     'channels',
     # apps
     'user',
@@ -140,15 +138,6 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-# TODO: probably get rid of this
-# REST_FRAMEWORK = {
-#     'DEFAULT_AUTHENTICATION_CLASSES': [
-#         # 'user.authentication.JwtAuthentication'
-#         'rest_framework.authentication.SessionAuthentication',
-#         'rest_framework.authentication.BasicAuthentication',
-#     ]
-# }
 
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',

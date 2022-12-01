@@ -11,7 +11,7 @@ Group=todd
 User=todd
 
 WorkingDirectory=/home/todd/dev/tm-svelte/server
-ExecStart=/home/todd/.local/virtualenvs/share/tm-svelte-bQq8cgGE/bin/hypercorn server.asgi:application -w 4 -b 127.0.0.1:8000
+ExecStart=/home/todd/.local/virtualenvs/share/tm-svelte-bQq8cgGE/bin/daphne server.asgi:application
 Restart=always
 RestartSec=10
 
