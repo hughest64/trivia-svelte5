@@ -39,6 +39,7 @@ export const getJwtPayload = (token?: string): JwtPayload => {
 // sort a user's teams so their active team comes first
 export const sortUserTeams = (userTeams: UserTeam[], activeTeamId: number): UserTeam[] | void => {
     const activeTeamIndex = userTeams.findIndex((team) => team.id === activeTeamId);
+    // TODO: shoudl this be if (activeTeamIndex === -1):
     if (!activeTeamIndex) return;
 
     const updatedTeams = [...userTeams];
@@ -47,6 +48,7 @@ export const sortUserTeams = (userTeams: UserTeam[], activeTeamId: number): User
     return [activeTeam, ...updatedTeams];
 };
 
+// TODO: deprecate in favor of splitQuestionKey
 export const getCurrentFromKey = (key: string): CurrentEventData => {
     const split = key.split('.');
 
@@ -73,11 +75,11 @@ export const splitQuestionKey = (key: string): RoundQuestion => {
 };
 
 export const getQuestionKeys = (questions: GameQuestion[], activeRound: GameRound): string[] => {
-    const qNums = [];
+    const keys = [];
     for (const q of questions) {
         if (q.round_number === activeRound.round_number) {
-            qNums.push(q.key);
+            keys.push(q.key);
         }
     }
-    return qNums;
+    return keys;
 };
