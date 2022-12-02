@@ -18,7 +18,7 @@ export const load: PageServerLoad = async ({ parent }) => {
 export const selectTeam: Action = async ({ fetch, request, url }) => {
     const { selectedteam, currentteam } = Object.fromEntries((await request.formData()).entries());
     if (selectedteam !== currentteam) {
-        const response = await fetch(`${apiHost}/teamselect/`, {
+        const response = await fetch(`${apiHost}/team/join`, {
             method: 'POST',
             body: JSON.stringify({ team_id: selectedteam })
         });

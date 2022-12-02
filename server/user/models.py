@@ -3,14 +3,15 @@ from django.db import models
 from game.models import Team
 
 class User(AbstractUser):
-    active_team_id = models.IntegerField(blank=True, null=True)
+    active_team = models.ForeignKey("game.Team", blank=True, null=True, on_delete=models.SET_NULL)
+    # active_team_id = models.IntegerField(blank=True, null=True)
     auto_reveal_questions = models.BooleanField(default=False)
 
     def teams_json(self):
         return [team.to_json() for team in self.teams.all()]
 
     def to_json(self):
-        active_team_id = self.active_team_id if self.active_team_id else None
+        active_team_id = self.active_team.id if self.active_team else None
         return {
             "id": self.pk,
             "username": self.username,
@@ -21,13 +22,6 @@ class User(AbstractUser):
             "teams": self.teams_json()
         }
 
-    def clean(self):
-        # ensure that whenever an active id is set, the user is added to the team
-        if self.active_team_id:
-            team_query = Team.objects.filter(id=self.active_team_id)
-            if not team_query.exists():
-                raise ValueError(f"Team with id {self.active_team_id} does not exist")
-
-            self.teams.add(self.active_team_id)
-
-        return super().clean()
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)

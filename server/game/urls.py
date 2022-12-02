@@ -1,7 +1,7 @@
 from django.urls import path, re_path
 from django.shortcuts import redirect
 
-from .views import common, host, player
+from .views import common, game, host, team
 
 def redirect_to_admin(_):
     return redirect('/admin/')
@@ -22,11 +22,11 @@ urlpatterns = [
     re_path(r"^host/(?P<joincode>\d+)[/\w]*/?$", host.EventHostView.as_view()),
 
     # player endpoints
-    re_path(r"^game/join/?$", player.EventJoinView.as_view()),
-    re_path(r"^game/(?P<joincode>\d+)/response/?$", player.ResponseView.as_view()),
-    re_path(r"^game/(?P<joincode>\d+)[/\w]*/?$", player.EventView.as_view()),
-    re_path(r"^teamselect/?$", player.TeamView.as_view()),
-    re_path(r"^team/?$", player.TeamView.as_view()),
+    re_path(r"^game/join/?$", game.EventJoinView.as_view()),
+    re_path(r"^game/(?P<joincode>\d+)/response/?$", game.ResponseView.as_view()),
+    re_path(r"^game/(?P<joincode>\d+)[/\w]*/?$", game.EventView.as_view()),
+    re_path(r"^team/join/?$", team.TeamJoinView.as_view()),
+    re_path(r"^team/?$", team.TeamView.as_view()),
 
     # for testing only!
     re_path(r"^reset-event-data/?$", common.ClearEventDataView.as_view()),

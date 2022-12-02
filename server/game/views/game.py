@@ -62,32 +62,6 @@ class EventJoinView(APIView):
         return Response({"user_data": user_data})
 
 
-class TeamView(APIView):
-    authentication_classes = [JwtAuthentication]
-
-    def get(self, request):
-        user_data = request.user.to_json()
-
-        return Response({"user_data": user_data})
-
-    @method_decorator(csrf_protect)
-    def post(self, request):
-        print(request.data)
-        team_id = request.data.get("team_id")
-        status = HTTP_200_OK
-        if team_id:
-            user = request.user
-            requested_team = Team.objects.filter(id=team_id)
-            if requested_team.exists():
-                user.active_team_id = requested_team.first().id
-                user.save()
-
-            else:
-                status = HTTP_404_NOT_FOUND
-
-        return Response({"active_team_id": team_id}, status=status)
-
-
 class ResponseView(APIView):
     authentication_classes = [JwtAuthentication]
 

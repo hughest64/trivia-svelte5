@@ -1873,7 +1873,7 @@
             "is_staff": false,
             "is_active": true,
             "date_joined": "2022-07-01T20:56:26.281Z",
-            "active_team_id": 6,
+            "active_team": 6,
             "auto_reveal_questions": false,
             "groups": [],
             "user_permissions": []
@@ -1893,7 +1893,7 @@
             "is_staff": true,
             "is_active": true,
             "date_joined": "2022-08-05T20:36:36Z",
-            "active_team_id": null,
+            "active_team": null,
             "auto_reveal_questions": false,
             "groups": [],
             "user_permissions": []
@@ -1921,26 +1921,6 @@
     },
     {
         "model": "user.user",
-        "pk": 6,
-        "fields": {
-            "password": "pbkdf2_sha256$390000$y7doi0gEuBOmhK9Cy9gm93$92X4RGnn1DAaac5Jlio6Olm5SQPVxCMZ0imihnRQLm8=",
-            "last_login": null,
-            "is_superuser": false,
-            "username": "blarg",
-            "first_name": "",
-            "last_name": "",
-            "email": "",
-            "is_staff": false,
-            "is_active": true,
-            "date_joined": "2022-10-04T14:13:16Z",
-            "active_team_id": 2,
-            "auto_reveal_questions": false,
-            "groups": [],
-            "user_permissions": []
-        }
-    },
-    {
-        "model": "user.user",
         "pk": 7,
         "fields": {
             "password": "pbkdf2_sha256$390000$Fzh6Zuq4n9UBLXYyOti7nS$dB4vtBhrNLGLz+/E32kWuuhrOT7USnwIFX3isM95c24=",
@@ -1953,7 +1933,7 @@
             "is_staff": false,
             "is_active": true,
             "date_joined": "2022-10-21T20:58:06Z",
-            "active_team_id": 3,
+            "active_team": 3,
             "auto_reveal_questions": false,
             "groups": [],
             "user_permissions": []
@@ -1973,7 +1953,7 @@
             "is_staff": false,
             "is_active": true,
             "date_joined": "2022-11-21T19:38:52Z",
-            "active_team_id": 2,
+            "active_team": 2,
             "auto_reveal_questions": false,
             "groups": [],
             "user_permissions": []
@@ -1993,7 +1973,7 @@
             "is_staff": false,
             "is_active": true,
             "date_joined": "2022-11-21T19:39:38Z",
-            "active_team_id": 2,
+            "active_team": 2,
             "auto_reveal_questions": false,
             "groups": [],
             "user_permissions": []

@@ -4,7 +4,7 @@ from .models import User
 
 class TriviaUserAdmin(UserAdmin):
     fieldsets = (
-        ("User Info", {"fields": ('active_team_id', 'auto_reveal_questions')}),
+        ("User Info", {"fields": ('active_team', 'auto_reveal_questions')}),
     ) + UserAdmin.fieldsets
 
 
