@@ -1,6 +1,6 @@
 import * as cookie from 'cookie';
 import { invalid, redirect } from '@sveltejs/kit';
-import { PUBLIC_API_HOST as apiHost } from '$env/static/public';
+import { PUBLIC_API_HOST as apiHost, PUBLIC_SECURE_COOKIE as secureCookie } from '$env/static/public';
 import type { Action, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ cookies, locals }) => {
@@ -16,7 +16,12 @@ export const load: PageServerLoad = async ({ cookies, locals }) => {
     const csrfCookie = cookie.parse(getResponse.headers.get('set-cookie') || '');
     const csrftoken = csrfCookie?.csrftoken || '';
 
-    cookies.set('csrftoken', csrftoken, { expires: new Date(csrfCookie.expires), path: '/', sameSite: 'lax' });
+    cookies.set('csrftoken', csrftoken, {
+        expires: new Date(csrfCookie.expires),
+        path: '/',
+        secure: Boolean(secureCookie),
+        sameSite: 'lax'
+    });
 };
 
 // guest login
@@ -40,7 +45,7 @@ const guestLogin: Action = async ({ cookies, url }) => {
 
     const responseCookies = response.headers.get('set-cookie') || '';
     const jwt = cookie.parse(responseCookies)?.jwt;
-    jwt && cookies.set('jwt', jwt, { path: '/' });
+    jwt && cookies.set('jwt', jwt, { path: '/', secure: Boolean(secureCookie), httpOnly: true });
     const next = url.searchParams.get('next') || '/team';
 
     throw redirect(302, next);
