@@ -10,6 +10,7 @@ django-cors-headers = "*"
 pyjwt = "*"
 channels = {extras = ["daphne"], version = "*"}
 channels-redis = "*"
+whitenoise = "*"
 
 [dev-packages]
 black = "*"

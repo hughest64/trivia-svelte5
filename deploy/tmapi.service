@@ -11,7 +11,7 @@ Group=todd
 User=todd
 
 WorkingDirectory=/home/todd/dev/tm-svelte/server
-ExecStart=/home/todd/.local/virtualenvs/share/tm-svelte-bQq8cgGE/bin/daphne server.asgi:application
+ExecStart=/home/todd/.local/share/virtualenvs/tm-svelte-bQq8cgGE/bin/daphne -u /home/todd/dev/tm-svelte/tmp/tmdemo.sock
 Restart=always
 RestartSec=10
 
