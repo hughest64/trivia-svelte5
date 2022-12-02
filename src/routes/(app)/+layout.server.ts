@@ -1,4 +1,4 @@
-import { redirect } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 import { PUBLIC_API_HOST as apiHost } from '$env/static/public';
 import type { LayoutServerLoad } from './$types';
 
@@ -13,9 +13,9 @@ export const load: LayoutServerLoad = async ({ locals, request, fetch }) => {
     const response = await fetch(`${apiHost}${apiEndpoint}/`);
 
     let data = {};
+    const pageData = await response.json();
     if (response.ok) {
-        const eventData = await response.json();
-        data = { ...eventData, ...locals };
+        data = { ...pageData, ...locals };
     }
 
     // not authorized, redirect to log out to ensure cookies get deleted
@@ -25,6 +25,11 @@ export const load: LayoutServerLoad = async ({ locals, request, fetch }) => {
     // forbidden, redirect to a safe page
     if (response.status === 403) {
         throw redirect(302, '/team');
+    }
+    // TODO: expand to handle other pages (/team, etc)
+    // resolve the error page
+    if (response.status === 404) {
+        throw error(404, { message: pageData.detail, next: '/game/join' });
     }
 
     return data;

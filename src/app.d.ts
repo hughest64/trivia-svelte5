@@ -24,6 +24,9 @@ declare namespace App {
         game_select_data?: Array<import('$lib/types').GameSelectData>;
     }
     // interface Platform {}
+    interface Error {
+        next?: string;
+    }
 }
 
 declare namespace svelte.JSX {
