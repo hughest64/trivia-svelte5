@@ -6,7 +6,7 @@
         "build": "vite build",
         "preview": "vite preview",
         "test": "playwright test",
-        "test-db": "API_PORT=7000 playwright test",
+        "test-db": "API_PORT=7000 playwright test --config playwright.config.db.ts",
         "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
         "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
         "lint": "prettier --check . && eslint .",
