@@ -1,5 +1,6 @@
 <script lang="ts">
     import '$lib/styles/popup.scss';
+    import { fly } from 'svelte/transition';
     import { page } from '$app/stores';
     import CloseButton from './CloseButton.svelte';
     import { getStore, getCurrentFromKey } from '$lib/utils';
@@ -43,11 +44,18 @@
 </script>
 
 <div class="pop-timer">
-    <h4>{count}</h4>
+    {#key count}
+        <h4 in:fly={{ y: -20 }}>{count}</h4>
+    {/key}
 </div>
 
 <div class="pop-content">
-    <p>The Next Question Will Be Revealed in {count} second{count > 1 ? 's' : ''}</p>
+    <p>
+        The Next Question Will Be Revealed in
+        {#key count}
+            <span style="display: inline-block" in:fly={{ y: -20 }}>{count}</span>
+        {/key} second{count === 1 ? '' : 's'}
+    </p>
 </div>
 
 <CloseButton on:click={() => (count = 0)} />
