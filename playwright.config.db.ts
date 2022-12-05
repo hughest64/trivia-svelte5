@@ -5,7 +5,7 @@ const config: PlaywrightTestConfig = {
     timeout: 60000, // 1 minute
     webServer: [
         {
-            command: 'npm run build -- --mode test && npm run preview',
+            command: 'npm run build -- --mode test-db && npm run preview',
             port: 4173
         }
     ],
