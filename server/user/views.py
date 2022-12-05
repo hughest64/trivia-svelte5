@@ -32,7 +32,6 @@ class GuestView(APIView):
         jwt = request.COOKIES.get("jwt")
         user = decode_token(jwt)
 
-        # TODO: create a user
         if user.is_anonymous:
             user = User.objects.get(username="guest")
             valid_token = False

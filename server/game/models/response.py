@@ -7,7 +7,7 @@ class Response(models.Model):
     recorded_answer = models.TextField(default="")
     game_question = models.ForeignKey("GameQuestion", on_delete=models.CASCADE)
     team = models.ForeignKey("Team", related_name="responses", on_delete=models.CASCADE)
-    # TODO: this will need to change to leaderboard, or at least have leaderboard added, maybe?
+    # TODO: add leaderboard
     event = models.ForeignKey("TriviaEvent", related_name="responses", on_delete=models.CASCADE)
 
     def __str__(self):
