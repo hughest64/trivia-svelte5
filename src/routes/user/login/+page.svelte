@@ -16,12 +16,12 @@
 <form method="POST">
     {#if form?.error}<h3>{form?.error}</h3>{/if}
     <div class="input-element">
-        <input type="text" id="username" name="username" />
+        <input type="text" id="username" name="username" autocapitalize="off" autocomplete="username"/>
         <label for="username">Username or Email</label>
     </div>
 
     <div class="input-element">
-        <input type="password" id="password" name="password" />
+        <input type="password" id="password" name="password" autocomplete="current-password" />
         <label for="password">Password</label>
     </div>
 

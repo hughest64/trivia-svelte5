@@ -51,6 +51,10 @@
             required
             name="response_text"
             type="text"
+            autocapitalize="none"
+            autocorrect="off"
+            autocomplete="off"
+            spellcheck="false"
             value={activeResponse?.recorded_answer || ''}
             on:input={syncInputText}
         />

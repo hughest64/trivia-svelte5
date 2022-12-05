@@ -18,7 +18,7 @@
 <form action="?/joinevent" method="POST">
     {#if form?.error}<p class="error">{form?.error}</p>{/if}
     <div class="input-element">
-        <input type="text" name="joincode" placeholder="Enter Code" />
+        <input type="text" name="joincode" placeholder="Enter Code" autocapitalize="none" autocomplete="off" />
     </div>
     <button class="button button-red" type="submit">Join Game!</button>
 </form>
