@@ -52,7 +52,7 @@
 
             const response = await fetch('?/lock', { method: 'post', body: data });
             if (!response.ok) {
-                // TOODO: handle error
+                // TODO: handle error
                 console.log(response.json());
                 locked = !locked;
             }
