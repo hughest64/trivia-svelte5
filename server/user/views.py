@@ -15,6 +15,7 @@ User = get_user_model()
 
 # TODO: implement for user creation
 class RegisterView(APIView):
+    @method_decorator(csrf_protect)
     def post(self, request):
 
         return Response({"detail": "Not Found"}, code=HTTP_404_NOT_FOUND)

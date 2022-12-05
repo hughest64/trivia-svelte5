@@ -85,7 +85,7 @@ class QuestionRevealView(APIView):
     authentication_classes = [JwtAuthentication]
     permission_classes = [IsAdminUser]
 
-    # TODO: csrf protect
+    @method_decorator(csrf_protect)
     def post(self, request, joincode):
         try:
             data = parse_reveal_payload(request.data)
@@ -111,7 +111,7 @@ class UpdateView(APIView):
     authentication_classes = [JwtAuthentication]
     permission_classes = [IsAdminUser]
 
-    # TOOD: csrf protect
+    @method_decorator(csrf_protect)
     def post(self, request, joincode):
         data = parse_reveal_payload(request.data)
         key = data.get("key")
@@ -175,6 +175,7 @@ class UpdateAllView(APIView):
     authentication_classes = [JwtAuthentication]
     permission_classes = [IsAdminUser]
 
+    @method_decorator(csrf_protect)
     def post(self, request, joincode):
         data = parse_reveal_payload(request.data)
         round_number = data.get("round")
@@ -231,6 +232,7 @@ class RoundLockView(APIView):
     authentication_classes = [JwtAuthentication]
     permission_classes = [IsAdminUser]
 
+    @method_decorator(csrf_protect)
     def post(self, request, joincode):
         data = request.data
         round_number = int(data.get("round_number"))

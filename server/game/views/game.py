@@ -65,6 +65,7 @@ class EventJoinView(APIView):
 class ResponseView(APIView):
     authentication_classes = [JwtAuthentication]
 
+    @method_decorator(csrf_protect)
     def post(self, request, joincode):
         team_id = request.data.get("team_id")
         question_id = request.data.get("question_id")
