@@ -1,4 +1,7 @@
-<svg viewBox="0 0 33.073 33.073" xmlns="http://www.w3.org/2000/svg" class="${$$props.class}"
+<script lang="ts">
+    export let cls: string;
+</script>
+<svg viewBox="0 0 33.073 33.073" xmlns="http://www.w3.org/2000/svg" class="${cls}"
     ><path
         d="M16.536 32.397c-8.759 0-15.86-7.101-15.86-15.86 0-8.76 7.101-15.86 15.86-15.86 8.76 0 15.86 7.1 15.86 15.86 0 8.759-7.1 15.86-15.86 15.86"
         fill="#e9222e"

@@ -20,19 +20,19 @@
         {#if isEventRoute}
             <li class:active={setActive(joinCode)}>
                 <a href={`/${routeId}/${joinCode}`}>
-                    <QuizIcon class="svg" />
+                    <QuizIcon cls="svg" />
                     <p>Quiz</p>
                 </a>
             </li>
             <li class:active={setActive('leaderboard')}>
                 <a href={`/${routeId}/${joinCode}/leaderboard`}>
-                    <LeaderboardIcon class="svg" />
+                    <LeaderboardIcon cls="svg" />
                     <p>Leaderboard</p>
                 </a>
             </li>
             <li class:active={setActive('chat')}>
                 <a href={`/${routeId}/${joinCode}/chat`}>
-                    <ChatIcon class="svg" />
+                    <ChatIcon cls="svg" />
                     <p>Chat</p>
                 </a>
             </li>
@@ -40,21 +40,21 @@
         {#if routeId === 'game' && isEventRoute}
             <li class:active={setActive('megaround')}>
                 <a href={`/game/${joinCode}/megaround`}>
-                    <MegaroundIcon class="svg" />
+                    <MegaroundIcon cls="svg" />
                     <p>Megaround</p>
                 </a>
             </li>
         {:else if routeId === 'host' && isEventRoute}
             <li class:active={setActive('score')}>
                 <a href={`/host/${joinCode}/score`}>
-                    <ScoringIcon class="svg" />
+                    <ScoringIcon cls="svg" />
                     <p>Scoring</p>
                 </a>
             </li>
         {/if}
         <li>
             <button class="menu" on:click>
-                <MenuIcon class="svg" />
+                <MenuIcon cls="svg" />
                 <p>Menu</p>
             </button>
         </li>
