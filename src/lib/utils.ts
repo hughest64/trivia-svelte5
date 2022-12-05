@@ -48,17 +48,6 @@ export const sortUserTeams = (userTeams: UserTeam[], activeTeamId: number): User
     return [activeTeam, ...updatedTeams];
 };
 
-// TODO: deprecate in favor of splitQuestionKey
-export const getCurrentFromKey = (key: string): CurrentEventData => {
-    const split = key.split('.');
-
-    return {
-        round_number: Number(split[0]),
-        question_number: Number(split.slice(-1)),
-        question_key: key
-    };
-};
-
 interface RoundQuestion {
     round: string;
     question: string;
@@ -72,6 +61,16 @@ export const splitQuestionKey = (key: string): RoundQuestion => {
     const keyReg = /^(?<r>\d+).(?<q>\d+)$/;
     const groups = key.match(keyReg)?.groups;
     return { round: groups?.r || '', question: groups?.q || '' };
+};
+
+export const getCurrentDataFromKey = (key: string): CurrentEventData => {
+    const split = key.split('.');
+
+    return {
+        round_number: Number(split[0]),
+        question_number: Number(split.slice(-1)),
+        question_key: key
+    };
 };
 
 export const getQuestionKeys = (questions: GameQuestion[], activeRound: GameRound): string[] => {

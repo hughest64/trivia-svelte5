@@ -3,7 +3,7 @@
     import { fly } from 'svelte/transition';
     import { page } from '$app/stores';
     import CloseButton from './CloseButton.svelte';
-    import { getStore, getCurrentFromKey } from '$lib/utils';
+    import { getStore, getCurrentDataFromKey } from '$lib/utils';
     import type { ActiveEventData, PopupData } from '$lib/types';
 
     const userData = $page.data.user_data;
@@ -15,7 +15,7 @@
     const resetPopup = () => ($popupData = { is_displayed: false, popup_type: '' });
     const gotoQuestion = async () => {
         if (userData?.auto_reveal_questions && !$page.url.pathname.startsWith('/host')) {
-            const updatedData = getCurrentFromKey($popupData.data?.key);
+            const updatedData = getCurrentDataFromKey($popupData.data?.key);
             $activeEventData = {
                 activeQuestionKey: updatedData.question_key,
                 activeRoundNumber: updatedData.round_number,
