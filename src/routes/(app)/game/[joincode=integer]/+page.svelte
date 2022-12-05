@@ -6,10 +6,12 @@
     import Note from './Note.svelte';
     import type { CurrentEventData, ActiveEventData, GameRound } from '$lib/types';
 
-    const roundNumbers = $page.data?.rounds?.map((rd) => rd.round_number) || []; 
+    const roundNumbers = $page.data?.rounds?.map((rd) => rd.round_number) || [];
     $: activeEventData = getStore<ActiveEventData>('activeEventData');
     $: currentEventData = getStore<CurrentEventData>('currentEventData');
-    $: activeRound = $page.data?.rounds?.find((rd) => rd.round_number === $activeEventData.activeRoundNumber) as GameRound;
+    $: activeRound = $page.data?.rounds?.find(
+        (rd) => rd.round_number === $activeEventData.activeRoundNumber
+    ) as GameRound;
 
     $: joincode = $page.params?.joincode;
 

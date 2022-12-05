@@ -27,7 +27,7 @@
         const keyCode = (event as KeyboardEvent).code;
 
         let nextQuestionKey = $activeEventData.activeQuestionKey;
-        let currentIndex = allQuestionKeys.findIndex((key) => key === nextQuestionKey);
+        const currentIndex = allQuestionKeys.findIndex((key) => key === nextQuestionKey);
         let nextIndex = -1;
 
         if (eventDirection === 'right' || keyCode === 'ArrowRight') {

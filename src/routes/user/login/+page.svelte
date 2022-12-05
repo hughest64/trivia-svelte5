@@ -16,7 +16,7 @@
 <form method="POST">
     {#if form?.error}<h3>{form?.error}</h3>{/if}
     <div class="input-element">
-        <input type="text" id="username" name="username" autocapitalize="off" autocomplete="username"/>
+        <input type="text" id="username" name="username" autocapitalize="off" autocomplete="username" />
         <label for="username">Username or Email</label>
     </div>
 

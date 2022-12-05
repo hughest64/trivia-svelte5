@@ -41,9 +41,7 @@
             "version": "==22.1.0"
         },
         "autobahn": {
-            "hashes": [
-                "sha256:8b462ea2e6aad6b4dc0ed45fb800b6cbfeb0325e7fe6983907f122f2be4a1fe9"
-            ],
+            "hashes": ["sha256:8b462ea2e6aad6b4dc0ed45fb800b6cbfeb0325e7fe6983907f122f2be4a1fe9"],
             "markers": "python_version >= '3.7'",
             "version": "==22.7.1"
         },
@@ -124,9 +122,7 @@
             "version": "==1.15.1"
         },
         "channels": {
-            "extras": [
-                "daphne"
-            ],
+            "extras": ["daphne"],
             "hashes": [
                 "sha256:0ce53507a7da7b148eaa454526e0e05f7da5e5d1c23440e4886cf146981d8420",
                 "sha256:2253334ac76f67cba68c2072273f7e0e67dbdac77eeb7e318f511d2f9a53c5e4"
@@ -368,9 +364,7 @@
             "version": "==0.4.3"
         },
         "twisted": {
-            "extras": [
-                "tls"
-            ],
+            "extras": ["tls"],
             "hashes": [
                 "sha256:32acbd40a94f5f46e7b42c109bfae2b302250945561783a8b7a059048f2d4d31",
                 "sha256:86c55f712cc5ab6f6d64e02503352464f0400f66d4f079096d744080afcccbd0"

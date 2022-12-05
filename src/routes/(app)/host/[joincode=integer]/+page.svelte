@@ -12,7 +12,9 @@
     $: currentEventData = getStore<CurrentEventData>('currentEventData');
     $: roundStates = getStore<RoundState[]>('roundStates') || [];
 
-    $: activeRound = $page.data.rounds?.find((rd) => rd. round_number === $activeEventData.activeRoundNumber) as GameRound;
+    $: activeRound = $page.data.rounds?.find(
+        (rd) => rd.round_number === $activeEventData.activeRoundNumber
+    ) as GameRound;
     $: activeRoundState = $roundStates.find((rs) => rs.round_number === $activeEventData.activeRoundNumber);
     $: locked = activeRoundState?.locked;
 

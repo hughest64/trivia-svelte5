@@ -11,10 +11,8 @@ import type { CurrentEventData, GameQuestion, GameRound, JwtPayload, StoreKey, U
  * @returns an array of cookies to invalidate (delete)
  */
 export const invalidateCookies = (cookies: Cookies, keys: string | string[]): void => {
-    if (!Array.isArray(keys)) {
-        keys = [keys];
-    }
-    keys.forEach((key) => {
+    const allKeys = !Array.isArray(keys) ? [keys] : keys;
+    allKeys.forEach((key) => {
         cookies.set(key, '', { path: '/', httpOnly: true, secure: false, expires: new Date(0) });
     });
 };
