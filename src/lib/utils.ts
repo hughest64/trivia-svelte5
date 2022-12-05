@@ -37,8 +37,7 @@ export const getJwtPayload = (token?: string): JwtPayload => {
 // sort a user's teams so their active team comes first
 export const sortUserTeams = (userTeams: UserTeam[], activeTeamId: number): UserTeam[] | void => {
     const activeTeamIndex = userTeams.findIndex((team) => team.id === activeTeamId);
-    // TODO: shoudl this be if (activeTeamIndex === -1):
-    if (!activeTeamIndex) return;
+    if (activeTeamIndex === -1) return;
 
     const updatedTeams = [...userTeams];
     const activeTeam = updatedTeams.splice(activeTeamIndex, 1)[0];

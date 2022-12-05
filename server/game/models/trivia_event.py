@@ -31,7 +31,7 @@ class Question(models.Model):
     question_text = models.TextField()
     question_url = models.CharField(max_length=255, blank=True, null=True)
     display_answer = models.CharField(max_length=255)
-    # TODO: answers (ArrayField)
+    accepted_answers = models.JSONField(default=list)
     answer_notes = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
