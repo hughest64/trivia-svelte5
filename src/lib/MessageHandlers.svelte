@@ -90,7 +90,7 @@
                 // TODO: error message to user?
                 goto(`/team?next=${location.pathname}`, { invalidateAll: true });
 
-                // anonymous user in the socket connection
+            // anonymous user in the socket connection
             } else if (data.type === 'unauthenticated') {
                 webSocket.send(JSON.stringify({ type: 'authenticate', message: { token: $page.data.jwt } }));
             } else if (handlers[data.type]) {

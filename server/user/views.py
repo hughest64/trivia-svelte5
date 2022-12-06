@@ -13,7 +13,6 @@ from .authentication import create_token, decode_token, JwtAuthentication
 User = get_user_model()
 
 
-# TODO: implement for user creation
 class RegisterView(APIView):
     @method_decorator(csrf_protect)
     def post(self, request):
@@ -33,7 +32,6 @@ class GuestView(APIView):
         jwt = request.COOKIES.get("jwt")
         user = decode_token(jwt)
 
-        # TODO: create a user
         if user.is_anonymous:
             user = User.objects.get(username="guest")
             valid_token = False
@@ -41,7 +39,6 @@ class GuestView(APIView):
         user_data = user.to_json()
         response = Response({"user_data": user_data})
 
-        # TODO: should we "refresh" the token if it is valid?
         if not valid_token:
             token = create_token(user)
             response.set_cookie(key="jwt", value=token, httponly=True)

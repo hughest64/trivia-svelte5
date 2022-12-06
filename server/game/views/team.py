@@ -26,11 +26,17 @@ class TeamView(APIView):
 
 
 class TeamCreateView(APIView):
+    """Create a team and set active"""
     pass
 
 
-# join a new team and set as active
+class TeamSelectView(APIView):
+    """Select an existing team add to a players teams and set active"""
+    pass
+
+
 class TeamJoinView(APIView):
+    """Set an existing player's team active"""
     authentication_classes = [JwtAuthentication]
 
     @method_decorator(csrf_protect)
@@ -46,8 +52,3 @@ class TeamJoinView(APIView):
         user.save()
 
         return Response({"active_team_id": team_id})
-
-
-# select from teams a player is already on
-class TeamSelectView(APIView):
-    pass # TODO: move TeamView post here
