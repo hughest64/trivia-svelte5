@@ -53,7 +53,6 @@ const login: Action = async ({ cookies, request, url }) => {
 
     const responseCookies = response.headers.get('set-cookie') || '';
     const jwt = cookie.parse(responseCookies)?.jwt;
-    // TODO: set secure based on prod mode (eventually)
     jwt && cookies.set('jwt', jwt, { path: '/', httpOnly: true, secure: Boolean(secureCookie) });
 
     const next = url.searchParams.get('next') || (responseData?.user_data?.is_staff ? '/host/choice' : '/team');

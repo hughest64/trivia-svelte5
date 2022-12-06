@@ -99,6 +99,5 @@
                 console.error(`message type ${data.type} does not have a handler function!`);
             }
         };
-        // TODO: returm webSocket.close()?
     });
 </script>
