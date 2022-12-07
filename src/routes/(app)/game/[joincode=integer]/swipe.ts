@@ -1,6 +1,6 @@
 /**
  * compare the x coordinate from mousedown and mouseup and fire the custom "swipe" event if the distance
- * traveled is greater than theshold.
+ * traveled is greater than threshold.
  *
  * @param node html element that uses this function
  * @param threshold distance in pixels from mouse down to mouse up required in order to fire the event

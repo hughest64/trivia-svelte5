@@ -1,5 +1,3 @@
-from asgiref.sync import async_to_sync
-
 from channels.layers import get_channel_layer
 
 from django.utils.decorators import method_decorator
@@ -10,8 +8,6 @@ from rest_framework.status import HTTP_403_FORBIDDEN, HTTP_404_NOT_FOUND
 from rest_framework.views import APIView
 
 from user.authentication import JwtAuthentication
-
-from game.models import Team, Response as QuestionResponse, TriviaEvent
 
 channel_layer = get_channel_layer()
 
