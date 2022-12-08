@@ -1,40 +1,61 @@
-# TrivaMafia SvelteKit Concept
+# TrivaMafia - SvelteKit Edition
 
-A re-platformed re-conceived version of the trivia app intended to provide more flexibility, better scalability, easier implementation of new features, and better testing patterns.
+A demonstartion of the Trivia Mafia app using the awesome SvelteKit framwork and Django as an api backend.
 
 ## Installation
 
 ### SvelteKit
-
--   SvelteKit requires `node >= 16`, so make sure that is installed and active.
--   For convenience there is a `.nvmrc` file at the root which will automatically load the correct version in this directory. This is only useful if you are using Node Version Manager.
--   with node 16 active, run `npm i` to install the dependencies
+Make sure you have `node >=16` then `npm i` to install the dependencies
 
 ### Python
-
--   from the `server` directory run `pipenv install` to add the python dependencies
+`cd server` then `pipenv install` to add the python dependencies
 
 ### Environment Variables
-
--   create a `.env` file at the root and add the following variables which are requried for running the dev server
-
+ create a `.env` file at the root with the following values
 ```bash
-VITE_API_HOST = 'http://localhost:8000'
-
-VITE_WEBSOCKET_HOST = 'ws://localhost:8000'
+VITE_API_HOST = 'http://127.0.0.1:8000'
+VITE_WEBSOCKET_HOST = 'ws://127.0.0.1:8000'
+PUBLIC_COOKIE_MAX_AGE=60
+PUBLIC_SECURE_COOKIE=
+PUBLIC_QUESTION_REVEAL_TIMEOUT=5000
 ```
 
 ## Project Setup
-
-`NOTE:` There is no need to use the `createsuperuser` command here, that is handled in the setup script described below.\
-All commands need to be run from the server dirctory with `pipenv` active.
-
--   do the initia datbase migration with `python manage.py migrate`
--   run the database setup script with `python manage.py dbsetup` this will allow you to optionally create a superuser as well as create the example teams and guest user/team for the app
+### Database
+For simplicity the default `sqlite` is used
+### Migrations
+- `python manage.py makemigrations user`
+- `python manage.py makemigrations game`
+- `python manage.py migrate`
+### Load Fixture Data
+- `python manage.py loaddata fixtures/dbdump.json`
+### SuperUser
+- `python manage.py createsuperuser` - follow the prompts
+- it's not currently possible to create teams in the ui, so you'll have to add yourself to one or more in the admin
 
 ## Run the Dev Servers
+- With `pipenv` active from the `server` dir run `python manage.py runserver` to start Django at `localhost:8000`
+- From the root run `npm run dev` to start the SvetleKit dev server at `localhost:5173`
 
--   python - with `pipenv` active from the `server` run `python manage.py runserver`
--   SvelteKit - from the root run `npm run dev`
+## Run Playwright tests
+There are multiple methods for running tests. Using the provided vscode task `run-tests` is the easiest way. 
+This will start a Django test server at `localhost:7000`. Playwright will build the app and run tests against it. 
+This keeps the actual database isolated and prevents possible false negatives. Expect 2-3 flaky tests and ~56 passing tests.
 
-## Testing
+In order to use the vscode task you will need to create a `.env.test` file with the following parameters:
+```bash
+PUBLIC_QUESTION_REVEAL_TIMEOUT=1000 # 1 second for tests
+PUBLIC_API_HOST='http://127.0.0.1:7000'
+PUBLIC_WEBSOCKET_HOST='ws://127.0.0.1:7000'
+```
+This will reduce the question reveal time to 1 second to help speed up tests and build the app using the test-db port to connect to the api.
+
+Tests can be run from the command line with `npm run test`. This runs all tests against the dev database
+Tests can also be run directly in vscode if the playwright extension is installed. Just open a test file and click the play button
+next to the test. This runs tests against the dev database and django must be running on port 8000
+
+Note that the dev database must be in "fresh" state for all tests to pass meaning that round locks, question reveals, and responses
+need to be in the state of a brand new game.
+
+You can use the command `python manage.py reset` to reset the database before the test run (this should be automated at the start of each test run).
+Subsequent test runs are guaranteed to have a "fesh" state as the tests themselves reset the data frequently.
