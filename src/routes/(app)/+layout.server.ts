@@ -4,8 +4,7 @@ import type { LayoutServerLoad } from './$types';
 
 const apiMap = new Map([['/host/choice', '/user']]);
 
-export const load: LayoutServerLoad = async ({ locals, request, fetch }) => {
-    const url = new URL(request.url);
+export const load: LayoutServerLoad = async ({ locals, url, fetch }) => {
     const apiEndpoint = apiMap.get(url.pathname) || url.pathname;
 
     if (!locals.validtoken) throw redirect(302, `/user/logout?next=${url.pathname}`);
