@@ -8,6 +8,11 @@
 <svelte:head><title>Trivia Mafia | Welcome</title></svelte:head>
 
 <main>
+    <div class='demo-note flex-column'>
+        <h4>Welcome to the Trivia Mafia SvelteKit Demo!</h4>
+        <p>Please note that this demo is FAR from feature complete. <a href="/about">Click here for the details</a>.</p>
+    </div>
+
     <div class="logo-container">
         <img src="TM2021-Flat-Stacked-WhiteBackground.svg" alt="Trivia Mafia" />
     </div>
@@ -31,6 +36,20 @@
             max-width: calc(100% - 2em);
             margin: auto;
             display: block;
+        }
+    }
+    .demo-note {
+        padding: 1em;
+        background-color: var(--color-red);
+        color: var(--color-white);
+        width: 100vw;
+        h4 {
+            margin-bottom: .5em;
+        }
+        a {
+            color: var(--color-white);
+            text-decoration: underline;
+            font-weight: bold;
         }
     }
 </style>
