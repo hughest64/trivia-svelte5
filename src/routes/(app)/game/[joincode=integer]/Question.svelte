@@ -1,0 +1,91 @@
+<script lang="ts">
+    import { page } from '$app/stores';
+    import { getStore } from '$lib/utils';
+    import type { ActionData } from './$types';
+    import type { ActiveEventData, Response, RoundState, QuestionState, UserData } from '$lib/types';
+
+    $: form = <ActionData>$page.form;
+    $: userData = getStore<UserData>('userData');
+    $: activeEventData = getStore<ActiveEventData>('activeEventData');
+    $: responses = getStore<Response[]>('responseData') || [];
+    $: roundStates = getStore<RoundState[]>('roundStates') || [];
+    $: questionStates = getStore<QuestionState[]>('questionStates') || [];
+
+    $: activeQuestion = $page.data.questions?.find((q) => q.key === $activeEventData.activeQuestionKey);
+    $: activeResponse = $responses.find((resp) => resp.key === $activeEventData.activeQuestionKey);
+    $: questionState = $questionStates.find((qs) => qs.key === $activeEventData.activeQuestionKey);
+    $: activeRoundState = $roundStates.find((rs) => rs.round_number === $activeEventData.activeRoundNumber);
+
+    let responseText = '';
+    $: notsubmitted = responseText && responseText !== activeResponse?.recorded_answer;
+    const syncInputText = (e: Event) => {
+        const target = <HTMLInputElement>e.target;
+        responseText = target.value;
+    };
+
+    const handleSubmitResponse = async () => {
+        const data = new FormData();
+        data.set('question_id', String(activeQuestion?.id));
+        data.set('team_id', String($userData.active_team_id));
+        data.set('key', activeQuestion?.key || '');
+        data.set('response_text', responseText);
+
+        const response = await fetch('?/response', { method: 'post', body: data });
+        // TODO: error handling
+        console.log(await response.json());
+    };
+</script>
+
+<h2>{activeQuestion?.key}</h2>
+
+<p id={`${activeQuestion?.key}-text`} class="question-text">
+    {questionState?.question_displayed
+        ? activeQuestion?.question_text
+        : 'Please Wait for the Host to Reveal This Question'}
+</p>
+
+<form on:submit|preventDefault={handleSubmitResponse}>
+    <div class="input-element" class:notsubmitted>
+        <input
+            disabled={activeRoundState?.locked}
+            required
+            name="response_text"
+            type="text"
+            autocapitalize="none"
+            autocorrect="off"
+            autocomplete="off"
+            spellcheck="false"
+            value={activeResponse?.recorded_answer || ''}
+            on:input={syncInputText}
+        />
+        <label for="response_text">Enter Answer</label>
+    </div>
+
+    {#if form?.error}<p>{form.error}</p>{/if}
+
+    <button class:disabled={activeRoundState?.locked} class="button button-red" disabled={activeRoundState?.locked}>
+        Submit
+    </button>
+</form>
+
+<style lang="scss">
+    h2 {
+        margin: 0.5em;
+    }
+
+    .question-text {
+        padding: 0 1em;
+    }
+
+    .notsubmitted {
+        input {
+            border-color: var(--color-red);
+        }
+        label {
+            background-color: var(--color-red);
+        }
+    }
+    .disabled {
+        cursor: not-allowed;
+    }
+</style>

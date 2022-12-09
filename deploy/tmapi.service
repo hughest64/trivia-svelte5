@@ -1,0 +1,19 @@
+# service file for the Trivia Mafia Django API
+
+[Unit]
+Description=TM Django API
+# is this necessary?
+After=network.target
+
+[Service]
+Type=simple
+Group=todd
+User=todd
+
+WorkingDirectory=/home/todd/dev/tm-svelte/server
+ExecStart=/home/todd/.local/share/virtualenvs/tm-svelte-bQq8cgGE/bin/daphne -u /home/todd/dev/tm-svelte/tmp/tmdemo.sock
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

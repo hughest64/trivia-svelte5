@@ -1,0 +1,1 @@
+<h1>Page for resetting a password</h1>

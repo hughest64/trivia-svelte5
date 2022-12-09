@@ -1,0 +1,23 @@
+# service file for the Trivia Mafia SvelteKit demo
+
+[Unit]
+Description=TM SvelteKit
+
+[Service]
+Type=simple
+Group=todd
+User=todd
+
+# match the proxy_pass host in the nginx config (default port is already 3000)
+Environment="HOST=127.0.0.1"
+
+# match the server_name in the ngnix config
+Environment="ORIGIN=http://10.0.0.135"
+
+WorkingDirectory=/home/todd/dev/tm-svelte/build
+ExecStart=node index.js
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

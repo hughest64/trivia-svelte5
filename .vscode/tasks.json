@@ -1,0 +1,51 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "npm",
+            "script": "dev",
+            "problemMatcher": [],
+            "label": "kit-dev",
+            "detail": "sveltekit dev server"
+        },
+        {
+            "label": "django-dev",
+            "type": "shell",
+            "detail": "run a Django development server",
+            "command": "${command:python.interpreterPath}",
+            "args": ["manage.py", "runserver"],
+            "options": {
+                "cwd": "${cwd}/server"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "django-test",
+            "type": "shell",
+            "detail": "run a Django test server which creates a test database from a fixture",
+            "command": "${command:python.interpreterPath}",
+            "args": ["manage.py", "testserver", "fixtures/dbdump.json", "--addrport", "7000"],
+            "options": {
+                "cwd": "${cwd}/server"
+            },
+            "problemMatcher": []
+        },
+        {
+            "type": "npm",
+            "script": "test-db",
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "problemMatcher": [],
+            "label": "test-db",
+            "detail": "run playwright test using port 7000 to connect to the api (test server)"
+        },
+        {
+            "label": "run-tests",
+            "dependsOn": ["django-test", "test-db"],
+            "problemMatcher": [],
+            "detail": "start the Django test server and run playwright tests against it"
+        }
+    ]
+}
