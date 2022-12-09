@@ -82,7 +82,7 @@ class ResponseView(APIView):
             event = TriviaEvent.objects.get(join_code=joincode)
         except TriviaEvent.DoesNotExist:
             return Response(
-                {"deail": f"event with join code {joincode} not found"},
+                {"detail": f"event with join code {joincode} not found"},
                 status=HTTP_404_NOT_FOUND,
             )
 
