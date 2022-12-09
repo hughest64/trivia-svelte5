@@ -1,4 +1,4 @@
-# Triva Mafia - SvelteKit Edition
+# Trivia Mafia - SvelteKit Edition
 
 A demonstration of the Trivia Mafia app using the awesome SvelteKit framework and Django as an api backend.
 
@@ -22,7 +22,7 @@ For simplicity the default `sqlite` is used
 - `python manage.py migrate`
 ### Load Seed Data
 - `python manage.py loaddata fixtures/dbdump.json`
-### SuperUser
+### Super User
 - `python manage.py createsuperuser` - follow the prompts
 - it's not currently possible to create teams in the ui, so you'll have to add yourself to one or more in the admin
 
@@ -38,7 +38,7 @@ This keeps the actual database isolated and prevents possible false negatives. E
 `npm run test` will run all tests against the dev database and requires Django to be running on port 8000.
 
 Tests can also be run directly in vscode if the playwright extension is installed. Just open a test file and click the play button 
-next to the test. This also uses the dev database and Django must be running on port 8000
+next to the test. This also uses the dev database and Django must be running on port 8000.
 
 Note that the dev database must be in "fresh" state for all tests to pass meaning that round locks, question reveals, and responses
 need to be in the state of a brand new game.
