@@ -8,8 +8,8 @@ node_modules
 tmp/
 
 # python
-__pycache__/
+*/__pycache__/
 # built static files from Django
 server/static/
-migrations/
-db.sqlite3
+server/migrations/
+server/db.sqlite3
