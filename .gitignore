@@ -8,7 +8,7 @@ node_modules
 tmp/
 
 # python
-*/__pycache__/
+__pycache__/
 # built static files from Django
 server/static/
 server/migrations/
