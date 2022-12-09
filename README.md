@@ -17,8 +17,7 @@ All required `.env` settings for development and testing are included in the rep
 ### Database
 For simplicity the default `sqlite` is used
 ### Migrations
-- `python manage.py makemigrations user`
-- `python manage.py makemigrations game`
+- `python manage.py makemigrations`
 - `python manage.py migrate`
 ### Load Seed Data
 - `python manage.py loaddata fixtures/dbdump.json`
