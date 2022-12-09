@@ -12,4 +12,4 @@ __pycache__/
 # built static files from Django
 server/static/
 migrations/
-db.sqlite3
+server/db.sqlite3
