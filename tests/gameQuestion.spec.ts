@@ -64,6 +64,7 @@ test('active round and question classes are applied properly', async () => {
     await host.revealQuestion('2.1');
 
     // 2.1 should be current
+    await asyncTimeout(revealDelay);
     await expect(host.roundButton('2')).toHaveClass(current);
     await expect(p1.roundButton('2')).toHaveClass(current);
     await expect(p1.questionSelector('2.1')).toHaveClass(current);
@@ -114,7 +115,7 @@ test('question text reveals properly for players', async () => {
 test('auto reveal respects player settings', async () => {
     // host reveals 1.2
     await host.revealQuestion('1.2');
-    await asyncTimeout(revealDelay);
+    await asyncTimeout(1500);
     await host.expectQuestionToBeRevealed('1.2');
     await p1.expectCorrectQuestionHeading('1.2');
     await p2.expectCorrectQuestionHeading('1.1');
@@ -129,7 +130,7 @@ test('reveal all reveals all questions for a round', async () => {
     // host find and click reveal all
     await host.revealQuestion('all');
 
-    await asyncTimeout(revealDelay);
+    await asyncTimeout(1500);
     await p1.expectCorrectQuestionHeading('2.1');
     await p2.expectCorrectQuestionHeading('1.1');
     await p2.roundButton('2').click();
