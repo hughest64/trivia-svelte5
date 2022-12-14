@@ -1,4 +1,4 @@
-import { invalid, redirect } from '@sveltejs/kit';
+import { fail, redirect } from '@sveltejs/kit';
 import { PUBLIC_API_HOST as apiHost } from '$env/static/public';
 import { sortUserTeams } from '$lib/utils';
 import type { Action, PageServerLoad } from './$types';
@@ -25,7 +25,7 @@ export const selectTeam: Action = async ({ fetch, request, url }) => {
 
         const responseData = await response.json();
         if (!response.ok) {
-            return invalid(response.status, { error: responseData.detail });
+            return fail(response.status, { error: responseData.detail });
         }
     }
 

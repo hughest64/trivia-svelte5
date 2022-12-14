@@ -1,4 +1,4 @@
-import { invalid, redirect } from '@sveltejs/kit';
+import { fail, redirect } from '@sveltejs/kit';
 import { PUBLIC_API_HOST as apiHost } from '$env/static/public';
 import type { Action } from './$types';
 
@@ -14,7 +14,7 @@ const fetchEventData: Action = async ({ fetch, request }) => {
 
     const responseData = await response.json();
     if (!response.ok) {
-        return invalid(response.status, { error: responseData.detail });
+        return fail(response.status, { error: responseData.detail });
     }
 
     const joinCode = responseData?.event_data?.join_code;

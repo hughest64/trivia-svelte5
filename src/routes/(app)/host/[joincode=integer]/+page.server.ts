@@ -1,4 +1,4 @@
-import { invalid } from '@sveltejs/kit';
+import { fail } from '@sveltejs/kit';
 import { PUBLIC_API_HOST as apiHost, PUBLIC_QUESTION_REVEAL_TIMEOUT as updateDelay } from '$env/static/public';
 import type { Action } from './$types';
 
@@ -18,7 +18,7 @@ const reveal: Action = async ({ fetch, request, params }) => {
 
     if (!revealResponse.ok) {
         const revealData = await revealResponse.json();
-        return invalid(revealResponse.status, { error: revealData.detail });
+        return fail(revealResponse.status, { error: revealData.detail });
     }
 
     // 5 seconds by default on reveal only
@@ -33,7 +33,7 @@ const reveal: Action = async ({ fetch, request, params }) => {
 
     const updateData = await updateResponse.json();
     if (!updateResponse.ok) {
-        return invalid(updateResponse.status, { error: updateData.detail });
+        return fail(updateResponse.status, { error: updateData.detail });
     }
 
     return { success: true };
@@ -50,7 +50,7 @@ const lock: Action = async ({ fetch, params, request }) => {
 
     const responseData = await response.json();
     if (!response.ok) {
-        return invalid(response.status, { error: responseData.detail });
+        return fail(response.status, { error: responseData.detail });
     }
 
     return { success: true };

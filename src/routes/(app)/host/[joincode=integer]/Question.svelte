@@ -25,7 +25,7 @@
 
         const response = await fetch('?/reveal', { method: 'POST', body: data });
         const result = await response.json();
-        if (result.type === 'invalid') {
+        if (result.type === 'failure') {
             formError = result.data.error;
             questionRevealed = !questionRevealed;
         }
