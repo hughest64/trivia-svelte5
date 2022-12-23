@@ -6,13 +6,14 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 
 from rest_framework.response import Response
-from rest_framework.status import HTTP_200_OK, HTTP_403_FORBIDDEN, HTTP_404_NOT_FOUND
 from rest_framework.views import APIView
 
 from user.authentication import JwtAuthentication
 
-from game.models import Team, QuestionResponse, TriviaEvent
+from game.models import QuestionResponse
 from game.models.utils import queryset_to_json
+from game.views.validation.data_cleaner import TeamRequired, get_event_or_404
+from user.models import User
 
 channel_layer = get_channel_layer()
 
@@ -22,31 +23,19 @@ class EventView(APIView):
 
     def get(self, request, joincode):
         """fetch a specific event from the joincode parsed from the url"""
-        user_data = request.user.to_json()
+        user: User = request.user
+        if not user.active_team:
+            raise TeamRequired
 
-        active_team_qs = Team.objects.filter(id=request.user.active_team_id)
-        if not request.user.active_team_id or not active_team_qs.exists:
-            return Response(
-                {"detail": "You must be on a team to view this page"},
-                status=HTTP_403_FORBIDDEN,
-            )
-
-        try:
-            event = TriviaEvent.objects.get(join_code=joincode)
-        except TriviaEvent.DoesNotExist:
-            return Response(
-                {"detail": f"An event with join code {joincode} was not found"},
-                status=HTTP_404_NOT_FOUND,
-            )
-
+        event = get_event_or_404(join_code=joincode)
         question_responses = QuestionResponse.objects.filter(
-            event__join_code=joincode, team_id=request.user.active_team_id
+            event__join_code=joincode, team=user.active_team
         )
 
         return Response(
             {
                 **event.to_json(),
-                "user_data": user_data,
+                "user_data": user.to_json(),
                 "response_data": queryset_to_json(question_responses),
             }
         )
@@ -56,7 +45,6 @@ class EventJoinView(APIView):
     authentication_classes = [JwtAuthentication]
 
     def get(self, request):
-        """return user data to /game/join"""
         user_data = request.user.to_json()
 
         return Response({"user_data": user_data})
@@ -71,39 +59,25 @@ class ResponseView(APIView):
         question_id = request.data.get("question_id")
         response_text = request.data.get("response_text")
 
-        active_team_qs = Team.objects.filter(id=request.user.active_team_id)
-        if not request.user.active_team_id or not active_team_qs.exists:
-            return Response(
-                {"detail": "You must be on a team to view this page"},
-                status=HTTP_403_FORBIDDEN,
-            )
+        if not request.user.active_team:
+            raise TeamRequired
 
-        try:
-            event = TriviaEvent.objects.get(join_code=joincode)
-        except TriviaEvent.DoesNotExist:
-            return Response(
-                {"detail": f"event with join code {joincode} not found"},
-                status=HTTP_404_NOT_FOUND,
-            )
-
-        question_response, created = QuestionResponse.objects.get_or_create(
+        event = get_event_or_404(join_code=joincode)
+        question_response, _ = QuestionResponse.objects.update_or_create(
             team_id=team_id,
             event=event,
             game_question_id=question_id,
             defaults={"recorded_answer": response_text},
         )
-        if not created:
-            question_response.recorded_answer = response_text
-
-        question_response.grade()
-        question_response.save()
+        if not question_response.locked:
+            question_response.grade()
+            question_response.save()
 
         async_to_sync(channel_layer.group_send)(
             f"team_{team_id}_event_{joincode}",
             {
                 "type": "team_update",
                 "msg_type": "team_response_update",
-                "store": "responseData",
                 "message": question_response.to_json(),
             },
         )
