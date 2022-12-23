@@ -1,5 +1,6 @@
 <script lang="ts">
     import { getStore } from '$lib/utils';
+    import { deserialize } from '$app/forms';
     import type { GameQuestion, QuestionState } from '$lib/types';
 
     export let question: GameQuestion;
@@ -20,13 +21,15 @@
         // update the state locally only, the store value is updated from the web socket response
         questionRevealed = !questionRevealed;
         const data = new FormData();
-        data.set('key', question.key);
-        data.set('value', questionRevealed ? 'revealed' : '');
+        data.set('round_number', String(question.round_number));
+        // stringify an array of a single question number for compatibility with reveal all
+        data.set('question_numbers', JSON.stringify([question.question_number]));
+        data.set('reveal', String(questionRevealed));
 
         const response = await fetch('?/reveal', { method: 'POST', body: data });
-        const result = await response.json();
+        const result = deserialize(await response.text());
         if (result.type === 'failure') {
-            formError = result.data.error;
+            formError = result.data?.error;
             questionRevealed = !questionRevealed;
         }
         updating = false;

@@ -1,7 +1,9 @@
 from asgiref.sync import async_to_sync
+from typing import List
 
 from channels.layers import get_channel_layer
 
+from django.db.models import QuerySet
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 
@@ -10,23 +12,28 @@ from rest_framework.response import Response
 from rest_framework.status import HTTP_404_NOT_FOUND, HTTP_400_BAD_REQUEST
 from rest_framework.views import APIView
 
+from game.views.validation.data_cleaner import (
+    DataCleaner,
+    DataValidationError,
+    get_event_or_404,
+)
 from user.authentication import JwtAuthentication
 
-from game.models import Game, Location, EventRoundState, EventQuestionState, TriviaEvent
+from game.models import (
+    Game,
+    GameQuestion,
+    Location,
+    EventRoundState,
+    EventQuestionState,
+    TriviaEvent,
+    QuestionResponse,
+)
 from game.models.utils import queryset_to_json
 
 channel_layer = get_channel_layer()
 
 # TODO: remove once creating event is implemented
 DEMO_EVENT_JOIN_CODE = 1234
-
-
-def parse_reveal_payload(data):
-    key = data.get("key", "")
-    round, question = key.split(".")
-    revealed = bool(data.get("value", ""))
-
-    return {"key": key, "round": round, "question": question, "revealed": revealed}
 
 
 class EventHostView(APIView):
@@ -85,142 +92,78 @@ class QuestionRevealView(APIView):
     authentication_classes = [JwtAuthentication]
     permission_classes = [IsAdminUser]
 
+    @staticmethod
+    def get_updated_event_data(
+        round_number: int, question_numbers: List[int], event: TriviaEvent
+    ):
+        """update the current attributes of a trivia event when the game play advances"""
+        event_data = {"event_updated": False}
+        if (round_number > event.current_round_number) or (
+            round_number == event.current_round_number
+            and max(question_numbers) > event.current_question_number
+        ):
+            event.current_round_number = round_number
+            event.current_question_number = (
+                question_numbers[0]
+                if len(question_numbers) == 1
+                else min(question_numbers)
+            )
+            event.save()
+            event_data = {
+                "event_updated": True,
+                "question_number": event.current_round_number,
+                "round_number": event.current_round_number,
+            }
+        return event_data
+
     @method_decorator(csrf_protect)
     def post(self, request, joincode):
         try:
-            data = parse_reveal_payload(request.data)
+            data = DataCleaner(request.data)
+            round_number = data.as_int("round_number")
+            question_numbers = data.as_int_array("question_numbers", deserialize=True)
+            reveal = data.as_bool("reveal")
+            update = data.as_bool("update")
+        except DataValidationError as e:
+            return Response(e.response())
+
+        # notify the event group but don't update the db
+        if not update:
             async_to_sync(channel_layer.group_send)(
                 f"event_{joincode}",
                 {
                     "type": "event_update",
                     "msg_type": "question_reveal_popup",
-                    "store": "popupData",
                     "message": {
-                        "key": data.get("key", "").replace("all", "1"),
-                        "value": data.get("revealed"),
+                        "reveal": reveal,
+                        "question_number": min(question_numbers),
+                        "round_number": round_number,
                     },
                 },
             )
-        except Exception as e:
-            return Response({"detail": "An Error Occured"}, status=HTTP_400_BAD_REQUEST)
+        else:
+            event = get_event_or_404(joincode)
+            updated_states = []
+            for num in question_numbers:
+                question_state, _ = EventQuestionState.objects.update_or_create(
+                    event=event,
+                    round_number=round_number,
+                    question_number=num,
+                    defaults={"question_displayed": reveal},
+                )
+                updated_states.append(question_state.to_json())
 
-        return Response({"success": True})
-
-
-class UpdateView(APIView):
-    authentication_classes = [JwtAuthentication]
-    permission_classes = [IsAdminUser]
-
-    @method_decorator(csrf_protect)
-    def post(self, request, joincode):
-        data = parse_reveal_payload(request.data)
-        key = data.get("key")
-        round_number = data.get("round")
-        question_number = data.get("question")
-        revealed = data.get("revealed")
-
-        try:
-            questionState = EventQuestionState.objects.select_related("event").get(
-                event__join_code=joincode,
-                round_number=round_number,
-                question_number=question_number,
+            current_event_data = self.get_updated_event_data(
+                round_number, question_numbers, event
             )
-        except EventQuestionState.DoesNotExist:
-            return Response(
-                data={"detail": f"Question State for Key {key} Does Not Exist"},
-                status=HTTP_404_NOT_FOUND,
-            )
-
-        # only update current values if the trivia event has been advanced
-        updated = False
-        event = questionState.event
-        if revealed and key > event.current_question_key:
-            event.current_round_number = round_number
-            event.current_question_number = question_number
-            event.save()
-            updated = True
-
-        questionState.question_displayed = revealed
-        questionState.save()
-
-        async_to_sync(channel_layer.group_send)(
-            f"event_{joincode}",
-            {
-                "type": "event_update",
-                "msg_type": "question_update",
-                "store": "questionStates",
-                "message": {"key": key, "value": revealed},
-            },
-        )
-
-        if updated:
             async_to_sync(channel_layer.group_send)(
                 f"event_{joincode}",
                 {
                     "type": "event_update",
-                    "msg_type": "current_data_update",
-                    "store": "currentEventData",
+                    "msg_type": "question_state_update",
                     "message": {
-                        "question_key": key,
-                        "question_number": int(question_number),
-                        "round_number": int(round_number),
-                    },
-                },
-            )
-
-        return Response({"success": True})
-
-
-class UpdateAllView(APIView):
-    authentication_classes = [JwtAuthentication]
-    permission_classes = [IsAdminUser]
-
-    @method_decorator(csrf_protect)
-    def post(self, request, joincode):
-        data = parse_reveal_payload(request.data)
-        round_number = data.get("round")
-        question_number = data.get("question")
-        revealed = data.get("revealed")
-
-        if question_number != "all":
-            return Response({"detail": "Bad Request"}, status=HTTP_400_BAD_REQUEST)
-
-        event_states = EventQuestionState.objects.filter(
-            event__join_code=joincode, round_number=round_number
-        )
-        event_states.update(question_displayed=revealed)
-
-        updated = False
-        event = event_states.first().event
-        min_key = min(*[state.key for state in event_states])
-        min_question_number = min(*[state.question_number for state in event_states])
-        if revealed and min_key > event.current_question_key:
-            event.current_round_number = round_number
-            event.current_question_number = min_question_number
-            event.save()
-            updated = True
-
-        async_to_sync(channel_layer.group_send)(
-            f"event_{joincode}",
-            {
-                "type": "event_update",
-                "msg_type": "question_update_all",
-                "store": "questionStates",
-                "message": {"round_number": round_number, "value": revealed},
-            },
-        )
-
-        if updated:
-            async_to_sync(channel_layer.group_send)(
-                f"event_{joincode}",
-                {
-                    "type": "event_update",
-                    "msg_type": "current_data_update",
-                    "store": "currentEventData",
-                    "message": {
-                        "question_key": min_key,
-                        "question_number": int(min_question_number),
-                        "round_number": int(round_number),
+                        "question_states": updated_states,
+                        **current_event_data,
                     },
                 },
             )
@@ -234,30 +177,114 @@ class RoundLockView(APIView):
 
     @method_decorator(csrf_protect)
     def post(self, request, joincode):
-        data = request.data
-        round_number = int(data.get("round_number"))
-        locked = bool(data.get("value"))
-
         try:
-            round_state = EventRoundState.objects.get(
-                event__join_code=joincode, round_number=round_number
-            )
-        except EventRoundState.DoesNotExist:
-            return Response(
-                {"detail": f"Round state for round {round_number} does not exist"}
-            )
+            data = DataCleaner(request.data)
+            round_number = data.as_int("round_number")
+            locked = data.as_bool("locked")
+        except DataValidationError as e:
+            return Response(e.response())
 
-        round_state.locked = locked
-        round_state.save()
+        event = get_event_or_404(joincode)
+
+        round_state, _ = EventRoundState.objects.update_or_create(
+            event=event,
+            round_number=round_number,
+            defaults={"locked": locked},
+        )
 
         async_to_sync(channel_layer.group_send)(
             f"event_{joincode}",
             {
                 "type": "event_update",
                 "msg_type": "round_update",
-                "store": "roundStates",
-                "message": {"round_number": round_number, "value": locked},
+                "message": round_state.to_json(),
             },
         )
 
-        return Response({ "success": True })
+        return Response({"success": True})
+
+
+class ScoreRoundView(APIView):
+    authentication_classes = [JwtAuthentication]
+    permission_classes = [IsAdminUser]
+
+    @staticmethod
+    def get_fuzz_ratio(resp_data):
+        return resp_data.get("fuzz_ratio", 0)
+
+    def get(self, request, joincode, round_number=None) -> Response:
+        event = get_event_or_404(joincode)
+        if (
+            round_number is not None
+            and not event.game.game_rounds.filter(round_number=round_number).exists()
+        ):
+            return Response(
+                {"detail": f"Round {round_number} not found for event {joincode}"}
+            )
+
+        # fetch all rounds, but filter to a specific round if appropriate
+        questions: QuerySet[GameQuestion] = event.game.game_questions.all()
+        if round_number is not None:
+            questions = questions.filter(round_number=round_number)
+
+        response_data = []
+        for question in questions:
+            responses = QuestionResponse.objects.filter(
+                game_question=question, event=event
+            )
+            grouped_responses = {}
+            for response in responses:
+                text = response.recorded_answer.lower().strip()
+                grouped_responses.setdefault(
+                    text,
+                    {
+                        "recorded_answer": response.recorded_answer,
+                        "round_number": question.round_number,
+                        "question_number": question.question_number,
+                        "key": question.key,
+                        "points_awarded": response.points_awarded,
+                        "funny": response.funny,
+                        "fuzz_ratio": response.fuzz_ratio,
+                        "response_ids": [],
+                    },
+                )
+                grouped_responses[text]["response_ids"].append(response.id)
+
+            response_data.extend(
+                sorted(
+                    grouped_responses.values(), key=self.get_fuzz_ratio, reverse=True
+                )
+            )
+
+        return Response(
+            {
+                "user_data": request.user.to_json(),
+                **event.to_json(),
+                "host_response_data": response_data,
+            }
+        )
+
+    @method_decorator(csrf_protect)
+    def post(self, request, joincode):
+        try:
+            data = DataCleaner(request.data)
+            id_list = data.as_int_array("response_ids", deserialize=True)
+            funny = data.as_bool("funny")
+            points_awarded = data.as_float("points_awarded")
+        except DataValidationError as e:
+            return Response(e.response())
+
+        QuestionResponse.objects.filter(id__in=id_list).update(
+            points_awarded=points_awarded, funny=funny
+        )
+
+        async_to_sync(channel_layer.group_send)(
+            f"event_{joincode}",
+            {
+                "type": "event_update",
+                "msg_type": "score_update",
+                "message": request.data,  # NOTE: the id array will be serialized!
+            },
+        )
+
+        return Response({"success": True})

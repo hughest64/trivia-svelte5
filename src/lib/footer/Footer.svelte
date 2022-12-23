@@ -1,11 +1,15 @@
 <script lang="ts">
     import { page } from '$app/stores';
+    import { getStore } from '$lib/utils';
     import QuizIcon from '$lib/footer/icons/QuizIcon.svelte';
     import ChatIcon from './icons/ChatIcon.svelte';
     import LeaderboardIcon from './icons/LeaderboardIcon.svelte';
     import MegaroundIcon from './icons/MegaroundIcon.svelte';
     import MenuIcon from './icons/MenuIcon.svelte';
     import ScoringIcon from './icons/ScoringIcon.svelte';
+    import type { ActiveEventData } from '$lib/types';
+
+    $: activeEventData = getStore<ActiveEventData>('activeEventData');
 
     const reg = /^\/\(\w+\)\/(game|host)\/[[=\w]+]\/?/;
     const joinCode = $page.params?.joincode;
@@ -45,8 +49,8 @@
                 </a>
             </li>
         {:else if routeId === 'host' && isEventRoute}
-            <li class:active={setActive('score')}>
-                <a href={`/host/${joinCode}/score`}>
+            <li class:active={setActive($page.params.round ? `score/${$page.params.round}` : 'score')}>
+                <a href={`/host/${joinCode}/score/${$activeEventData.activeRoundNumber || 1}`}>
                     <ScoringIcon cls="svg" />
                     <p>Scoring</p>
                 </a>

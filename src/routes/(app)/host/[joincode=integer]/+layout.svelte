@@ -5,7 +5,7 @@
 </script>
 
 <svelte:head>
-    <title>Trivia Mafia Event {$page.params.joincode}</title>
+    <title>Trivia Mafia | Event {$page.params.joincode}</title>
 </svelte:head>
 
 <Socket>

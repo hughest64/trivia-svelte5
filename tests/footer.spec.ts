@@ -131,7 +131,7 @@ test.describe('footer links display and navigate correctly for hosts', async () 
 
     test('Scoring link connects to the correct endpoint', async () => {
         await page.locator('p:has-text("Scoring")').click();
-        await expect(page).toHaveURL('/host/1234/score');
+        await expect(page.locator('h1', { hasText: 'Scoring' })).toBeVisible();
     });
 
     test('Quiz link connects to the correct endpoint', async () => {

@@ -30,21 +30,45 @@ class Question(models.Model):
     question_type = models.IntegerField(choices=QUESTION_TYPES, default=0)
     question_text = models.TextField()
     question_url = models.CharField(max_length=255, blank=True, null=True)
-    display_answer = models.CharField(max_length=255)
+    display_answer = models.ForeignKey(
+        "QuestionAnswer", related_name="display_answer", on_delete=models.PROTECT
+    )
+    accepted_answers = models.ManyToManyField(
+        "QuestionAnswer", related_name="accepted_answers", blank=True
+    )
     answer_notes = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
-        return self.question_text[:30] + "..."
+        qt = self.question_text
+        return qt if len(qt) < 20 else qt[:20] + "..."
 
     def to_json(self):
         data = model_to_dict(self)
-        # get the text value
-        data.update({"question_type": question_type_dict[self.question_type]})
+        data.update(
+            {
+                "display_answer": self.display_answer.text,
+                "question_type": question_type_dict[self.question_type],
+                "accepted_answers": [
+                    answer.text for answer in self.accepted_answers.all()
+                ],
+            }
+        )
         return data
 
     def save(self, *args, **kwargs):
         self.full_clean()
         super().save(*args, **kwargs)
+
+
+class QuestionAnswer(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    text = models.CharField(max_length=255, unique=True, db_index=True)
+
+    def __str__(self):
+        return self.text
+
+    def to_json(self):
+        return {"id": self.id, "text": self.text}
 
 
 class GameQuestion(models.Model):
@@ -221,7 +245,7 @@ class EventRoundState(models.Model):
 
     class Meta:
         ordering = ["event", "round_number"]
-    
+
     def __str__(self):
         return f"Round {self.round_number} for event {self.event}"
 

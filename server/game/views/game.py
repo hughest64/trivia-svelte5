@@ -11,7 +11,7 @@ from rest_framework.views import APIView
 
 from user.authentication import JwtAuthentication
 
-from game.models import Team, Response as QuestionResponse, TriviaEvent
+from game.models import Team, QuestionResponse, TriviaEvent
 from game.models.utils import queryset_to_json
 
 channel_layer = get_channel_layer()
@@ -90,11 +90,13 @@ class ResponseView(APIView):
             team_id=team_id,
             event=event,
             game_question_id=question_id,
-            defaults={"recorded_answer": response_text}
+            defaults={"recorded_answer": response_text},
         )
         if not created:
             question_response.recorded_answer = response_text
-            question_response.save()
+
+        question_response.grade()
+        question_response.save()
 
         async_to_sync(channel_layer.group_send)(
             f"team_{team_id}_event_{joincode}",

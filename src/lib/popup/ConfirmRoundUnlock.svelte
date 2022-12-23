@@ -12,7 +12,7 @@
     const unlock = async () => {
         const data = new FormData();
         data.set('round_number', roundNumber);
-        data.set('value', '');
+        data.set('locked', 'false');
 
         const response = await fetch('?/lock', { method: 'post', body: data });
         if (response.ok) {

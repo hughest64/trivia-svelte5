@@ -1,35 +1,43 @@
 <script lang="ts">
     import Question from './Question.svelte';
     import { page } from '$app/stores';
+    import { deserialize } from '$app/forms';
     import { getStore } from '$lib/utils';
     import type { QuestionState, GameQuestion, GameRound } from '$lib/types';
 
     export let activeRound: GameRound;
-    let formError: string;
+
+    let error: string;
     const questions: GameQuestion[] = $page.data.questions || [];
+    $: roundQuestionNumbers = questions
+        .filter((q) => q.round_number === activeRound?.round_number)
+        .map((q) => q.question_number);
 
     $: roundQuestions = questions.filter((question) => question.round_number === activeRound?.round_number);
     $: questionStates = getStore<QuestionState[]>('questionStates');
     $: roundQuestionStates = $questionStates.filter((qs) => qs.round_number === activeRound?.round_number);
-    $: allQuestionsRevealed = roundQuestionStates.every((q) => q.question_displayed);
+
+    $: allQuestionsRevealed =
+        roundQuestionStates.length === roundQuestions.length && roundQuestionStates.every((q) => q.question_displayed);
     $: allQuestionsRevealedText = allQuestionsRevealed ? 'All Questions Revealed' : 'Reveal All Questions';
 
     let updating = false;
     const handleRevalAll = async () => {
         if (updating) return;
         updating = true;
-        formError = '';
+        error = '';
 
         allQuestionsRevealed = !allQuestionsRevealed;
 
         const data = new FormData();
-        data.set('key', `${activeRound?.round_number}.all`);
-        data.set('value', allQuestionsRevealed ? 'revealed' : '');
+        data.set('round_number', String(activeRound?.round_number));
+        data.set('question_numbers', JSON.stringify(roundQuestionNumbers));
+        data.set('reveal', String(allQuestionsRevealed));
 
         const response = await fetch('?/reveal', { method: 'POST', body: data });
-        const result = await response.json();
+        const result = deserialize(await response.text());
         if (result.type === 'failure') {
-            formError = JSON.parse(result.data)?.slice(-1)[0];
+            error = result.data?.error;
             allQuestionsRevealed = !allQuestionsRevealed;
         }
         updating = false;
@@ -41,7 +49,7 @@
 
     <p>{activeRound?.round_description}</p>
 
-    {#if formError}<p>{formError}</p>{/if}
+    {#if error}<p>{error}</p>{/if}
 
     <div class="switch-container">
         <label for="all" class="switch">
@@ -52,7 +60,7 @@
     </div>
 </div>
 
-{#each roundQuestions as question (question.question_number)}
+{#each roundQuestions as question (question.id)}
     <Question {question} />
 {/each}
 

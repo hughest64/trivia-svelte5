@@ -24,7 +24,7 @@
             "type": "shell",
             "detail": "run a Django test server which creates a test database from a fixture",
             "command": "${command:python.interpreterPath}",
-            "args": ["manage.py", "testserver", "fixtures/dbdump.json", "--addrport", "7000"],
+            "args": ["manage.py", "testserver", "game/fixtures/dbdump.json", "--addrport", "7000"],
             "options": {
                 "cwd": "${cwd}/server"
             },

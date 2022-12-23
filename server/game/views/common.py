@@ -6,11 +6,11 @@ from game.models import (
     EventQuestionState,
     EventRoundState,
     TriviaEvent,
-    Response as QuestionResponse,
+    QuestionResponse,
 )
 
 
-# NOTE: for resetting post data only!
+# NOTE: for testing only!
 class ClearEventDataView(APIView):
     def post(self, request):
         secret = request.data.get("secret")
@@ -28,7 +28,8 @@ class ClearEventDataView(APIView):
                 question_displayed=False, answer_displayed=False
             )
             EventRoundState.objects.all().update(scored=False, locked=False)
-            QuestionResponse.objects.all().delete()
+            # keep responses for event 9998 for load testing
+            QuestionResponse.objects.exclude(event__join_code=9998).delete()
         except Exception as e:
             return Response({"detail": ""}, status=HTTP_400_BAD_REQUEST)
 

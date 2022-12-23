@@ -1,4 +1,5 @@
 import { fail } from '@sveltejs/kit';
+import { resolveBool } from '$lib/utils';
 import { PUBLIC_API_HOST as apiHost, PUBLIC_QUESTION_REVEAL_TIMEOUT as updateDelay } from '$env/static/public';
 import type { Action } from './$types';
 
@@ -9,31 +10,30 @@ async function asyncTimeout(ms = 100): Promise<ReturnType<typeof setTimeout>> {
 const reveal: Action = async ({ fetch, request, params }) => {
     const formData = await request.formData();
     const data = Object.fromEntries(formData.entries());
-    const baseUrl = `${apiHost}/host/${params.joincode}`;
+    const requestUrl = `${apiHost}/host/${params.joincode}/reveal`;
 
-    const revealResponse = await fetch(`${baseUrl}/reveal/`, {
-        method: 'post',
-        body: JSON.stringify(data)
-    });
+    if (!data.update) {
+        const revealResponse = await fetch(requestUrl, {
+            method: 'post',
+            body: JSON.stringify({ ...data, update: false })
+        });
 
-    if (!revealResponse.ok) {
         const revealData = await revealResponse.json();
-        return fail(revealResponse.status, { error: revealData.detail });
+        if (revealData.status && revealData.status !== 200) {
+            return fail(revealData.status, { error: revealData.detail });
+        }
     }
 
     // 5 seconds by default on reveal only
-    data.value && (await asyncTimeout(Number(updateDelay)));
-    const revealAll = String(data.key).endsWith('all');
-
-    const updateUrl = revealAll ? `${baseUrl}/update-all/` : `${baseUrl}/update/`;
-    const updateResponse = await fetch(updateUrl, {
+    resolveBool(data.reveal as string) && (await asyncTimeout(Number(updateDelay)));
+    const updateResponse = await fetch(requestUrl, {
         method: 'post',
-        body: JSON.stringify(data)
+        body: JSON.stringify({ ...data, update: true })
     });
 
     const updateData = await updateResponse.json();
-    if (!updateResponse.ok) {
-        return fail(updateResponse.status, { error: updateData.detail });
+    if (updateData.status && updateData.status !== 200) {
+        return fail(updateData.status, { error: updateData.detail });
     }
 
     return { success: true };
@@ -49,8 +49,8 @@ const lock: Action = async ({ fetch, params, request }) => {
     });
 
     const responseData = await response.json();
-    if (!response.ok) {
-        return fail(response.status, { error: responseData.detail });
+    if (responseData.status && responseData.status !== 200) {
+        return fail(responseData.status, { error: responseData.detail });
     }
 
     return { success: true };

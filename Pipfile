@@ -10,9 +10,12 @@ pyjwt = "*"
 channels = {extras = ["daphne"], version = "*"}
 channels-redis = "*"
 whitenoise = "*"
+fuzzywuzzy = "*"
+python-levenshtein = "*"
 
 [dev-packages]
 black = "*"
+ipykernel = "*"
 
 [requires]
 python_version = "3.10"

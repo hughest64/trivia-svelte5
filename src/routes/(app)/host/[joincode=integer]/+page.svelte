@@ -1,15 +1,14 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { getStore } from '$lib/utils';
+    import { deserialize } from '$app/forms';
     import Round from './Round.svelte';
-    import type { ActiveEventData, CurrentEventData, GameRound, RoundState, PopupData } from '$lib/types';
+    import RoundSelector from './RoundSelector.svelte';
+    import type { ActiveEventData, GameRound, RoundState, PopupData } from '$lib/types';
 
     const eventData = $page.data.event_data;
-    const roundNumbers = $page.data.rounds?.map((rd) => rd.round_number) || [];
-
     $: popupData = getStore<PopupData>('popupData');
     $: activeEventData = getStore<ActiveEventData>('activeEventData');
-    $: currentEventData = getStore<CurrentEventData>('currentEventData');
     $: roundStates = getStore<RoundState[]>('roundStates') || [];
 
     $: activeRound = $page.data.rounds?.find(
@@ -20,23 +19,9 @@
 
     $: joincode = $page.params?.joincode;
 
-    const handleRoundSelect = async (event: MouseEvent) => {
-        const target = <HTMLButtonElement>event.target;
-
-        $activeEventData = {
-            activeQuestionNumber: 1,
-            activeRoundNumber: Number(target.id),
-            activeQuestionKey: `1.${target.id}`
-        };
-
-        // post to the game endpoint to set active round and question in a cookie
-        await fetch('/update', {
-            method: 'POST',
-            body: JSON.stringify({ activeEventData: $activeEventData, joincode })
-        });
-    };
-
+    let error: string;
     const handleLockRound = async () => {
+        error = '';
         if (locked) {
             $popupData = {
                 popup_type: 'round_unlock',
@@ -48,12 +33,12 @@
 
             const data = new FormData();
             data.set('round_number', String(activeRound?.round_number));
-            data.set('value', locked ? 'locked' : '');
+            data.set('locked', locked ? 'true' : 'false');
 
             const response = await fetch('?/lock', { method: 'post', body: data });
-            if (!response.ok) {
-                // TODO: handle error
-                console.log(response.json());
+            const result = deserialize(await response.text());
+            if (result.type === 'failure') {
+                error = result.data?.error || 'An Error Occured';
                 locked = !locked;
             }
         }
@@ -64,18 +49,7 @@
 <p>Event Join Code: <strong>{joincode}</strong></p>
 <p>Details: <strong>{eventData?.location}, {eventData?.game_title}</strong></p>
 
-<div class="round-selector">
-    {#each roundNumbers as roundNum}
-        <button
-            id={String(roundNum)}
-            on:click={handleRoundSelect}
-            class:active={$activeEventData.activeRoundNumber === roundNum}
-            class:current={$currentEventData.round_number === roundNum}
-        >
-            {roundNum}
-        </button>
-    {/each}
-</div>
+<RoundSelector />
 
 <div class="lock-container">
     <label id={`rd-${activeRound?.round_number}`} for="round-lock" class="lock">
@@ -89,6 +63,7 @@
         <span class:checked={locked} />
     </label>
 </div>
+{#if error}<p>{error}</p>{/if}
 
 <!-- <button class="button button-red" on:click|preventDefault>Score/Edit This Round</button> -->
 

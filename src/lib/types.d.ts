@@ -100,9 +100,17 @@ export interface CurrentEventData {
 export interface Response {
     id: number;
     recorded_answer: string;
+    points_awarded: number;
+    funny: boolean;
+    locked: boolean;
     round_number: string | number;
     question_number: string | number;
-    key: string; // like: `${round_number}.${question_number}
+    key: string;
+}
+
+export interface HostResponse extends Omit<Response, ['id', 'locked']> {
+    response_ids: number[];
+    fuzz_ratio?: number;
 }
 
 export interface PopupData {
@@ -137,6 +145,7 @@ export type StoreKey =
     | 'roundStates'
     | 'questionStates'
     | 'responseData'
+    | 'hostResponseData'
     | 'popupData'
     | 'eventPageData';
 

@@ -1,0 +1,139 @@
+<script lang="ts">
+    import { page } from '$app/stores';
+    import { goto } from '$app/navigation';
+    import { getStore } from '$lib/utils';
+    import RoundSelector from '../../RoundSelector.svelte';
+    import ResponseGroup from './ResponseGroup.svelte';
+    import type { ActiveEventData, HostResponse } from '$lib/types';
+
+    const roundNumbers = $page.data.rounds?.map((rd) => rd.round_number) || [];
+    const allQuestions = $page.data?.questions || [];
+    const joincode = $page.params.joincode;
+
+    $: roundNumber = Number($page.params.round);
+    $: activeEventData = getStore<ActiveEventData>('activeEventData');
+    $: responses = getStore<HostResponse[]>('hostResponseData');
+
+    $: roundQuestions = allQuestions.filter((q) => q.round_number === roundNumber);
+    $: roundQuestionNumbers = roundQuestions?.map((q) => q.question_number) || [];
+
+    $: scoringQuestionNumber = $activeEventData.activeQuestionNumber || roundNumber || 1;
+    $: scoringQuestion = roundQuestions.find((q) => q.question_number === scoringQuestionNumber);
+    $: scoringResponses = $responses && $responses.filter((r) => r.question_number === scoringQuestionNumber);
+
+    const advance = async () => {
+        const next = scoringQuestionNumber + 1;
+        const maxQuestion = Math.max(...roundQuestionNumbers);
+        if (next <= maxQuestion) {
+            activeEventData.update((data) => ({ ...data, activeQuestionNumber: next }));
+            await fetch('/update', {
+                method: 'post',
+                body: JSON.stringify({ activeEventData: $activeEventData, joincode: joincode })
+            });
+        } else if (next > maxQuestion) {
+            const maxRound = Math.max(...roundNumbers);
+            const nextRound = roundNumber + 1;
+            if (roundNumber < maxRound) {
+                const postData = {
+                    activeRoundNumber: nextRound,
+                    activeQuestionNumber: 1,
+                    activeQuestionKey: `${nextRound}.1`
+                };
+                await fetch('/update', {
+                    method: 'post',
+                    body: JSON.stringify({ activeEventData: postData, joincode: joincode })
+                });
+                goto(`/host/${joincode}/score/${nextRound}`);
+            }
+        }
+    };
+
+    const goBack = async () => {
+        const previousQ = scoringQuestionNumber - 1;
+        const minQuestion = Math.min(...roundQuestionNumbers);
+        if (previousQ >= minQuestion) {
+            activeEventData.update((data) => ({ ...data, activeQuestionNumber: previousQ }));
+            await fetch('/update', {
+                method: 'post',
+                body: JSON.stringify({ activeEventData: $activeEventData, joincode: joincode })
+            });
+        } else if (previousQ < minQuestion) {
+            const minRound = Math.min(...roundNumbers);
+            const previousround = roundNumber - 1;
+            if (roundNumber > minRound) {
+                const preveiousRoundMaxQ = Math.max(
+                    ...allQuestions.filter((q) => q.round_number === previousround).map((q) => q.question_number)
+                );
+                const postData = {
+                    activeRoundNumber: previousround,
+                    activeQuestionNumber: preveiousRoundMaxQ,
+                    activeQuestionKey: `${previousround}.${preveiousRoundMaxQ}`
+                };
+                await fetch('/update', {
+                    method: 'post',
+                    body: JSON.stringify({ activeEventData: postData, joincode: joincode })
+                });
+                goto(`/host/${joincode}/score/${previousround}`);
+            }
+        }
+    };
+
+    const handleKeyPress = (event: KeyboardEvent) => {
+        if (event.code === 'ArrowRight') {
+            advance();
+        } else if (event.code === 'ArrowLeft') {
+            goBack();
+        }
+    };
+</script>
+
+<svelte:window on:keyup={handleKeyPress} />
+
+<h1>Scoring</h1>
+<RoundSelector />
+{#if roundNumber && $responses}
+    <div class="host-question-panel">
+        <h2>Round {scoringQuestion?.round_number} Question {scoringQuestion?.question_number}</h2>
+        <p>{scoringQuestion?.question_text}</p>
+    </div>
+    <h3 class="answer">Answer: {scoringQuestion?.display_answer}</h3>
+    <div class="button-container">
+        <button class="button button-black" on:click={goBack}>Previous</button>
+        <button class="button button-black" on:click={advance}>Next</button>
+    </div>
+    <ul>
+        {#each scoringResponses as response}
+            <ResponseGroup {response} />
+        {/each}
+    </ul>
+    <div class="button-container">
+        <button class="button button-black" on:click={goBack}>Previous</button>
+        <button class="button button-black" on:click={advance}>Next</button>
+    </div>
+{:else if $responses}
+    <!-- TODO: do something with all responses or eliminate the ability to fetch all responses -->
+    <h4>{$responses.length} Total responses for Event {$page.params.joincode}</h4>
+{:else}
+    <h4>No Responses Found!</h4>
+{/if}
+
+<style lang="scss">
+    h1 {
+        margin: 0.5em auto;
+    }
+    .host-question-panel {
+        h2,
+        p {
+            margin: 1rem;
+        }
+    }
+    .answer {
+        margin-top: 1em;
+    }
+    .button-container {
+        width: 40em;
+        max-width: calc(100% - 2em);
+        display: flex;
+        gap: 1rem;
+    }
+</style>

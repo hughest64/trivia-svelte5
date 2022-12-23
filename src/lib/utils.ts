@@ -60,14 +60,8 @@ export const splitQuestionKey = (key: string): RoundQuestion => {
     return { round: groups?.r || '', question: groups?.q || '' };
 };
 
-export const getCurrentDataFromKey = (key: string): CurrentEventData => {
-    const split = key.split('.');
-
-    return {
-        round_number: Number(split[0]),
-        question_number: Number(split.slice(-1)),
-        question_key: key
-    };
+export const createQuestionKey = (roundNumber: number, questionNumber: number): string => {
+    return `${roundNumber}.${questionNumber}`;
 };
 
 export const getQuestionKeys = (questions: GameQuestion[], activeRound: GameRound): string[] => {
@@ -78,4 +72,9 @@ export const getQuestionKeys = (questions: GameQuestion[], activeRound: GameRoun
         }
     }
     return keys;
+};
+
+export const resolveBool = (value: string | boolean) => {
+    if (value === 'false') return false;
+    return Boolean(value);
 };

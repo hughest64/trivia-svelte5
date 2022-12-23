@@ -17,11 +17,11 @@
     <main>
         <slot />
     </main>
-</Stores>
 
-<footer>
-    <Footer on:click={() => (displayMenu = !displayMenu)} />
-</footer>
+    <footer>
+        <Footer on:click={() => (displayMenu = !displayMenu)} />
+    </footer>
+</Stores>
 
 <style lang="scss">
     div {
