@@ -12,7 +12,12 @@ from user.authentication import JwtAuthentication
 
 from game.models import QuestionResponse
 from game.models.utils import queryset_to_json
-from game.views.validation.data_cleaner import TeamRequired, get_event_or_404
+from game.views.validation.data_cleaner import (
+    DataCleaner,
+    DataValidationError,
+    TeamRequired,
+    get_event_or_404,
+)
 from user.models import User
 
 channel_layer = get_channel_layer()
@@ -55,21 +60,25 @@ class ResponseView(APIView):
 
     @method_decorator(csrf_protect)
     def post(self, request, joincode):
-        team_id = request.data.get("team_id")
-        question_id = request.data.get("question_id")
-        response_text = request.data.get("response_text")
+        try:
+            data = DataCleaner(request.data)
+            team_id = data.as_int("team_id")
+            question_id = data.as_int("question_id")
+            response_text = data.as_string("response_text")
+        except DataValidationError as e:
+            return Response(e.response)
 
         if not request.user.active_team:
             raise TeamRequired
 
         event = get_event_or_404(join_code=joincode)
-        question_response, _ = QuestionResponse.objects.update_or_create(
+        question_response, _ = QuestionResponse.objects.get_or_create(
             team_id=team_id,
             event=event,
             game_question_id=question_id,
-            defaults={"recorded_answer": response_text},
         )
         if not question_response.locked:
+            question_response.recorded_answer = response_text
             question_response.grade()
             question_response.save()
 

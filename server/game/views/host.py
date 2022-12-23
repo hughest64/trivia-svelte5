@@ -163,7 +163,6 @@ class QuestionRevealView(APIView):
         return Response({"success": True})
 
 
-# TODO: lock (or unlock) responses!
 class RoundLockView(APIView):
     authentication_classes = [JwtAuthentication]
     permission_classes = [IsAdminUser]
@@ -183,6 +182,10 @@ class RoundLockView(APIView):
             event=event,
             round_number=round_number,
             defaults={"locked": locked},
+        )
+        # lock or unlock responses for the round
+        QuestionResponse.objects.filter(event=event, round_number=round_number).update(
+            locked=locked
         )
 
         async_to_sync(channel_layer.group_send)(
@@ -228,6 +231,9 @@ class ScoreRoundView(APIView):
             grouped_responses = {}
             for response in responses:
                 text = response.recorded_answer.lower().strip()
+                # don't process blank responses
+                if not text:
+                    continue
                 grouped_responses.setdefault(
                     text,
                     {
