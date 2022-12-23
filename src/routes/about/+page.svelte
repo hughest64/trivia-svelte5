@@ -6,7 +6,7 @@
 
 <div class="container">
     <h1>About the Demo</h1>
-    <hr>
+    <hr />
     <a href="/">{anchorText}</a>
     <h3>Some things you can do in this demo:</h3>
     <ul>
@@ -31,6 +31,9 @@
         <li>
             <p>- Lock rounds (as a host)</p>
         </li>
+        <li>
+            <p>- Score responses (as a host)</p>
+        </li>
     </ul>
 
     <h3>Some things you cannot do:</h3>
@@ -48,9 +51,18 @@
             <p>- Login with Google or Github</p>
         </li>
         <li>
+            <p>- Create events</p>
+        </li>
+        <li>
             <p>
                 - Use a join code other than <span style="font-weight: bold;">1234</span> (anything else will net you a
                 <span style="font-weight: bold;">404</span>)
+            </p>
+        </li>
+        <li>
+            <p>
+                - Well, technically event <span style="font-weight: bold;">9998</span> is playable, but consider it reserved
+                for load testing responses
             </p>
         </li>
         <li>
@@ -62,9 +74,6 @@
     <ul>
         <li>
             <p>- Megarounds</p>
-        </li>
-        <li>
-            <p>- Scoring</p>
         </li>
         <li>
             <p>- Leaderboards</p>
@@ -80,7 +89,6 @@
 </div>
 
 <style lang="scss">
-
     .container {
         align-items: flex-start;
         margin: 0 20%;
@@ -94,7 +102,7 @@
             background-color: var(--color-black);
         }
         h3 {
-            margin: .75em 0;
+            margin: 0.75em 0;
             font-weight: bold;
             color: var(--color-red);
         }
@@ -102,8 +110,8 @@
             margin-bottom: 3em;
         }
         li {
-            margin: .5em 0;
-        };
+            margin: 0.5em 0;
+        }
     }
     @media (max-width: 1000px) {
         .container {
