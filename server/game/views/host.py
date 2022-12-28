@@ -288,3 +288,24 @@ class ScoreRoundView(APIView):
         )
 
         return Response({"success": True})
+
+
+class HostLeaderbaordView(APIView):
+    authentication_classes = [JwtAuthentication]
+    permission_classes = [IsAdminUser]
+
+    def get(self, request, joincode):
+        # look up both leaderboards and return them
+        return Response({"success": True})
+
+
+class UpdateLeaderbaord(APIView):
+    authentication_classes = [JwtAuthentication]
+    permission_classes = [IsAdminUser]
+
+    @method_decorator(csrf_protect)
+    def post(self, request, joincode):
+        # read in "leaderboard_type" from request.data
+        # look up the appropriate leaderboard
+        # use the leaderboard helper class to update the leaderboard and return it (socket)
+        return Response({"success": True})

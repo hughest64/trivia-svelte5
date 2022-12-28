@@ -2,7 +2,16 @@ from django.db import models
 
 from fuzzywuzzy import fuzz
 
+from game.models.utils import queryset_to_json
+
 FUZZ_MATCH_RATIO = 85
+
+LEADERBOARD_TYPE_HOST = 0
+LEADERBOARD_TYPE_PLAYER = 1
+LEADERBOARD_TYPE_OPTIONS = [
+    (LEADERBOARD_TYPE_HOST, "Host"),
+    (LEADERBOARD_TYPE_PLAYER, "Public"),
+]
 
 
 class QuestionResponse(models.Model):
@@ -52,3 +61,79 @@ class QuestionResponse(models.Model):
     def save(self, *args, **kwargs):
         self.full_clean()
         super().save(*args, **kwargs)
+
+
+class Leaderboard(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    leaderboard_type = models.IntegerField(
+        choices=LEADERBOARD_TYPE_OPTIONS, default=LEADERBOARD_TYPE_PLAYER
+    )
+    event = models.ForeignKey("Event", on_delete=models.CASCADE)
+    # represents the max round for which player leaderboards should display point totals, rank, etc
+    through_round = models.IntegerField(blank=True, null=True)
+
+    # can be used to notify a host that either leaderboard type is not up to date with the max scored round
+    def up_to_date(self):
+        return (
+            self.through_round is not None
+            and self.through_round == self.event.max_scored_round()
+        )
+
+    def to_json(self):
+
+        return {"leaderboard_entries": queryset_to_json(self.leaderboard_entries.all())}
+
+    class Meta:
+        unique_together = ("event", "leaderboard_type")
+
+
+class LeaderboardEntry(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    leaderboard = models.ForeignKey(
+        Leaderboard, related_name="leaderboard_entries", on_delete=models.CASCADE
+    )
+    team = models.ForeignKey("Team", related_name="teams", on_delete=models.CASCADE)
+    rank = models.IntegerField(blank=True, null=True)
+    # TODO: this should be handled by a tiebreaker_instance, so not necessary here
+    # tiebreaker_rank = models.IntegerField(blank=True, null=True)
+    total_points = models.FloatField(default=0)
+    # Other fields:
+    # selected_megaround
+    # megaround_applied ?
+    # points_adjustment
+    # points_adjustment_reason
+    # trivia_users # ? - this is supposed to rep whom actual played, not all team members
+
+    class Meta:
+        ordering = ["-event", "rank", "tiebreaker_rank", "pk"]
+
+    def __str__(self):
+        return f"{self.team} - {self.event}"
+
+    def to_json(self):
+        # TODO:
+        return {}
+
+
+"""
+The idea here is that when a tiebreaker is required, the host see's the question options from
+a tiebraker instnace. They choose a question, and select the teams involved, that creates
+tibreaker responses for each team
+"""
+
+
+class TiebreakerInstance(models.Model):
+    event = models.ForeignKey("TriviaEvent", on_delete=models.CASCADE)
+    round_number = models.IntegerField()
+    resolved = models.BooleanField(default=False)
+
+
+class TiebreakerResponse(models.Model):
+    tiebreaker_instance = models.ForeignKey(
+        TiebreakerInstance, on_delete=models.CASCADE
+    )
+    # chosen from the tiebreaker_instance
+    question = models.ForeignKey("Question", on_delete=models.CASCADE)
+    leaderboard_entry = models.ForeignKey(LeaderboardEntry, on_delete=models.CASCADE)
+    recorded_answer = models.TextField(default="")
+    tiebraker_rank = models.IntegerField(blank=True, null=True)

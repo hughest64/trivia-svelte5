@@ -162,6 +162,7 @@ class TriviaEvent(models.Model):
     location = models.ForeignKey(
         "Location", blank=True, null=True, on_delete=models.SET_NULL
     )
+    # TODO: add teams (m2m)
     join_code = models.CharField(max_length=64, unique=True, db_index=True)
     current_round_number = models.IntegerField(default=1)
     current_question_number = models.IntegerField(default=1)
@@ -169,6 +170,12 @@ class TriviaEvent(models.Model):
     @property
     def current_question_key(self):
         return f"{self.current_round_number}.{self.current_question_number}"
+
+    def max_scored_round(self):
+        round_states = self.round_states.filter(scored=True).order_by("round_number")
+        if not round_states.exists():
+            return None
+        return round_states.last().round_number
 
     def __str__(self):
         return f"{self.game.title} on {self.date}"

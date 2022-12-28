@@ -17,6 +17,7 @@ from game.models.utils import queryset_to_json
 channel_layer = get_channel_layer()
 
 
+# TODO: get_or_create two leaderboard entries, one player, one host based on event and user.active_team
 class EventView(APIView):
     authentication_classes = [JwtAuthentication]
 
