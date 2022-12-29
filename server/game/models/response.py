@@ -23,7 +23,6 @@ class QuestionResponse(models.Model):
     locked = models.BooleanField(default=False)
     game_question = models.ForeignKey("GameQuestion", on_delete=models.CASCADE)
     team = models.ForeignKey("Team", related_name="responses", on_delete=models.CASCADE)
-    # TODO: add leaderboard
     event = models.ForeignKey(
         "TriviaEvent", related_name="responses", on_delete=models.CASCADE
     )
@@ -80,7 +79,6 @@ class Leaderboard(models.Model):
         )
 
     def to_json(self):
-
         return {"leaderboard_entries": queryset_to_json(self.leaderboard_entries.all())}
 
     class Meta:

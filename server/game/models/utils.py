@@ -29,11 +29,6 @@ class LeaderboardRank:
         self.through_round = through_round
 
     def _set_team_score(self, team: Team):
-        if self.Team is None:
-            raise ValueError("A team instance is required, add one to the init")
-        if self.Event is None:
-            raise ValueError("A TriviaEvent instance is required, add one to the init")
-
         lbe, _ = LeaderboardEntry.objects.get_or_create(
             team=self.team, event=self.event
         )
