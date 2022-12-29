@@ -26,6 +26,8 @@ question_type_dict = dict(QUESTION_TYPES)
 
 
 class Question(models.Model):
+    """Question data. Not tied to a game or round number or question number."""
+
     created_at = models.DateTimeField(auto_now_add=True)
     question_type = models.IntegerField(choices=QUESTION_TYPES, default=0)
     question_text = models.TextField()
@@ -61,6 +63,8 @@ class Question(models.Model):
 
 
 class QuestionAnswer(models.Model):
+    """An answer to a question."""
+
     created_at = models.DateTimeField(auto_now_add=True)
     text = models.CharField(max_length=255, unique=True, db_index=True)
 
@@ -72,6 +76,8 @@ class QuestionAnswer(models.Model):
 
 
 class GameQuestion(models.Model):
+    """Ties a question to a game with round number and question number."""
+
     created_at = models.DateTimeField(auto_now_add=True)
     game = models.ForeignKey(
         "Game", related_name="game_questions", on_delete=models.CASCADE
@@ -104,7 +110,35 @@ class GameQuestion(models.Model):
         super().save(*args, **kwargs)
 
 
+class TiebreakerQuestion(models.Model):
+    """Like a GameQuestion, but for tiebreaker questions only with no round or question number."""
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    game = models.ForeignKey(
+        "Game", related_name="game_questions", on_delete=models.CASCADE
+    )
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"Question {self.key} for game {self.game}"
+
+    def to_json(self):
+        question_data = self.question.to_json()
+        # remove the question id
+        question_data.pop("id")
+        return {
+            "id": self.pk,
+            **question_data,
+        }
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+
 class GameRound(models.Model):
+    """Meta data about a round for a game"""
+
     created_at = models.DateTimeField(auto_now_add=True)
     title = models.CharField(max_length=128)
     round_description = models.TextField(blank=True, default="")

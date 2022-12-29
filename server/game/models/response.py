@@ -64,12 +64,13 @@ class QuestionResponse(models.Model):
 
 class Leaderboard(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
-    leaderboard_type = models.IntegerField(
-        choices=LEADERBOARD_TYPE_OPTIONS, default=LEADERBOARD_TYPE_PLAYER
-    )
+    leaderboard_type = models.IntegerField(choices=LEADERBOARD_TYPE_OPTIONS)
     event = models.ForeignKey("Event", on_delete=models.CASCADE)
     # represents the max round for which player leaderboards should display point totals, rank, etc
     through_round = models.IntegerField(blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.leaderboard_type} leaderboard for event {self.event}"
 
     # can be used to notify a host that either leaderboard type is not up to date with the max scored round
     def up_to_date(self):
@@ -83,6 +84,10 @@ class Leaderboard(models.Model):
 
     class Meta:
         unique_together = ("event", "leaderboard_type")
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
 
 
 class LeaderboardEntry(models.Model):
@@ -105,7 +110,7 @@ class LeaderboardEntry(models.Model):
         ordering = ["-event", "rank", "tiebreaker_rank", "pk"]
 
     def __str__(self):
-        return f"{self.team} - {self.event}"
+        return f"Leaderboard Entry for {self.team} at event {self.event}"
 
     def to_json(self):
         # TODO:

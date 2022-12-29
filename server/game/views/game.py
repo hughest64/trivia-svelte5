@@ -82,7 +82,7 @@ class ResponseView(APIView):
             defaults={"recorded_answer": response_text},
         )
 
-        # TODO: this should probably throw an error if the response is locked, or better yetpass the
+        # TODO: this should probably throw an error if the response is locked, or better yet pass the
         # round number in the post data and throw an error if the corresponding round is locked
         if not question_response.locked:
             question_response.recorded_answer = response_text
