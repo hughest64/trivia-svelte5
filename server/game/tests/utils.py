@@ -50,7 +50,6 @@ class GameCreator:
 
     def create_game(self, title=None):
         "create a game if one wasn't provided and set as an attr"
-        # TODO: must create rounds!
         game_title = title or self.default_game_title
         game, _ = Game.objects.get_or_create(title=game_title, block_code="A")
         [

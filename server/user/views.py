@@ -8,9 +8,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.status import HTTP_404_NOT_FOUND
 
-from .authentication import create_token, decode_token, JwtAuthentication
-
-User = get_user_model()
+from user.authentication import create_token, decode_token, JwtAuthentication
+from user.models import User
 
 
 class RegisterView(APIView):
@@ -50,7 +49,7 @@ class LoginView(APIView):
     @method_decorator(ensure_csrf_cookie)
     def get(self, request):
 
-        return Response()
+        return Response({"success": True})
 
     @method_decorator(csrf_protect)
     def post(self, request):
