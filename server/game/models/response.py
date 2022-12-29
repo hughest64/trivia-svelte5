@@ -94,8 +94,7 @@ class LeaderboardEntry(models.Model):
     )
     team = models.ForeignKey("Team", related_name="teams", on_delete=models.CASCADE)
     rank = models.IntegerField(blank=True, null=True)
-    # TODO: this should be handled by a tiebreaker_instance, so not necessary here
-    # tiebreaker_rank = models.IntegerField(blank=True, null=True)
+    tiebreaker_rank = models.IntegerField(blank=True, null=True)
     total_points = models.FloatField(default=0)
     # Other fields:
     # selected_megaround
@@ -116,24 +115,35 @@ class LeaderboardEntry(models.Model):
 
 
 """
-The idea here is that when a tiebreaker is required, the host see's the question options from
-a tiebraker instnace. They choose a question, and select the teams involved, that creates
-tibreaker responses for each team
+host creates a tiebraker instance and response objects for each team. teams answer
+the tiebreaker then the host resolves the tiebreaker. updating the leaderboard is a 
+separate action
 """
 
 
 class TiebreakerInstance(models.Model):
-    event = models.ForeignKey("TriviaEvent", on_delete=models.CASCADE)
+    event = models.ForeignKey(
+        "TriviaEvent", related_name="tiebreaker_instances", on_delete=models.CASCADE
+    )
     round_number = models.IntegerField()
     resolved = models.BooleanField(default=False)
+
+    def resolve_tiebreaker(self):
+        resps = self.tiebreaker_responses.all()
+        # set tiebreaker_rank on leaderboard entries based on closeness to the right answer
+        # (assuming all questions are numeric)
+        self.resolved = True
+        self.save()
 
 
 class TiebreakerResponse(models.Model):
     tiebreaker_instance = models.ForeignKey(
-        TiebreakerInstance, on_delete=models.CASCADE
+        TiebreakerInstance,
+        related_name="tiebreaker_responses",
+        on_delete=models.CASCADE,
     )
     # chosen from the tiebreaker_instance
     question = models.ForeignKey("Question", on_delete=models.CASCADE)
     leaderboard_entry = models.ForeignKey(LeaderboardEntry, on_delete=models.CASCADE)
     recorded_answer = models.TextField(default="")
-    tiebraker_rank = models.IntegerField(blank=True, null=True)
+    tiebreaker_rank = models.IntegerField(blank=True, null=True)
