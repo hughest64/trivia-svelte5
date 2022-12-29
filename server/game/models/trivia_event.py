@@ -115,12 +115,12 @@ class TiebreakerQuestion(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     game = models.ForeignKey(
-        "Game", related_name="game_questions", on_delete=models.CASCADE
+        "Game", related_name="tiebreaker_questions", on_delete=models.CASCADE
     )
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"Question {self.key} for game {self.game}"
+        return f"Tiebreker Question for game {self.game}"
 
     def to_json(self):
         question_data = self.question.to_json()

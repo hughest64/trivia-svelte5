@@ -65,7 +65,7 @@ class QuestionResponse(models.Model):
 class Leaderboard(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     leaderboard_type = models.IntegerField(choices=LEADERBOARD_TYPE_OPTIONS)
-    event = models.ForeignKey("Event", on_delete=models.CASCADE)
+    event = models.ForeignKey("TriviaEvent", on_delete=models.CASCADE)
     # represents the max round for which player leaderboards should display point totals, rank, etc
     through_round = models.IntegerField(blank=True, null=True)
 
@@ -107,7 +107,7 @@ class LeaderboardEntry(models.Model):
     # trivia_users # ? - this is supposed to rep whom actual played, not all team members
 
     class Meta:
-        ordering = ["-event", "rank", "tiebreaker_rank", "pk"]
+        ordering = ["-leaderboard__event", "rank", "tiebreaker_rank", "pk"]
 
     def __str__(self):
         return f"Leaderboard Entry for {self.team} at event {self.event}"
@@ -124,29 +124,29 @@ separate action
 """
 
 
-class TiebreakerInstance(models.Model):
-    event = models.ForeignKey(
-        "TriviaEvent", related_name="tiebreaker_instances", on_delete=models.CASCADE
-    )
-    round_number = models.IntegerField()
-    resolved = models.BooleanField(default=False)
+# class TiebreakerInstance(models.Model):
+#     event = models.ForeignKey(
+#         "TriviaEvent", related_name="tiebreaker_instances", on_delete=models.CASCADE
+#     )
+#     round_number = models.IntegerField()
+#     resolved = models.BooleanField(default=False)
 
-    def resolve_tiebreaker(self):
-        resps = self.tiebreaker_responses.all()
-        # set tiebreaker_rank on leaderboard entries based on closeness to the right answer
-        # (assuming all questions are numeric)
-        self.resolved = True
-        self.save()
+#     def resolve_tiebreaker(self):
+#         resps = self.tiebreaker_responses.all()
+#         # set tiebreaker_rank on leaderboard entries based on closeness to the right answer
+#         # (assuming all questions are numeric)
+#         self.resolved = True
+#         self.save()
 
 
-class TiebreakerResponse(models.Model):
-    tiebreaker_instance = models.ForeignKey(
-        TiebreakerInstance,
-        related_name="tiebreaker_responses",
-        on_delete=models.CASCADE,
-    )
-    # chosen from the tiebreaker_instance
-    question = models.ForeignKey("Question", on_delete=models.CASCADE)
-    leaderboard_entry = models.ForeignKey(LeaderboardEntry, on_delete=models.CASCADE)
-    recorded_answer = models.TextField(default="")
-    tiebreaker_rank = models.IntegerField(blank=True, null=True)
+# class TiebreakerResponse(models.Model):
+#     tiebreaker_instance = models.ForeignKey(
+#         TiebreakerInstance,
+#         related_name="tiebreaker_responses",
+#         on_delete=models.CASCADE,
+#     )
+#     # chosen from the tiebreaker_instance
+#     question = models.ForeignKey("Question", on_delete=models.CASCADE)
+#     leaderboard_entry = models.ForeignKey(LeaderboardEntry, on_delete=models.CASCADE)
+#     recorded_answer = models.TextField(default="")
+#     tiebreaker_rank = models.IntegerField(blank=True, null=True)
