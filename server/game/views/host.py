@@ -184,9 +184,9 @@ class RoundLockView(APIView):
             defaults={"locked": locked},
         )
         # lock or unlock responses for the round
-        QuestionResponse.objects.filter(event=event, round_number=round_number).update(
-            locked=locked
-        )
+        QuestionResponse.objects.filter(
+            event=event, game_question__round_number=round_number
+        ).update(locked=locked)
 
         async_to_sync(channel_layer.group_send)(
             f"event_{joincode}",

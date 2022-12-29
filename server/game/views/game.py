@@ -72,11 +72,17 @@ class ResponseView(APIView):
             raise TeamRequired
 
         event = get_event_or_404(join_code=joincode)
+
+        # TODO: this doesn't prevent a reponse from being created if a round is already locked!
         question_response, _ = QuestionResponse.objects.get_or_create(
             team_id=team_id,
             event=event,
             game_question_id=question_id,
+            defaults={"recorded_answer": response_text},
         )
+
+        # TODO: this should probably throw an error if the response is locked, or better yetpass the
+        # round number in the post data and throw an error if the corresponding round is locked
         if not question_response.locked:
             question_response.recorded_answer = response_text
             question_response.grade()
