@@ -1,7 +1,3 @@
-from asgiref.sync import async_to_sync
-
-from channels.layers import get_channel_layer
-
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 
@@ -18,9 +14,8 @@ from game.views.validation.data_cleaner import (
     TeamRequired,
     get_event_or_404,
 )
+from game.utils.socket_classes import SendTeamMessage
 from user.models import User
-
-channel_layer = get_channel_layer()
 
 
 class EventView(APIView):
@@ -88,10 +83,10 @@ class ResponseView(APIView):
             question_response.grade()
             question_response.save()
 
-        async_to_sync(channel_layer.group_send)(
-            f"team_{team_id}_event_{joincode}",
+        SendTeamMessage(
+            joincode,
+            team_id,
             {
-                "type": "team_update",
                 "msg_type": "team_response_update",
                 "message": question_response.to_json(),
             },

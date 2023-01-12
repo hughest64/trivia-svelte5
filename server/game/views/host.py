@@ -1,7 +1,4 @@
-from asgiref.sync import async_to_sync
 from typing import List
-
-from channels.layers import get_channel_layer
 
 from django.db.models import QuerySet
 from django.utils.decorators import method_decorator
@@ -29,8 +26,7 @@ from game.models import (
     QuestionResponse,
 )
 from game.models.utils import queryset_to_json
-
-channel_layer = get_channel_layer()
+from game.utils.socket_classes import SendEventMessage
 
 # TODO: remove once creating event is implemented
 DEMO_EVENT_JOIN_CODE = 1234
@@ -103,7 +99,7 @@ class QuestionRevealView(APIView):
             event.save()
             event_data = {
                 "event_updated": True,
-                "question_number": event.current_round_number,
+                "question_number": event.current_question_number,
                 "round_number": event.current_round_number,
             }
         return event_data
@@ -121,10 +117,9 @@ class QuestionRevealView(APIView):
 
         # notify the event group but don't update the db
         if not update:
-            async_to_sync(channel_layer.group_send)(
-                f"event_{joincode}",
+            SendEventMessage(
+                joincode,
                 {
-                    "type": "event_update",
                     "msg_type": "question_reveal_popup",
                     "message": {
                         "reveal": reveal,
@@ -148,10 +143,10 @@ class QuestionRevealView(APIView):
             current_event_data = self.update_event_data(
                 round_number, question_numbers, event
             )
-            async_to_sync(channel_layer.group_send)(
-                f"event_{joincode}",
+
+            SendEventMessage(
+                joincode,
                 {
-                    "type": "event_update",
                     "msg_type": "question_state_update",
                     "message": {
                         "question_states": updated_states,
@@ -188,10 +183,9 @@ class RoundLockView(APIView):
             event=event, game_question__round_number=round_number
         ).update(locked=locked)
 
-        async_to_sync(channel_layer.group_send)(
-            f"event_{joincode}",
+        SendEventMessage(
+            joincode,
             {
-                "type": "event_update",
                 "msg_type": "round_update",
                 "message": round_state.to_json(),
             },
@@ -277,10 +271,9 @@ class ScoreRoundView(APIView):
             points_awarded=points_awarded, funny=funny
         )
 
-        async_to_sync(channel_layer.group_send)(
-            f"event_{joincode}",
+        SendEventMessage(
+            joincode,
             {
-                "type": "event_update",
                 "msg_type": "score_update",
                 "message": request.data,  # NOTE: the id array will be serialized!
             },
