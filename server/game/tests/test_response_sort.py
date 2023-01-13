@@ -20,7 +20,7 @@ class HostResponseGrading(TestCase):
     def setUp(self) -> None:
         self.client = APIClient()
         self.client.force_authenticate(user=User.objects.get(username="sample_admin"))
-        self.event = TriviaEvent.objects.get(join_code=1234)
+        self.event = TriviaEvent.objects.get(joincode=1234)
         self.resp_generator = QuestionResponseGenerator(
             self.event,
             round_numbers=list(range(1, 9)),
@@ -51,7 +51,7 @@ class HostResponseGrading(TestCase):
 
     def test_update_funny_values(self) -> None:
         responses_to_update = QuestionResponse.objects.filter(
-            event__join_code=1234, funny=False, points_awarded=1
+            event__joincode=1234, funny=False, points_awarded=1
         )[:5]
         resp_ids = [resp.id for resp in responses_to_update]
         self.client.post(
@@ -67,7 +67,7 @@ class HostResponseGrading(TestCase):
 
     def test_update_points_values(self) -> None:
         responses_to_update = QuestionResponse.objects.filter(
-            event__join_code=1234, funny=False, points_awarded=0
+            event__joincode=1234, funny=False, points_awarded=0
         )[:5]
         resp_ids = [resp.id for resp in responses_to_update]
         self.client.post(

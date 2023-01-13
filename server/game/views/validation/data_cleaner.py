@@ -6,11 +6,11 @@ from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_403_FORBIDDEN
 from game.models import TriviaEvent
 
 
-def get_event_or_404(join_code) -> TriviaEvent:
+def get_event_or_404(joincode) -> TriviaEvent:
     try:
-        return TriviaEvent.objects.get(join_code=join_code)
+        return TriviaEvent.objects.get(joincode=joincode)
     except TriviaEvent.DoesNotExist:
-        raise NotFound(detail=f"Event with join code {join_code} does not exist")
+        raise NotFound(detail=f"Event with join code {joincode} does not exist")
 
 
 class TeamRequired(APIException):

@@ -2,6 +2,8 @@ from channels.generic.websocket import AsyncJsonWebsocketConsumer
 
 from user.authentication import get_user
 
+from game.utils.socket_classes import get_event_group, get_team_group, get_user_group
+
 
 class SocketConsumer(AsyncJsonWebsocketConsumer):
     unauthorized_msg = {
@@ -21,9 +23,9 @@ class SocketConsumer(AsyncJsonWebsocketConsumer):
         self.joincode = kwargs.get("joincode")
         self.gametype = kwargs.get("gametype")
         self.user = self.scope["user"]
-        self.event_group = f"event_{self.joincode}"
-        self.team_group = f"team_{self.user.active_team_id}_{self.event_group}"
-        self.user_group = f"user_id_{self.user.id}"
+        self.event_group = get_event_group(self.joincode)
+        self.team_group = get_team_group(self.user.active_team_id, self.joincode)
+        self.user_group = get_user_group(self.user.id)
 
     async def _set_connection(self):
         """Called after a user is validated. Will send an unauthenticated message
@@ -31,6 +33,7 @@ class SocketConsumer(AsyncJsonWebsocketConsumer):
         unauthorized (equvalant to http 403) messasge when accessing a game
         connection without an active team id set.
         """
+        # TODO: should the fallback be AnonymousUser? (probably)
         user = self.scope.get("user", {})
         kwargs = self.scope.get("url_route", {}).get("kwargs", {})
 
@@ -47,10 +50,13 @@ class SocketConsumer(AsyncJsonWebsocketConsumer):
         await self.join_socket_groups()
         await self.send_json({"type": "connected", "message": "hello Svelte!"})
 
-        print(f"hello {self.user.username} your Join code is {self.joincode} and you are playing on {self.user.active_team_id}")
+        # TODO: proper log statement
+        print(
+            f"hello {self.user.username} your Join code is {self.joincode} and you are playing on {self.user.active_team_id}"
+        )
 
     async def join_socket_groups(self):
-        """Add socket groups for the trivia event, user team, and indiviual user. """
+        """Add socket groups for the trivia event, user team, and indiviual user."""
         # trivia event group
         await self.channel_layer.group_add(self.event_group, self.channel_name)
         # team group
@@ -72,7 +78,7 @@ class SocketConsumer(AsyncJsonWebsocketConsumer):
         # print("content received")
         # print(content)
         if content.get("type") == "authenticate":
-           await self.authenticate(content)
+            await self.authenticate(content)
 
     #####################
     ### USER MESSAGES ###
@@ -98,11 +104,7 @@ class SocketConsumer(AsyncJsonWebsocketConsumer):
     #####################
 
     async def team_update(self, data):
-        """Pass a single response object back to a team group."""
-        # print("updating response", self.team_group)
-        msg_type = data.pop("msg_type")
-        if msg_type:
-            data["type"] = msg_type
+        data["type"] = data.pop("msg_type", "")
         await self.send_json(data)
 
     ######################
@@ -110,9 +112,5 @@ class SocketConsumer(AsyncJsonWebsocketConsumer):
     ######################
 
     async def event_update(self, data):
-        # print(data)
-        msg_type = data.pop("msg_type")
-        if msg_type:
-            data["type"] = msg_type
-
+        data["type"] = data.pop("msg_type", "")
         await self.send_json(data)

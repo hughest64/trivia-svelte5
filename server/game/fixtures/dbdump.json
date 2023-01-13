@@ -6,7 +6,10 @@
             "created_at": "2022-07-02T14:29:37.733Z",
             "name": "for all the marbles",
             "password": "silent-pros-earnest",
-            "members": [8, 9]
+            "members": [
+                8,
+                9
+            ]
         }
     },
     {
@@ -16,7 +19,10 @@
             "created_at": "2022-07-02T14:29:57.774Z",
             "name": "hello world",
             "password": "supurb-glorify-bright",
-            "members": [5, 7]
+            "members": [
+                5,
+                7
+            ]
         }
     },
     {
@@ -26,7 +32,10 @@
             "created_at": "2022-07-02T14:30:23.573Z",
             "name": "The Best Team",
             "password": "leads-joy-blossom",
-            "members": [4, 5]
+            "members": [
+                4,
+                5
+            ]
         }
     },
     {
@@ -36,7 +45,9 @@
             "created_at": "2022-07-02T14:30:55.910Z",
             "name": "All the gold in utah",
             "password": "shine-bargain-woo",
-            "members": [5]
+            "members": [
+                5
+            ]
         }
     },
     {
@@ -46,7 +57,9 @@
             "created_at": "2022-07-02T16:40:19.939Z",
             "name": "Guest Team",
             "password": "guest",
-            "members": [3]
+            "members": [
+                3
+            ]
         }
     },
     {
@@ -2309,7 +2322,7 @@
             "date": "2022-11-10",
             "game": 1,
             "location": 1,
-            "join_code": "1234",
+            "joincode": "1234",
             "current_round_number": 1,
             "current_question_number": 1
         }
@@ -2322,7 +2335,7 @@
             "date": "2022-11-20",
             "game": 1,
             "location": 2,
-            "join_code": "9999",
+            "joincode": "9999",
             "current_round_number": 1,
             "current_question_number": 1
         }
