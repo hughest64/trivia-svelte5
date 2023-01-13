@@ -17,7 +17,7 @@ const fetchEventData: Action = async ({ fetch, request }) => {
         return fail(response.status, { error: responseData.detail });
     }
 
-    const joinCode = responseData?.event_data?.join_code;
+    const joinCode = responseData?.event_data?.joincode;
     throw redirect(302, `/host/${joinCode}`);
 };
 

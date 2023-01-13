@@ -85,7 +85,7 @@ export interface EventData {
     event_id: string | number;
     game_title: string;
     location: string;
-    join_code: string | number;
+    joincode: string | number;
     // reveal_answers: boolean;
     current_round_number: number;
     current_question_number: number;
@@ -131,7 +131,6 @@ export interface ActiveEventData {
 
 export interface SocketMessage {
     type: string;
-    store: StoreKey;
     message: any;
 }
 
