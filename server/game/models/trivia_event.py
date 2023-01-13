@@ -162,7 +162,7 @@ class TriviaEvent(models.Model):
     location = models.ForeignKey(
         "Location", blank=True, null=True, on_delete=models.SET_NULL
     )
-    join_code = models.CharField(max_length=64, unique=True, db_index=True)
+    joincode = models.CharField(max_length=64, unique=True, db_index=True)
     current_round_number = models.IntegerField(default=1)
     current_question_number = models.IntegerField(default=1)
 
@@ -179,7 +179,7 @@ class TriviaEvent(models.Model):
                 "id": self.pk,
                 # "game_id": self.pk,
                 "game_title": self.game.title,
-                "join_code": self.join_code,
+                "joincode": self.joincode,
                 "location": self.location.name if self.location else "",
                 "block_code": self.game.block_code,
             },

@@ -39,7 +39,7 @@ class EventHostView(APIView):
     def get(self, request, joincode):
         """fetch a specific event from the joincode parsed from the url"""
         user_data = request.user.to_json()
-        event = get_event_or_404(join_code=joincode)
+        event = get_event_or_404(joincode=joincode)
 
         return Response({**event.to_json(), "user_data": user_data})
 
@@ -69,7 +69,7 @@ class EventSetupView(APIView):
     def post(self, request):
         """create a new event or fetch an existing one with a specified game/location combo"""
         # TODO: use DataCleaner when we no longer use the demo code
-        event = TriviaEvent.objects.get(join_code=DEMO_EVENT_JOIN_CODE)
+        event = TriviaEvent.objects.get(joincode=DEMO_EVENT_JOIN_CODE)
         user_data = request.user.to_json()
 
         return Response(

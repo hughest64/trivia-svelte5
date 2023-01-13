@@ -22,7 +22,7 @@ def get_user_group(user_id):
 
 
 class BaseSocketMessage(ABC):
-    """A base class for messange handling. It cannot be instantiaed directly."""
+    """Base class for message handling. It cannot be instantiaed directly."""
 
     @abstractmethod
     def __init__(self, group: str, message: dict, auto_send=True) -> None:
@@ -38,7 +38,7 @@ class BaseSocketMessage(ABC):
             raise TypeError("The message property must be a dict.")
         if not "type" in self.message or not "msg_type" in self.message:
             raise ValueError(
-                "The message property must contain keys for 'type' and 'msg_type.'"
+                "The message property must contain keys for 'type' and 'msg_type'."
             )
 
     def send(self) -> None:

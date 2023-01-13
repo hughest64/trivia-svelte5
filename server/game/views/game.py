@@ -27,9 +27,9 @@ class EventView(APIView):
         if not user.active_team:
             raise TeamRequired
 
-        event = get_event_or_404(join_code=joincode)
+        event = get_event_or_404(joincode=joincode)
         question_responses = QuestionResponse.objects.filter(
-            event__join_code=joincode, team=user.active_team
+            event__joincode=joincode, team=user.active_team
         )
 
         return Response(
@@ -66,7 +66,7 @@ class ResponseView(APIView):
         if not request.user.active_team:
             raise TeamRequired
 
-        event = get_event_or_404(join_code=joincode)
+        event = get_event_or_404(joincode=joincode)
 
         # TODO: this doesn't prevent a reponse from being created if a round is already locked!
         question_response, _ = QuestionResponse.objects.get_or_create(

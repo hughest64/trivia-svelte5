@@ -29,8 +29,6 @@ example = {
 class GameCreator:
     """This is likely to change a lot, but a good start to creating data from the a.t. import"""
 
-    # how to handle teams - I don't want to create them, but might have to
-
     def __init__(self, responses, game=None, event=None, round_count=8):
         # TODO: for airtable imports, this would be airtable data
         self.responses = responses
@@ -40,7 +38,7 @@ class GameCreator:
         self.default_game_title = "Responses for Scoring"
         self.default_event_data = {
             "location": Location.objects.first(),
-            "join_code": 9998,
+            "joincode": 9998,
             "game": self.game,
         }
         self.game_questions = {}
