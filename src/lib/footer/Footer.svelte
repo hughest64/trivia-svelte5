@@ -23,19 +23,19 @@
     <ul id="nav-links" class:justify-nav={!isEventRoute}>
         {#if isEventRoute}
             <li class:active={setActive(joinCode)}>
-                <a href={`/${routeId}/${joinCode}`}>
+                <a data-sveltekit-preload-data="hover" href={`/${routeId}/${joinCode}`}>
                     <QuizIcon cls="svg" />
                     <p>Quiz</p>
                 </a>
             </li>
             <li class:active={setActive('leaderboard')}>
-                <a href={`/${routeId}/${joinCode}/leaderboard`}>
+                <a data-sveltekit-preload-data="hover" href={`/${routeId}/${joinCode}/leaderboard`}>
                     <LeaderboardIcon cls="svg" />
                     <p>Leaderboard</p>
                 </a>
             </li>
             <li class:active={setActive('chat')}>
-                <a href={`/${routeId}/${joinCode}/chat`}>
+                <a data-sveltekit-preload-data="hover" href={`/${routeId}/${joinCode}/chat`}>
                     <ChatIcon cls="svg" />
                     <p>Chat</p>
                 </a>
@@ -43,14 +43,17 @@
         {/if}
         {#if routeId === 'game' && isEventRoute}
             <li class:active={setActive('megaround')}>
-                <a href={`/game/${joinCode}/megaround`}>
+                <a data-sveltekit-preload-data="hover" href={`/game/${joinCode}/megaround`}>
                     <MegaroundIcon cls="svg" />
                     <p>Megaround</p>
                 </a>
             </li>
         {:else if routeId === 'host' && isEventRoute}
             <li class:active={setActive($page.params.round ? `score/${$page.params.round}` : 'score')}>
-                <a href={`/host/${joinCode}/score/${$activeEventData.activeRoundNumber || 1}`}>
+                <a
+                    data-sveltekit-preload-data="hover"
+                    href={`/host/${joinCode}/score/${$activeEventData.activeRoundNumber || 1}`}
+                >
                     <ScoringIcon cls="svg" />
                     <p>Scoring</p>
                 </a>
