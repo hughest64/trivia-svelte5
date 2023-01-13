@@ -1,32 +1,39 @@
 import json
 
-from rest_framework.exceptions import NotFound
-from rest_framework.status import HTTP_400_BAD_REQUEST
+from rest_framework.exceptions import APIException, NotFound
+from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_403_FORBIDDEN
 
 from game.models import TriviaEvent
 
 
-def get_event_or_404(join_code) -> TriviaEvent:
+def get_event_or_404(joincode) -> TriviaEvent:
     try:
-        return TriviaEvent.objects.get(join_code=join_code)
+        return TriviaEvent.objects.get(joincode=joincode)
     except TriviaEvent.DoesNotExist:
-        raise NotFound(detail=f"Could not find an event with join code {join_code}")
+        raise NotFound(detail=f"Event with join code {joincode} does not exist")
+
+
+class TeamRequired(APIException):
+    status_code = HTTP_403_FORBIDDEN
+    default_detail = "You must be on a team to view this page"
 
 
 class DataValidationError(Exception):
-    def __init__(self, message="Invalid Data", field=None, **kwargs):
-        self.message = message
+    def __init__(self, message=None, field=None, status=None):
+        self.message = message or "Invalid Data"
         self.field = field
+        self.status = status or HTTP_400_BAD_REQUEST
 
     def __str__(self):
         return json.dumps(self.response())
 
+    @property
     def response(self):
         parts = [self.message]
         if self.field:
             parts.append(self.field)
 
-        return {"detail": " - ".join(parts), "status": HTTP_400_BAD_REQUEST}
+        return {"detail": " - ".join(parts), "status": self.status}
 
 
 class DataCleaner:

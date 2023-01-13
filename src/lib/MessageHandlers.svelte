@@ -93,7 +93,7 @@
             currentDataStore.set(message);
         },
         score_update: (message: Record<string, string>) => {
-            // TODO: update host AND player reponses, no need to filter by team since ids are unique
+            // TODO: update host AND player responses, no need to filter by team since ids are unique
             console.log(message);
         }
     };

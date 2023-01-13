@@ -1,7 +1,4 @@
-from asgiref.sync import async_to_sync
 from typing import List
-
-from channels.layers import get_channel_layer
 
 from django.db.models import QuerySet
 from django.utils.decorators import method_decorator
@@ -9,7 +6,7 @@ from django.views.decorators.csrf import csrf_protect
 
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
-from rest_framework.status import HTTP_404_NOT_FOUND, HTTP_400_BAD_REQUEST
+from rest_framework.status import HTTP_404_NOT_FOUND
 from rest_framework.views import APIView
 
 from game.views.validation.data_cleaner import (
@@ -29,8 +26,7 @@ from game.models import (
     QuestionResponse,
 )
 from game.models.utils import queryset_to_json
-
-channel_layer = get_channel_layer()
+from game.utils.socket_classes import SendEventMessage
 
 # TODO: remove once creating event is implemented
 DEMO_EVENT_JOIN_CODE = 1234
@@ -43,14 +39,7 @@ class EventHostView(APIView):
     def get(self, request, joincode):
         """fetch a specific event from the joincode parsed from the url"""
         user_data = request.user.to_json()
-
-        try:
-            event = TriviaEvent.objects.get(join_code=joincode or DEMO_EVENT_JOIN_CODE)
-        except TriviaEvent.DoesNotExist:
-            return Response(
-                {"detail": f"An event with join code {joincode} was not found"},
-                status=HTTP_404_NOT_FOUND,
-            )
+        event = get_event_or_404(joincode=joincode)
 
         return Response({**event.to_json(), "user_data": user_data})
 
@@ -61,8 +50,10 @@ class EventSetupView(APIView):
 
     def get(self, request):
         """get this weeks games and a list of locations"""
-        locations = queryset_to_json(Location.objects.filter(active=True))
         # TODO: add active param to game model, possibly use celery to update the attr
+        # TODO: we need to send data indicating if game/event combinations already exist
+        # to duplicate the join vs start logic in the current app
+        locations = queryset_to_json(Location.objects.filter(active=True))
         games = queryset_to_json(Game.objects.all())
         user_data = request.user.to_json()
 
@@ -77,7 +68,8 @@ class EventSetupView(APIView):
     @method_decorator(csrf_protect)
     def post(self, request):
         """create a new event or fetch an existing one with a specified game/location combo"""
-        event = TriviaEvent.objects.get(join_code=DEMO_EVENT_JOIN_CODE)
+        # TODO: use DataCleaner when we no longer use the demo code
+        event = TriviaEvent.objects.get(joincode=DEMO_EVENT_JOIN_CODE)
         user_data = request.user.to_json()
 
         return Response(
@@ -93,7 +85,7 @@ class QuestionRevealView(APIView):
     permission_classes = [IsAdminUser]
 
     @staticmethod
-    def get_updated_event_data(
+    def update_event_data(
         round_number: int, question_numbers: List[int], event: TriviaEvent
     ):
         """update the current attributes of a trivia event when the game play advances"""
@@ -103,15 +95,11 @@ class QuestionRevealView(APIView):
             and max(question_numbers) > event.current_question_number
         ):
             event.current_round_number = round_number
-            event.current_question_number = (
-                question_numbers[0]
-                if len(question_numbers) == 1
-                else min(question_numbers)
-            )
+            event.current_question_number = min(question_numbers)
             event.save()
             event_data = {
                 "event_updated": True,
-                "question_number": event.current_round_number,
+                "question_number": event.current_question_number,
                 "round_number": event.current_round_number,
             }
         return event_data
@@ -125,14 +113,13 @@ class QuestionRevealView(APIView):
             reveal = data.as_bool("reveal")
             update = data.as_bool("update")
         except DataValidationError as e:
-            return Response(e.response())
+            return Response(e.response)
 
         # notify the event group but don't update the db
         if not update:
-            async_to_sync(channel_layer.group_send)(
-                f"event_{joincode}",
+            SendEventMessage(
+                joincode,
                 {
-                    "type": "event_update",
                     "msg_type": "question_reveal_popup",
                     "message": {
                         "reveal": reveal,
@@ -153,13 +140,13 @@ class QuestionRevealView(APIView):
                 )
                 updated_states.append(question_state.to_json())
 
-            current_event_data = self.get_updated_event_data(
+            current_event_data = self.update_event_data(
                 round_number, question_numbers, event
             )
-            async_to_sync(channel_layer.group_send)(
-                f"event_{joincode}",
+
+            SendEventMessage(
+                joincode,
                 {
-                    "type": "event_update",
                     "msg_type": "question_state_update",
                     "message": {
                         "question_states": updated_states,
@@ -182,7 +169,7 @@ class RoundLockView(APIView):
             round_number = data.as_int("round_number")
             locked = data.as_bool("locked")
         except DataValidationError as e:
-            return Response(e.response())
+            return Response(e.response)
 
         event = get_event_or_404(joincode)
 
@@ -191,11 +178,14 @@ class RoundLockView(APIView):
             round_number=round_number,
             defaults={"locked": locked},
         )
+        # lock or unlock responses for the round
+        QuestionResponse.objects.filter(
+            event=event, game_question__round_number=round_number
+        ).update(locked=locked)
 
-        async_to_sync(channel_layer.group_send)(
-            f"event_{joincode}",
+        SendEventMessage(
+            joincode,
             {
-                "type": "event_update",
                 "msg_type": "round_update",
                 "message": round_state.to_json(),
             },
@@ -235,6 +225,9 @@ class ScoreRoundView(APIView):
             grouped_responses = {}
             for response in responses:
                 text = response.recorded_answer.lower().strip()
+                # don't process blank responses
+                if not text:
+                    continue
                 grouped_responses.setdefault(
                     text,
                     {
@@ -272,16 +265,15 @@ class ScoreRoundView(APIView):
             funny = data.as_bool("funny")
             points_awarded = data.as_float("points_awarded")
         except DataValidationError as e:
-            return Response(e.response())
+            return Response(e.response)
 
         QuestionResponse.objects.filter(id__in=id_list).update(
             points_awarded=points_awarded, funny=funny
         )
 
-        async_to_sync(channel_layer.group_send)(
-            f"event_{joincode}",
+        SendEventMessage(
+            joincode,
             {
-                "type": "event_update",
                 "msg_type": "score_update",
                 "message": request.data,  # NOTE: the id array will be serialized!
             },

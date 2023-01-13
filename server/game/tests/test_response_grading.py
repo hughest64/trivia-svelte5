@@ -7,7 +7,7 @@ class ResponseGradeTestCase(TestCase):
     fixtures = ["dbdump.json"]
 
     def setUp(self):
-        self.event = TriviaEvent.objects.get(join_code=1234)
+        self.event = TriviaEvent.objects.get(joincode=1234)
         self.team = Team.objects.get(name="hello world")
 
     def tearDown(self) -> None:

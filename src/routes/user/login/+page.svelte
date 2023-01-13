@@ -13,6 +13,7 @@
 
 <h2>-or-</h2>
 
+<!-- TODO: add an action, maybe action='?/login' -->
 <form method="POST">
     {#if form?.error}<h3>{form?.error}</h3>{/if}
     <div class="input-element">
@@ -25,6 +26,7 @@
         <label for="password">Password</label>
     </div>
 
+    <!-- not yet implemented, but the input will likely need to be a button with a formAction -->
     <a href="/user/forgot">Click Here to Reset your Password</a>
     <input class="button button-red" type="submit" value="Submit" />
 </form>

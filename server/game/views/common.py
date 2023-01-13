@@ -29,7 +29,7 @@ class ClearEventDataView(APIView):
             )
             EventRoundState.objects.all().update(scored=False, locked=False)
             # keep responses for event 9998 for load testing
-            QuestionResponse.objects.exclude(event__join_code=9998).delete()
+            QuestionResponse.objects.exclude(event__joincode=9998).delete()
         except Exception as e:
             return Response({"detail": ""}, status=HTTP_400_BAD_REQUEST)
 
