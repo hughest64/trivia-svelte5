@@ -9,12 +9,13 @@ from game.models import (
 )
 
 
-class LeaderboardRank:
+class LeaderboardProcessor:
     def __init__(self, leaderboard: Leaderboard, through_round: int):
         self.leaderbaord = leaderboard
         # round to score through inclusive, if None, all locked and scored rounds are considered
         self.through_round = through_round
 
+    # TODO: should we only allow updating the host version? i.e. the public board can only be synced, not updated
     def _set_team_score(self, team: Team):
         lbe, _ = LeaderboardEntry.objects.get_or_create(
             team=self.team, event=self.event
@@ -62,3 +63,7 @@ class LeaderboardRank:
     def sync_leaderboards(self):
         # map a host leaderboard to a public leaderboard
         return
+
+    # get the serialized leaderboard entires
+    def to_json(self):
+        return {}
