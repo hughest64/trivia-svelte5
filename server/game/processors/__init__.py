@@ -1,1 +1,1 @@
-from leaderboard_processor import *
+from .leaderboard_processor import *

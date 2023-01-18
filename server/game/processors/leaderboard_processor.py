@@ -5,7 +5,7 @@ from game.models import (
     TriviaEvent,
     QuestionResponse,
     LEADERBOARD_TYPE_HOST,
-    LEADERBOARD_TYPE_PLAYER,
+    LEADERBOARD_TYPE_PUBLIC,
 )
 
 

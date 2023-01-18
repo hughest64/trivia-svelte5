@@ -67,7 +67,7 @@ class Leaderboard(models.Model):
     leaderboard_type = models.IntegerField(choices=LEADERBOARD_TYPE_OPTIONS)
     event = models.ForeignKey("TriviaEvent", on_delete=models.CASCADE)
     # represents the max round for which player leaderboards should display point totals, rank, etc
-    through_round = models.IntegerField(blank=True, null=True)
+    through_round = models.IntegerField(default=0)
 
     def __str__(self):
         return f"{self.leaderboard_type} leaderboard for event {self.event}"
@@ -80,7 +80,10 @@ class Leaderboard(models.Model):
         )
 
     def to_json(self):
-        return {"leaderboard_entries": queryset_to_json(self.leaderboard_entries.all())}
+        return {
+            "through_round": self.through_round,
+            "leaderboard_entries": queryset_to_json(self.leaderboard_entries.all()),
+        }
 
     class Meta:
         unique_together = ("event", "leaderboard_type")
@@ -108,13 +111,19 @@ class LeaderboardEntry(models.Model):
 
     class Meta:
         ordering = ["-leaderboard__event", "rank", "tiebreaker_rank", "pk"]
+        verbose_name_plural = "Leaderboard Entries"
 
     def __str__(self):
         return f"Leaderboard Entry for {self.team} at event {self.event}"
 
     def to_json(self):
         # TODO:
-        return {}
+        return {
+            "team_id": self.team.id,
+            "team_name": self.team.name,
+            "rank": self.rank,
+            "total_points": self.total_points,
+        }
 
 
 """

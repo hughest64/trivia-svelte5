@@ -26,15 +26,15 @@ class LeaderboardView(APIView):
 
     def get(self, request, joincode):
         event = get_event_or_404(joincode)
-        # TODO: we'll need to be able to determine which type to get if the same
-        # view will be used by host and player (host may need to fetch both types)
-        # try:
+        # try
         leaderboard = Leaderboard.objects.get(event=event, type=LEADERBOARD_TYPE_PUBLIC)
-        # except:
-        leaderboard_data = LeaderboardProcessor(leaderboard).to_json()
+        # except
 
         return Response(
-            {"user_data": request.user.to_json(), "leaderbaord_data": leaderboard_data}
+            {
+                "user_data": request.user.to_json(),
+                "leaderboard_data": leaderboard.to_json(),
+            }
         )
 
 
