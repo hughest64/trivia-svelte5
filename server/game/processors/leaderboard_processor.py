@@ -1,3 +1,5 @@
+from django.db import transaction
+
 from game.models import (
     Team,
     Leaderboard,
@@ -9,35 +11,43 @@ from game.models import (
 )
 
 
+class ProcedureError(Exception):
+    def __init__(self, message) -> None:
+        self.message = message or "This method should not be called indepentently"
+
+    def __str__(self):
+        return self.message
+
+
 class LeaderboardProcessor:
-    def __init__(self, leaderboard: Leaderboard, through_round: int):
-        self.leaderbaord = leaderboard
-        # round to score through inclusive, if None, all locked and scored rounds are considered
+    def __init__(self, event: TriviaEvent, leaderboard_type: int, through_round: int):
+        self.event = event
+        self.leaderboard_type = leaderboard_type
+        # round to score through inclusive
         self.through_round = through_round
+        self.processing = False
 
-    # TODO: should we only allow updating the host version? i.e. the public board can only be synced, not updated
-    def _set_team_score(self, team: Team):
-        lbe, _ = LeaderboardEntry.objects.get_or_create(
-            team=self.team, event=self.event
-        )
+    def _check_order(self):
+        """ensure that the update process is only run from update_leaderboard."""
+        if self.processing == False:
+            raise ProcedureError("This method cannot be called indepentently")
 
-        rng = range(1, self.through_round + 1)
+    def _set_team_score(self, lbe: LeaderboardEntry):
+        self._check_order()
         resps = QuestionResponse.objects.filter(
-            event=self.leaderboard.event, team=team, round_number__in=rng
+            event=self.leaderboard.event,
+            team=lbe.team,
+            round_number__lte=self.through_round,
         )
 
-        points = sum(*[resp.points_awarded for resp in resps])
-        lbe.points_through_round = points
+        points = sum([resp.points_awarded for resp in resps])
+        lbe.total_points = points
         if not self.through_round:
             lbe.total_points = points
-        lbe.save()
 
-        return points
-
-    def _set_leaderboard_ranks(self):
-        leaderboard_entries = Leaderboard.objects.filter(total_points__gte=0).order_by(
-            ["-points", "tiebreaker_rank"]
-        )
+    # TODO: the tiebreaker bit needs work (do we reset it for example?)
+    def _set_leaderboard_rank(self, leaderboard_entries):
+        self._check_order()
         pts_vals = [lbe.points for lbe in leaderboard_entries]
         tb_index = 0
         for lbe in leaderboard_entries:
@@ -48,22 +58,36 @@ class LeaderboardProcessor:
             else:
                 tb_index = 0
             lbe.rank = rank
-            lbe.save()
-
-    def update_leaderboard(self):
-        # use with transaction.atomic() and:
-        # - lookup all teams for the event (leaderboard.event.teams.all())
-        # - pass each team to self.set_team_score()
-        # call self.set_team_ranks()
-        return
 
     def handle_tiebreaker(self):
         return
 
+    def update_leaderboard(self):
+        if self.leaderboard_type == LEADERBOARD_TYPE_PUBLIC:
+            raise ValueError("cannot call update_leaderboard on a public leaderboard")
+
+        try:
+            with transaction.atomic():
+                leaderboard = Leaderboard.objects.get(
+                    event=self.event, leaderboard_type=self.leaderboard_type
+                )
+
+                entries = leaderboard.leaderboard_entries.all()
+                for entry in entries:
+                    self._set_team_score(entry)
+
+                self._set_leaderboard_rank(entries)
+                LeaderboardEntry.objects.bulk_update(entries, ["total_points", "rank"])
+                leaderboard.through_round = self.through_round
+                leaderboard.save()
+            # TODO: log?
+            # better stats to be passed to the front end?
+            return {"sucess": True}
+
+        except Exception as e:
+            # TODO: proper log
+            print(f"Could not update leaderboard. Reason:\{e}")
+
     def sync_leaderboards(self):
         # map a host leaderboard to a public leaderboard
         return
-
-    # get the serialized leaderboard entires
-    def to_json(self):
-        return {}

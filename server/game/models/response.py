@@ -117,7 +117,6 @@ class LeaderboardEntry(models.Model):
         return f"Leaderboard Entry for {self.team} at event {self.event}"
 
     def to_json(self):
-        # TODO:
         return {
             "team_id": self.team.id,
             "team_name": self.team.name,
