@@ -12,7 +12,7 @@ from game.models import (
 
 
 class ProcedureError(Exception):
-    def __init__(self, message) -> None:
+    def __init__(self, message=None) -> None:
         self.message = message or "This method should not be called indepentently"
 
     def __str__(self):
@@ -23,14 +23,19 @@ class LeaderboardProcessor:
     def __init__(self, event: TriviaEvent, leaderboard_type: int, through_round: int):
         self.event = event
         self.leaderboard_type = leaderboard_type
-        # round to score through inclusive
+        # round to score through, inclusive
         self.through_round = through_round
         self.processing = False
+        self._validate()
 
     def _check_order(self):
         """ensure that the update process is only run from update_leaderboard."""
         if self.processing == False:
             raise ProcedureError("This method cannot be called indepentently")
+
+    def _validate(self):
+        # ensure through round is valid
+        return
 
     def _set_team_score(self, lbe: LeaderboardEntry):
         self._check_order()
@@ -65,7 +70,9 @@ class LeaderboardProcessor:
 
     def update_leaderboard(self):
         if self.leaderboard_type == LEADERBOARD_TYPE_PUBLIC:
-            raise ValueError("cannot call update_leaderboard on a public leaderboard")
+            raise ProcedureError(
+                "Updating a public leaderboard directly is not allowed. Use the 'sync_leaderboards' method to sync with the host leaderboard instead"
+            )
         self.processing = True
         try:
             with transaction.atomic():

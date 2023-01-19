@@ -18,7 +18,6 @@ from game.models import (
     LEADERBOARD_TYPE_HOST,
     LEADERBOARD_TYPE_PUBLIC,
 )
-from game.processors import LeaderboardProcessor
 
 
 class LeaderboardView(APIView):
@@ -26,9 +25,15 @@ class LeaderboardView(APIView):
 
     def get(self, request, joincode):
         event = get_event_or_404(joincode)
-        # try
-        leaderboard = Leaderboard.objects.get(event=event, type=LEADERBOARD_TYPE_PUBLIC)
-        # except
+        try:
+            leaderboard = Leaderboard.objects.get(
+                event=event, type=LEADERBOARD_TYPE_PUBLIC
+            )
+        except Leaderboard.DoesNotExist:
+            return Response(
+                {"detail": f"No public leaderboard for event with joincode {joincode}"},
+                status=404,
+            )
 
         return Response(
             {
