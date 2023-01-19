@@ -114,7 +114,7 @@ class LeaderboardEntry(models.Model):
         verbose_name_plural = "Leaderboard Entries"
 
     def __str__(self):
-        return f"Leaderboard Entry for {self.team} at event {self.event}"
+        return f"Leaderboard Entry for {self.team} at event {self.leaderboard.event}"
 
     def to_json(self):
         return {

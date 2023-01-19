@@ -35,23 +35,24 @@ class LeaderboardProcessor:
     def _set_team_score(self, lbe: LeaderboardEntry):
         self._check_order()
         resps = QuestionResponse.objects.filter(
-            event=self.leaderboard.event,
+            event=self.event,
             team=lbe.team,
-            round_number__lte=self.through_round,
+            game_question__round_number__lte=self.through_round,
         )
 
         points = sum([resp.points_awarded for resp in resps])
         lbe.total_points = points
-        if not self.through_round:
-            lbe.total_points = points
 
     # TODO: the tiebreaker bit needs work (do we reset it for example?)
     def _set_leaderboard_rank(self, leaderboard_entries):
         self._check_order()
-        pts_vals = [lbe.points for lbe in leaderboard_entries]
+        pts_vals = sorted(
+            [lbe.total_points for lbe in leaderboard_entries],
+            reverse=True,
+        )
         tb_index = 0
         for lbe in leaderboard_entries:
-            rank = pts_vals.index(lbe.points)
+            rank = pts_vals.index(lbe.total_points) + 1
             if lbe.tiebreaker_rank is not None:
                 rank += tb_index
                 tb_index += 1
@@ -65,7 +66,7 @@ class LeaderboardProcessor:
     def update_leaderboard(self):
         if self.leaderboard_type == LEADERBOARD_TYPE_PUBLIC:
             raise ValueError("cannot call update_leaderboard on a public leaderboard")
-
+        self.processing = True
         try:
             with transaction.atomic():
                 leaderboard = Leaderboard.objects.get(
@@ -85,8 +86,9 @@ class LeaderboardProcessor:
             return {"sucess": True}
 
         except Exception as e:
+            self.processing = False
             # TODO: proper log
-            print(f"Could not update leaderboard. Reason:\{e}")
+            print(f"Could not update leaderboard. Reason: {e}")
 
     def sync_leaderboards(self):
         # map a host leaderboard to a public leaderboard
