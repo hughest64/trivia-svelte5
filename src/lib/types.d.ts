@@ -33,6 +33,23 @@ export interface UserTeam {
     members?: string[];
 }
 
+export interface LeaderboardEntry {
+    team_id: number;
+    team_name: string;
+    rank?: number;
+    total_points: number;
+}
+
+export interface PublicLeaderboard {
+    through_round?: number;
+    leaderboard_entries: LeaderboardEntry[];
+}
+
+// TODO
+// export interface HostLeaderboard extends PublicLeaderboard {
+//     //
+// }
+
 export interface LocationSelectData {
     location_id: string | number;
     location_name: string;
@@ -146,6 +163,7 @@ export type StoreKey =
     | 'responseData'
     | 'hostResponseData'
     | 'popupData'
-    | 'eventPageData';
+    | 'eventPageData'
+    | 'publicLeaderboard';
 
 export type MessageHandler = Record<string, (message: any) => unknown>;

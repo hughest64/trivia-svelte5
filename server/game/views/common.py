@@ -27,11 +27,13 @@ class LeaderboardView(APIView):
         event = get_event_or_404(joincode)
         try:
             leaderboard = Leaderboard.objects.get(
-                event=event, type=LEADERBOARD_TYPE_PUBLIC
+                event=event, leaderboard_type=LEADERBOARD_TYPE_PUBLIC
             )
         except Leaderboard.DoesNotExist:
             return Response(
-                {"detail": f"No public leaderboard for event with joincode {joincode}"},
+                {
+                    "detail": f"No public leaderboard for event with joincode {joincode} was found"
+                },
                 status=404,
             )
 

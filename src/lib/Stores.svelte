@@ -34,6 +34,8 @@
     $: createStore<QuestionState[]>('questionStates', data?.question_states || []);
     $: createStore<Response[]>('responseData', data?.response_data || []);
 
+    $: createStore('publicLeaderboard', data?.leaderboard_data || {});
+
     const hostResponses = createStore<HostResponse[]>('hostResponseData', []);
     $: hostResponses.set(data?.host_response_data);
 </script>
