@@ -12,6 +12,7 @@ LEADERBOARD_TYPE_OPTIONS = [
     (LEADERBOARD_TYPE_HOST, "Host"),
     (LEADERBOARD_TYPE_PUBLIC, "Public"),
 ]
+LEADERBOARD_TYPE_DICT = dict(LEADERBOARD_TYPE_OPTIONS)
 
 
 class QuestionResponse(models.Model):
@@ -70,7 +71,7 @@ class Leaderboard(models.Model):
     through_round = models.IntegerField(default=0)
 
     def __str__(self):
-        return f"{self.leaderboard_type} leaderboard for event {self.event}"
+        return f"{LEADERBOARD_TYPE_DICT[self.leaderboard_type]} leaderboard for event {self.event}"
 
     # can be used to notify a host that either leaderboard type is not up to date with the max scored round
     def up_to_date(self):

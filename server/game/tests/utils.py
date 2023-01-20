@@ -8,24 +8,7 @@ from django.db import transaction
 from game.models import *
 
 
-example = {
-    "leaderboard_entry_id": 54734,  # skip
-    "recorded_answer": "Austria",  # same
-    "round_id": 2627,  # skip
-    "round_number": 4,  # skip
-    "question_id": 14270,  # game_question (pk) - get_or_create)
-    "question_number": 7,  # skip
-    "display_answer": "Uruguay",  # answer (set as display_answer for game_question)
-    "text": "What country is this?",  # text for game_question
-    "event_id": 5132,  # event (pk) - create prior?
-    "team_id": 124,  # team (pk) - get_or_create
-    "is_funny": False,  # skip
-    "points_awarded": 0.0,  # skip
-    "id": 1837237,  # skip
-    "megaround_value": 0.0,  # skip
-}
-
-
+# TODO: this is only used by a management cmd, probably move out of testings
 class GameCreator:
     """This is likely to change a lot, but a good start to creating data from the a.t. import"""
 
@@ -125,6 +108,7 @@ class GameCreator:
                 resp.save()
 
 
+# TODO: we don't need this anymore
 class QuestionResponseGenerator:
     """for use in testing only!"""
 
