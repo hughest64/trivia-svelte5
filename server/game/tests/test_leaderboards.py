@@ -3,6 +3,9 @@ from django.test import TestCase
 from game.models import *
 from game.processors import LeaderboardProcessor
 
+# TODO: this should test the update functionality in stages
+# i.e. through rd 4 then through rd 8
+
 
 class LeaderboardSetup(TestCase):
     fixtures = ["data-1-19-23.json"]
@@ -53,15 +56,12 @@ class LeaderboardSetup(TestCase):
 
     def test_leadboard_sync(self):
         LeaderboardProcessor(self.event).sync_leaderboards()
-        host_lb = Leaderboard.objects.get(
-            event=self.event, leaderboard_type=LEADERBOARD_TYPE_HOST
-        )
-        host_entries = host_lb.leaderboard_entries.all()
+        host_entries = self.host_lb.leaderboard_entries.all()
         public_lb = Leaderboard.objects.get(
             event=self.event, leaderboard_type=LEADERBOARD_TYPE_PUBLIC
         )
 
-        self.assertEqual(host_lb.through_round, public_lb.through_round)
+        self.assertEqual(self.host_lb.through_round, public_lb.through_round)
 
         for e in host_entries:
             public_entry = LeaderboardEntry.objects.get(
