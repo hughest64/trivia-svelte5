@@ -20,29 +20,27 @@ class ProcedureError(Exception):
 
 
 class LeaderboardProcessor:
-    def __init__(self, event: TriviaEvent, leaderboard_type: int, through_round: int):
+    def __init__(self, event: TriviaEvent):
         self.event = event
-        self.leaderboard_type = leaderboard_type
-        # round to score through, inclusive
-        self.through_round = through_round
         self.processing = False
-        self._validate()
 
     def _check_order(self):
-        """ensure that the update process is only run from update_leaderboard."""
+        """ensure that the update process is only run from update_host_leaderboard."""
         if self.processing == False:
             raise ProcedureError("This method cannot be called indepentently")
 
-    def _validate(self):
-        # ensure through round is valid
-        return
+    def _validate_round_number(self, through_round):
+        if not self.event.game.game_rounds.filter(round_number=through_round).exists():
+            raise ValueError(
+                f"event {self.event} does not contain a round {through_round}"
+            )
 
-    def _set_team_score(self, lbe: LeaderboardEntry):
+    def _set_team_score(self, lbe: LeaderboardEntry, through_round: int):
         self._check_order()
         resps = QuestionResponse.objects.filter(
             event=self.event,
             team=lbe.team,
-            game_question__round_number__lte=self.through_round,
+            game_question__round_number__lte=through_round,
         )
 
         points = sum([resp.points_awarded for resp in resps])
@@ -68,35 +66,53 @@ class LeaderboardProcessor:
     def handle_tiebreaker(self):
         return
 
-    def update_leaderboard(self):
-        if self.leaderboard_type == LEADERBOARD_TYPE_PUBLIC:
-            raise ProcedureError(
-                "Updating a public leaderboard directly is not allowed. Use the 'sync_leaderboards' method to sync with the host leaderboard instead"
-            )
+    def update_host_leaderboard(self, through_round):
+        self._validate_round_number(through_round)
         self.processing = True
         try:
             with transaction.atomic():
                 leaderboard = Leaderboard.objects.get(
-                    event=self.event, leaderboard_type=self.leaderboard_type
+                    event=self.event, leaderboard_type=LEADERBOARD_TYPE_HOST
                 )
 
                 entries = leaderboard.leaderboard_entries.all()
                 for entry in entries:
-                    self._set_team_score(entry)
+                    self._set_team_score(entry, through_round)
 
                 self._set_leaderboard_rank(entries)
                 LeaderboardEntry.objects.bulk_update(entries, ["total_points", "rank"])
-                leaderboard.through_round = self.through_round
+                leaderboard.through_round = through_round
                 leaderboard.save()
             # TODO: log?
             # better stats to be passed to the front end?
             return {"sucess": True}
 
         except Exception as e:
-            self.processing = False
             # TODO: proper log
             print(f"Could not update leaderboard. Reason: {e}")
 
+        self.processing = False
+
     def sync_leaderboards(self):
-        # map a host leaderboard to a public leaderboard
-        return
+        """use host leaderboard and entry data to update the public leaderboard"""
+        host_lb = Leaderboard.objects.get(
+            event=self.event, leaderboard_type=LEADERBOARD_TYPE_HOST
+        )
+        public_lb, _ = Leaderboard.objects.update_or_create(
+            event=self.event,
+            leaderboard_type=LEADERBOARD_TYPE_PUBLIC,
+            defaults={
+                "through_round": host_lb.through_round,
+            },
+        )
+
+        for e in host_lb.leaderboard_entries.all():
+            LeaderboardEntry.objects.update_or_create(
+                leaderboard=public_lb,
+                team=e.team,
+                defaults={
+                    "rank": e.rank,
+                    "tiebreaker_rank": e.tiebreaker_rank,
+                    "total_points": e.total_points,
+                },
+            )

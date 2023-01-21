@@ -68,6 +68,7 @@ class Leaderboard(models.Model):
     leaderboard_type = models.IntegerField(choices=LEADERBOARD_TYPE_OPTIONS)
     event = models.ForeignKey("TriviaEvent", on_delete=models.CASCADE)
     # represents the max round for which player leaderboards should display point totals, rank, etc
+    # TODO: perhaps this should be null=True and have a min validator of 1?
     through_round = models.IntegerField(default=0)
 
     def __str__(self):

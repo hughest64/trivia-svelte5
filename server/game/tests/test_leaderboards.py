@@ -1,7 +1,7 @@
 from django.test import TestCase
 
 from game.models import *
-from game.processors import LeaderboardProcessor, ProcedureError
+from game.processors import LeaderboardProcessor
 
 
 class LeaderboardSetup(TestCase):
@@ -22,9 +22,7 @@ class LeaderboardSetup(TestCase):
         self.assertEqual(entries.filter(rank__isnull=True).count(), entry_count)
 
         # run the update
-        LeaderboardProcessor(
-            event=self.event, leaderboard_type=LEADERBOARD_TYPE_HOST, through_round=8
-        ).update_leaderboard()
+        LeaderboardProcessor(event=self.event).update_host_leaderboard(through_round=8)
         entries = LeaderboardEntry.objects.filter(leaderboard=self.host_lb)
 
         # point totals are summed correctly
@@ -49,13 +47,28 @@ class LeaderboardSetup(TestCase):
                 continue
             self.assertTrue(e.rank >= entries[i - 1].rank)
 
-    def test_direct_update_public_leaderboard(self):
-        with self.assertRaises(ProcedureError):
-            LeaderboardProcessor(
-                self.event, LEADERBOARD_TYPE_PUBLIC, through_round=8
-            ).update_leaderboard()
+    def test_though_round_out_of_range(self):
+        with self.assertRaises(ValueError):
+            LeaderboardProcessor(self.event).update_host_leaderboard(through_round=9)
 
-    # def test_leadboard_sync(self):
+    def test_leadboard_sync(self):
+        LeaderboardProcessor(self.event).sync_leaderboards()
+        host_lb = Leaderboard.objects.get(
+            event=self.event, leaderboard_type=LEADERBOARD_TYPE_HOST
+        )
+        host_entries = host_lb.leaderboard_entries.all()
+        public_lb = Leaderboard.objects.get(
+            event=self.event, leaderboard_type=LEADERBOARD_TYPE_PUBLIC
+        )
+
+        self.assertEqual(host_lb.through_round, public_lb.through_round)
+
+        for e in host_entries:
+            public_entry = LeaderboardEntry.objects.get(
+                leaderboard=public_lb, team=e.team
+            )
+            self.assertEqual(e.total_points, public_entry.total_points)
+            self.assertEqual(e.tiebreaker_rank, public_entry.tiebreaker_rank)
 
     # this is probably worthy of a separate class as there are many scenarios
     # def test_tiebreakers(self):
