@@ -26,13 +26,28 @@ class LeaderboardSetup(TestCase):
             event=self.event, leaderboard_type=LEADERBOARD_TYPE_HOST, through_round=8
         ).update_leaderboard()
         entries = LeaderboardEntry.objects.filter(leaderboard=self.host_lb)
-        # validate pts (summed correct for 1-2 teams?)
+
+        # point totals are summed correctly
+        team_a = entries[0].team
+        team_a_resps = QuestionResponse.objects.filter(event=self.event, team=team_a)
+        team_a_pt_total = sum([r.points_awarded for r in team_a_resps])
+        self.assertEqual(team_a_pt_total, entries[0].total_points)
+
+        team_b = entries[1].team
+        team_b_resps = QuestionResponse.objects.filter(event=self.event, team=team_b)
+        team_b_pt_total = sum([r.points_awarded for r in team_b_resps])
+        self.assertEqual(team_b_pt_total, entries[1].total_points)
 
         # entries are sorted are ranked properly
         self.assertEqual(entries.filter(rank__isnull=False).count(), entry_count)
         self.assertEqual(entries.first().rank, 1)
         self.assertEqual(entries.last().rank, entry_count)
-        # need to assert a <= b <= n... for all entries
+        # assert a <= b <= n... for all entries
+        for i, e in enumerate(entries):
+            if i == 0:
+                self.assertTrue(e.rank == 1)
+                continue
+            self.assertTrue(e.rank >= entries[i - 1].rank)
 
     def test_direct_update_public_leaderboard(self):
         with self.assertRaises(ProcedureError):
