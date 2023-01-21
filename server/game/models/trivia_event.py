@@ -190,7 +190,6 @@ class Game(models.Model):
 
 
 class TriviaEvent(models.Model):
-    # TODO: add teams (m2m)
     created_at = models.DateTimeField(auto_now_add=True)
     date = models.DateField(default=timezone.now)
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
@@ -200,6 +199,11 @@ class TriviaEvent(models.Model):
     joincode = models.CharField(max_length=64, unique=True, db_index=True)
     current_round_number = models.IntegerField(default=1)
     current_question_number = models.IntegerField(default=1)
+
+    # used to limit qty of players from a team that can join an event
+    allowed_players_per_team = models.IntegerField(blank=True, null=True)
+    teams = models.ManyToManyField("team", related_name="teams")
+    players = models.ManyToManyField("user.User", related_name="players")
 
     @property
     def current_question_key(self):

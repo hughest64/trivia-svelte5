@@ -20,7 +20,6 @@ from game.utils.socket_classes import SendTeamMessage
 from user.models import User
 
 
-# TODO: get_or_create two leaderboard entries, one player, one host based on event and user.active_team
 class EventView(APIView):
     authentication_classes = [JwtAuthentication]
 
@@ -31,6 +30,12 @@ class EventView(APIView):
             raise TeamRequired
 
         event = get_event_or_404(joincode=joincode)
+
+        # - check if the event limits players per team, and if so
+        # - check if the user's team is on the event
+        # - check if the user is on the event
+        # - limit checks are in place and fail raise an error (similar to TeamRequired?)
+
         question_responses = QuestionResponse.objects.filter(
             event__joincode=joincode, team=user.active_team
         )
@@ -42,6 +47,29 @@ class EventView(APIView):
                 "response_data": queryset_to_json(question_responses),
             }
         )
+
+    @method_decorator(csrf_protect)
+    def post(self, request):
+        try:
+            data = DataCleaner(request.data)
+            joncode = data.as_int("joincode")
+        except DataValidationError as e:
+            return Response(e.response)
+
+        event = get_event_or_404(joincode=joncode)
+
+        # - if no active team, reject (TeamRequired)
+        # - check if the event limits players per team, and if so
+        # - check if the user's team is on the event
+        # -- if no, add it and the user and go
+        # -- if yes, check if the user is added or qty of players for the team < allowed
+        # --- if no, raise an error (similar to TeamRequired?)
+        # --- if yes, add user if necessary and go
+
+        # also create leaderboard entires (public and host)
+
+        # user and event data
+        return Response()
 
 
 class EventJoinView(APIView):
