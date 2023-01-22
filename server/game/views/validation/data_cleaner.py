@@ -1,24 +1,16 @@
 import json
 
-from rest_framework.exceptions import APIException, NotFound
-from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_403_FORBIDDEN
+from rest_framework.exceptions import NotFound
+from rest_framework.status import HTTP_400_BAD_REQUEST
 
 from game.views.validation.exceptions import LeaderboardEntryRequired
 from game.models import Leaderboard, TriviaEvent, LEADERBOARD_TYPE_PUBLIC
 from user.models import User
 
-
-class TeamRequired(APIException):
-    status_code = HTTP_403_FORBIDDEN
-    default_detail = "You must be on a team to view this page"
-    default_code = "team_required"
-
-
-# TODO: better detail, perhaps reference the actual limit?
-class PlayerLimitExceeded(APIException):
-    status_code = HTTP_403_FORBIDDEN
-    default_detail = "Player limit exceeded for this event"
-    default_code = "player_limit_exceeded"
+from game.views.validation.exceptions import (
+    PlayerLimitExceeded,
+    LeaderboardEntryRequired,
+)
 
 
 def check_player_limit(event: TriviaEvent, user: User):

@@ -20,15 +20,13 @@ from game.models.utils import queryset_to_json
 from game.views.validation.data_cleaner import (
     DataCleaner,
     DataValidationError,
-    # LeaderboardEntryRequired,
-    TeamRequired,
     check_player_limit,
     get_event_or_404,
     get_public_leaderboard,
 )
 from user.models import User
 
-from game.views.validation.exceptions import LeaderboardEntryRequired
+from game.views.validation.exceptions import LeaderboardEntryRequired, TeamRequired
 from game.utils.socket_classes import SendTeamMessage
 from user.models import User
 
@@ -45,10 +43,7 @@ class EventView(APIView):
 
         # TODO: this logic should be conditional somehow as by default it requires
         # a user's team to have a leaderboard entry for the event
-        try:
-            public_lb = get_public_leaderboard(event, user)
-        except LeaderboardEntryRequired as e:
-            return Response(e.response, status=e.status_code)
+        public_lb = get_public_leaderboard(event, user)
 
         check_player_limit(event, user)
 

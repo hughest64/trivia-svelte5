@@ -31,7 +31,6 @@ class EventViewTestCase(TestCase):
     def test_get_without_leaderboard_entry(self):
         resp = self.client.get("/game/1234")
         self.assertEqual(resp.status_code, 403)
-        print(resp.data)
         self.assertEqual(resp.data.get("reason"), "join_required")
 
     def test_get_over_player_limit(self):
