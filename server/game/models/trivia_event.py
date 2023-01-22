@@ -200,10 +200,10 @@ class TriviaEvent(models.Model):
     current_round_number = models.IntegerField(default=1)
     current_question_number = models.IntegerField(default=1)
 
-    # event_teams = models.ManyToManyField("team", related_name="event_teams")
-    # # used to limit qty of players from a team that can join an event
-    # player_limit = models.IntegerField(blank=True, null=True)
-    # players = models.ManyToManyField("user.User", related_name="players")
+    # used to limit qty of players from a team that can join an event
+    player_limit = models.IntegerField(blank=True, null=True)
+    players = models.ManyToManyField("user.User", related_name="players")
+    event_teams = models.ManyToManyField("team", related_name="event_teams")
 
     @property
     def current_question_key(self):
