@@ -1,3 +1,4 @@
+from django.db.models import Prefetch
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 
@@ -6,12 +7,19 @@ from rest_framework.views import APIView
 
 from user.authentication import JwtAuthentication
 
-from game.models import QuestionResponse
+from game.models import (
+    LeaderboardEntry,
+    TriviaEvent,
+    QuestionResponse,
+    LEADERBOARD_TYPE_HOST,
+    LEADERBOARD_TYPE_PUBLIC,
+)
 from game.models.utils import queryset_to_json
 from game.views.validation.data_cleaner import (
     DataCleaner,
     DataValidationError,
     TeamRequired,
+    check_player_limit,
     get_event_or_404,
 )
 from user.models import User
@@ -30,11 +38,7 @@ class EventView(APIView):
             raise TeamRequired
 
         event = get_event_or_404(joincode=joincode)
-
-        # - check if the event limits players per team, and if so
-        # - check if the user's team is on the event
-        # - check if the user is on the event
-        # - limit checks are in place and fail raise an error (similar to TeamRequired?)
+        check_player_limit(event, user)
 
         question_responses = QuestionResponse.objects.filter(
             event__joincode=joincode, team=user.active_team
@@ -56,17 +60,34 @@ class EventView(APIView):
         except DataValidationError as e:
             return Response(e.response)
 
+        user = request.user
+        # TODO: can we add something that will prefetch leaderboards and use
+        # to_attr? then we'd have a list of leaderboards on the event obj
+        e = TriviaEvent.objects.prefetch_related(
+            Prefetch(
+                "leaderboards",
+                to_attr="leaderboard_list",
+            )
+        ).get(joncode=joncode)
+
         event = get_event_or_404(joincode=joncode)
+        check_player_limit(event, user)
+        event.event_teams.add(user.active_team)
+        event.players.add(user)
 
-        # - if no active team, reject (TeamRequired)
-        # - check if the event limits players per team, and if so
-        # - check if the user's team is on the event
-        # -- if no, add it and the user and go
-        # -- if yes, check if the user is added or qty of players for the team < allowed
-        # --- if no, raise an error (similar to TeamRequired?)
-        # --- if yes, add user if necessary and go
+        # get or create leaderboard entires (public and host)
+        LeaderboardEntry.objects.get_or_create(
+            leaderboard=event.leaderboard_list[LEADERBOARD_TYPE_HOST],
+            team=user.active_team,
+        )
+        public_lbe, created = LeaderboardEntry.objects.get_or_create(
+            leaderboard=event.leaderboard_list[LEADERBOARD_TYPE_PUBLIC],
+            team=user.active_team,
+        )
 
-        # also create leaderboard entires (public and host)
+        if created:
+            # send a socket message
+            pass
 
         # user and event data
         return Response()

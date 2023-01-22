@@ -66,7 +66,9 @@ class QuestionResponse(models.Model):
 class Leaderboard(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     leaderboard_type = models.IntegerField(choices=LEADERBOARD_TYPE_OPTIONS)
-    event = models.ForeignKey("TriviaEvent", on_delete=models.CASCADE)
+    event = models.ForeignKey(
+        "TriviaEvent", related_name="leaderboards", on_delete=models.CASCADE
+    )
     # represents the max round for which player leaderboards should display point totals, rank, etc
     # TODO: perhaps this should be null=True and have a min validator of 1?
     through_round = models.IntegerField(default=0)
@@ -89,6 +91,7 @@ class Leaderboard(models.Model):
 
     class Meta:
         unique_together = ("event", "leaderboard_type")
+        ordering = ["-event", "leaderboard_type"]
 
     def save(self, *args, **kwargs):
         self.full_clean()

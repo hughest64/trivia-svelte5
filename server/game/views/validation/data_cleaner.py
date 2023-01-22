@@ -4,6 +4,31 @@ from rest_framework.exceptions import APIException, NotFound
 from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_403_FORBIDDEN
 
 from game.models import TriviaEvent
+from user.models import User
+
+
+class TeamRequired(APIException):
+    status_code = HTTP_403_FORBIDDEN
+    default_detail = "You must be on a team to view this page"
+
+
+# TODO: better detail, perhaps reference the actual limit?
+class PlayerLimitExceeded(APIException):
+    status_code = HTTP_403_FORBIDDEN
+    default_detail = "Player limit exceeded for this event"
+
+
+def check_player_limit(event: TriviaEvent, user: User):
+    if user.active_team is None:
+        raise TeamRequired
+    if event.player_limit is None:
+        return
+    team_players = event.players.filter(active_team=user.active_team)
+    player_count = team_players.count()
+    if (
+        player_count == event.player_limit and user not in team_players
+    ) or player_count > event.player_limit:
+        raise PlayerLimitExceeded
 
 
 def get_event_or_404(joincode) -> TriviaEvent:
@@ -11,11 +36,6 @@ def get_event_or_404(joincode) -> TriviaEvent:
         return TriviaEvent.objects.get(joincode=joincode)
     except TriviaEvent.DoesNotExist:
         raise NotFound(detail=f"Event with join code {joincode} does not exist")
-
-
-class TeamRequired(APIException):
-    status_code = HTTP_403_FORBIDDEN
-    default_detail = "You must be on a team to view this page"
 
 
 class DataValidationError(Exception):
