@@ -61,21 +61,20 @@ class EventView(APIView):
             return Response(e.response)
 
         user = request.user
-        # TODO: can we add something that will prefetch leaderboards and use
-        # to_attr? then we'd have a list of leaderboards on the event obj
-        e = TriviaEvent.objects.prefetch_related(
+        # TODO: should we add the prefetch stuff to get_event_or_404?
+        # event = get_event_or_404(joincode=joncode)
+        event = TriviaEvent.objects.prefetch_related(
             Prefetch(
                 "leaderboards",
                 to_attr="leaderboard_list",
             )
         ).get(joncode=joncode)
 
-        event = get_event_or_404(joincode=joncode)
         check_player_limit(event, user)
         event.event_teams.add(user.active_team)
         event.players.add(user)
 
-        # get or create leaderboard entires (public and host)
+        # TODO: not sure I trust the indexing here
         LeaderboardEntry.objects.get_or_create(
             leaderboard=event.leaderboard_list[LEADERBOARD_TYPE_HOST],
             team=user.active_team,
