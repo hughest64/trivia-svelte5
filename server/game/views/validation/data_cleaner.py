@@ -1,13 +1,13 @@
 import json
 
 from rest_framework.exceptions import NotFound
-from rest_framework.status import HTTP_400_BAD_REQUEST
 
 from game.views.validation.exceptions import LeaderboardEntryRequired
 from game.models import Leaderboard, TriviaEvent, LEADERBOARD_TYPE_PUBLIC
 from user.models import User
 
 from game.views.validation.exceptions import (
+    DataValidationError,
     PlayerLimitExceeded,
     LeaderboardEntryRequired,
 )
@@ -47,24 +47,6 @@ def get_event_or_404(joincode) -> TriviaEvent:
         return TriviaEvent.objects.get(joincode=joincode)
     except TriviaEvent.DoesNotExist:
         raise NotFound(detail=f"Event with join code {joincode} does not exist")
-
-
-class DataValidationError(Exception):
-    def __init__(self, message=None, field=None, status=None):
-        self.message = message or "Invalid Data"
-        self.field = field
-        self.status = status or HTTP_400_BAD_REQUEST
-
-    def __str__(self):
-        return json.dumps(self.response())
-
-    @property
-    def response(self):
-        parts = [self.message]
-        if self.field:
-            parts.append(self.field)
-
-        return {"detail": " - ".join(parts), "status": self.status}
 
 
 class DataCleaner:

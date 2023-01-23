@@ -50,6 +50,14 @@ class EventViewTestCase(TestCase):
         self.assertEqual(resp.status_code, 403)
 
     # test post bad join code (both non-existent and non-integer)
+    def test_post_bad_code(self):
+        # cannot post a string as the join code
+        response = self.client.post("/game/join", data={"joincode": "monkey"})
+        self.assertEqual(response.status_code, 400)
+
+        response = self.client.post("/game/join", data={"joincode": 7864})
+        self.assertEqual(response.status_code, 404)
+
     # test post no active team
     # test post over player limit
     # test successful post

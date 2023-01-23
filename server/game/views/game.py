@@ -19,14 +19,13 @@ from game.models import (
 from game.models.utils import queryset_to_json
 from game.views.validation.data_cleaner import (
     DataCleaner,
-    DataValidationError,
     check_player_limit,
     get_event_or_404,
     get_public_leaderboard,
 )
 from user.models import User
 
-from game.views.validation.exceptions import LeaderboardEntryRequired, TeamRequired
+from game.views.validation.exceptions import DataValidationError, TeamRequired
 from game.utils.socket_classes import SendTeamMessage
 from user.models import User
 
@@ -66,11 +65,8 @@ class EventJoinView(APIView):
 
     @method_decorator(csrf_protect)
     def post(self, request):
-        try:
-            data = DataCleaner(request.data)
-            joincode = data.as_int("joincode")
-        except DataValidationError as e:
-            return Response(e.response)
+        data = DataCleaner(request.data)
+        joincode = data.as_int("joincode")
 
         user = request.user
         if user.active_team is None:
