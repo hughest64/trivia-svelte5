@@ -30,10 +30,9 @@ class TeamRequired(APIException):
     default_code = "team_required"
 
 
-# TODO: better detail, perhaps reference the actual limit?
 class PlayerLimitExceeded(APIException):
     status_code = HTTP_403_FORBIDDEN
-    default_detail = "Player limit exceeded for this event"
+    default_detail = "Players per team limit exceeded for this event"
     default_code = "player_limit_exceeded"
 
 
