@@ -17,6 +17,7 @@ from game.models import (
     LEADERBOARD_TYPE_PUBLIC,
 )
 from game.models.utils import queryset_to_json
+from game.utils.socket_classes import SendEventMessage
 from game.views.validation.data_cleaner import (
     DataCleaner,
     check_player_limit,
@@ -87,14 +88,19 @@ class EventJoinView(APIView):
             leaderboard=event.leaderboard_list[LEADERBOARD_TYPE_HOST],
             team=user.active_team,
         )
-        _, created = LeaderboardEntry.objects.get_or_create(
+        public_lbe, created = LeaderboardEntry.objects.get_or_create(
             leaderboard=event.leaderboard_list[LEADERBOARD_TYPE_PUBLIC],
             team=user.active_team,
         )
 
         if created:
-            # TODO: send a socket message
-            pass
+            SendEventMessage(
+                joincode,
+                message={
+                    "msg_type": "leaderboard_join",
+                    "message": public_lbe.to_json(),
+                },
+            )
 
         return Response({"success": True})
 
