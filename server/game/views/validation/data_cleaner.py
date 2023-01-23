@@ -33,7 +33,7 @@ def get_public_leaderboard(event: TriviaEvent, user: User) -> Leaderboard:
             event=event,
             leaderboard_type=LEADERBOARD_TYPE_PUBLIC,
         )
-        if user.active_team not in public_lb.leaderboard_entries.all():
+        if not public_lb.leaderboard_entries.filter(team=user.active_team).exists():
             raise LeaderboardEntryRequired
 
     except Leaderboard.DoesNotExist:

@@ -34,14 +34,29 @@ class EventViewTestCase(TestCase):
         self.assertEqual(resp.data.get("reason"), "join_required")
 
     def test_get_over_player_limit(self):
-        # make a leaderboard entry for self.user.active_team
-        # set the player limit to 1 for self.event
-        # add a teammate of player (player_two?) to the event
-        # try get request, should be over the limit
-        # reset the event and delete the lbe
-        return
+        LeaderboardEntry.objects.create(
+            leaderboard=self.public_lb, team=self.player.active_team
+        )
+        self.event.player_limit = 1
+        self.event.save()
+        p2 = User.objects.get(username="player_two")
 
-    # test successful get request
+        # both players are on the same team
+        self.assertEqual(self.player.active_team, p2.active_team)
+        # add p2 and team to the event
+        self.event.players.add(p2)
+        self.event.event_teams.add(p2.active_team)
+
+        # should be over the limit
+        response = self.client.get("/game/1234")
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.data.get("reason"), "player_limit_exceeded")
+
+        # inceasing the limit should succeed
+        self.event.player_limit = 2
+        self.event.save()
+        response = self.client.get("/game/1234")
+        self.assertEqual(response.status_code, 200)
 
     def test_no_active_team(self):
         self.player.active_team = None
@@ -54,7 +69,7 @@ class EventViewTestCase(TestCase):
         # cannot post a string as the join code
         response = self.client.post("/game/join", data={"joincode": "monkey"})
         self.assertEqual(response.status_code, 400)
-
+        # non-existent event
         response = self.client.post("/game/join", data={"joincode": 7864})
         self.assertEqual(response.status_code, 404)
 

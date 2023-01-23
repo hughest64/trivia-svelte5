@@ -56,6 +56,6 @@ def event_exception_handler(exc, context):
         return response
 
     if isinstance(exc, DataValidationError):
-        # This might be the trick to get the proper status code, maybe?
-        # headers = {"WWW-Authenticate": "session"}
         return Response(data=exc.response, status=exc.status)
+
+    return None
