@@ -9,8 +9,11 @@ const joinevent: Action = async ({ fetch, request }) => {
     if (!joincode) {
         return { errors: { message: 'Please Enter a Join Code' } };
     }
-    const response = await fetch(`${apiHost}/game/${joincode}`);
-
+    const response = await fetch(`${apiHost}/game/join`, {
+        method: 'post',
+        body: JSON.stringify({ joincode: joincode })
+    });
+    console.log(response);
     const responseData = await response.json();
     if (!response.ok) {
         return fail(responseData.status, { error: responseData.detail });

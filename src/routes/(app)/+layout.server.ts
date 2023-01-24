@@ -2,7 +2,11 @@ import { error, redirect } from '@sveltejs/kit';
 import { PUBLIC_API_HOST as apiHost } from '$env/static/public';
 import type { LayoutServerLoad } from './$types';
 
-const apiMap = new Map([['/host/choice', '/user']]);
+const apiMap = new Map([
+    ['/host/choice', '/user'],
+    // TODO: should we keep this?
+    ['/game/join', '/user']
+]);
 
 export const load: LayoutServerLoad = async ({ locals, url, fetch }) => {
     const apiEndpoint = apiMap.get(url.pathname) || url.pathname;
@@ -23,6 +27,9 @@ export const load: LayoutServerLoad = async ({ locals, url, fetch }) => {
     }
     // forbidden, redirect to a safe page
     if (response.status === 403) {
+        if (pageData?.reason === 'join_required') {
+            throw redirect(302, `/game/join?reason=${pageData.reason}`);
+        }
         throw redirect(302, '/team');
     }
     // TODO: expand to handle other pages (/team, etc)
