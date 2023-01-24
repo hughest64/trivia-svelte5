@@ -27,6 +27,9 @@
 
     const handlers: MessageHandler = {
         connected: () => console.log('connected!'),
+        leaderboard_join: (message) => {
+            console.log('update leaderboard with', message);
+        },
         team_response_update: (message: Response) => {
             const responsStore = <Writable<Response[]>>allStores.get('responseData');
             responsStore.update((responses) => {

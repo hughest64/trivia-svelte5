@@ -1,3 +1,5 @@
+from django.core import management
+
 from rest_framework.response import Response
 from rest_framework.status import HTTP_400_BAD_REQUEST
 from rest_framework.views import APIView
@@ -56,15 +58,17 @@ class ClearEventDataView(APIView):
             )
 
         try:
-            TriviaEvent.objects.all().update(
-                current_question_number=1, current_round_number=1
-            )
-            EventQuestionState.objects.all().update(
-                question_displayed=False, answer_displayed=False
-            )
-            EventRoundState.objects.all().update(scored=False, locked=False)
-            # keep responses for event 9998 for load testing
-            QuestionResponse.objects.exclude(event__joincode=9998).delete()
+            # TriviaEvent.objects.all().update(
+            #     current_question_number=1, current_round_number=1
+            # )
+            # EventQuestionState.objects.all().update(
+            #     question_displayed=False, answer_displayed=False
+            # )
+            # EventRoundState.objects.all().update(scored=False, locked=False)
+            # # keep responses for event 9998 for load testing
+            # QuestionResponse.objects.exclude(event__joincode=9998).delete()
+            msg = management.call_command("reset")
+            print(msg)
         except Exception as e:
             return Response({"detail": ""}, status=HTTP_400_BAD_REQUEST)
 
