@@ -24,8 +24,14 @@ def check_player_limit(event: TriviaEvent, user: User):
         raise PlayerLimitExceeded
 
 
-def get_public_leaderboard(event: TriviaEvent, user: User) -> Leaderboard:
-    """disallow access to an event if a player's active team does not have a leaderboard entery for the event"""
+def get_public_leaderboard(
+    event: TriviaEvent, user: User, raise_for_entry=True
+) -> Leaderboard:
+    """
+    Lookup the public leaderboard for an event. If raise_for_entry is True, disallow access to an event
+    if a player's active team does not have a leaderboard entery for the event.
+    """
+    # TODO:
     # an alternative here is to make them an "observer", i.e. cannot submit responses, but can view the game
     # a user persmission to allow it would also be good (debugging, etc)
     try:
@@ -33,8 +39,9 @@ def get_public_leaderboard(event: TriviaEvent, user: User) -> Leaderboard:
             event=event,
             leaderboard_type=LEADERBOARD_TYPE_PUBLIC,
         )
-        if not public_lb.leaderboard_entries.filter(team=user.active_team).exists():
-            raise LeaderboardEntryRequired
+        if raise_for_entry:
+            if not public_lb.leaderboard_entries.filter(team=user.active_team).exists():
+                raise LeaderboardEntryRequired
 
     except Leaderboard.DoesNotExist:
         raise NotFound(detail=f"A leaderboard for {event} does not exist")

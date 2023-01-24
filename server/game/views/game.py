@@ -43,7 +43,7 @@ class EventView(APIView):
 
         # TODO: this logic should be conditional somehow as by default it requires
         # a user's team to have a leaderboard entry for the event
-        public_lb = get_public_leaderboard(event, user)
+        public_lb = get_public_leaderboard(event, user, raise_for_entry=True)
 
         check_player_limit(event, user)
 
@@ -56,7 +56,7 @@ class EventView(APIView):
                 **event.to_json(),
                 "user_data": user.to_json(),
                 "response_data": queryset_to_json(question_responses),
-                "leaderboard": public_lb.to_json(),
+                "leaderboard_data": public_lb.to_json(),
             }
         )
 

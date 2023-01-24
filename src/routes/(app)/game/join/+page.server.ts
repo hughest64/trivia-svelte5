@@ -13,7 +13,6 @@ const joinevent: Action = async ({ fetch, request }) => {
         method: 'post',
         body: JSON.stringify({ joincode: joincode })
     });
-    console.log(response);
     const responseData = await response.json();
     if (!response.ok) {
         return fail(responseData.status, { error: responseData.detail });

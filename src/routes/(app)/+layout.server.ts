@@ -4,7 +4,6 @@ import type { LayoutServerLoad } from './$types';
 
 const apiMap = new Map([
     ['/host/choice', '/user'],
-    // TODO: should we keep this?
     ['/game/join', '/user']
 ]);
 
@@ -16,9 +15,9 @@ export const load: LayoutServerLoad = async ({ locals, url, fetch }) => {
     const response = await fetch(`${apiHost}${apiEndpoint}/`);
 
     let data = {};
-    const pageData = await response.json();
+    const apiData = await response.json();
     if (response.ok) {
-        data = { ...pageData, ...locals };
+        data = { ...apiData, ...locals };
     }
 
     // not authorized, redirect to log out to ensure cookies get deleted
@@ -27,15 +26,15 @@ export const load: LayoutServerLoad = async ({ locals, url, fetch }) => {
     }
     // forbidden, redirect to a safe page
     if (response.status === 403) {
-        if (pageData?.reason === 'join_required') {
-            throw redirect(302, `/game/join?reason=${pageData.reason}`);
+        if (apiData?.reason === 'join_required') {
+            throw redirect(302, `/game/join?reason=${apiData.reason}`);
         }
         throw redirect(302, '/team');
     }
     // TODO: expand to handle other pages (/team, etc)
     // resolve the error page
     if (response.status === 404) {
-        throw error(404, { message: pageData.detail, next: '/game/join' });
+        throw error(404, { message: apiData.detail, next: '/game/join' });
     }
 
     return data;
