@@ -23,19 +23,19 @@
     <ul id="nav-links" class:justify-nav={!isEventRoute}>
         {#if isEventRoute}
             <li class:active={setActive(joinCode)}>
-                <a data-sveltekit-preload-data="hover" href={`/${routeId}/${joinCode}`}>
+                <a data-sveltekit-preload-data="tap" href={`/${routeId}/${joinCode}`}>
                     <QuizIcon cls="svg" />
                     <p>Quiz</p>
                 </a>
             </li>
             <li class:active={setActive('leaderboard')}>
-                <a data-sveltekit-preload-data="hover" href={`/${routeId}/${joinCode}/leaderboard`}>
+                <a data-sveltekit-preload-data="tap" href={`/${routeId}/${joinCode}/leaderboard`}>
                     <LeaderboardIcon cls="svg" />
                     <p>Leaderboard</p>
                 </a>
             </li>
             <li class:active={setActive('chat')}>
-                <a data-sveltekit-preload-data="hover" href={`/${routeId}/${joinCode}/chat`}>
+                <a data-sveltekit-preload-data="tap" href={`/${routeId}/${joinCode}/chat`}>
                     <ChatIcon cls="svg" />
                     <p>Chat</p>
                 </a>
@@ -43,7 +43,7 @@
         {/if}
         {#if routeId === 'game' && isEventRoute}
             <li class:active={setActive('megaround')}>
-                <a data-sveltekit-preload-data="hover" href={`/game/${joinCode}/megaround`}>
+                <a data-sveltekit-preload-data="tap" href={`/game/${joinCode}/megaround`}>
                     <MegaroundIcon cls="svg" />
                     <p>Megaround</p>
                 </a>
@@ -51,7 +51,7 @@
         {:else if routeId === 'host' && isEventRoute}
             <li class:active={setActive($page.params.round ? `score/${$page.params.round}` : 'score')}>
                 <a
-                    data-sveltekit-preload-data="hover"
+                    data-sveltekit-preload-data="tap"
                     href={`/host/${joinCode}/score/${$activeEventData.activeRoundNumber || 1}`}
                 >
                     <ScoringIcon cls="svg" />

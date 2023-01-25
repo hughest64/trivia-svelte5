@@ -2,28 +2,37 @@ import json
 
 from rest_framework.exceptions import NotFound
 
-from game.views.validation.exceptions import LeaderboardEntryRequired
 from game.models import Leaderboard, TriviaEvent, LEADERBOARD_TYPE_PUBLIC
 from user.models import User
 
 from game.views.validation.exceptions import (
     DataValidationError,
     PlayerLimitExceeded,
-    LeaderboardEntryRequired,
+    EventJoinRequired,
 )
 
 
 def check_player_limit(event: TriviaEvent, user: User):
-    if event.player_limit is None:
-        return
     team_players = event.players.filter(active_team=user.active_team)
+    player_limit = event.player_limit or 0
     player_count = team_players.count()
+    player_joined = user in team_players
+    limit_exceeded = False
     if (
-        player_count == event.player_limit and user not in team_players
-    ) or player_count > event.player_limit:
+        player_count == event.player_limit and not player_joined
+    ) or player_count > player_limit > 0:
+        limit_exceeded = True
+
+    if limit_exceeded:
         raise PlayerLimitExceeded
 
+    if not limit_exceeded and player_joined:
+        return True
 
+    return False
+
+
+# TODO: now not being used, can we deprecate?
 def get_public_leaderboard(
     event: TriviaEvent, user: User, raise_for_entry=True
 ) -> Leaderboard:
@@ -41,7 +50,7 @@ def get_public_leaderboard(
         )
         if raise_for_entry:
             if not public_lb.leaderboard_entries.filter(team=user.active_team).exists():
-                raise LeaderboardEntryRequired
+                raise EventJoinRequired
 
     except Leaderboard.DoesNotExist:
         raise NotFound(detail=f"A leaderboard for {event} does not exist")

@@ -9,6 +9,8 @@
     const userData = getStore<UserData>('userData');
     $: activeTeam = $userData?.teams.find((team) => team.id === $userData?.active_team_id);
 
+    // TODO: it's probably better to trigger a popup instead of displaying on the page directly
+    // we also want to givet the user the option to change teams. And we need tests for over the limit
     const errorMessageMap: Record<string, string> = {
         join_required: 'Please Join an event by entering the join code',
         player_limit_excedded: `Someone from ${

@@ -36,7 +36,7 @@ class PlayerLimitExceeded(APIException):
     default_code = "player_limit_exceeded"
 
 
-class LeaderboardEntryRequired(APIException):
+class EventJoinRequired(APIException):
     status_code = HTTP_403_FORBIDDEN
     default_detail = "A leaderboard entry is required to view this page"
     default_code = "join_required"

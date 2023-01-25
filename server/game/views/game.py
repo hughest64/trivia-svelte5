@@ -9,7 +9,6 @@ from rest_framework.views import APIView
 from user.authentication import JwtAuthentication
 
 from game.models import (
-    Leaderboard,
     LeaderboardEntry,
     TriviaEvent,
     QuestionResponse,
@@ -22,7 +21,6 @@ from game.views.validation.data_cleaner import (
     DataCleaner,
     check_player_limit,
     get_event_or_404,
-    get_public_leaderboard,
 )
 from user.models import User
 
@@ -41,14 +39,10 @@ class EventView(APIView):
         if user.active_team is None:
             raise TeamRequired
 
-        # TODO: this logic should be conditional somehow as by default it requires
-        # a user's team to have a leaderboard entry for the event
-        public_lb = get_public_leaderboard(event, user, raise_for_entry=True)
-
-        check_player_limit(event, user)
+        player_joined = check_player_limit(event, user)
 
         question_responses = QuestionResponse.objects.filter(
-            event__joincode=joincode, team=user.active_team
+            event=event, team=user.active_team
         )
 
         return Response(
@@ -56,7 +50,9 @@ class EventView(APIView):
                 **event.to_json(),
                 "user_data": user.to_json(),
                 "response_data": queryset_to_json(question_responses),
-                "leaderboard_data": public_lb.to_json(),
+                # if false, the player can view the event but not responsd to questions
+                # this should probably trigger a pop up so that user is aware that they can't do anything
+                "player_joined": player_joined,
             }
         )
 
@@ -108,6 +104,9 @@ class EventJoinView(APIView):
 class ResponseView(APIView):
     authentication_classes = [JwtAuthentication]
 
+    # TODO:
+    # remove try/catch on data,
+    # check if the player has joined the event and send a 400 back if they have not
     @method_decorator(csrf_protect)
     def post(self, request, joincode):
         try:

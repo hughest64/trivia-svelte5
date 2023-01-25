@@ -7,8 +7,8 @@ const apiMap = new Map([
     ['/game/join', '/user']
 ]);
 
-export const load: LayoutServerLoad = async ({ locals, request, fetch }) => {
-    const url = new URL(request.url.split('/__data.json')[0]);
+export const load: LayoutServerLoad = async ({ locals, url, fetch }) => {
+    // const url = new URL(request.url.split('/__data.json')[0]);
     const apiEndpoint = apiMap.get(url.pathname) || url.pathname;
 
     if (!locals.validtoken) throw redirect(302, `/user/logout?next=${url.pathname}`);
@@ -27,6 +27,9 @@ export const load: LayoutServerLoad = async ({ locals, request, fetch }) => {
     }
     // forbidden, redirect to a safe page
     if (response.status === 403) {
+        // not currently enforced by they api as it does not prevent a player from viewing
+        // an event when they have not joined, they will not be able to submit resonses though
+        // - OR - we could auto join on their behalf. i.e. post to game/join
         if (apiData?.reason === 'join_required') {
             throw redirect(302, `/game/join?reason=${apiData.reason}`);
         }
