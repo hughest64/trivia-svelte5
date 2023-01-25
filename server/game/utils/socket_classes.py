@@ -45,7 +45,7 @@ class BaseSocketMessage(ABC):
 
 
 class SendEventMessage(BaseSocketMessage):
-    def __init__(self, joincode: str | int, message: dict, **kwargs) -> None:
+    def __init__(self, joincode: int, message: dict, **kwargs) -> None:
         group = get_event_group(joincode)
         message.update({"type": "event_update"})
         super().__init__(group, message, **kwargs)
