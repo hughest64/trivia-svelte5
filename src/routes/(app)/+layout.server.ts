@@ -7,7 +7,8 @@ const apiMap = new Map([
     ['/game/join', '/user']
 ]);
 
-export const load: LayoutServerLoad = async ({ locals, url, fetch }) => {
+export const load: LayoutServerLoad = async ({ locals, request, fetch }) => {
+    const url = new URL(request.url.split('/__data.json')[0]);
     const apiEndpoint = apiMap.get(url.pathname) || url.pathname;
 
     if (!locals.validtoken) throw redirect(302, `/user/logout?next=${url.pathname}`);
