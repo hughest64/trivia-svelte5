@@ -2,7 +2,7 @@ import { fail } from '@sveltejs/kit';
 import { PUBLIC_API_HOST as apiHost } from '$env/static/public';
 import type { Action } from './$types';
 
-const response: Action = async ({ fetch, request, params }) => {
+const sumpitresponse: Action = async ({ fetch, request, params }) => {
     const data = Object.fromEntries((await request.formData()).entries());
     const apiEndpoint = `${apiHost}/game/${params.joincode}/response`;
 
@@ -18,4 +18,4 @@ const response: Action = async ({ fetch, request, params }) => {
     return data;
 };
 
-export const actions = { response };
+export const actions = { sumpitresponse };

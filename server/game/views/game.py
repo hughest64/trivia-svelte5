@@ -9,6 +9,7 @@ from rest_framework.views import APIView
 from user.authentication import JwtAuthentication
 
 from game.models import (
+    EventRoundState,
     LeaderboardEntry,
     TriviaEvent,
     QuestionResponse,
@@ -24,7 +25,11 @@ from game.views.validation.data_cleaner import (
 )
 from user.models import User
 
-from game.views.validation.exceptions import DataValidationError, TeamRequired
+from game.views.validation.exceptions import (
+    DataValidationError,
+    EventJoinRequired,
+    TeamRequired,
+)
 from game.utils.socket_classes import SendTeamMessage
 from user.models import User
 
@@ -104,23 +109,33 @@ class EventJoinView(APIView):
 class ResponseView(APIView):
     authentication_classes = [JwtAuthentication]
 
-    # TODO:
-    # remove try/catch on data,
-    # check if the player has joined the event and send a 400 back if they have not
     @method_decorator(csrf_protect)
     def post(self, request, joincode):
-        try:
-            data = DataCleaner(request.data)
-            team_id = data.as_int("team_id")
-            question_id = data.as_int("question_id")
-            response_text = data.as_string("response_text")
-        except DataValidationError as e:
-            return Response(e.response)
+        data = DataCleaner(request.data)
+        team_id = data.as_int("team_id")
+        question_id = data.as_int("question_id")
+        round_number = data.as_int("round_number")
+        response_text = data.as_string("response_text")
 
         if not request.user.active_team:
             raise TeamRequired
 
         event = get_event_or_404(joincode=joincode)
+
+        if request.user not in event.players:
+            raise EventJoinRequired
+
+        try:
+            round_state = EventRoundState.objects.get(
+                event=event, round_number=round_number
+            )
+        except EventRoundState.DoesNotExist:
+            raise DataValidationError(
+                "Could not submit response, round state does not exist"
+            )
+
+        if round_state.locked:
+            raise DataValidationError("Cannot submit resposne, the round is locked")
 
         # TODO: this doesn't prevent a response from being created if a round is already locked!
         question_response, _ = QuestionResponse.objects.get_or_create(
@@ -130,8 +145,7 @@ class ResponseView(APIView):
             defaults={"recorded_answer": response_text},
         )
 
-        # TODO: this should probably throw an error if the response is locked, or better yetpass the
-        # round number in the post data and throw an error if the corresponding round is locked
+        # TODO: raise for response lock or is round lock enough?
         if not question_response.locked:
             question_response.recorded_answer = response_text
             question_response.grade()
