@@ -112,10 +112,9 @@ class LeaderboardEntry(models.Model):
     # megaround_applied ?
     # points_adjustment
     # points_adjustment_reason
-    # trivia_users # ? - this is supposed to rep whom actual played, not all team members
 
     class Meta:
-        ordering = ["-leaderboard__event", "rank", "tiebreaker_rank", "pk"]
+        ordering = ["leaderboard__event", "rank", "tiebreaker_rank", "pk"]
         verbose_name_plural = "Leaderboard Entries"
 
     def __str__(self):
