@@ -1,6 +1,5 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { beforeNavigate, invalidate } from '$app/navigation';
     import { getStore } from '$lib/utils';
     import QuizIcon from '$lib/footer/icons/QuizIcon.svelte';
     import ChatIcon from './icons/ChatIcon.svelte';
@@ -18,13 +17,6 @@
     $: routeId = $page.route.id?.split('/')[2];
     $: isEventRoute = reg.test($page.route.id || '');
     $: setActive = (link: string) => $page.url.pathname.endsWith(link);
-    // invalidate the chat endpoint as chats are not prefetched by the api
-    beforeNavigate(({ to, type }) => {
-        if (type !== 'link') return;
-        const invalidatePaths = ['chat', 'score'];
-        const shouldInvalidate = invalidatePaths.some((path) => to?.url.pathname.includes(path));
-        shouldInvalidate && invalidate(to?.url.href || '');
-    });
 </script>
 
 <nav>
