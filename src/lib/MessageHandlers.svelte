@@ -8,7 +8,9 @@
     import type {
         CurrentEventData,
         MessageHandler,
+        LeaderboardEntry,
         PopupData,
+        PublicLeaderboard,
         QuestionState,
         Response,
         RoundState,
@@ -27,8 +29,17 @@
 
     const handlers: MessageHandler = {
         connected: () => console.log('connected!'),
-        leaderboard_join: (message) => {
-            console.log('update leaderboard with', message);
+        leaderboard_join: (message: LeaderboardEntry) => {
+            const publicStore = <Writable<PublicLeaderboard>>allStores.get('publicLeaderboard');
+
+            publicStore.update((lb) => {
+                const newLB = { ...lb };
+                const existingIndex = lb.leaderboard_entries.findIndex((e) => e.team_id === message.team_id);
+                if (existingIndex === -1) {
+                    newLB.leaderboard_entries.push(message);
+                }
+                return newLB;
+            });
         },
         team_response_update: (message: Response) => {
             const responsStore = <Writable<Response[]>>allStores.get('responseData');

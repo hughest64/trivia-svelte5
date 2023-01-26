@@ -10,7 +10,8 @@ class Command(BaseCommand):
         """reset all mutable event related data for an event with the joincode 1234"""
         self.stdout.write("reseting event data")
         TriviaEvent.objects.filter(joincode__in=[1234, 9998]).update(
-            current_question_number=1, current_round_number=1
+            current_question_number=1,
+            current_round_number=1,
         )
         EventQuestionState.objects.filter(event__joincode=1234).update(
             question_displayed=False, answer_displayed=False

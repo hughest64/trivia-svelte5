@@ -28,6 +28,7 @@ urlpatterns = [
     re_path(r"^host/(?P<joincode>\d+)[/\w]*/?$", host.EventHostView.as_view()),
     # player endpoints
     re_path(r"^game/join/?$", game.EventJoinView.as_view()),
+    re_path(r"^game/(?P<joincode>\d+)/leaderboard/?$", game.LeaderboardView.as_view()),
     re_path(r"^game/(?P<joincode>\d+)/response/?$", game.ResponseView.as_view()),
     re_path(r"^game/(?P<joincode>\d+)[/\w]*/?$", game.EventView.as_view()),
     re_path(r"^team/join/?$", team.TeamJoinView.as_view()),

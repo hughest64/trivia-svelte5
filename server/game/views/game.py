@@ -1,6 +1,7 @@
 from django.db.models import Prefetch
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
+from django.core.exceptions import ValidationError
 
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
@@ -9,7 +10,7 @@ from rest_framework.views import APIView
 from user.authentication import JwtAuthentication
 
 from game.models import (
-    GameQuestion,
+    Leaderboard,
     LeaderboardEntry,
     TriviaEvent,
     QuestionResponse,
@@ -55,7 +56,7 @@ class EventView(APIView):
                 **event.to_json(),
                 "user_data": user.to_json(),
                 "response_data": queryset_to_json(question_responses),
-                # if false, the player can view the event but not responsd to questions
+                # if false, the player can view the event but not respond to questions
                 # this should probably trigger a pop up so that user is aware that they can't do anything
                 "player_joined": player_joined,
             }
@@ -106,6 +107,28 @@ class EventJoinView(APIView):
         return Response({"success": True})
 
 
+class LeaderboardView(APIView):
+    authentication_classes = [JwtAuthentication]
+
+    # at least for now, the leaerboard view does not require a user to be stored on the event
+    def get(self, request, joincode):
+        try:
+            public_lb = Leaderboard.objects.get(
+                event__joincode=joincode, leaderboard_type=LEADERBOARD_TYPE_PUBLIC
+            )
+        except Leaderboard.DoesNotExist:
+            return NotFound(f"No leaderboard exists for event {joincode}.")
+
+        print(public_lb)
+
+        return Response(
+            {
+                "user_data": request.user.to_json(),
+                "leaderboard_data": public_lb.to_json(),
+            }
+        )
+
+
 class ResponseView(APIView):
     authentication_classes = [JwtAuthentication]
 
@@ -124,12 +147,6 @@ class ResponseView(APIView):
         if request.user not in event.players:
             raise EventJoinRequired
 
-        # TODO: what error occurs when trying to create a resonse w/ a bad joincode
-        # maybe we just catch that instead of looking it up on every submission
-        game_question = GameQuestion.objects.filter(id=question_id)
-        if not game_question.exists():
-            raise DataValidationError(f"Game question with id {question_id}")
-
         # this is a bit verbose, but it allows for updating or creating a response as well as score it with one db write
         question_lookup = dict(
             team_id=team_id, event=event, game_question_id=question_id
@@ -144,7 +161,11 @@ class ResponseView(APIView):
 
         question_response.recorded_answer = response_text
         question_response.grade()
-        question_response.save()
+        try:
+            question_response.save()
+        # mostly to ensure the game_question_id is valid
+        except ValidationError as e:
+            raise DataValidationError(str(e))
 
         SendTeamMessage(
             joincode,
