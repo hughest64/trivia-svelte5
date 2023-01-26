@@ -114,7 +114,6 @@ class ResponseView(APIView):
         data = DataCleaner(request.data)
         team_id = data.as_int("team_id")
         question_id = data.as_int("question_id")
-        round_number = data.as_int("round_number")
         response_text = data.as_string("response_text")
 
         if not request.user.active_team:
@@ -125,31 +124,21 @@ class ResponseView(APIView):
         if request.user not in event.players:
             raise EventJoinRequired
 
-        try:
-            round_state = EventRoundState.objects.get(
-                event=event, round_number=round_number
-            )
-        except EventRoundState.DoesNotExist:
-            raise DataValidationError(
-                "Could not submit response, round state does not exist"
-            )
-
-        if round_state.locked:
-            raise DataValidationError("Cannot submit resposne, the round is locked")
-
-        # TODO: this doesn't prevent a response from being created if a round is already locked!
-        question_response, _ = QuestionResponse.objects.get_or_create(
-            team_id=team_id,
-            event=event,
-            game_question_id=question_id,
-            defaults={"recorded_answer": response_text},
+        # this is a bit verbose, but it allows for updating or creating a response as well as score it with one db write
+        question_lookup = dict(
+            team_id=team_id, event=event, game_question_id=question_id
         )
+        try:
+            question_response = QuestionResponse.objects.get(**question_lookup)
+        except QuestionResponse.DoesNotExist:
+            question_response = QuestionResponse(**question_lookup)
 
-        # TODO: raise for response lock or is round lock enough?
-        if not question_response.locked:
-            question_response.recorded_answer = response_text
-            question_response.grade()
-            question_response.save()
+        if question_response.locked:
+            raise DataValidationError("This response is locked and cannot be updated")
+
+        question_response.recorded_answer = response_text
+        question_response.grade()
+        question_response.save()
 
         SendTeamMessage(
             joincode,

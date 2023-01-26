@@ -28,7 +28,6 @@
         data.set('question_id', String(activeQuestion?.id));
         data.set('team_id', String($userData.active_team_id));
         data.set('key', activeQuestion?.key || '');
-        data.set('round_number', String(activeQuestion?.round_number));
         data.set('response_text', responseText);
 
         const response = await fetch('?/submitresponse', { method: 'post', body: data });
