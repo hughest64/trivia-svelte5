@@ -9,7 +9,7 @@ from rest_framework.views import APIView
 from user.authentication import JwtAuthentication
 
 from game.models import (
-    EventRoundState,
+    GameQuestion,
     LeaderboardEntry,
     TriviaEvent,
     QuestionResponse,
@@ -123,6 +123,12 @@ class ResponseView(APIView):
 
         if request.user not in event.players:
             raise EventJoinRequired
+
+        # TODO: what error occurs when trying to create a resonse w/ a bad joincode
+        # maybe we just catch that instead of looking it up on every submission
+        game_question = GameQuestion.objects.filter(id=question_id)
+        if not game_question.exists():
+            raise DataValidationError(f"Game question with id {question_id}")
 
         # this is a bit verbose, but it allows for updating or creating a response as well as score it with one db write
         question_lookup = dict(
