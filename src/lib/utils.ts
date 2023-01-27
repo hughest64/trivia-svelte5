@@ -2,7 +2,7 @@ import { getContext, setContext } from 'svelte';
 import { writable, type Writable } from 'svelte/store';
 import jwt_decode from 'jwt-decode';
 import type { Cookies } from '@sveltejs/kit';
-import type { CurrentEventData, GameQuestion, GameRound, JwtPayload, StoreKey, UserTeam } from './types';
+import type { GameQuestion, GameRound, JwtPayload, StoreKey, UserTeam } from './types';
 
 /**
  * take one or many cookie keys and invalidate them by creating new cookies with an exipiration

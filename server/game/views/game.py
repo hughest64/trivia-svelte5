@@ -47,15 +47,26 @@ class EventView(APIView):
 
         player_joined = check_player_limit(event, user)
 
+        try:
+            public_lb = Leaderboard.objects.get(
+                event__joincode=joincode, leaderboard_type=LEADERBOARD_TYPE_PUBLIC
+            )
+        except Leaderboard.DoesNotExist:
+            # TODO: should we raise, or just ship an empty dict?
+            raise NotFound(f"No leaderboard exists for event {joincode}.")
+
         question_responses = QuestionResponse.objects.filter(
             event=event, team=user.active_team
         )
+
+        # TODO: chats (last 50 for the players active team on this event)
 
         return Response(
             {
                 **event.to_json(),
                 "user_data": user.to_json(),
                 "response_data": queryset_to_json(question_responses),
+                "leaderboard_data": public_lb.to_json(),
                 # if false, the player can view the event but not respond to questions
                 # this should probably trigger a pop up so that user is aware that they can't do anything
                 "player_joined": player_joined,
@@ -65,6 +76,9 @@ class EventView(APIView):
 
 class EventJoinView(APIView):
     authentication_classes = [JwtAuthentication]
+
+    def get(self, request):
+        return Response({"user_data": request.user.to_json()})
 
     @method_decorator(csrf_protect)
     def post(self, request):
@@ -105,28 +119,6 @@ class EventJoinView(APIView):
             )
 
         return Response({"success": True})
-
-
-class LeaderboardView(APIView):
-    authentication_classes = [JwtAuthentication]
-
-    # at least for now, the leaerboard view does not require a user to be stored on the event
-    def get(self, request, joincode):
-        try:
-            public_lb = Leaderboard.objects.get(
-                event__joincode=joincode, leaderboard_type=LEADERBOARD_TYPE_PUBLIC
-            )
-        except Leaderboard.DoesNotExist:
-            return NotFound(f"No leaderboard exists for event {joincode}.")
-
-        print(public_lb)
-
-        return Response(
-            {
-                "user_data": request.user.to_json(),
-                "leaderboard_data": public_lb.to_json(),
-            }
-        )
 
 
 class ResponseView(APIView):
