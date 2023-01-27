@@ -35,9 +35,7 @@
             publicStore.update((lb) => {
                 const newLB = { ...lb };
                 const existingIndex = lb.leaderboard_entries.findIndex((e) => e.team_id === message.team_id);
-                if (existingIndex === -1) {
-                    newLB.leaderboard_entries.push(message);
-                }
+                existingIndex === -1 && newLB.leaderboard_entries.push(message);
                 return newLB;
             });
         },
