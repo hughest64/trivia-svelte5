@@ -7,12 +7,12 @@ from user.models import User
 
 from game.views.validation.exceptions import (
     DataValidationError,
-    PlayerLimitExceeded,
     EventJoinRequired,
+    PlayerLimitExceeded,
 )
 
 
-def check_player_limit(event: TriviaEvent, user: User):
+def check_player_limit(event: TriviaEvent, user: User, join_required=False):
     team_players = event.players.filter(active_team=user.active_team)
     player_limit = event.player_limit or 0
     player_count = team_players.count()
@@ -29,33 +29,10 @@ def check_player_limit(event: TriviaEvent, user: User):
     if not limit_exceeded and player_joined:
         return True
 
+    if join_required:
+        raise EventJoinRequired
+
     return False
-
-
-# TODO: now not being used, can we deprecate?
-def get_public_leaderboard(
-    event: TriviaEvent, user: User, raise_for_entry=True
-) -> Leaderboard:
-    """
-    Lookup the public leaderboard for an event. If raise_for_entry is True, disallow access to an event
-    if a player's active team does not have a leaderboard entery for the event.
-    """
-    # TODO:
-    # an alternative here is to make them an "observer", i.e. cannot submit responses, but can view the game
-    # a user persmission to allow it would also be good (debugging, etc)
-    try:
-        public_lb = Leaderboard.objects.get(
-            event=event,
-            leaderboard_type=LEADERBOARD_TYPE_PUBLIC,
-        )
-        if raise_for_entry:
-            if not public_lb.leaderboard_entries.filter(team=user.active_team).exists():
-                raise EventJoinRequired
-
-    except Leaderboard.DoesNotExist:
-        raise NotFound(detail=f"A leaderboard for {event} does not exist")
-
-    return public_lb
 
 
 def get_event_or_404(joincode) -> TriviaEvent:

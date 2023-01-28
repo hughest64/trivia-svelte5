@@ -1,10 +1,10 @@
 import { fail, redirect } from '@sveltejs/kit';
 import { PUBLIC_API_HOST as apiHost } from '$env/static/public';
-import { sortUserTeams } from '$lib/utils';
-import type { Action, PageServerLoad } from './$types';
+import { handlePlayerAuth, sortUserTeams } from '$lib/utils';
+import type { Action, PageServerLoad, PageData } from './$types';
 
-export const load: PageServerLoad = async ({ parent }) => {
-    const data = <App.PageData>await parent();
+export const load: PageServerLoad = async (loadEvent) => {
+    const data = await (<PageData>handlePlayerAuth({ ...loadEvent, endPoint: '/user' }));
     const activeTeamId = data.user_data?.active_team_id;
     const userTeams = data.user_data?.teams;
 
@@ -13,6 +13,8 @@ export const load: PageServerLoad = async ({ parent }) => {
         const sortedTeams = sortUserTeams(userTeams, activeTeamId);
         if (sortedTeams) data.user_data.teams = sortedTeams;
     }
+
+    return data;
 };
 
 const selectTeam: Action = async ({ fetch, request, url }) => {

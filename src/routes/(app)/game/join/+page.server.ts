@@ -1,6 +1,11 @@
 import { fail, redirect } from '@sveltejs/kit';
+import { handlePlayerAuth } from '$lib/utils';
 import { PUBLIC_API_HOST as apiHost } from '$env/static/public';
-import type { Action } from './$types';
+import type { Action, PageServerLoad } from './$types';
+
+export const load: PageServerLoad = async (loadEvent) => {
+    return handlePlayerAuth({ ...loadEvent, endPoint: '/user' });
+};
 
 const joinevent: Action = async ({ fetch, request }) => {
     const formData = await request.formData();

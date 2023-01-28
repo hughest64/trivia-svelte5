@@ -216,7 +216,7 @@ class TriviaEvent(models.Model):
         return round_states.last().round_number
 
     def __str__(self):
-        return f"{self.game.title} on {self.date}"
+        return f"{self.game.title} on {self.date} - {self.joincode}"
 
     def to_json(self):
         return {

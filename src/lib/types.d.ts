@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any*/
 
+import type { ServerLoadEvent } from '@sveltejs/kit';
+
 export interface JwtPayload {
     // user.id
     id?: number;
@@ -167,3 +169,7 @@ export type StoreKey =
     | 'publicLeaderboard';
 
 export type MessageHandler = Record<string, (message: any) => unknown>;
+
+interface CustomLoadEvent extends ServerLoadEvent {
+    endPoint?: string;
+}

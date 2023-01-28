@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { page } from '$app/stores';
+    import { getStore } from '$lib/utils';
     import type { UserData } from '$lib/types';
     import type { ActionData } from './$types';
 
@@ -7,7 +7,7 @@
     let hidecreateteam = true;
     let hideteampassword = true;
 
-    const userData = <UserData>$page.data?.user_data;
+    const userData = getStore<UserData>('userData');
 </script>
 
 <svelte:head><title>TriviaMafia | Team Select</title></svelte:head>
@@ -28,17 +28,17 @@
 
 <h1>Or Play with an Existing Team</h1>
 
-{#if userData?.teams.length > 0}
+{#if $userData?.teams.length > 0}
     <form method="POST">
         {#if form?.error}<p class="error">{form?.error}</p>{/if}
 
         <label class="select-label" for="team-select">Choose A Team</label>
         <select class="select" id="team-select" name="selectedteam">
-            {#each userData.teams as team (team.id)}
+            {#each $userData.teams as team (team.id)}
                 <option value={team.id}>{team.name}</option>
             {/each}
         </select>
-        <input type="hidden" name="currentteam" value={userData?.active_team_id} />
+        <input type="hidden" name="currentteam" value={$userData?.active_team_id} />
         <button class="button button-red" type="submit" id="team-select-submit">Choose This Team</button>
     </form>
 {/if}
