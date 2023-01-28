@@ -1,10 +1,10 @@
 import { fail, redirect } from '@sveltejs/kit';
 import { PUBLIC_API_HOST as apiHost } from '$env/static/public';
 import { handlePlayerAuth, sortUserTeams } from '$lib/utils';
-import type { Action, PageServerLoad, PageData } from './$types';
+import type { Action, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async (loadEvent) => {
-    const data = await (<PageData>handlePlayerAuth({ ...loadEvent, endPoint: '/user' }));
+    const data = await handlePlayerAuth({ ...loadEvent, endPoint: '/user' });
     const activeTeamId = data.user_data?.active_team_id;
     const userTeams = data.user_data?.teams;
 

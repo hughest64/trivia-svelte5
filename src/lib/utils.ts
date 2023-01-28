@@ -91,7 +91,7 @@ const apiMap = new Map([
     ['/game/join', '/user']
 ]);
 
-export const handlePlayerAuth = async ({ locals, fetch, url, endPoint }: CustomLoadEvent) => {
+export const handlePlayerAuth = async ({ locals, fetch, url, endPoint }: CustomLoadEvent): Promise<App.PageData> => {
     if (!locals.validtoken) throw redirect(302, `/user/logout?next=${url.pathname}`);
 
     const apiEndpoint = apiMap.get(endPoint || '') || endPoint;
@@ -124,11 +124,10 @@ export const handlePlayerAuth = async ({ locals, fetch, url, endPoint }: CustomL
     return data;
 };
 
-export const handleHostAuth = async ({ locals, fetch, url, endPoint }: CustomLoadEvent) => {
+export const handleHostAuth = async ({ locals, fetch, url, endPoint }: CustomLoadEvent): Promise<App.PageData> => {
     const apiEndpoint = apiMap.get(endPoint || '') || endPoint;
 
     if (!locals.validtoken) throw redirect(302, `/user/logout?next=${url.pathname}`);
-    // TODO: this is only necessary because /host/choice just queiries /user and that is not locked down to staff
     if (!locals.staffuser) throw redirect(302, '/team');
 
     const response = await fetch(`${apiHost}${apiEndpoint}/`);
@@ -144,14 +143,13 @@ export const handleHostAuth = async ({ locals, fetch, url, endPoint }: CustomLoa
         throw redirect(302, `/user/logout?next=${url.pathname}`);
     }
 
-    // TODO: will this occur host side? if so is there a better endpoint than /team for redirection?
     // forbidden, redirect to a safe page
     if (response.status === 403) {
-        throw redirect(302, '/team');
+        throw redirect(302, '/host/choice');
     }
-    // TODO: this is not the right redirect for a 404 with host pages
+
     if (response.status === 404) {
-        throw error(404, { message: apiData.detail, next: '/game/join' });
+        throw error(404, { message: apiData.detail, next: '/host/choice' });
     }
 
     return data;
