@@ -5,6 +5,7 @@
         ActiveEventData,
         CurrentEventData,
         PublicLeaderboard,
+        PlayerJoined,
         RoundState,
         QuestionState,
         PopupData,
@@ -17,6 +18,10 @@
     $: createStore('userData', data?.user_data || {});
     $: createStore('eventData', data?.event_data || {});
     $: createStore<PopupData>('popupData', { is_displayed: false, popup_type: '' });
+
+    // is the player stored as a participant for the event?
+    const playerJoined = createStore<PlayerJoined>('playerJoined', false);
+    $: playerJoined.set(data.player_joined);
 
     $: createStore<CurrentEventData>('currentEventData', {
         round_number: data?.current_event_data?.round_number || 1,

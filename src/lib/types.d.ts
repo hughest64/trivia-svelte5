@@ -110,6 +110,8 @@ export interface EventData {
     current_question_number: number;
 }
 
+export type PlayerJoined = boolean;
+
 export interface CurrentEventData {
     round_number: number;
     question_number: number;
@@ -166,7 +168,8 @@ export type StoreKey =
     | 'hostResponseData'
     | 'popupData'
     | 'eventPageData'
-    | 'publicLeaderboard';
+    | 'publicLeaderboard'
+    | 'playerJoined';
 
 export type MessageHandler = Record<string, (message: any) => unknown>;
 

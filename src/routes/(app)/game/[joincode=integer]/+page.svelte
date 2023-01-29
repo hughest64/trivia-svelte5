@@ -30,6 +30,8 @@
             body: JSON.stringify({ activeEventData: $activeEventData, joincode })
         });
     };
+
+    // TODO: if !playerJoined create a popup w/ some options for the player to join the event or go pick a different team
 </script>
 
 <h3>{activeRound?.title}</h3>
