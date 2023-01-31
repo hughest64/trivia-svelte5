@@ -84,6 +84,7 @@ export const resolveBool = (value: string | boolean) => {
 /**
  * Custom load functions to help keep trivia event endpoints dry. Player
  * and Host routes are handled separately as the logic differs a bit.
+ * TODO: these belong in a separate auth.ts file
  */
 
 const apiMap = new Map([
@@ -91,7 +92,13 @@ const apiMap = new Map([
     ['/game/join', '/user']
 ]);
 
-export const handlePlayerAuth = async ({ locals, fetch, url, endPoint }: CustomLoadEvent): Promise<App.PageData> => {
+export const handlePlayerAuth = async ({
+    locals,
+    params,
+    fetch,
+    url,
+    endPoint
+}: CustomLoadEvent): Promise<App.PageData> => {
     if (!locals.validtoken) throw redirect(302, `/user/logout?next=${url.pathname}`);
 
     const apiEndpoint = apiMap.get(endPoint || '') || endPoint;
@@ -107,10 +114,16 @@ export const handlePlayerAuth = async ({ locals, fetch, url, endPoint }: CustomL
     }
     // forbidden, redirect to a safe page
     if (response.status === 403) {
+        // auto-join the event
         if (apiData?.reason === 'join_required') {
-            // TODO: auto-join, i.e. post to /game/join w/ params.joincode
-            // if ok, return data, else redirect or error accordingly
-            throw redirect(302, `/game/join?reason=${apiData.reason}`);
+            const joinResponse = await fetch(`${apiHost}/game/join`, {
+                method: 'post',
+                body: JSON.stringify({ joincode: params.joincode })
+            });
+            if (!joinResponse.ok) {
+                const respData = await response.json();
+                throw error(joinResponse.status, respData.detail);
+            }
         }
         throw redirect(302, '/team');
     }
