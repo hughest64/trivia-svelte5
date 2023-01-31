@@ -107,10 +107,9 @@ export const handlePlayerAuth = async ({ locals, fetch, url, endPoint }: CustomL
     }
     // forbidden, redirect to a safe page
     if (response.status === 403) {
-        // not currently enforced by they api as it does not prevent a player from viewing
-        // an event when they have not joined, they will not be able to submit resonses though
-        // - OR - we could auto join on their behalf. i.e. post to game/join
         if (apiData?.reason === 'join_required') {
+            // TODO: auto-join, i.e. post to /game/join w/ params.joincode
+            // if ok, return data, else redirect or error accordingly
             throw redirect(302, `/game/join?reason=${apiData.reason}`);
         }
         throw redirect(302, '/team');
