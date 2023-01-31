@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { page } from '$app/stores';
     import { getStore } from '$lib/utils';
     import type { UserData } from '$lib/types';
     import type { ActionData } from './$types';
@@ -8,17 +7,6 @@
 
     const userData = getStore<UserData>('userData');
     $: activeTeam = $userData?.teams.find((team) => team.id === $userData?.active_team_id);
-
-    // TODO: it's probably better to trigger a popup instead of displaying on the page directly
-    // we also want to givet the user the option to change teams. And we need tests for over the limit
-    const errorMessageMap: Record<string, string> = {
-        join_required: 'Please Join an event by entering the join code',
-        player_limit_excedded: `Someone from ${
-            activeTeam ? activeTeam.name : 'your team'
-        } has alredy joined this event`,
-        none: ''
-    };
-    $: errMsg = errorMessageMap[$page.url.searchParams.get('reason') || 'none'];
 </script>
 
 <svelte:head><title>Trivia Mafia | Join</title></svelte:head>
@@ -27,9 +15,6 @@
 
 {#if !!userData}
     <p>Thanks for Playing with team {activeTeam?.name}! Enter the game code from your host to get started.</p>
-{/if}
-{#if errMsg}
-    <p>{errMsg}</p>
 {/if}
 
 <form action="?/joinevent" method="POST">
