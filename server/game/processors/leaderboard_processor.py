@@ -1,4 +1,6 @@
 from django.db import transaction
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 from game.models import (
     Team,
@@ -9,6 +11,20 @@ from game.models import (
     LEADERBOARD_TYPE_HOST,
     LEADERBOARD_TYPE_PUBLIC,
 )
+
+
+# use the post_save signal to auto create leaderboards when trivia events are created
+# TODO: try/except? we need to know if something errored out here as the event will exist
+# but the leaderboards will not, we could delete the event and ???
+@receiver(post_save, sender=TriviaEvent)
+def create_leaderboards(sender, instance, created, **kwargs):
+    if created:
+        Leaderboard.objects.create(
+            event=instance, leaderboard_type=LEADERBOARD_TYPE_HOST
+        )
+        Leaderboard.objects.create(
+            event=instance, leaderboard_type=LEADERBOARD_TYPE_PUBLIC
+        )
 
 
 class ProcedureError(Exception):
