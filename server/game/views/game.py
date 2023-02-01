@@ -45,7 +45,7 @@ class EventView(APIView):
         if user.active_team is None:
             raise TeamRequired
 
-        player_joined = check_player_limit(event, user, join_required=False)
+        player_joined = check_player_limit(event, user, join_required=True)
 
         try:
             public_lb = Leaderboard.objects.get(

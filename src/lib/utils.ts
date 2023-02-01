@@ -124,6 +124,10 @@ export const handlePlayerAuth = async ({
                 const respData = await response.json();
                 throw error(joinResponse.status, respData.detail);
             }
+            throw redirect(302, `/game/${params.joincode}`);
+        }
+        if (apiData?.reason === 'player_limit_exceeded') {
+            throw error(403, apiData.detail);
         }
         throw redirect(302, '/team');
     }

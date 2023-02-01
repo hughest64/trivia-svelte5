@@ -20,6 +20,7 @@ const joinevent: Action = async ({ fetch, request }) => {
     });
     const responseData = await response.json();
     if (!response.ok) {
+        // TODO: check for player_limit_exceeded reason and throw error if present
         return fail(responseData.status, { error: responseData.detail });
     }
 

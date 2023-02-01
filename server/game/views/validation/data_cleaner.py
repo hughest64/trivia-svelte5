@@ -11,7 +11,8 @@ from game.views.validation.exceptions import (
     PlayerLimitExceeded,
 )
 
-
+# TODO: - rename? the bool that is returned conerns whether or not a player
+# joined the event, not if the limit was exceeded but both aspects are validated
 def check_player_limit(event: TriviaEvent, user: User, join_required=False):
     team_players = event.players.filter(active_team=user.active_team)
     player_limit = event.player_limit or 0
