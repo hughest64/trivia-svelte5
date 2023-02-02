@@ -53,8 +53,8 @@ class EventView(APIView):
             ).to_json()
         except Leaderboard.DoesNotExist:
             # TODO: should we raise, or just ship an empty dict?
-            # raise NotFound(f"No leaderboard exists for event {joincode}.")
-            public_lb = {}
+            raise NotFound(f"No leaderboard exists for event {joincode}.")
+            # public_lb = {}
 
         question_responses = QuestionResponse.objects.filter(
             event=event, team=user.active_team
