@@ -26,6 +26,7 @@ declare namespace App {
     // interface Platform {}
     interface Error {
         next?: string;
+        code?: string | number;
     }
 }
 

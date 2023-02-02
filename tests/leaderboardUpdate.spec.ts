@@ -33,7 +33,7 @@ test.afterEach(async () => {
 });
 
 // TODO: actual locator (div w/ a classname?)
-test('player one leaderbaord updates when another team joins', async () => {
+test.skip('player one leaderboard updates when another team joins', async () => {
     // expect player 1's team to be on the leaderboard, but not p3
     await expect(p1.page.locator('something')).toHaveText('p1 team name');
     await expect(p1.page.locator('something')).not.toHaveText('p3 team name');

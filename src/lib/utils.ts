@@ -126,8 +126,9 @@ export const handlePlayerAuth = async ({
             }
             throw redirect(302, `/game/${params.joincode}`);
         }
+        // TODO: add a payload key to the error and send userdata through
         if (apiData?.reason === 'player_limit_exceeded') {
-            throw error(403, apiData.detail);
+            throw error(403, { message: apiData.detail, code: apiData.reason });
         }
         throw redirect(302, '/team');
     }

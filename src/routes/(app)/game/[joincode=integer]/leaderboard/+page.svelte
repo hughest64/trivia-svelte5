@@ -7,4 +7,5 @@
 
 <h1>Game - Leaderboard</h1>
 
+<!-- TODO flesh this out so we have some elements/classes to look for in our leaderboard update test(s)-->
 <pre>{JSON.stringify($leaderboard, null, 4)}</pre>
