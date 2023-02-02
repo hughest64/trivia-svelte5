@@ -68,6 +68,12 @@ class EventViewTestCase(TestCase):
         resp = self.client.get("/game/1234")
         self.assertEqual(resp.status_code, 403)
 
+    def test_join_event_with_no_leaderboard(self):
+        new_event = TriviaEvent.objects.create(game=Game.objects.first(), joincode=9000)
+        new_event.players.add(self.player)
+        response = self.client.get("/game/9000")
+        self.assertEqual(response.status_code, 404)
+
     # POST requests
 
     def test_post_bad_code(self):
