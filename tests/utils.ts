@@ -55,7 +55,7 @@ export async function asyncTimeout(ms = 100): Promise<ReturnType<typeof setTimeo
 }
 
 /**
- * Returnt a Page object from the Browser context
+ * Return a Page object from the Browser context
  * @param browser
  * @returns page
  */
