@@ -32,9 +32,9 @@ class EventViewTestCase(TestCase):
 
     def test_get_without_joining_event(self):
         resp = self.client.get("/game/1234")
-        # allowed to view, but noted that they have not joined.
-        self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.data.get("player_joined"), False)
+        # not_joined, can't view the event
+        self.assertEqual(resp.status_code, 403)
+        self.assertEqual(resp.data.get("reason"), "join_required")
 
     def test_get_over_player_limit(self):
         LeaderboardEntry.objects.create(
@@ -58,6 +58,7 @@ class EventViewTestCase(TestCase):
         # inceasing the limit should succeed
         self.event.player_limit = 2
         self.event.save()
+        self.event.players.add(self.player)
         response = self.client.get("/game/1234")
         self.assertEqual(response.status_code, 200)
 
@@ -103,7 +104,7 @@ class EventViewTestCase(TestCase):
         self.assertFalse(self.player in self.event.players.all())
         response = self.client.post("/game/join", data={"joincode": 1234})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data, {"success": True})
+        self.assertEqual(response.data, {"player_joined": True})
 
         self.assertTrue(self.player in self.event.players.all())
         self.assertTrue(self.player.active_team in self.event.event_teams.all())

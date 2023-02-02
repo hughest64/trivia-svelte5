@@ -119,7 +119,7 @@ class EventJoinView(APIView):
                 },
             )
 
-        return Response({"plaer_joined": True})
+        return Response({"player_joined": True})
 
 
 class ResponseView(APIView):
