@@ -19,8 +19,11 @@ class BasePage {
     }
 
     async login() {
-        await this.page.goto(this.testConfig?.pageUrl as string);
-        await this.page.locator('a', { hasText: 'Login' }).click();
+        // TODO either add a config param or match the page, etc to detect
+        // if it's a game endpoint and make sure that we actually join first, thus
+        // skipping the extra auto-join post request
+        const desitnation = `/user/login?next=${this.testConfig?.pageUrl as string}`;
+        await this.page.goto(desitnation);
         await this.page.locator('input[name="username"]').fill(this.testConfig?.username as string);
         await this.page.locator('input[name="password"]').fill(this.testConfig?.password as string);
         await this.page.locator('input[value="Submit"]').click();
