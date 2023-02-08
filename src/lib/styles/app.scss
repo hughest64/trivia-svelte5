@@ -124,6 +124,10 @@ form {
     max-width: var(--max-element-width);
 }
 
+/* ------------------- */
+/* Classes             */
+/* ------------------- */
+
 .input-container {
     position: relative;
     text-align: initial;
@@ -254,7 +258,6 @@ button {
 // TODO:
 // &.round-indicator
 
-// TODO: remove or just rename to flex-container?
 .flex-column {
     display: flex;
     flex-direction: column;
@@ -265,15 +268,11 @@ button {
 /* Break Points        */
 /* ------------------- */
 
-// Not necessarily going to use all of these
 // xs (phone) < 600 px
 @media (max-width: 600px) {
     main {
         padding: 1rem 2rem;
     }
-    // h1 {
-    //     align-self: flex-start;
-    // }
 }
 @media (max-width: 700px) {
     h1 {
