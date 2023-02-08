@@ -14,9 +14,7 @@
 {/if}
 
 <Stores>
-    <main class="short">
-        <slot />
-    </main>
+    <slot />
 
     <footer>
         <Footer on:click={() => (displayMenu = !displayMenu)} />

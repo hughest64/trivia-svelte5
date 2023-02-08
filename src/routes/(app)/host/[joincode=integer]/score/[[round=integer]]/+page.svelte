@@ -96,7 +96,7 @@
         <h2>Round {scoringQuestion?.round_number} Question {scoringQuestion?.question_number}</h2>
         <p>{scoringQuestion?.question_text}</p>
     </div>
-    <h3 class="answer">Answer: {scoringQuestion?.display_answer}</h3>
+    <h4 class="answer">Answer: {scoringQuestion?.display_answer}</h4>
     <div class="button-container">
         <button class="button button-secondary" on:click={goBack}>Previous</button>
         <button class="button button-secondary" on:click={advance}>Next</button>
@@ -114,21 +114,10 @@
     <!-- TODO: do something with all responses or eliminate the ability to fetch all responses -->
     <h4>{$responses.length} Total responses for Event {$page.params.joincode}</h4>
 {:else}
-    <h4>No Responses Found!</h4>
+    <h2>All Caught Up!</h2>
 {/if}
 
 <style lang="scss">
-    .host-question-panel {
-        width: 100%;
-        margin: 1em 2em;
-        background-color: #e0e0e0;
-    }
-    h1 {
-        margin: 0.5em auto;
-    }
-    .answer {
-        margin-top: 1em;
-    }
     .button-container {
         width: 40em;
         max-width: calc(100% - 2em);

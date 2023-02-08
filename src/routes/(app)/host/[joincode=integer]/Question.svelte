@@ -39,7 +39,7 @@
 <div class="host-question-panel flex-column">
     {#if formError}<p>{formError}</p>{/if}
 
-    <h3>{question.key}</h3>
+    <h4>{question.key}</h4>
 
     <div class="switch-container">
         <label for={question.key} class="switch">
@@ -57,67 +57,5 @@
         Click To {answerDisplayed ? 'Hide' : 'Reveal'} Answer
     </button>
 
-    {#if answerDisplayed}<h3>{question.display_answer}</h3>{/if}
+    {#if answerDisplayed}<h4>{question.display_answer}</h4>{/if}
 </div>
-
-<style lang="scss">
-    .host-question-panel {
-        width: 100%;
-        margin: 1em 2em;
-        background-color: #e0e0e0;
-        padding: 1em;
-    }
-
-    .switch-container {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: center;
-        margin: 1em 0.5em;
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 4em;
-            height: 2em;
-            margin: 0 0.5em;
-            .slider {
-                border: none;
-                padding: 0;
-                position: absolute;
-                cursor: pointer;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                -webkit-transition: 0.4s;
-                transition: 0.4s;
-                border-radius: 2em;
-                background-color: #413f43;
-                &:before {
-                    background-color: white;
-                    position: absolute;
-                    content: '';
-                    height: 1.75em;
-                    width: 1.75em;
-                    left: 0.25em;
-                    bottom: 0.35em;
-                    -webkit-transition: 0.4s;
-                    transition: 0.4s;
-                    border-radius: 50%;
-                }
-            }
-            input:checked + .slider {
-                background-color: #6fcf97;
-            }
-            input:checked + .slider:before {
-                transform: translateX(2em);
-            }
-            .revealed {
-                background-color: #6fcf97;
-                &:before {
-                    transform: translateX(2.5em);
-                }
-            }
-        }
-    }
-</style>

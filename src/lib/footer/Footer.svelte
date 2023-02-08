@@ -70,6 +70,9 @@
 
 <style lang="scss">
     nav {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
         font-size: 1.2em;
     }
     ul {
@@ -77,7 +80,10 @@
         justify-content: space-around;
         align-items: center;
         margin: 0 auto;
-        max-width: calc(100% - 2em);
+        // padding: 0 0.5rem;
+        width: 100%;
+        max-width: var(--max-continer-width);
+        background-color: var(--color-tertiary);
     }
     li {
         padding: 0;
@@ -86,17 +92,17 @@
 
     li > a,
     .menu {
-        text-decoration: none;
-        width: 4em;
-        height: 4em;
-        background-color: #fcfcfc;
-        border-radius: 0.5em;
-        margin: 0 auto;
-        padding: 0.5em;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
+        width: 4em;
+        height: 4em;
+        border-radius: 0.5em;
+        margin: 0 auto;
+        padding: 0.5em;
+        text-decoration: none;
+        color: var(--color-black);
     }
     .menu {
         margin: 0;
@@ -122,7 +128,6 @@
     }
     .justify-nav {
         justify-content: flex-end;
-        // margin: 0.5em;
     }
     .active {
         a {

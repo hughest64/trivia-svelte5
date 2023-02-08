@@ -10,10 +10,12 @@
     <title>Trivia Mafia Event {joincode}</title>
 </svelte:head>
 
-<Socket>
-    <Popup />
-    <slot />
-</Socket>
+<main class="short">
+    <Socket>
+        <Popup />
+        <slot />
+    </Socket>
+</main>
 
 <style lang="scss">
     :global(main) {
