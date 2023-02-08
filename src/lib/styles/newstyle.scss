@@ -255,6 +255,7 @@ button {
 }
 .button-tertiary {
     outline: 3px solid var(--color-secondary);
+    background-color: var(--color-tertiary);
     &:active {
         outline: none;
         box-shadow: 0px 0px 4px 4px var(--color-secondary);
@@ -264,7 +265,7 @@ button {
 // TODO:
 // &.round-indicator
 
-// TODO: remove
+// TODO: remove or just rename to flex-container?
 .flex-column {
     display: flex;
     flex-direction: column;
@@ -281,9 +282,9 @@ button {
     main {
         padding: 1rem 2rem;
     }
-    h1 {
-        align-self: flex-start;
-    }
+    // h1 {
+    //     align-self: flex-start;
+    // }
 }
 @media (max-width: 700px) {
     h1 {

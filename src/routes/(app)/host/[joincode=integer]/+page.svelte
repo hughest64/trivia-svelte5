@@ -45,11 +45,13 @@
     };
 </script>
 
-<h1>Host Game</h1>
-<p>Event Join Code: <strong>{joincode}</strong></p>
-<p>Details: <strong>{eventData?.location}, {eventData?.game_title}</strong></p>
+<div class="title-container">
+    <h1>Host Game</h1>
+    <p>Event Join Code: <strong>{joincode}</strong></p>
+    <p>Details: <strong>{eventData?.location}, {eventData?.game_title}</strong></p>
 
-<RoundSelector />
+    <RoundSelector />
+</div>
 
 <div class="lock-container">
     <label id={`rd-${activeRound?.round_number}`} for="round-lock" class="lock">
@@ -65,17 +67,24 @@
 </div>
 {#if error}<p>{error}</p>{/if}
 
-<!-- <button class="button button-red" on:click|preventDefault>Score/Edit This Round</button> -->
+<!-- <button class="button button-primary" on:click|preventDefault>Score/Edit This Round</button> -->
 
 <Round {activeRound} />
 
 <style lang="scss">
-    h1 {
-        margin: 0.5em 0.25em;
+    // allow the question panel background to take up 100% width with no margin
+    :global(main) {
+        padding-left: 0;
+        padding-right: 0;
     }
 
-    p {
-        margin: 1em 0.25em;
+    // keep the padding for the title and game information
+    .title-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding-left: 1rem;
+        padding-right: 1rem;
     }
 
     .lock-container {

@@ -98,8 +98,8 @@
     </div>
     <h3 class="answer">Answer: {scoringQuestion?.display_answer}</h3>
     <div class="button-container">
-        <button class="button button-black" on:click={goBack}>Previous</button>
-        <button class="button button-black" on:click={advance}>Next</button>
+        <button class="button button-secondary" on:click={goBack}>Previous</button>
+        <button class="button button-secondary" on:click={advance}>Next</button>
     </div>
     <ul>
         {#each scoringResponses as response}
@@ -107,8 +107,8 @@
         {/each}
     </ul>
     <div class="button-container">
-        <button class="button button-black" on:click={goBack}>Previous</button>
-        <button class="button button-black" on:click={advance}>Next</button>
+        <button class="button button-secondary" on:click={goBack}>Previous</button>
+        <button class="button button-secondary" on:click={advance}>Next</button>
     </div>
 {:else if $responses}
     <!-- TODO: do something with all responses or eliminate the ability to fetch all responses -->
@@ -118,14 +118,13 @@
 {/if}
 
 <style lang="scss">
+    .host-question-panel {
+        width: 100%;
+        margin: 1em 2em;
+        background-color: #e0e0e0;
+    }
     h1 {
         margin: 0.5em auto;
-    }
-    .host-question-panel {
-        h2,
-        p {
-            margin: 1rem;
-        }
     }
     .answer {
         margin-top: 1em;
