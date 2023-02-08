@@ -14,7 +14,7 @@
 {/if}
 
 <Stores>
-    <main>
+    <main class="short">
         <slot />
     </main>
 

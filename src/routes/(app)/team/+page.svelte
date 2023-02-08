@@ -14,16 +14,20 @@
 
 <h1>Create a New Team</h1>
 
-<button class="button button-red" class:disabled={!hidecreateteam} on:click={() => (hidecreateteam = !hidecreateteam)}>
+<button
+    class="button button-primary"
+    class:disabled={!hidecreateteam}
+    on:click={() => (hidecreateteam = !hidecreateteam)}
+>
     Create a New Team
 </button>
 
 <form class:hidecreateteam on:submit|preventDefault>
     <h3>Enter Your Team Name</h3>
-    <div class="input-element">
-        <input type="text" placeholder="Team Name" />
+    <div class="input-container">
+        <input type="text" placeholder="Team Name" required />
     </div>
-    <input class="button button-white" type="submit" name="" id="" value="Submit" />
+    <input class="button button-tertirary" type="submit" name="" id="" value="Submit" />
 </form>
 
 <h1>Or Play with an Existing Team</h1>
@@ -39,12 +43,12 @@
             {/each}
         </select>
         <input type="hidden" name="currentteam" value={userData?.active_team_id} />
-        <button class="button button-red" type="submit" id="team-select-submit">Choose This Team</button>
+        <button class="button button-primary" type="submit" id="team-select-submit">Choose This Team</button>
     </form>
 {/if}
 
 <button
-    class="button button-black"
+    class="button button-secondary"
     class:disabled={!hideteampassword}
     on:click={() => (hideteampassword = !hideteampassword)}
 >
@@ -59,24 +63,6 @@
 </form>
 
 <style lang="scss">
-    form {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-    }
-    .input-element {
-        width: 100%;
-    }
-    h1,
-    h3 {
-        margin: 0.5em;
-    }
-    select {
-        margin-bottom: 1em;
-    }
-    .select-label {
-        margin-top: 1em;
-    }
     .hidecreateteam {
         display: none;
     }

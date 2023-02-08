@@ -8,7 +8,7 @@
 <svelte:head><title>Trivia Mafia | Welcome</title></svelte:head>
 
 <main>
-    <div class='demo-note flex-column'>
+    <div class="demo-note flex-column">
         <h4>Welcome to the Trivia Mafia SvelteKit Demo!</h4>
         <p>Please note that this demo is FAR from feature complete. <a href="/about">Click here for the details</a>.</p>
     </div>
@@ -19,9 +19,9 @@
 
     {#if form?.error}<p>{form?.error}</p>{/if}
 
-    <a class="button button-red" href={`/user/login${$page.url.search}`}> Login/Create Account </a>
+    <a class="button button-primary" href={`/user/login${$page.url.search}`}> Login/Create Account </a>
     <form action="" method="POST">
-        <input class="button button-white" type="submit" value="Play as a Guest" />
+        <input class="button button-tertiary" type="submit" value="Play as a Guest" />
     </form>
 </main>
 
@@ -32,22 +32,24 @@
     .logo-container {
         margin-bottom: 4em;
         img {
-            width: 30em;
-            max-width: calc(100% - 2em);
+            // width: 30em;
+            // max-width: calc(100% - 2em);
+            width: 100%;
+            max-width: var(--max-container-width);
             margin: auto;
             display: block;
         }
     }
     .demo-note {
         padding: 1em;
-        background-color: var(--color-red);
-        color: var(--color-white);
+        background-color: var(--color-primary);
+        color: var(--color-tertiary);
         width: 100vw;
         h4 {
-            margin-bottom: .5em;
+            margin-bottom: 0.5em;
         }
         a {
-            color: var(--color-white);
+            color: var(--color-primry);
             text-decoration: underline;
             font-weight: bold;
         }

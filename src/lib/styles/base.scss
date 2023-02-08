@@ -32,6 +32,7 @@ input::-webkit-inner-spin-button {
 
 /* Firefox */
 input[type='number'] {
+    appearance: textfield;
     -moz-appearance: textfield;
 }
 
@@ -51,10 +52,9 @@ html:focus-within {
     scroll-behavior: smooth;
 }
 
-/* Remove list styles on ul, ol elements with a list role, which suggests default styling will be removed */
-/* NOTE: svelte throws a linter warning when specifiying role=list on a ul, so skipping it here */
+/* Remove list styles on ul, ol elements */
 ul,
-ol[role='list'] {
+ol {
     padding-inline-start: 0;
     list-style: none;
 }

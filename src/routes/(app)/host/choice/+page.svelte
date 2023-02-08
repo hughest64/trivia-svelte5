@@ -11,19 +11,15 @@
 <h3>Do you want to:</h3>
 
 <!-- NOTE: rel="external" here ensures that the layout load will run and we get our data from the api -->
-<a class="button button-red" id="host" href="/host/event-setup" rel="external">Host A Game</a>
-<a class="button button-black" id="play" href="/team" rel="external">Play Trivia</a>
+<a class="button button-primary" id="host" href="/host/event-setup" rel="external">Host A Game</a>
+<a class="button button-secondary" id="play" href="/team" rel="external">Play Trivia</a>
 
 <small>To view the recent changes in the application, click Here.</small>
 
 <style>
-    h1,
-    h3 {
-        margin: 0.75em 0;
-    }
     small {
         padding: 0 0.5em;
-        font-size: 12px;
+        font-size: 0.75rem;
     }
     a {
         text-decoration: none;

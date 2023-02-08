@@ -8,36 +8,29 @@
 
 <h1>Login</h1>
 
-<button class="button button-red">login with Github</button>
-<button class="button button-red">login with Google</button>
+<button class="button button-primary">login with Github</button>
+<button class="button button-primary">login with Google</button>
 
 <h2>-or-</h2>
 
 <!-- TODO: add an action, maybe action='?/login' -->
 <form method="POST">
     {#if form?.error}<h3>{form?.error}</h3>{/if}
-    <div class="input-element">
-        <input type="text" id="username" name="username" autocapitalize="off" autocomplete="username" />
+    <div class="input-container">
+        <input type="text" id="username" name="username" autocapitalize="off" autocomplete="username" required />
         <label for="username">Username or Email</label>
     </div>
 
-    <div class="input-element">
-        <input type="password" id="password" name="password" autocomplete="current-password" />
+    <div class="input-container">
+        <input type="password" id="password" name="password" autocomplete="current-password" required />
         <label for="password">Password</label>
     </div>
 
     <!-- not yet implemented, but the input will likely need to be a button with a formAction -->
     <a href="/user/forgot">Click Here to Reset your Password</a>
-    <input class="button button-red" type="submit" value="Submit" />
+    <input class="button button-primary" type="submit" value="Submit" />
 </form>
 
 <h1>Sign Up</h1>
 
-<button class="button button-white">Create Account</button>
-
-<style>
-    h1,
-    h2 {
-        margin: 0.5em 0;
-    }
-</style>
+<button class="button button-tertiary">Create Account</button>

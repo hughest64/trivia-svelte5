@@ -33,10 +33,10 @@
         {/each}
     </select>
 
-    <button class="button button-red" type="submit" name="submit" id="submit">Begin Event</button>
+    <button class="button button-primary" type="submit" name="submit" id="submit">Begin Event</button>
 </form>
 
-<style>
+<!-- <style>
     form {
         display: flex;
         flex-direction: column;
@@ -52,4 +52,4 @@
         margin-top: 1em;
         width: 100%;
     }
-</style>
+</style> -->
