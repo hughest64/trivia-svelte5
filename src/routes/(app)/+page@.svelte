@@ -13,7 +13,7 @@
 
 <main>
     {#if showContent}
-        <div transition:fade|local={{ delay: 1000, duration: 1000 }} class="demo-note flex-column">
+        <div transition:fade|local={{ delay: 500, duration: 1000 }} class="demo-note flex-column">
             <h4>Welcome to the Trivia Mafia SvelteKit Demo!</h4>
             <a href="/about">Click for details</a>
         </div>
