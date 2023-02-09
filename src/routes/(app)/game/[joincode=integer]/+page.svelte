@@ -32,7 +32,7 @@
     };
 </script>
 
-<h3>{activeRound?.title}</h3>
+<h2>{activeRound?.title}</h2>
 
 <div class="round-selector">
     {#each roundNumbers as roundNum}
@@ -51,9 +51,3 @@
     <Question />
     <Note />
 </Round>
-
-<style lang="scss">
-    h3 {
-        margin: 0.5em 0.25em;
-    }
-</style>

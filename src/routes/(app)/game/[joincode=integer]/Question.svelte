@@ -36,7 +36,7 @@
     };
 </script>
 
-<h2>{activeQuestion?.key}</h2>
+<h4>{activeQuestion?.key}</h4>
 
 <p id={`${activeQuestion?.key}-text`} class="question-text">
     {questionState?.question_displayed
@@ -45,7 +45,7 @@
 </p>
 
 <form on:submit|preventDefault={handleSubmitResponse}>
-    <div class="input-element" class:notsubmitted>
+    <div class="input-container" class:notsubmitted>
         <input
             disabled={activeRoundState?.locked}
             required
@@ -63,26 +63,22 @@
 
     {#if form?.error}<p>{form.error}</p>{/if}
 
-    <button class:disabled={activeRoundState?.locked} class="button button-red" disabled={activeRoundState?.locked}>
+    <button class:disabled={activeRoundState?.locked} class="button button-primary" disabled={activeRoundState?.locked}>
         Submit
     </button>
 </form>
 
 <style lang="scss">
-    h2 {
-        margin: 0.5em;
-    }
-
     .question-text {
-        padding: 0 1em;
+        padding: 0 0.5rem;
     }
 
     .notsubmitted {
         input {
-            border-color: var(--color-red);
+            border-color: var(--color-primary);
         }
         label {
-            background-color: var(--color-red);
+            background-color: var(--color-primary);
         }
     }
     .disabled {

@@ -1,0 +1,69 @@
+.question-box {
+    overflow-x: hidden;
+    border: 2px solid var(--color-secondary);
+    border-radius: 0.5em;
+    width: 100%;
+    flex-grow: 1;
+    margin: 1em 0;
+    padding-top: 1em;
+    box-shadow: 10px 0px 5px -5px rgb(0 0 0 / 80%);
+
+    &.question-row {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        & > * {
+            max-width: 100%;
+        }
+    }
+    &.question-selector {
+        display: flex;
+        gap: 0.25em;
+        margin: 0.5rem 0;
+        button {
+            width: 2.5em;
+            height: 2.5em;
+            font-weight: bold;
+            border: 2px solid var(--color-secondary);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+    }
+    &.question {
+        width: 100%;
+    }
+    button.current {
+        border-color: var(--color-current);
+    }
+
+    .notes-container {
+        background-color: #f2f2f2;
+        // width: calc(100% - 2rem);
+        width: 100%;
+        max-width: var(--max-element-width);
+        margin: 0 0 1rem;
+        form {
+            margin: 0 auto;
+            width: 100%;
+            input {
+                outline: none;
+                border: 2px solid var(--color-secondary);
+                margin: 0;
+                padding: 1.25rem;
+            }
+        }
+        button.disabled {
+            margin: 0 auto;
+        }
+    }
+}
+
+@media (max-width: 700px) {
+    form {
+        width: calc(100% - 2rem);
+    }
+    // TODO what makes this not work as a class?
+    #notes-container {
+        width: calc(100% - 2rem);
+    }
+}

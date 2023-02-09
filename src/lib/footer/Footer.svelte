@@ -74,12 +74,14 @@
         bottom: 0;
         width: 100%;
         font-size: 1.2em;
+        z-index: 3;
     }
     ul {
         display: flex;
         justify-content: space-between;
         align-items: center;
         margin: 0 auto;
+        padding: 0 1rem;
         width: 100%;
         max-width: var(--max-continer-width);
         background-color: var(--color-tertiary);
