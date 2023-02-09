@@ -32,10 +32,7 @@
     .logo-container {
         margin-bottom: 4em;
         img {
-            // width: 30em;
-            // max-width: calc(100% - 2em);
-            width: 100%;
-            max-width: var(--max-container-width);
+            width: 30rem;
             margin: auto;
             display: block;
         }
