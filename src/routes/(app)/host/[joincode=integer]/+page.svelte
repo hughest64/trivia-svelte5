@@ -49,9 +49,8 @@
     <h1>Host Game</h1>
     <h4>Event Join Code: <strong>{joincode}</strong></h4>
     <h4>Details: <strong>{eventData?.location}, {eventData?.game_title}</strong></h4>
-
-    <RoundSelector />
 </div>
+<RoundSelector />
 
 <div class="lock-container">
     <label id={`rd-${activeRound?.round_number}`} for="round-lock" class="lock">

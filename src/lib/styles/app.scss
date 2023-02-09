@@ -255,8 +255,34 @@ button {
     }
 }
 
-// TODO:
-// &.round-indicator
+//round numbers
+.round-selector {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 0.25rem;
+    width: 100%;
+    max-width: var((--max-element-width));
+    margin: 1rem 0;
+    button {
+        width: 3rem;
+        height: 3rem;
+        border: 2px solid var(--color-secondary);
+        border-radius: 0.5rem;
+        font-size: 1rem;
+        font-weight: bold;
+        color: var(--color-secondary);
+        background-color: var(--color-tertiary);
+        cursor: pointer;
+        &.active {
+            color: var(--color-tertiary);
+            background-color: var(--color-primary);
+        }
+        &.current {
+            border-color: var(--color-current);
+        }
+    }
+}
 
 .flex-column {
     display: flex;
