@@ -81,7 +81,6 @@
         justify-content: space-between;
         align-items: center;
         margin: 0 auto;
-        padding: 0 1rem;
         width: 100%;
         max-width: var(--max-continer-width);
         background-color: var(--color-tertiary);
