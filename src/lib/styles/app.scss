@@ -89,7 +89,7 @@ h3 {
 h4 {
     font-size: 1.5em;
     font-weight: normal;
-    margin: 1rem;
+    margin: 1rem 0;
 }
 p {
     // outline: 1px solid blue;
@@ -268,7 +268,6 @@ button {
 /* Break Points        */
 /* ------------------- */
 
-// xs (phone) < 600 px
 @media (max-width: 600px) {
     main {
         padding: 1rem 2rem;
@@ -284,8 +283,7 @@ button {
     h3 {
         font-size: 1rem;
     }
+    h4 {
+        font-size: 1.25rem;
+    }
 }
-// s (tablet) < 905 (32 dp)
-// s (tablet) < 1240 (fluid)
-// m (laptop) < 1450
-// l (desktop) 1440 +
