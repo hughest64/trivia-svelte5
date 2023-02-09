@@ -1,31 +1,40 @@
 <script lang="ts">
+    import { onMount } from 'svelte';
     import { page } from '$app/stores';
+    import { fade, fly, scale } from 'svelte/transition';
     import type { ActionData } from './$types';
 
     export let form: ActionData;
+    let showContent = false;
+    onMount(() => (showContent = true));
 </script>
 
 <svelte:head><title>Trivia Mafia | Welcome</title></svelte:head>
 
 <main>
-    <div class="demo-note flex-column">
-        <h4>Welcome to the Trivia Mafia SvelteKit Demo!</h4>
-        <p>Please note that this demo is FAR from feature complete. <a href="/about">Click here for the details</a>.</p>
-    </div>
+    {#if showContent}
+        <div transition:fade|local={{ delay: 1000, duration: 1000 }} class="demo-note flex-column">
+            <h4>Welcome to the Trivia Mafia SvelteKit Demo!</h4>
+            <a href="/about">Click for details</a>
+        </div>
+        <div transition:scale|local={{ duration: 1500 }} class="logo-container">
+            <img src="TM2021-Flat-Stacked-WhiteBackground.svg" alt="Trivia Mafia" />
+        </div>
 
-    <div class="logo-container">
-        <img src="TM2021-Flat-Stacked-WhiteBackground.svg" alt="Trivia Mafia" />
-    </div>
-
-    {#if form?.error}<p>{form?.error}</p>{/if}
-
-    <a class="button button-primary" href={`/user/login${$page.url.search}`}> Login/Create Account </a>
-    <form action="" method="POST">
-        <input class="button button-tertiary" type="submit" value="Play as a Guest" />
-    </form>
+        <div transition:fly|local={{ y: 500, duration: 1500 }} class="form-container flex-column">
+            <a class="button button-primary" href={`/user/login${$page.url.search}`}> Login/Create Account </a>
+            <form action="" method="POST">
+                <input class="button button-tertiary" type="submit" value="Play as a Guest" />
+            </form>
+            {#if form?.error}<p>{form?.error}</p>{/if}
+        </div>
+    {/if}
 </main>
 
 <style lang="scss">
+    main {
+        padding-top: 0;
+    }
     a {
         text-decoration: none;
     }
@@ -36,6 +45,9 @@
             margin: auto;
             display: block;
         }
+    }
+    .form-container {
+        width: 100%;
     }
     .demo-note {
         padding: 1em;
