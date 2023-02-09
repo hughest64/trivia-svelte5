@@ -2,8 +2,6 @@
     import { page } from '$app/stores';
     import { getStore } from '$lib/utils';
     import Round from './Round.svelte';
-    import Question from './Question.svelte';
-    import Note from './Note.svelte';
     import type { CurrentEventData, ActiveEventData, GameRound } from '$lib/types';
 
     const roundNumbers = $page.data?.rounds?.map((rd) => rd.round_number) || [];
@@ -47,7 +45,4 @@
     {/each}
 </div>
 
-<Round {activeRound}>
-    <Question />
-    <Note />
-</Round>
+<Round {activeRound} />
