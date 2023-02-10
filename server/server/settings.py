@@ -12,19 +12,30 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 
 from pathlib import Path
 
+import environ
+
+env = environ.Env(
+    # set casting, default value
+    DEBUG=(bool, False)
+)
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-PRIVATE_EVENT = False
+environ.Env.read_env(BASE_DIR.parent / ".env.django")
+
+PRIVATE_EVENT = env.bool("PRIVATE_EVENT")
+
+AIRTABLE_API_TOKEN = env("AIRTABLE_API_TOKEN")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-5fbk@6dpt#2$smve-m82k_brqe6+prj(1q4m1h6qd1bpo8n%ku"
+SECRET_KEY = env("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env("DEBUG")
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", "10.0.0.135", "api-backend"]
 
