@@ -81,7 +81,4 @@
             background-color: var(--color-primary);
         }
     }
-    .disabled {
-        cursor: not-allowed;
-    }
 </style>
