@@ -16,6 +16,8 @@
     $: questionState = $questionStates.find((qs) => qs.key === $activeEventData.activeQuestionKey);
     $: activeRoundState = $roundStates.find((rs) => rs.round_number === $activeEventData.activeRoundNumber);
 
+    $: hasImage = activeQuestion?.question_type.toLocaleLowerCase().startsWith('image');
+
     let responseText = '';
     $: notsubmitted = responseText && responseText !== activeResponse?.recorded_answer;
     const syncInputText = (e: Event) => {
@@ -43,6 +45,12 @@
         ? activeQuestion?.question_text
         : 'Please Wait for the Host to Reveal This Question'}
 </p>
+
+{#if hasImage && activeQuestion?.question_url}
+    <p>Show image from {activeQuestion?.question_url}</p>
+{:else if hasImage}
+    <p>Show a broken image icon here as we don't have an image</p>
+{/if}
 
 <form on:submit|preventDefault={handleSubmitResponse}>
     <div class="input-container" class:notsubmitted>
