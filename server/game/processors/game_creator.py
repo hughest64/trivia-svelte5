@@ -1,5 +1,7 @@
 # game_creator.py
 """
+TODO: update this as needed to refelct the database architecture of the refactor
+
 Classes used to process airtable data and update or create game, round, and question data.
 The dertermination to create new data or update existing data is based solely on the
 game's meta data with the following criteria:
@@ -94,11 +96,10 @@ class TriviaGameCreator:
     update_or_create should not be called directly in order to respect atomic transaction handling
     """
 
-    # TODO: use the enum from models
-    general_knowledge_type = None  # QuestionType.objects.get(type="General Knowledge")
+    question_types = QUESTION_TYPE_DICT
+    general_knowledge = QUESTION_TYPE_GENERAL_KNOWLEDGE
 
     def __init__(self, frame: pd.DataFrame, private_event: bool = PRIVATE_EVENT):
-        raise NotImplementedError("The Game Creator class is not yet implemented")
         self.frame = frame
         self.private_event = private_event
         self.game = None
@@ -198,88 +199,87 @@ class TriviaGameCreator:
 
         round_data = rd_frame.iloc[0]
         round_number = round_data.round_number
+
         # TODO: we still need better handling of sound vs. no sound game creation
-        if self.no_sound_game is not None and round_number == 9:
-            round_number = 8
-            game_round_queryset = self.no_sound_game.rounds.filter(
-                round_number=round_number
-            )
-        else:
-            game_round_queryset = self.game.rounds.filter(round_number=round_number)
-
-        # TODO: update to match db Architecure
-        if not game_round_queryset.exists():
-            game_round = GameRound.objects.create(
+        # create the sound round version first
+        if round_number != 9:
+            _, created = GameRound.objects.update_or_create(
+                game=self.game,
                 round_number=round_number,
-                title=round_data.game_title,
-                round_description=round_data.round_description,
-                round_description_player=round_data.round_description_player,
+                defaults={
+                    "title": round_data.round_title,
+                    "round_description": round_data.round_description,
+                },
             )
-            self.total_new_rounds += 1
-        else:
-            game_round_queryset.update(
-                title=round_data.game_title,
-                round_description=round_data.round_description,
-                round_description_player=round_data.round_description_player,
+            self.total_new_rounds += int(created)
+
+        # then no-sound
+        if self.no_sound_game is not None:
+            if round_number == 8:
+                return
+
+            if round_number == 9:
+                round_number = 8
+
+            _, created = GameRound.objects.update_or_create(
+                game=self.no_sound_game,
+                round_number=round_number,
+                defaults={
+                    "title": round_data.game_title,
+                    "round_description": round_data.round_description,
+                },
             )
-            game_round = game_round_queryset[0]
+            self.total_new_rounds += int(created)
 
-        self._update_or_create_questions(game_round, rd_frame)
-
-        if self.no_sound_game is not None and round_data.question_type != "Sound Round":
-            self.no_sound_game.rounds.add(game_round)
-        self.game.rounds.add(game_round)
-
-    # TODO: deprecate
-    @classmethod
-    def lookup_question_type(cls, val):
-        """
-        Try to lookup a question type in the database,
-        default to general knowledge if it doens't exist.
-        """
-        # try:
-        #     return QuestionType.objects.get(type=val)
-        # except QuestionType.DoesNotExist:
-        #     return cls.general_knowledge_type\
-        return
-
-    # TODO: you know the drill by now
-    def _update_or_create_questions(
-        self, game_round: GameRound, rd_frame: pd.DataFrame
-    ) -> None:
+    def _update_or_create_questions(self, rd_frame: pd.DataFrame) -> None:
         if self.game is None:
             raise ProcedureError
 
-        questions = []
+        round_number = rd_frame.iloc[0].round_number
         for i in range(len(rd_frame)):
-            # we have the same M2M limitation here as in round creation
             row = rd_frame.iloc[i]
-            question_queryset = game_round.questions.filter(
-                question_number=row.question_number
+
+            display_answer, _ = QuestionAnswer.objects.get_or_create(
+                text=row.display_answer
             )
-            created = False
-            question_dict = dict(
-                question_number=row.question_number,
+
+            accepted_answers = set()
+            for _a in row.answers:
+                answer, _ = QuestionAnswer.objects.get_or_create(text=_a)
+                accepted_answers.add(answer)
+
+            question, _ = Question.objects.get_or_create(
+                question_type=self.question_types.get(
+                    row.question_type, self.general_knowledge
+                ),
                 question_text=row.question_text,
-                question_url=row.question_url,
-                display_answer=row.display_answer,
-                question_notes=row.question_notes,
-                answer_notes=row.answer_notes,
-                question_type=self.lookup_question_type(row.question_type),
-                answers=row.answers,
+                defaults={
+                    "display_answer": display_answer,
+                    "question_url": row.question_url,
+                    "answer_notes": row.answer_notes,
+                    # TODO: add this field to the model
+                    # "question_notes": row.question_notes,
+                },
             )
-            if not question_queryset.exists():
-                question = Question.objects.create(**question_dict)
-                created = True
-            else:
-                question_queryset.update(**question_dict)
-                question = question_queryset[0]
+            question.accepted_answers.set(accepted_answers)
 
-            questions.append(question)
-            if created:
-                self.total_new_questions += 1
+            if round_number != 9:
+                _, created = GameQuestion.objects.update_or_create(
+                    game=self.game,
+                    question_number=row.question_number,
+                    round_number=row.round_number,
+                    defaults={"question": question},
+                )
+                self.total_new_questions += int(created)
 
-        game_round.questions.set(questions)
+            if self.no_sound_game is not None and round_number != 8:
+                _, created = GameQuestion.objects.update_or_create(
+                    game=self.no_sound_game,
+                    question_number=row.question_number,
+                    round_number=row.round_number,
+                    defaults={"question": question},
+                )
+                self.total_new_questions += int(created)
 
     def update_or_create(self, commit=True):
         """create game data and commit to the database only if commit=True"""
@@ -297,8 +297,12 @@ class TriviaGameCreator:
                 for num in round_numbers:
                     rd_frame = self.frame[self.frame.round_number == num]
                     self._update_or_create_round(rd_frame)
+                    self._update_or_create_questions(rd_frame)
 
                 if self.private_event:
+                    raise NotImplementedError(
+                        "private event creation is not yet implemented"
+                    )
                     self._update_or_create_private_event(rd_frame)
                     self._update_or_create_trivia_event_for_private_event(rd_frame)
 
@@ -411,7 +415,6 @@ class TriviaGameFactory:
     """Produce multiple Trivia Events and collect all creation statistics"""
 
     def __init__(self, *frames, commit=True, private_event=PRIVATE_EVENT):
-        raise NotImplementedError("The GameFactory class is not yet implemented")
         self.frames = frames
         self.private_event = private_event
         self.commit = commit

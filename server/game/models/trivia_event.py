@@ -22,7 +22,7 @@ QUESTION_TYPES = [
     (QUESTION_TYPE_TIE_BREAKER, "Tiebreaker"),
 ]
 
-question_type_dict = dict(QUESTION_TYPES)
+QUESTION_TYPE_DICT = dict(QUESTION_TYPES)
 
 
 class Question(models.Model):
@@ -47,7 +47,7 @@ class Question(models.Model):
         data.update(
             {
                 "display_answer": self.display_answer.text,
-                "question_type": question_type_dict[self.question_type],
+                "question_type": QUESTION_TYPE_DICT[self.question_type],
                 "accepted_answers": [
                     answer.text for answer in self.accepted_answers.all()
                 ],
@@ -188,7 +188,7 @@ class TriviaEvent(models.Model):
                 "question_number": self.current_question_number,
                 "question_key": self.current_question_key,
             },
-            "rounds": queryset_to_json(self.game.game_rounds.all()),
+            "rounds": queryset_to_json(self.game.game_rounds.exclude(round_number=0)),
             "questions": queryset_to_json(self.game.game_questions.all()),
             "round_states": queryset_to_json(self.round_states.all()),
             "question_states": queryset_to_json(self.question_states.all()),

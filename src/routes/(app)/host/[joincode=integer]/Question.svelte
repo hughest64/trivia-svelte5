@@ -51,7 +51,7 @@
 
     <p>{question.question_text}</p>
 
-    {#if question.answer_notes}<p>question.answer_notes</p>{/if}
+    {#if question.answer_notes}<p>{question.answer_notes}</p>{/if}
 
     <button class="button button-white" on:click={() => (answerDisplayed = !answerDisplayed)}>
         Click To {answerDisplayed ? 'Hide' : 'Reveal'} Answer
