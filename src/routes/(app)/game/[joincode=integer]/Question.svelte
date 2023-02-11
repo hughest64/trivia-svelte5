@@ -47,7 +47,7 @@
 </p>
 
 {#if hasImage && activeQuestion?.question_url}
-    <p>Show image from {activeQuestion?.question_url}</p>
+    <img src={activeQuestion?.question_url} alt="sound round" />
 {:else if hasImage}
     <p>Show a broken image icon here as we don't have an image</p>
 {/if}
