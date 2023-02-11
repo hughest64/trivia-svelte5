@@ -263,8 +263,6 @@ class TriviaGameCreator:
                 # question_notes=row.question_notes,
             )
             question.accepted_answers.set(accepted_answers)
-            if round_number == 4:
-                print(question.to_json())
 
             if round_number != 9:
                 _, created = GameQuestion.objects.update_or_create(
