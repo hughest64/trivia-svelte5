@@ -96,7 +96,8 @@ class TriviaGameCreator:
     update_or_create should not be called directly in order to respect atomic transaction handling
     """
 
-    question_types = QUESTION_TYPE_DICT
+    # reverse the question type dict so that the strings are keys
+    question_types = {v: k for k, v in QUESTION_TYPE_DICT.items()}
     general_knowledge = QUESTION_TYPE_GENERAL_KNOWLEDGE
 
     def __init__(self, frame: pd.DataFrame, private_event: bool = PRIVATE_EVENT):
@@ -248,20 +249,22 @@ class TriviaGameCreator:
                 answer, _ = QuestionAnswer.objects.get_or_create(text=_a)
                 accepted_answers.add(answer)
 
+            # NOTE: for safety, don't use any defaults (values not used in the lookup) as things
+            # like url and notes could be different and we don't want to cross the streams
             question, _ = Question.objects.get_or_create(
                 question_type=self.question_types.get(
                     row.question_type, self.general_knowledge
                 ),
                 question_text=row.question_text,
-                defaults={
-                    "display_answer": display_answer,
-                    "question_url": row.question_url,
-                    "answer_notes": row.answer_notes,
-                    # TODO: add this field to the model
-                    # "question_notes": row.question_notes,
-                },
+                display_answer=display_answer,
+                question_url=row.question_url,
+                answer_notes=row.answer_notes,
+                # TODO: add this field to the model
+                # question_notes=row.question_notes,
             )
             question.accepted_answers.set(accepted_answers)
+            if round_number == 4:
+                print(question.to_json())
 
             if round_number != 9:
                 _, created = GameQuestion.objects.update_or_create(
