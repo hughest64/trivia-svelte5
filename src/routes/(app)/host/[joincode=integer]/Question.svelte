@@ -42,7 +42,7 @@
 <div class="host-question-panel flex-column">
     {#if formError}<p>{formError}</p>{/if}
 
-    <h4>{question.key}</h4>
+    <h4 class="question-key">{question.key}</h4>
 
     <div class="switch-container">
         <label for={question.key} class="switch">

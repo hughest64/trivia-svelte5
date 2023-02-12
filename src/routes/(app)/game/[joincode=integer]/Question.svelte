@@ -40,7 +40,7 @@
     };
 </script>
 
-<h4>{activeQuestion?.key}</h4>
+<h4 class="question-key">{activeQuestion?.key}</h4>
 
 <p id={`${activeQuestion?.key}-text`} class="question-text">
     {questionState?.question_displayed

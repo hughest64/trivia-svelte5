@@ -8,9 +8,9 @@
     padding-top: 1em;
     box-shadow: 10px 0px 5px -5px rgb(0 0 0 / 80%);
 
-    &.question-selector {
+    .question-selector {
         display: flex;
-        gap: 0.25em;
+        gap: 0.25rem;
         margin: 0.5rem 0;
         button {
             width: 2.5em;
@@ -21,8 +21,19 @@
             cursor: pointer;
         }
     }
+
     button.current {
         border-color: var(--color-current);
+    }
+
+    .question-row {
+        display: flex;
+        justify-content: center;
+        flex-direction: row;
+        width: 100%;
+        div {
+            width: 100%;
+        }
     }
 
     .notes-container {
@@ -43,17 +54,6 @@
         button.disabled {
             margin: 0 auto;
         }
-    }
-}
-
-// TODO: why does this not work as a direct child of the .question-box class?
-.question-row {
-    display: flex;
-    justify-content: center;
-    flex-direction: row;
-    width: 100%;
-    div {
-        width: 100%;
     }
 }
 
