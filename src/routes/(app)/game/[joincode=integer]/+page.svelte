@@ -2,8 +2,6 @@
     import { page } from '$app/stores';
     import { getStore } from '$lib/utils';
     import Round from './Round.svelte';
-    import Question from './Question.svelte';
-    import Note from './Note.svelte';
     import type { CurrentEventData, ActiveEventData, GameRound } from '$lib/types';
 
     const roundNumbers = $page.data?.rounds?.map((rd) => rd.round_number) || [];
@@ -34,7 +32,7 @@
     // TODO: if !playerJoined create a popup w/ some options for the player to join the event or go pick a different team
 </script>
 
-<h3>{activeRound?.title}</h3>
+<h2>{activeRound?.title}</h2>
 
 <div class="round-selector">
     {#each roundNumbers as roundNum}
@@ -49,13 +47,4 @@
     {/each}
 </div>
 
-<Round {activeRound}>
-    <Question />
-    <Note />
-</Round>
-
-<style lang="scss">
-    h3 {
-        margin: 0.5em 0.25em;
-    }
-</style>
+<Round {activeRound} />

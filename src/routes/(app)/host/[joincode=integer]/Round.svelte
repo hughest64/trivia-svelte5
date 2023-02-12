@@ -45,7 +45,7 @@
 </script>
 
 <div class="host-question-panel flex-column">
-    <h4>{activeRound?.title}</h4>
+    <h2>{activeRound?.title}</h2>
 
     <p>{activeRound?.round_description}</p>
 
@@ -63,9 +63,3 @@
 {#each roundQuestions as question (question.id)}
     <Question {question} />
 {/each}
-
-<style lang="scss">
-    h4 {
-        margin: 2em 0.25em;
-    }
-</style>

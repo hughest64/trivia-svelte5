@@ -1,4 +1,5 @@
 <script lang="ts">
+    import '$lib/styles/host.scss';
     import { page } from '$app/stores';
     import Socket from '$lib/Socket.svelte';
     import Popup from '$lib/popup/Popup.svelte';
@@ -8,7 +9,17 @@
     <title>Trivia Mafia | Event {$page.params.joincode}</title>
 </svelte:head>
 
-<Socket>
-    <Popup />
-    <slot />
-</Socket>
+<main class="host short">
+    <Socket>
+        <Popup />
+        <slot />
+    </Socket>
+</main>
+
+<style lang="scss">
+    // allow the question panel background to take up 100% width with no margin
+    // :global(main) {
+    //     padding-left: 0;
+    //     padding-right: 0;
+    // }
+</style>
