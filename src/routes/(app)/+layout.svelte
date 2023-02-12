@@ -36,6 +36,7 @@
         margin: 0 auto;
         z-index: 99;
         button {
+            cursor: default;
             flex-grow: 1;
             width: 100%;
             padding: 0;

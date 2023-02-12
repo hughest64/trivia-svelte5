@@ -23,7 +23,7 @@
     }
 
     .image-container {
-        height: calc(100% - 65px);
+        height: calc(100% - 4rem);
         width: 100%;
 
         img {
