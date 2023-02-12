@@ -1,4 +1,5 @@
 <script lang="ts">
+    import Lightbox from '$lib/Lightbox.svelte';
     import { page } from '$app/stores';
     import { getStore } from '$lib/utils';
     import type { ActionData } from './$types';
@@ -17,6 +18,7 @@
     $: activeRoundState = $roundStates.find((rs) => rs.round_number === $activeEventData.activeRoundNumber);
 
     $: hasImage = activeQuestion?.question_type.toLocaleLowerCase().startsWith('image');
+    let displayLightbox = false;
 
     let responseText = '';
     $: notsubmitted = responseText && responseText !== activeResponse?.recorded_answer;
@@ -47,7 +49,12 @@
 </p>
 
 {#if hasImage && activeQuestion?.question_url}
-    <img src={activeQuestion?.question_url} alt="sound round" />
+    {#if displayLightbox}
+        <Lightbox source={activeQuestion?.question_url} on:click={() => (displayLightbox = false)} />
+    {/if}
+    <button class="button-image" on:click={() => (displayLightbox = true)}>
+        <img src={activeQuestion?.question_url} alt="img round" />
+    </button>
 {:else if hasImage}
     <p>Show a broken image icon here as we don't have an image</p>
 {/if}

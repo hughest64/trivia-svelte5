@@ -8,6 +8,7 @@
 
     $: questionStates = getStore<QuestionState[]>('questionStates') || [];
     $: questionRevealed = $questionStates.find((qs) => qs.key === question.key)?.question_displayed;
+    $: hasImage = question.question_type.toLocaleLowerCase().startsWith('image');
 
     // TODO: default should be set based on whether or not answers are revealed for all
     let answerDisplayed = false;
@@ -50,6 +51,10 @@
     </div>
 
     <p>{question.question_text}</p>
+
+    {#if hasImage}
+        <img src={question.question_url} alt="Img Round" />
+    {/if}
 
     {#if question.answer_notes}<p>question.answer_notes</p>{/if}
 
