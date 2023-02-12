@@ -1,4 +1,5 @@
 <script lang="ts">
+    import Lightbox from '$lib/Lightbox.svelte';
     import { getStore } from '$lib/utils';
     import { deserialize } from '$app/forms';
     import type { GameQuestion, QuestionState } from '$lib/types';
@@ -9,6 +10,7 @@
     $: questionStates = getStore<QuestionState[]>('questionStates') || [];
     $: questionRevealed = $questionStates.find((qs) => qs.key === question.key)?.question_displayed;
     $: hasImage = question.question_type.toLocaleLowerCase().startsWith('image');
+    let displayLightbox = false;
 
     // TODO: default should be set based on whether or not answers are revealed for all
     let answerDisplayed = false;
@@ -52,8 +54,15 @@
 
     <p>{question.question_text}</p>
 
-    {#if hasImage}
-        <img src={question.question_url} alt="Img Round" />
+    {#if hasImage && question?.question_url}
+        {#if displayLightbox}
+            <Lightbox source={question?.question_url} on:click={() => (displayLightbox = false)} />
+        {/if}
+        <button class="button-image" on:click={() => (displayLightbox = true)}>
+            <img src={question?.question_url} alt="img round" />
+        </button>
+    {:else if hasImage}
+        <p>Image Missing</p>
     {/if}
 
     {#if question.answer_notes}<p>question.answer_notes</p>{/if}

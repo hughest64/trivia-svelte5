@@ -56,7 +56,7 @@
         <img src={activeQuestion?.question_url} alt="img round" />
     </button>
 {:else if hasImage}
-    <p>Show a broken image icon here as we don't have an image</p>
+    <p>Image Missing</p>
 {/if}
 
 <form on:submit|preventDefault={handleSubmitResponse}>
