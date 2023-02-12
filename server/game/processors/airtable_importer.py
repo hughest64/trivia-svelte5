@@ -76,7 +76,9 @@ def get_request_dates():
 
 class AirtableData:
     """Import data from airtable and optionally convert to a cleaned Pandas Dataframe"""
+
     private_event = PRIVATE_EVENT
+
     def __init__(
         self,
         private_event=None,
@@ -255,7 +257,7 @@ class AirtableData:
             str(answers).replace(", ", ",").replace("[", "").replace("]", "")
         )
         return cleaned_string.split(",") if cleaned_string else []
-    
+
     @classmethod
     def _map_question_url(cls, url_type, image_url, sound_url):
         """map url columns to a single url column"""
@@ -305,9 +307,7 @@ class AirtableData:
         to let the user know there may be an issue.
         """
         # use combination of date and block code to identify a game
-        df["game_title"] = list(
-            map(cls._game_title, df["date_used"], df["block_code"])
-        )
+        df["game_title"] = list(map(cls._game_title, df["date_used"], df["block_code"]))
 
         # used to ensure a frame (game) does not contain duplicate round/question combinations
         df["rd_quest"] = list(
@@ -326,7 +326,7 @@ class AirtableData:
                 if val != "0.0"
             }
 
-            if len(not_unique) == 0:            
+            if len(not_unique) == 0:
                 date_frames.append(frame)
             else:
                 err_msg = f"Game {title} may have duplicates for the following question(s):\n{', '.join(not_unique)}."
@@ -335,4 +335,5 @@ class AirtableData:
                     err_msg + " Please correct the error(s) and try the import again."
                 )
 
-        return date_frames
+        # sort  the frames by date
+        return sorted(date_frames, key=lambda f: f.iloc[0].date_used)
