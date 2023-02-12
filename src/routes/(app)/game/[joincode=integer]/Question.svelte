@@ -1,4 +1,5 @@
 <script lang="ts">
+    import Lightbox from '$lib/Lightbox.svelte';
     import { page } from '$app/stores';
     import { getStore } from '$lib/utils';
     import type { ActionData } from './$types';
@@ -15,6 +16,9 @@
     $: activeResponse = $responses.find((resp) => resp.key === $activeEventData.activeQuestionKey);
     $: questionState = $questionStates.find((qs) => qs.key === $activeEventData.activeQuestionKey);
     $: activeRoundState = $roundStates.find((rs) => rs.round_number === $activeEventData.activeRoundNumber);
+
+    $: hasImage = activeQuestion?.question_type.toLocaleLowerCase().startsWith('image');
+    let displayLightbox = false;
 
     let responseText = '';
     $: notsubmitted = responseText && responseText !== activeResponse?.recorded_answer;
@@ -36,7 +40,7 @@
     };
 </script>
 
-<h2>{activeQuestion?.key}</h2>
+<h4 class="question-key">{activeQuestion?.key}</h4>
 
 <p id={`${activeQuestion?.key}-text`} class="question-text">
     {questionState?.question_displayed
@@ -44,8 +48,19 @@
         : 'Please Wait for the Host to Reveal This Question'}
 </p>
 
+{#if hasImage && activeQuestion?.question_url}
+    {#if displayLightbox}
+        <Lightbox source={activeQuestion?.question_url} on:click={() => (displayLightbox = false)} />
+    {/if}
+    <button class="button-image" on:click={() => (displayLightbox = true)}>
+        <img src={activeQuestion?.question_url} alt="img round" />
+    </button>
+{:else if hasImage}
+    <p>Image Missing</p>
+{/if}
+
 <form on:submit|preventDefault={handleSubmitResponse}>
-    <div class="input-element" class:notsubmitted>
+    <div class="input-container" class:notsubmitted>
         <input
             disabled={activeRoundState?.locked}
             required
@@ -63,29 +78,22 @@
 
     {#if form?.error}<p>{form.error}</p>{/if}
 
-    <button class:disabled={activeRoundState?.locked} class="button button-red" disabled={activeRoundState?.locked}>
+    <button class:disabled={activeRoundState?.locked} class="button button-primary" disabled={activeRoundState?.locked}>
         Submit
     </button>
 </form>
 
 <style lang="scss">
-    h2 {
-        margin: 0.5em;
-    }
-
     .question-text {
-        padding: 0 1em;
+        padding: 0 0.5rem;
     }
 
     .notsubmitted {
         input {
-            border-color: var(--color-red);
+            border-color: var(--color-primary);
         }
         label {
-            background-color: var(--color-red);
+            background-color: var(--color-primary);
         }
-    }
-    .disabled {
-        cursor: not-allowed;
     }
 </style>

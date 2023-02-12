@@ -189,7 +189,9 @@ class TriviaEvent(models.Model):
                 "question_key": self.current_question_key,
             },
             "rounds": queryset_to_json(self.game.game_rounds.exclude(round_number=0)),
-            "questions": queryset_to_json(self.game.game_questions.all()),
+            "questions": queryset_to_json(
+                self.game.game_questions.exclude(question_number=0)
+            ),
             "round_states": queryset_to_json(self.round_states.all()),
             "question_states": queryset_to_json(self.question_states.all()),
         }

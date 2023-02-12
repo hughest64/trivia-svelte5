@@ -96,10 +96,10 @@
         <h2>Round {scoringQuestion?.round_number} Question {scoringQuestion?.question_number}</h2>
         <p>{scoringQuestion?.question_text}</p>
     </div>
-    <h3 class="answer">Answer: {scoringQuestion?.display_answer}</h3>
+    <h4 class="answer">Answer: {scoringQuestion?.display_answer}</h4>
     <div class="button-container">
-        <button class="button button-black" on:click={goBack}>Previous</button>
-        <button class="button button-black" on:click={advance}>Next</button>
+        <button class="button button-secondary" on:click={goBack}>Previous</button>
+        <button class="button button-secondary" on:click={advance}>Next</button>
     </div>
     <ul>
         {#each scoringResponses as response}
@@ -107,29 +107,17 @@
         {/each}
     </ul>
     <div class="button-container">
-        <button class="button button-black" on:click={goBack}>Previous</button>
-        <button class="button button-black" on:click={advance}>Next</button>
+        <button class="button button-secondary" on:click={goBack}>Previous</button>
+        <button class="button button-secondary" on:click={advance}>Next</button>
     </div>
 {:else if $responses}
     <!-- TODO: do something with all responses or eliminate the ability to fetch all responses -->
     <h4>{$responses.length} Total responses for Event {$page.params.joincode}</h4>
 {:else}
-    <h4>No Responses Found!</h4>
+    <h2>All Caught Up!</h2>
 {/if}
 
 <style lang="scss">
-    h1 {
-        margin: 0.5em auto;
-    }
-    .host-question-panel {
-        h2,
-        p {
-            margin: 1rem;
-        }
-    }
-    .answer {
-        margin-top: 1em;
-    }
     .button-container {
         width: 40em;
         max-width: calc(100% - 2em);

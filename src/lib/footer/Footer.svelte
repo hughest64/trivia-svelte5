@@ -70,14 +70,20 @@
 
 <style lang="scss">
     nav {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
         font-size: 1.2em;
+        z-index: 3;
     }
     ul {
         display: flex;
-        justify-content: space-around;
+        justify-content: space-between;
         align-items: center;
         margin: 0 auto;
-        max-width: calc(100% - 2em);
+        width: 100%;
+        max-width: var(--max-continer-width);
+        background-color: var(--color-tertiary);
     }
     li {
         padding: 0;
@@ -86,20 +92,22 @@
 
     li > a,
     .menu {
-        text-decoration: none;
-        width: 4em;
-        height: 4em;
-        background-color: #fcfcfc;
-        border-radius: 0.5em;
-        margin: 0 auto;
-        padding: 0.5em;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
+        width: 4em;
+        height: 4em;
+        margin: 0 auto;
+        padding: 0.5em;
+        border: none;
+        border-radius: 0.5em;
+        text-decoration: none;
+        color: var(--color-black);
+        cursor: pointer;
     }
     .menu {
-        margin: 0;
+        margin: 0 auto;
         padding: 0;
         border: none;
     }
@@ -116,13 +124,12 @@
         // }
     }
     p {
-        font-size: 10px;
-        margin: 5px 0;
+        font-size: 0.75rem;
+        margin: 0.25rem 0;
         color: var(--color-black);
     }
     .justify-nav {
         justify-content: flex-end;
-        // margin: 0.5em;
     }
     .active {
         a {
@@ -140,7 +147,17 @@
             color: #fcfcfc;
         }
     }
-    .menu {
-        cursor: pointer;
+
+    @media (max-width: 350px) {
+        nav {
+            font-size: 0.75rem;
+        }
+        ul {
+            justify-content: space-around;
+        }
+        .menu {
+            width: 2.5rem;
+            height: 2.5rem;
+        }
     }
 </style>

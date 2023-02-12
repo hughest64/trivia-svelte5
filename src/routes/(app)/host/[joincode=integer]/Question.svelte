@@ -1,4 +1,5 @@
 <script lang="ts">
+    import Lightbox from '$lib/Lightbox.svelte';
     import { getStore } from '$lib/utils';
     import { deserialize } from '$app/forms';
     import type { GameQuestion, QuestionState } from '$lib/types';
@@ -8,6 +9,8 @@
 
     $: questionStates = getStore<QuestionState[]>('questionStates') || [];
     $: questionRevealed = $questionStates.find((qs) => qs.key === question.key)?.question_displayed;
+    $: hasImage = question.question_type.toLocaleLowerCase().startsWith('image');
+    let displayLightbox = false;
 
     // TODO: default should be set based on whether or not answers are revealed for all
     let answerDisplayed = false;
@@ -39,7 +42,7 @@
 <div class="host-question-panel flex-column">
     {#if formError}<p>{formError}</p>{/if}
 
-    <h3>{question.key}</h3>
+    <h4 class="question-key">{question.key}</h4>
 
     <div class="switch-container">
         <label for={question.key} class="switch">
@@ -51,17 +54,22 @@
 
     <p>{question.question_text}</p>
 
-    {#if question.answer_notes}<p>{question.answer_notes}</p>{/if}
+    {#if hasImage && question?.question_url}
+        {#if displayLightbox}
+            <Lightbox source={question?.question_url} on:click={() => (displayLightbox = false)} />
+        {/if}
+        <button class="button-image" on:click={() => (displayLightbox = true)}>
+            <img src={question?.question_url} alt="img round" />
+        </button>
+    {:else if hasImage}
+        <p>Image Missing</p>
+    {/if}
 
-    <button class="button button-white" on:click={() => (answerDisplayed = !answerDisplayed)}>
+    {#if question.answer_notes}<p>question.answer_notes</p>{/if}
+
+    <button class="button button-tertiary" on:click={() => (answerDisplayed = !answerDisplayed)}>
         Click To {answerDisplayed ? 'Hide' : 'Reveal'} Answer
     </button>
 
-    {#if answerDisplayed}<h3>{question.display_answer}</h3>{/if}
+    {#if answerDisplayed}<h4>{question.display_answer}</h4>{/if}
 </div>
-
-<style lang="scss">
-    .host-question-panel {
-        padding: 1em;
-    }
-</style>
