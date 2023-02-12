@@ -12,6 +12,7 @@
         <div class="menu-content">
             <Menu on:click={() => (displayMenu = false)} />
         </div>
+        <button on:click={() => (displayMenu = false)} />
     </div>
 {/if}
 
@@ -26,19 +27,26 @@
 <style lang="scss">
     .menu-slider {
         display: flex;
+        flex-direction: column;
         position: fixed;
         top: 0;
-        height: calc(100% - calc(var(--footer-height) + 0.5rem));
+        height: 100%;
         width: 100%;
         overflow: hidden;
         margin: 0 auto;
         z-index: 99;
+        button {
+            flex-grow: 1;
+            width: 100%;
+            padding: 0;
+            background-color: transparent;
+        }
     }
     .menu-content {
         justify-self: center;
-        height: 100%;
+        height: calc(100% - calc(var(--footer-height) + 0.5rem));
         width: 100%;
-        width: var(--max-continer-width);
+        max-width: var(--max-continer-width);
         margin: 0 auto;
         border-bottom-left-radius: 3em;
         border-bottom-right-radius: 3em;
