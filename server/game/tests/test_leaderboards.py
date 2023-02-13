@@ -8,16 +8,15 @@ from game.processors import LeaderboardProcessor
 
 
 class LeaderboardSetup(TestCase):
-    fixtures = ["data-1-19-23.json"]
+    fixtures = ["data-2-13-23.json"]
 
     def setUp(self) -> None:
         self.event = TriviaEvent.objects.get(joincode=9998)
-        self.host_lb = Leaderboard.objects.get(
-            event=self.event, leaderboard_type=LEADERBOARD_TYPE_HOST
-        )
 
     def test_leaderboard_update(self):
-        entries = LeaderboardEntry.objects.filter(leaderboard=self.host_lb)
+        entries = LeaderboardEntry.objects.filter(
+            event=self.event, leaderboard_type=LEADERBOARD_TYPE_HOST
+        )
         entry_count = len(entries)
 
         # rank should not be set and total points should be 0 for all entries
@@ -26,7 +25,9 @@ class LeaderboardSetup(TestCase):
 
         # run the update
         LeaderboardProcessor(event=self.event).update_host_leaderboard(through_round=8)
-        entries = LeaderboardEntry.objects.filter(leaderboard=self.host_lb)
+        entries = LeaderboardEntry.objects.filter(
+            event=self.event, leaderboard_type=LEADERBOARD_TYPE_HOST
+        )
 
         # point totals are summed correctly
         team_a = entries[0].team
@@ -54,18 +55,17 @@ class LeaderboardSetup(TestCase):
         with self.assertRaises(ValueError):
             LeaderboardProcessor(self.event).update_host_leaderboard(through_round=9)
 
-    def test_leadboard_sync(self):
+    def test_leaderboard_sync(self):
         LeaderboardProcessor(self.event).sync_leaderboards()
-        host_entries = self.host_lb.leaderboard_entries.all()
-        public_lb = Leaderboard.objects.get(
-            event=self.event, leaderboard_type=LEADERBOARD_TYPE_PUBLIC
+        host_entries = LeaderboardEntry.objects.filter(
+            event=self.event, leaderboard_type=LEADERBOARD_TYPE_HOST
         )
-
-        self.assertEqual(self.host_lb.through_round, public_lb.through_round)
+        event_lb, _ = Leaderboard.objects.get_or_create(event=self.event)
+        self.assertEqual(event_lb.host_through_round, event_lb.public_through_round)
 
         for e in host_entries:
             public_entry = LeaderboardEntry.objects.get(
-                leaderboard=public_lb, team=e.team
+                event=self.event, team=e.team, leaderboard_type=LEADERBOARD_TYPE_PUBLIC
             )
             self.assertEqual(e.total_points, public_entry.total_points)
             self.assertEqual(e.tiebreaker_rank, public_entry.tiebreaker_rank)

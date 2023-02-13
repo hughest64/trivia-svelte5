@@ -70,6 +70,7 @@ class LeaderboardProcessor:
         self.processing = True
         try:
             with transaction.atomic():
+                # an alternative here would be to loop event.teams and get_or_create on each team to ensure that every team has an entry
                 entries = LeaderboardEntry.objects.filter(
                     event=self.event, leaderboard_type=LEADERBOARD_TYPE_HOST
                 )

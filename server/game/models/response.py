@@ -81,10 +81,18 @@ class LeaderboardEntry(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     leaderboard_type = models.IntegerField(choices=LEADERBOARD_TYPE_OPTIONS)
     event = models.ForeignKey(
-        "TriviaEvent", related_name="leaderboard_entries", on_delete=models.CASCADE
+        "TriviaEvent",
+        related_name="leaderboard_entries",
+        related_query_name="leaderboard_entry",
+        on_delete=models.CASCADE,
     )
     leaderboard = models.ForeignKey(
-        Leaderboard, related_name="entries", on_delete=models.CASCADE
+        Leaderboard,
+        related_name="entries",
+        related_query_name="leaderboard_entry",
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
     )
     team = models.ForeignKey("Team", related_name="teams", on_delete=models.CASCADE)
     rank = models.IntegerField(blank=True, null=True)
