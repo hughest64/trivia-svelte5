@@ -51,7 +51,7 @@ class ResponseGradeTestCase(TestCase):
 
 
 class HostResponseGrading(TestCase):
-    fixtures = ["data-1-19-23.json"]
+    fixtures = ["data-2-13-23.json"]
 
     def setUp(self) -> None:
         self.client = APIClient()

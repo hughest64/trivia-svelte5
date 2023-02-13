@@ -14,15 +14,6 @@ class EventViewTestCase(TestCase):
         self.player = User.objects.get(username="player")
         self.client.force_authenticate(user=self.player)
         self.event = TriviaEvent.objects.get(joincode=1234)
-        self.host_lb = Leaderboard.objects.create(
-            event=self.event, leaderboard_type=LEADERBOARD_TYPE_HOST
-        )
-        self.public_lb = Leaderboard.objects.create(
-            event=self.event, leaderboard_type=LEADERBOARD_TYPE_PUBLIC
-        )
-
-    def tearDown(self) -> None:
-        Leaderboard.objects.all().delete()
 
     # GET requests
 
@@ -38,7 +29,9 @@ class EventViewTestCase(TestCase):
 
     def test_get_over_player_limit(self):
         LeaderboardEntry.objects.create(
-            leaderboard=self.public_lb, team=self.player.active_team
+            event=self.event,
+            team=self.player.active_team,
+            leaderboard_type=LEADERBOARD_TYPE_PUBLIC,
         )
         self.event.player_limit = 1
         self.event.save()
@@ -67,12 +60,6 @@ class EventViewTestCase(TestCase):
         self.player.save()
         resp = self.client.get("/game/1234")
         self.assertEqual(resp.status_code, 403)
-
-    def test_join_event_with_no_leaderboard(self):
-        new_event = TriviaEvent.objects.create(game=Game.objects.first(), joincode=9000)
-        new_event.players.add(self.player)
-        response = self.client.get("/game/9000")
-        self.assertEqual(response.status_code, 404)
 
     # POST requests
 

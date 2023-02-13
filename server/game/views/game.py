@@ -48,7 +48,7 @@ class EventView(APIView):
 
         public_lb_entries = LeaderboardEntry.objects.filter(
             event__joincode=joincode, leaderboard_type=LEADERBOARD_TYPE_PUBLIC
-        ).to_json()
+        )
 
         question_responses = QuestionResponse.objects.filter(
             event=event, team=user.active_team
@@ -84,18 +84,20 @@ class EventJoinView(APIView):
         if user.active_team is None:
             raise TeamRequired
 
-        event = get_event_or_404()
+        event = get_event_or_404(joincode=joincode)
 
         check_player_limit(event, user)
         event.event_teams.add(user.active_team)
         event.players.add(user)
 
         LeaderboardEntry.objects.get_or_create(
-            leaderboard=event.leaderboard_list[LEADERBOARD_TYPE_HOST],
+            event=event,
+            leaderboard_type=LEADERBOARD_TYPE_HOST,
             team=user.active_team,
         )
         public_lbe, created = LeaderboardEntry.objects.get_or_create(
-            leaderboard=event.leaderboard_list[LEADERBOARD_TYPE_PUBLIC],
+            event=event,
+            leaderboard_type=LEADERBOARD_TYPE_PUBLIC,
             team=user.active_team,
         )
 
