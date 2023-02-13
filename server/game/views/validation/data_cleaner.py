@@ -2,7 +2,7 @@ import json
 
 from rest_framework.exceptions import NotFound
 
-from game.models import Leaderboard, TriviaEvent, LEADERBOARD_TYPE_PUBLIC
+from game.models import TriviaEvent
 from user.models import User
 
 from game.views.validation.exceptions import (

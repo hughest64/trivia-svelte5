@@ -10,7 +10,6 @@ from rest_framework.views import APIView
 from user.authentication import JwtAuthentication
 
 from game.models import (
-    Leaderboard,
     LeaderboardEntry,
     TriviaEvent,
     QuestionResponse,
@@ -47,14 +46,9 @@ class EventView(APIView):
 
         player_joined = check_player_limit(event, user, join_required=True)
 
-        try:
-            public_lb = Leaderboard.objects.get(
-                event__joincode=joincode, leaderboard_type=LEADERBOARD_TYPE_PUBLIC
-            ).to_json()
-        except Leaderboard.DoesNotExist:
-            # TODO: should we raise, or just ship an empty dict?
-            raise NotFound(f"No leaderboard exists for event {joincode}.")
-            # public_lb = {}
+        public_lb_entries = LeaderboardEntry.objects.filter(
+            event__joincode=joincode, leaderboard_type=LEADERBOARD_TYPE_PUBLIC
+        ).to_json()
 
         question_responses = QuestionResponse.objects.filter(
             event=event, team=user.active_team
@@ -67,7 +61,7 @@ class EventView(APIView):
                 **event.to_json(),
                 "user_data": user.to_json(),
                 "response_data": queryset_to_json(question_responses),
-                "leaderboard_data": public_lb,
+                "leaderboard_data": queryset_to_json(public_lb_entries),
                 # if false, the player can view the event but not respond to questions
                 # this should probably trigger a pop up so that user is aware that they can't do anything
                 "player_joined": player_joined,
@@ -90,12 +84,7 @@ class EventJoinView(APIView):
         if user.active_team is None:
             raise TeamRequired
 
-        try:
-            event = TriviaEvent.objects.prefetch_related(
-                Prefetch("leaderboards", to_attr="leaderboard_list")
-            ).get(joincode=joincode)
-        except TriviaEvent.DoesNotExist:
-            raise NotFound(detail=f"Event with join code {joincode} does not exist")
+        event = get_event_or_404()
 
         check_player_limit(event, user)
         event.event_teams.add(user.active_team)

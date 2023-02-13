@@ -63,50 +63,34 @@ class QuestionResponse(models.Model):
         super().save(*args, **kwargs)
 
 
+# for now, this only contains references to the round through which leaderboard entries
+# of a given type are scored, but it could also contain aggregated data about an event
 class Leaderboard(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
-    leaderboard_type = models.IntegerField(choices=LEADERBOARD_TYPE_OPTIONS)
-    event = models.ForeignKey(
+    event = models.OneToOneField(
         "TriviaEvent", related_name="leaderboards", on_delete=models.CASCADE
     )
-    # represents the max round for which player leaderboards should display point totals, rank, etc
-    # TODO: perhaps this should be null=True and have a min validator of 1?
-    through_round = models.IntegerField(default=0)
+    public_through_round = models.IntegerField(blank=True, null=True)
+    host_through_round = models.IntegerField(blank=True, null=True)
 
     def __str__(self):
-        return f"{LEADERBOARD_TYPE_DICT[self.leaderboard_type]} leaderboard for event {self.event}"
-
-    # can be used to notify a host that either leaderboard type is not up to date with the max scored round
-    def up_to_date(self):
-        return (
-            self.through_round is not None
-            and self.through_round == self.event.max_scored_round()
-        )
-
-    def to_json(self):
-        return {
-            "through_round": self.through_round,
-            "leaderboard_entries": queryset_to_json(self.leaderboard_entries.all()),
-        }
-
-    class Meta:
-        unique_together = ("event", "leaderboard_type")
-        ordering = ["-event", "leaderboard_type"]
-
-    def save(self, *args, **kwargs):
-        self.full_clean()
-        super().save(*args, **kwargs)
+        return f"{self.event} - {LEADERBOARD_TYPE_DICT[self.leaderboard_type]}"
 
 
 class LeaderboardEntry(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
+    leaderboard_type = models.IntegerField(choices=LEADERBOARD_TYPE_OPTIONS)
+    event = models.ForeignKey(
+        "TriviaEvent", related_name="leaderboard_entries", on_delete=models.CASCADE
+    )
     leaderboard = models.ForeignKey(
-        Leaderboard, related_name="leaderboard_entries", on_delete=models.CASCADE
+        Leaderboard, related_name="entries", on_delete=models.CASCADE
     )
     team = models.ForeignKey("Team", related_name="teams", on_delete=models.CASCADE)
     rank = models.IntegerField(blank=True, null=True)
     tiebreaker_rank = models.IntegerField(blank=True, null=True)
     total_points = models.FloatField(default=0)
+
     # Other fields:
     # selected_megaround
     # megaround_applied ?
@@ -114,18 +98,32 @@ class LeaderboardEntry(models.Model):
     # points_adjustment_reason
 
     class Meta:
-        ordering = ["leaderboard__event", "rank", "tiebreaker_rank", "pk"]
+        unique_together = ("team", "event", "leaderboard_type")
+        ordering = ["event", "rank", "tiebreaker_rank", "pk"]
         verbose_name_plural = "Leaderboard Entries"
 
+    def _get_through_rounds(self):
+        round_data = {"public": None, "host": None}
+        if self.leaderboard:
+            round_data = {
+                "public": self.leaderboard.public_through_round,
+                "host": self.leaderboard.host_through_round,
+            }
+
+        return round_data
+
     def __str__(self):
-        return f"Leaderboard Entry for {self.team} at event {self.leaderboard.event}"
+        return f"{self.team} - {self.event}"
 
     def to_json(self):
+        through_rounds = self._get_through_rounds()
         return {
             "team_id": self.team.id,
             "team_name": self.team.name,
             "rank": self.rank or "-",
             "total_points": self.total_points,
+            "public_through_round": through_rounds["public"],
+            "host_through_round": through_rounds["host"],
         }
 
 

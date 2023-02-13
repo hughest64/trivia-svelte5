@@ -10,16 +10,6 @@ from game.models import (
 )
 
 
-def get_or_create_leaderboards(event: TriviaEvent):
-    """Helper for creating leaderboards for a trivia event."""
-    Leaderboard.objects.get_or_create(
-        event=event, leaderboard_type=LEADERBOARD_TYPE_HOST
-    )
-    Leaderboard.objects.get_or_create(
-        event=event, leaderboard_type=LEADERBOARD_TYPE_PUBLIC
-    )
-
-
 class ProcedureError(Exception):
     def __init__(self, message=None) -> None:
         self.message = message or "This method should not be called indepentently"
@@ -80,21 +70,20 @@ class LeaderboardProcessor:
         self.processing = True
         try:
             with transaction.atomic():
-                leaderboard = Leaderboard.objects.get(
+                entries = LeaderboardEntry.objects.filter(
                     event=self.event, leaderboard_type=LEADERBOARD_TYPE_HOST
                 )
-
-                entries = leaderboard.leaderboard_entries.all()
                 for entry in entries:
                     self._set_team_score(entry, through_round)
 
                 self._set_leaderboard_rank(entries)
                 LeaderboardEntry.objects.bulk_update(entries, ["total_points", "rank"])
-                leaderboard.through_round = through_round
-                leaderboard.save()
+                Leaderboard.objects.update_or_create(
+                    event=self.event, defaults={"host_through_round": through_round}
+                )
+
             # TODO: log?
-            # better stats to be passed to the front end?
-            return {"sucess": True}
+            return {"status": f"Host leaderboard updated through round {through_round}"}
 
         except Exception as e:
             # TODO: proper log
@@ -104,24 +93,24 @@ class LeaderboardProcessor:
 
     def sync_leaderboards(self):
         """use host leaderboard and entry data to update the public leaderboard"""
-        host_lb = Leaderboard.objects.get(
-            event=self.event, leaderboard_type=LEADERBOARD_TYPE_HOST
-        )
-        public_lb, _ = Leaderboard.objects.update_or_create(
-            event=self.event,
-            leaderboard_type=LEADERBOARD_TYPE_PUBLIC,
-            defaults={
-                "through_round": host_lb.through_round,
-            },
-        )
-
-        for e in host_lb.leaderboard_entries.all():
-            LeaderboardEntry.objects.update_or_create(
-                leaderboard=public_lb,
-                team=e.team,
-                defaults={
-                    "rank": e.rank,
-                    "tiebreaker_rank": e.tiebreaker_rank,
-                    "total_points": e.total_points,
-                },
+        with transaction.atomic():
+            host_lb_entries = LeaderboardEntry.objects.filter(
+                event=self.event, leaderboard_type=LEADERBOARD_TYPE_HOST
             )
+
+            event_lb, _ = Leaderboard.objects.get_or_create(event=self.event)
+            event_lb.public_through_round = event_lb.host_through_round
+            event_lb.save()
+
+            for e in host_lb_entries:
+                LeaderboardEntry.objects.update_or_create(
+                    event=self.event,
+                    leaderboard_type=LEADERBOARD_TYPE_PUBLIC,
+                    team=e.team,
+                    defaults={
+                        "leaderboard": event_lb,
+                        "rank": e.rank,
+                        "tiebreaker_rank": e.tiebreaker_rank,
+                        "total_points": e.total_points,
+                    },
+                )
