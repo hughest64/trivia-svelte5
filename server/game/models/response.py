@@ -120,18 +120,22 @@ class LeaderboardEntry(models.Model):
 
         return round_data
 
+    def get_through_round(self, type):
+        if type not in ["public", "host"]:
+            raise ValueError("The type argument must be one of 'public' or 'host'")
+        through_rounds = self._get_through_rounds()
+
+        return through_rounds[type]
+
     def __str__(self):
         return f"{self.team} - {self.event}"
 
     def to_json(self):
-        through_rounds = self._get_through_rounds()
         return {
             "team_id": self.team.id,
             "team_name": self.team.name,
             "rank": self.rank or "-",
             "total_points": self.total_points,
-            "public_through_round": through_rounds["public"],
-            "host_through_round": through_rounds["host"],
         }
 
 

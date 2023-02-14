@@ -49,6 +49,7 @@ class EventView(APIView):
         public_lb_entries = LeaderboardEntry.objects.filter(
             event__joincode=joincode, leaderboard_type=LEADERBOARD_TYPE_PUBLIC
         )
+        through_round = public_lb_entries.first().get_through_round("public")
 
         question_responses = QuestionResponse.objects.filter(
             event=event, team=user.active_team
@@ -61,7 +62,10 @@ class EventView(APIView):
                 **event.to_json(),
                 "user_data": user.to_json(),
                 "response_data": queryset_to_json(question_responses),
-                "leaderboard_data": queryset_to_json(public_lb_entries),
+                "leaderboard_data": {
+                    "leaderboard_entries": queryset_to_json(public_lb_entries),
+                    "through_round": through_round,
+                },
                 # if false, the player can view the event but not respond to questions
                 # this should probably trigger a pop up so that user is aware that they can't do anything
                 "player_joined": player_joined,
