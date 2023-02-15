@@ -29,8 +29,11 @@
         question_key: data?.current_event_data?.question_key || '1.1'
     });
 
-    const activeEventData = createStore<ActiveEventData | null>('activeEventData', null);
-    $: activeEventData.set({
+    // TODO: this started causing problems when naviaging via footer links,
+    // but not sure why or why this change was made in the first place
+    // const activeEventData = createStore<ActiveEventData | null>('activeEventData', null);
+    // $: activeEventData.set({
+    $: createStore<ActiveEventData>('activeEventData', {
         activeQuestionNumber: data?.activeQuestionNumber || data.current_event_data?.question_number || 1,
         activeRoundNumber: data?.activeRoundNumber || data.current_event_data?.round_number || 1,
         activeQuestionKey: data?.activeQuestionKey || data.current_event_data?.question_key || '1.1'
