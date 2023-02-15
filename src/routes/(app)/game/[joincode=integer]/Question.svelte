@@ -79,7 +79,11 @@
 
     {#if form?.error}<p>{form.error}</p>{/if}
 
-    <button class:disabled={activeRoundState?.locked} class="button button-primary" disabled={activeRoundState?.locked}>
+    <button
+        class:disabled={activeRoundState?.locked || !$playerJoined}
+        class="button button-primary"
+        disabled={activeRoundState?.locked || !$playerJoined}
+    >
         Submit
     </button>
 </form>
