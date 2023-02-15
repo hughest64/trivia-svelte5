@@ -44,12 +44,23 @@ class EventView(APIView):
         if user.active_team is None:
             raise TeamRequired
 
-        player_joined = check_player_limit(event, user, join_required=True)
+        player_joined = check_player_limit(event, user, join_required=False)
 
         public_lb_entries = LeaderboardEntry.objects.filter(
             event__joincode=joincode, leaderboard_type=LEADERBOARD_TYPE_PUBLIC
         )
-        through_round = public_lb_entries.first().get_through_round("public")
+
+        through_round = None
+        try:
+            through_round = public_lb_entries.filter(team=user.active_team)[
+                0
+            ].leaderboard.public_through_round
+        # the player's active team does not have a leaderboard entry
+        except IndexError:
+            player_joined = False
+        # the leaderboard exists, but a through round has not yet been set
+        except AttributeError:
+            pass
 
         question_responses = QuestionResponse.objects.filter(
             event=event, team=user.active_team
@@ -66,8 +77,6 @@ class EventView(APIView):
                     "leaderboard_entries": queryset_to_json(public_lb_entries),
                     "through_round": through_round,
                 },
-                # if false, the player can view the event but not respond to questions
-                # this should probably trigger a pop up so that user is aware that they can't do anything
                 "player_joined": player_joined,
             }
         )

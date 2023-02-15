@@ -18,4 +18,21 @@ const submitresponse: Action = async ({ fetch, request, params }) => {
     return data;
 };
 
-export const actions = { submitresponse };
+const joinevent: Action = async ({ fetch, params }) => {
+    const response = await fetch(`${apiHost}/game/join`, {
+        method: 'post',
+        body: JSON.stringify({
+            joincode: params.joincode
+        })
+    });
+    const responseData = await response.json();
+    if (!response.ok) {
+        // TODO: check for player_limit_exceeded reason and throw error if present
+        return fail(responseData.status, { error: responseData.detail });
+    }
+
+    // throw redirect(303, `/game/${params.joincode}`);
+    return { playerJoined: true };
+};
+
+export const actions = { submitresponse, joinevent };

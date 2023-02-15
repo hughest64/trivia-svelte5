@@ -27,7 +27,6 @@ export interface UserData {
     user_is_anonymous?: boolean;
     user_home_locations?: string[];
 }
-
 export interface UserTeam {
     id: string | number;
     name: string;

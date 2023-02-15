@@ -21,7 +21,7 @@
 
     // is the player stored as a participant for the event?
     const playerJoined = createStore<PlayerJoined>('playerJoined', false);
-    $: playerJoined.set(data.player_joined);
+    $: playerJoined.set(data.player_joined || false);
 
     $: createStore<CurrentEventData>('currentEventData', {
         round_number: data?.current_event_data?.round_number || 1,

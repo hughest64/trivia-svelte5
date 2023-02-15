@@ -94,7 +94,7 @@ const apiMap = new Map([
 
 export const handlePlayerAuth = async ({
     locals,
-    params,
+    // params,
     fetch,
     url,
     endPoint
@@ -114,18 +114,6 @@ export const handlePlayerAuth = async ({
     }
     // forbidden, redirect to a safe page
     if (response.status === 403) {
-        // auto-join the event
-        if (apiData?.reason === 'join_required') {
-            const joinResponse = await fetch(`${apiHost}/game/join`, {
-                method: 'post',
-                body: JSON.stringify({ joincode: params.joincode })
-            });
-            if (!joinResponse.ok) {
-                const respData = await response.json();
-                throw error(joinResponse.status, respData.detail);
-            }
-            throw redirect(302, `/game/${params.joincode}`);
-        }
         // TODO: add a payload key to the error and send userdata through
         if (apiData?.reason === 'player_limit_exceeded') {
             throw error(403, { message: apiData.detail, code: apiData.reason });

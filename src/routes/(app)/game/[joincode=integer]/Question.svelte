@@ -3,7 +3,7 @@
     import { page } from '$app/stores';
     import { getStore } from '$lib/utils';
     import type { ActionData } from './$types';
-    import type { ActiveEventData, Response, RoundState, QuestionState, UserData } from '$lib/types';
+    import type { ActiveEventData, Response, RoundState, PlayerJoined, QuestionState, UserData } from '$lib/types';
 
     $: form = <ActionData>$page.form;
     $: userData = getStore<UserData>('userData');
@@ -11,6 +11,7 @@
     $: responses = getStore<Response[]>('responseData') || [];
     $: roundStates = getStore<RoundState[]>('roundStates') || [];
     $: questionStates = getStore<QuestionState[]>('questionStates') || [];
+    $: playerJoined = getStore<PlayerJoined>('playerJoined');
 
     $: activeQuestion = $page.data.questions?.find((q) => q.key === $activeEventData.activeQuestionKey);
     $: activeResponse = $responses.find((resp) => resp.key === $activeEventData.activeQuestionKey);
@@ -62,7 +63,7 @@
 <form on:submit|preventDefault={handleSubmitResponse}>
     <div class="input-container" class:notsubmitted>
         <input
-            disabled={activeRoundState?.locked}
+            disabled={activeRoundState?.locked || !$playerJoined}
             required
             name="response_text"
             type="text"

@@ -1,20 +1,46 @@
 <script lang="ts">
     import { page } from '$app/stores';
+    import { enhance } from '$app/forms';
     import { getStore } from '$lib/utils';
     import Round from './Round.svelte';
     import RoundSelector from './RoundSelector.svelte';
-    import type { ActiveEventData, GameRound } from '$lib/types';
+    import type { ActiveEventData, GameRound, PlayerJoined } from '$lib/types';
 
     $: activeEventData = getStore<ActiveEventData>('activeEventData');
     $: activeRound = $page.data?.rounds?.find(
         (rd) => rd.round_number === $activeEventData.activeRoundNumber
     ) as GameRound;
 
-    // TODO: if !playerJoined create a popup w/ some options for the player to join the event or go pick a different team
+    $: playerJoined = getStore<PlayerJoined>('playerJoined');
 </script>
 
 <h2>{activeRound?.title}</h2>
 
 <RoundSelector />
 
+{#if !$playerJoined}
+    <h3 class="not-joined-warning">
+        You are currently in view mode.
+        <form action="?/joinevent" method="post" use:enhance>
+            <button class="submit" type="submit"><h3>Click here</h3></button>to join the game!
+        </form>
+    </h3>
+{/if}
+
 <Round {activeRound} />
+
+<style lang="scss">
+    .not-joined-warning {
+        margin: 1rem 0;
+    }
+    h3 {
+        font-size: 1.5rem;
+    }
+    form {
+        display: inline;
+    }
+    .submit {
+        text-decoration: underline;
+        color: var(--color-primary);
+    }
+</style>

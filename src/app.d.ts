@@ -22,6 +22,7 @@ declare namespace App {
         question_states?: Array<import('$lib/types').EventQuestion>;
         location_select_data?: Array<import('$lib/types').LocationSelectData>;
         game_select_data?: Array<import('$lib/types').GameSelectData>;
+        player_joined?: boolean;
     }
     // interface Platform {}
     interface Error {
