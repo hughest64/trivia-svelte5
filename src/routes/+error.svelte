@@ -1,4 +1,4 @@
-<!-- TODO: this seems like it will get busier so I think a compoenent map like popups is in order
+<!-- TODO: this seems like it will get busier so I think a component map like popups is in order
 i.e. handle different errors in separate svelte components and use the code (if present) to map
 a component form an object (or acutal map) -->
 <script lang="ts">
