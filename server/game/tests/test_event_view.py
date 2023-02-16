@@ -23,9 +23,9 @@ class EventViewTestCase(TestCase):
 
     def test_get_without_joining_event(self):
         resp = self.client.get("/game/1234")
-        # not_joined, can't view the event
-        self.assertEqual(resp.status_code, 403)
-        self.assertEqual(resp.data.get("reason"), "join_required")
+        # not_joined
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.data.get("player_joined"), False)
 
     def test_get_over_player_limit(self):
         LeaderboardEntry.objects.create(
