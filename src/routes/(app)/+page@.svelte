@@ -50,12 +50,12 @@
         width: 100%;
     }
     .demo-note {
-        padding: 1em;
+        padding: 0.75rem;
         background-color: var(--color-primary);
         color: var(--color-tertiary);
         width: 100vw;
         h4 {
-            margin-bottom: 0.5em;
+            margin: 0 0 0.5rem;
         }
         a {
             color: var(--color-primry);
