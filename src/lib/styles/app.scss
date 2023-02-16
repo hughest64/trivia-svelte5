@@ -133,7 +133,7 @@ form {
     input {
         width: 100%;
         position: relative;
-        z-index: 2;
+        z-index: 3;
         top: 0;
         left: 0;
         margin: 1.5rem 0;
@@ -157,8 +157,9 @@ form {
         }
         &:disabled {
             outline: 3px solid var(--color-disabled);
+            background-color: var(--color-disabled);
             + label {
-                background-color: var(--color-disabled);
+                color: var(--color-disabled);
             }
         }
     }
