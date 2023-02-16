@@ -162,3 +162,7 @@ JWT_TOKEN_TTL = 24 * 60  # 24 hrs
 
 # use an env variable for prod
 JWT_TOKEN_SECRET = SECRET_KEY
+
+REST_FRAMEWORK = {
+    "EXCEPTION_HANDLER": "game.views.validation.exceptions.event_exception_handler"
+}

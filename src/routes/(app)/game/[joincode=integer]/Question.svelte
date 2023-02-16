@@ -3,7 +3,7 @@
     import { page } from '$app/stores';
     import { getStore } from '$lib/utils';
     import type { ActionData } from './$types';
-    import type { ActiveEventData, Response, RoundState, QuestionState, UserData } from '$lib/types';
+    import type { ActiveEventData, Response, RoundState, PlayerJoined, QuestionState, UserData } from '$lib/types';
 
     $: form = <ActionData>$page.form;
     $: userData = getStore<UserData>('userData');
@@ -11,6 +11,7 @@
     $: responses = getStore<Response[]>('responseData') || [];
     $: roundStates = getStore<RoundState[]>('roundStates') || [];
     $: questionStates = getStore<QuestionState[]>('questionStates') || [];
+    $: playerJoined = getStore<PlayerJoined>('playerJoined');
 
     $: activeQuestion = $page.data.questions?.find((q) => q.key === $activeEventData.activeQuestionKey);
     $: activeResponse = $responses.find((resp) => resp.key === $activeEventData.activeQuestionKey);
@@ -34,7 +35,7 @@
         data.set('key', activeQuestion?.key || '');
         data.set('response_text', responseText);
 
-        const response = await fetch('?/response', { method: 'post', body: data });
+        const response = await fetch('?/submitresponse', { method: 'post', body: data });
         // TODO: error handling
         console.log(await response.json());
     };
@@ -62,7 +63,7 @@
 <form on:submit|preventDefault={handleSubmitResponse}>
     <div class="input-container" class:notsubmitted>
         <input
-            disabled={activeRoundState?.locked}
+            disabled={activeRoundState?.locked || !$playerJoined}
             required
             name="response_text"
             type="text"
@@ -78,7 +79,11 @@
 
     {#if form?.error}<p>{form.error}</p>{/if}
 
-    <button class:disabled={activeRoundState?.locked} class="button button-primary" disabled={activeRoundState?.locked}>
+    <button
+        class:disabled={activeRoundState?.locked || !$playerJoined}
+        class="button button-primary"
+        disabled={activeRoundState?.locked || !$playerJoined}
+    >
         Submit
     </button>
 </form>

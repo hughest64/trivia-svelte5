@@ -1,8 +1,10 @@
+import { error, redirect } from '@sveltejs/kit';
+import { PUBLIC_API_HOST as apiHost } from '$env/static/public';
 import { getContext, setContext } from 'svelte';
 import { writable, type Writable } from 'svelte/store';
 import jwt_decode from 'jwt-decode';
 import type { Cookies } from '@sveltejs/kit';
-import type { CurrentEventData, GameQuestion, GameRound, JwtPayload, StoreKey, UserTeam } from './types';
+import type { CustomLoadEvent, GameQuestion, GameRound, JwtPayload, StoreKey, UserTeam } from './types';
 
 /**
  * take one or many cookie keys and invalidate them by creating new cookies with an exipiration
@@ -77,4 +79,83 @@ export const getQuestionKeys = (questions: GameQuestion[], activeRound: GameRoun
 export const resolveBool = (value: string | boolean) => {
     if (value === 'false') return false;
     return Boolean(value);
+};
+
+/**
+ * Custom load functions to help keep trivia event endpoints dry. Player
+ * and Host routes are handled separately as the logic differs a bit.
+ * TODO: these belong in a separate auth.ts file
+ */
+
+const apiMap = new Map([
+    ['/host/choice', '/user'],
+    ['/game/join', '/user']
+]);
+
+export const handlePlayerAuth = async ({
+    locals,
+    // params,
+    fetch,
+    url,
+    endPoint
+}: CustomLoadEvent): Promise<App.PageData> => {
+    if (!locals.validtoken) throw redirect(302, `/user/logout?next=${url.pathname}`);
+
+    const apiEndpoint = apiMap.get(endPoint || '') || endPoint;
+    const response = await fetch(`${apiHost}${apiEndpoint}/`);
+
+    let data = {};
+    const apiData = await response.json();
+    if (response.ok) data = { ...apiData, ...locals };
+
+    // not authorized, redirect to log out to ensure cookies get deleted
+    if (response.status === 401) {
+        throw redirect(302, `/user/logout?next=${url.pathname}`);
+    }
+    // forbidden, redirect to a safe page
+    if (response.status === 403) {
+        // TODO: add a payload key to the error and send userdata through
+        if (apiData?.reason === 'player_limit_exceeded') {
+            throw error(403, { message: apiData.detail, code: apiData.reason });
+        }
+        throw redirect(302, '/team');
+    }
+    // TODO: expand to handle other pages (/team, etc)
+    // resolve the error page
+    if (response.status === 404) {
+        throw error(404, { message: apiData.detail, next: '/game/join' });
+    }
+
+    return data;
+};
+
+export const handleHostAuth = async ({ locals, fetch, url, endPoint }: CustomLoadEvent): Promise<App.PageData> => {
+    const apiEndpoint = apiMap.get(endPoint || '') || endPoint;
+
+    if (!locals.validtoken) throw redirect(302, `/user/logout?next=${url.pathname}`);
+    if (!locals.staffuser) throw redirect(302, '/team');
+
+    const response = await fetch(`${apiHost}${apiEndpoint}/`);
+
+    let data = {};
+    const apiData = await response.json();
+    if (response.ok) {
+        data = { ...apiData, ...locals };
+    }
+
+    // not authorized, redirect to log out to ensure cookies get deleted
+    if (response.status === 401) {
+        throw redirect(302, `/user/logout?next=${url.pathname}`);
+    }
+
+    // forbidden, redirect to a safe page
+    if (response.status === 403) {
+        throw redirect(302, '/host/choice');
+    }
+
+    if (response.status === 404) {
+        throw error(404, { message: apiData.detail, next: '/host/choice' });
+    }
+
+    return data;
 };

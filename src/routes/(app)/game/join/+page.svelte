@@ -1,12 +1,12 @@
 <script lang="ts">
-    import { page } from '$app/stores';
+    import { getStore } from '$lib/utils';
     import type { UserData } from '$lib/types';
     import type { ActionData } from './$types';
 
     export let form: ActionData;
 
-    const userData = <UserData>$page.data?.user_data;
-    $: activeTeam = userData?.teams.find((team) => team.id === userData?.active_team_id);
+    const userData = getStore<UserData>('userData');
+    $: activeTeam = $userData?.teams.find((team) => team.id === $userData?.active_team_id);
 </script>
 
 <svelte:head><title>Trivia Mafia | Join</title></svelte:head>
@@ -14,7 +14,9 @@
 <main class="short">
     <h1>Enter Game Code</h1>
 
-    <p>Thanks for Playing with team {activeTeam?.name}! Enter the game code from your host to get started.</p>
+    {#if !!userData}
+        <p>Thanks for Playing with team {activeTeam?.name}! Enter the game code from your host to get started.</p>
+    {/if}
 
     <form action="?/joinevent" method="POST">
         {#if form?.error}<p class="error">{form?.error}</p>{/if}

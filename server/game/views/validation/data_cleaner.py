@@ -1,9 +1,43 @@
 import json
 
-from rest_framework.exceptions import APIException, NotFound
-from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_403_FORBIDDEN
+from rest_framework.exceptions import NotFound
 
 from game.models import TriviaEvent
+from user.models import User
+
+from game.views.validation.exceptions import (
+    DataValidationError,
+    EventJoinRequired,
+    PlayerLimitExceeded,
+)
+
+
+def check_player_limit(event: TriviaEvent, user: User, join_required=False):
+    # members of the user's active team already on the event
+    team_players = event.players.filter(active_team=user.active_team)
+    player_limit = event.player_limit or 0
+    player_count = team_players.count()
+    # has the user joined the event?
+    player_joined = user in team_players
+    limit_exceeded = False
+    if (
+        # limit has been reached but the user has not joined
+        player_count == event.player_limit
+        and not player_joined
+        # already past the player limit
+    ) or player_count > player_limit > 0:
+        limit_exceeded = True
+
+    if limit_exceeded:
+        raise PlayerLimitExceeded
+
+    if not limit_exceeded and player_joined:
+        return True
+
+    if join_required:
+        raise EventJoinRequired
+
+    return False
 
 
 def get_event_or_404(joincode) -> TriviaEvent:
@@ -11,29 +45,6 @@ def get_event_or_404(joincode) -> TriviaEvent:
         return TriviaEvent.objects.get(joincode=joincode)
     except TriviaEvent.DoesNotExist:
         raise NotFound(detail=f"Event with join code {joincode} does not exist")
-
-
-class TeamRequired(APIException):
-    status_code = HTTP_403_FORBIDDEN
-    default_detail = "You must be on a team to view this page"
-
-
-class DataValidationError(Exception):
-    def __init__(self, message=None, field=None, status=None):
-        self.message = message or "Invalid Data"
-        self.field = field
-        self.status = status or HTTP_400_BAD_REQUEST
-
-    def __str__(self):
-        return json.dumps(self.response())
-
-    @property
-    def response(self):
-        parts = [self.message]
-        if self.field:
-            parts.append(self.field)
-
-        return {"detail": " - ".join(parts), "status": self.status}
 
 
 class DataCleaner:

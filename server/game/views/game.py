@@ -1,18 +1,34 @@
+from django.db.models import Prefetch
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
+from django.core.exceptions import ValidationError
 
+from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from user.authentication import JwtAuthentication
 
-from game.models import QuestionResponse
+from game.models import (
+    LeaderboardEntry,
+    TriviaEvent,
+    QuestionResponse,
+    LEADERBOARD_TYPE_HOST,
+    LEADERBOARD_TYPE_PUBLIC,
+)
 from game.models.utils import queryset_to_json
+from game.utils.socket_classes import SendEventMessage
 from game.views.validation.data_cleaner import (
     DataCleaner,
-    DataValidationError,
-    TeamRequired,
+    check_player_limit,
     get_event_or_404,
+)
+from user.models import User
+
+from game.views.validation.exceptions import (
+    DataValidationError,
+    EventJoinRequired,
+    TeamRequired,
 )
 from game.utils.socket_classes import SendTeamMessage
 from user.models import User
@@ -23,20 +39,45 @@ class EventView(APIView):
 
     def get(self, request, joincode):
         """fetch a specific event from the joincode parsed from the url"""
+        event = get_event_or_404(joincode=joincode)
         user: User = request.user
-        if not user.active_team:
+        if user.active_team is None:
             raise TeamRequired
 
-        event = get_event_or_404(joincode=joincode)
-        question_responses = QuestionResponse.objects.filter(
-            event__joincode=joincode, team=user.active_team
+        player_joined = check_player_limit(event, user, join_required=False)
+
+        public_lb_entries = LeaderboardEntry.objects.filter(
+            event__joincode=joincode, leaderboard_type=LEADERBOARD_TYPE_PUBLIC
         )
+
+        through_round = None
+        try:
+            through_round = public_lb_entries.filter(team=user.active_team)[
+                0
+            ].leaderboard.public_through_round
+        # the player's active team does not have a leaderboard entry
+        except IndexError:
+            player_joined = False
+        # the leaderboard exists, but a through round has not yet been set
+        except AttributeError:
+            pass
+
+        question_responses = QuestionResponse.objects.filter(
+            event=event, team=user.active_team
+        )
+
+        # TODO: chats (last 50 for the players active team on this event)
 
         return Response(
             {
                 **event.to_json(),
                 "user_data": user.to_json(),
                 "response_data": queryset_to_json(question_responses),
+                "leaderboard_data": {
+                    "leaderboard_entries": queryset_to_json(public_lb_entries),
+                    "through_round": through_round,
+                },
+                "player_joined": player_joined,
             }
         )
 
@@ -45,9 +86,44 @@ class EventJoinView(APIView):
     authentication_classes = [JwtAuthentication]
 
     def get(self, request):
-        user_data = request.user.to_json()
+        return Response({"user_data": request.user.to_json()})
 
-        return Response({"user_data": user_data})
+    @method_decorator(csrf_protect)
+    def post(self, request):
+        data = DataCleaner(request.data)
+        joincode = data.as_int("joincode")
+
+        user = request.user
+        if user.active_team is None:
+            raise TeamRequired
+
+        event = get_event_or_404(joincode=joincode)
+
+        check_player_limit(event, user)
+        event.event_teams.add(user.active_team)
+        event.players.add(user)
+
+        LeaderboardEntry.objects.get_or_create(
+            event=event,
+            leaderboard_type=LEADERBOARD_TYPE_HOST,
+            team=user.active_team,
+        )
+        public_lbe, created = LeaderboardEntry.objects.get_or_create(
+            event=event,
+            leaderboard_type=LEADERBOARD_TYPE_PUBLIC,
+            team=user.active_team,
+        )
+
+        if created:
+            SendEventMessage(
+                joincode,
+                message={
+                    "msg_type": "leaderboard_join",
+                    "message": public_lbe.to_json(),
+                },
+            )
+
+        return Response({"player_joined": True})
 
 
 class ResponseView(APIView):
@@ -55,33 +131,38 @@ class ResponseView(APIView):
 
     @method_decorator(csrf_protect)
     def post(self, request, joincode):
-        try:
-            data = DataCleaner(request.data)
-            team_id = data.as_int("team_id")
-            question_id = data.as_int("question_id")
-            response_text = data.as_string("response_text")
-        except DataValidationError as e:
-            return Response(e.response)
+        data = DataCleaner(request.data)
+        team_id = data.as_int("team_id")
+        question_id = data.as_int("question_id")
+        response_text = data.as_string("response_text")
 
         if not request.user.active_team:
             raise TeamRequired
 
         event = get_event_or_404(joincode=joincode)
 
-        # TODO: this doesn't prevent a reponse from being created if a round is already locked!
-        question_response, _ = QuestionResponse.objects.get_or_create(
-            team_id=team_id,
-            event=event,
-            game_question_id=question_id,
-            defaults={"recorded_answer": response_text},
-        )
+        if request.user not in event.players.all():
+            raise EventJoinRequired
 
-        # TODO: this should probably throw an error if the response is locked, or better yetpass the
-        # round number in the post data and throw an error if the corresponding round is locked
-        if not question_response.locked:
-            question_response.recorded_answer = response_text
-            question_response.grade()
+        # this is a bit verbose, but it allows for updating or creating a response as well as score it with one db write
+        question_lookup = dict(
+            team_id=team_id, event=event, game_question_id=question_id
+        )
+        try:
+            question_response = QuestionResponse.objects.get(**question_lookup)
+        except QuestionResponse.DoesNotExist:
+            question_response = QuestionResponse(**question_lookup)
+
+        if question_response.locked:
+            raise DataValidationError("This response is locked and cannot be updated")
+
+        question_response.recorded_answer = response_text
+        question_response.grade()
+        try:
             question_response.save()
+        # mostly to ensure the game_question_id is valid
+        except ValidationError as e:
+            raise DataValidationError(str(e))
 
         SendTeamMessage(
             joincode,

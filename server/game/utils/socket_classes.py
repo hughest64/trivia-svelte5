@@ -7,7 +7,6 @@ from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 
 
-# TODO: use these in the consumers file for consistency
 def get_event_group(joincode):
     return f"event_{joincode}"
 

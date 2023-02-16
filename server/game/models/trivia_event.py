@@ -26,6 +26,8 @@ QUESTION_TYPE_DICT = dict(QUESTION_TYPES)
 
 
 class Question(models.Model):
+    """Question data. Not tied to a game or round number or question number."""
+
     created_at = models.DateTimeField(auto_now_add=True)
     question_type = models.IntegerField(choices=QUESTION_TYPES, default=0)
     question_text = models.TextField()
@@ -61,6 +63,8 @@ class Question(models.Model):
 
 
 class QuestionAnswer(models.Model):
+    """An answer to a question."""
+
     created_at = models.DateTimeField(auto_now_add=True)
     text = models.CharField(max_length=255, unique=True, db_index=True)
 
@@ -72,6 +76,8 @@ class QuestionAnswer(models.Model):
 
 
 class GameQuestion(models.Model):
+    """Ties a question to a game with round number and question number."""
+
     created_at = models.DateTimeField(auto_now_add=True)
     game = models.ForeignKey(
         "Game", related_name="game_questions", on_delete=models.CASCADE
@@ -104,7 +110,35 @@ class GameQuestion(models.Model):
         super().save(*args, **kwargs)
 
 
+class TiebreakerQuestion(models.Model):
+    """Like a GameQuestion, but for tiebreaker questions only with no round or question number."""
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    game = models.ForeignKey(
+        "Game", related_name="tiebreaker_questions", on_delete=models.CASCADE
+    )
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"Tiebreker Question for game {self.game}"
+
+    def to_json(self):
+        question_data = self.question.to_json()
+        # remove the question id
+        question_data.pop("id")
+        return {
+            "id": self.pk,
+            **question_data,
+        }
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+
 class GameRound(models.Model):
+    """Meta data about a round for a game"""
+
     created_at = models.DateTimeField(auto_now_add=True)
     title = models.CharField(max_length=128)
     round_description = models.TextField(blank=True, default="")
@@ -166,12 +200,23 @@ class TriviaEvent(models.Model):
     current_round_number = models.IntegerField(default=1)
     current_question_number = models.IntegerField(default=1)
 
+    # used to limit qty of players from a team that can join an event
+    player_limit = models.IntegerField(blank=True, null=True)
+    players = models.ManyToManyField("user.User", related_name="players", blank=True)
+    event_teams = models.ManyToManyField("team", related_name="event_teams", blank=True)
+
     @property
     def current_question_key(self):
         return f"{self.current_round_number}.{self.current_question_number}"
 
+    def max_scored_round(self):
+        round_states = self.round_states.filter(scored=True).order_by("round_number")
+        if not round_states.exists():
+            return None
+        return round_states.last().round_number
+
     def __str__(self):
-        return f"{self.game.title} on {self.date}"
+        return f"{self.game.title} on {self.date} - {self.joincode}"
 
     def to_json(self):
         return {
