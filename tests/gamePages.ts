@@ -19,11 +19,12 @@ class BasePage {
     }
 
     async login(joincode: string | null = null) {
-        let desitnation = '/user/login?next=/game/join';
+        let destination = '/user/login?next=/game/join';
         if (joincode === null) {
-            desitnation = `/user/login?next=${this.testConfig?.pageUrl as string}`;
+            destination = `/user/login?next=${this.testConfig?.pageUrl as string}`;
         }
-        await this.page.goto(desitnation);
+
+        await this.page.goto(destination);
         await this.page.locator('input[name="username"]').fill(this.testConfig?.username as string);
         await this.page.locator('input[name="password"]').fill(this.testConfig?.password as string);
         await this.page.locator('input[value="Submit"]').click();

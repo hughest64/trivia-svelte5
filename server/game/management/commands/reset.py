@@ -20,6 +20,6 @@ class Command(BaseCommand):
         EventRoundState.objects.filter(event__joincode=1234).update(
             scored=False, locked=False
         )
-        LeaderboardEntry.objects.filter(event__joincode=1234).delete()
+        LeaderboardEntry.objects.filter(event__joincode__in=[1234, 9999]).delete()
         QuestionResponse.objects.exclude(event__joincode=9998).delete()
         self.stdout.write("finished resetting event data")
