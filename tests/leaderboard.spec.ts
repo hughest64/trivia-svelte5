@@ -61,6 +61,18 @@ test('player one leaderboard updates when another team joins', async () => {
     await expect(p3.page.locator('h3.team-name', { hasText: /for all the marbles/i })).toBeVisible();
 });
 
-// test navigation via round selector (should go to q1 of the round clicked and survive a reresh/other nav)
+test('round headers on the leaderboard navigate back to the game', async () => {
+    await asyncTimeout();
+    await expect(p1.page).toHaveURL('/game/9999');
+    await p1.page.goto('/game/9999/leaderboard');
+    await expect(p1.page).toHaveURL('/game/9999/leaderboard');
+
+    // click on round 5
+    const rd5 = p1.page.locator('.round-selector').locator('button', { hasText: '5' });
+    await rd5.click();
+    // expect to be back on the game and round 5 is active
+    await expect(p1.page).toHaveURL('/game/9999');
+    await expect(rd5).toHaveClass('active');
+});
 
 // TODO: test actual leaderboard updates (pts values) from the host, maybe tiebreakers here too
