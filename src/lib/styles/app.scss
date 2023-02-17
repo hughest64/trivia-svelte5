@@ -156,7 +156,7 @@ form {
             }
         }
         &:disabled {
-            outline: 3px solid var(--color-disabled);
+            outline: 3px solid var(--color-alt-black);
             background-color: var(--color-disabled);
             + label {
                 color: var(--color-disabled);
