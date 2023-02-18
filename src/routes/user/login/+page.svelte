@@ -33,4 +33,11 @@
 
 <h1>Sign Up</h1>
 
-<button class="button button-tertiary">Create Account</button>
+<a class="button button-tertiary signup-link" href="/user/create">Create Account</a>
+
+<style lang="scss">
+    .signup-link {
+        text-decoration: none;
+        color: var(--color-secondary);
+    }
+</style>
