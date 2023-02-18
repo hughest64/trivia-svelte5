@@ -3,7 +3,10 @@ import { fail, redirect } from '@sveltejs/kit';
 import { PUBLIC_API_HOST as apiHost, PUBLIC_SECURE_COOKIE as secureCookie } from '$env/static/public';
 import type { Actions } from './$types';
 
-// TODO: perhaps a load function should check for an existing jwt and redirect if it's valid, or remove it if it's not
+// TODO:
+// perhaps a load function should check for an existing jwt and redirect if it's valid, or remove it if it's not
+// we should probably also have the api send a csrf cookie to handle the case of direct naigation
+// (i.e, did't come from the log in page)
 
 export const actions: Actions = {
     default: async ({ cookies, request, url }) => {

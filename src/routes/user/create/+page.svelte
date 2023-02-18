@@ -9,7 +9,6 @@
 
 <form action="" method="post" use:enhance>
     {#if form?.error}<p>{form.error}</p>{/if}
-    <!-- {#if form?.success}<p>Your user was created!</p>{/if} -->
     <div class="input-container">
         <input type="text" name="username" id="username" required />
         <label for="username">Username</label>
