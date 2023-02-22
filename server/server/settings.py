@@ -166,3 +166,11 @@ JWT_TOKEN_SECRET = SECRET_KEY
 REST_FRAMEWORK = {
     "EXCEPTION_HANDLER": "game.views.validation.exceptions.event_exception_handler"
 }
+
+# custom app settings
+
+with open(BASE_DIR / "game/word_lists/positive.txt", "r") as f:
+    WORD_LISZT = f.read().split("\n")
+
+# reserve join codes >= 9900 for testing
+MAX_EVENT_JOIN_CODE = 9899

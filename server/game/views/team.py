@@ -35,6 +35,7 @@ class TeamCreateView(APIView):
 
     @method_decorator(csrf_protect)
     def post(self, request):
+        user: User = request.user
         data = DataCleaner(request.data)
         team_name = data.as_string("name")
         try:
@@ -47,10 +48,10 @@ class TeamCreateView(APIView):
 
         team = Team.objects.create(name=team_name, password=password)
         team.members.add(request.user)
-        request.user.active_team = team
-        request.user.save()
+        user.active_team = team
+        user.save()
 
-        return Response({"user_data": request.user.to_json()})
+        return Response({"user_data": user.to_json()})
 
 
 # TODO: why are there two views here? should one handle join by password and the other by id?

@@ -43,10 +43,17 @@ class TeamViewsTestCase(TestCase):
         return
 
     def test_create_team(self):
-        post_data = {"team_name": "My Team"}
+        post_data = {"name": "My Team"}
         response = self.client.post("/team/create", data=post_data)
-        # expect a 200 response
-        # team My Team should exist
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue("user_data" in response.data)
+
+        team = Team.objects.get(name="My Team")
+        user = User.objects.get(username="player")
         # team should have an auto-generated password
+        self.assertTrue(team.password is not None)
         # user should be a member of the team
+        self.assertTrue(user in team.members.all())
         # user's active team should my "My Team"
+        self.assertTrue(user.active_team == team)

@@ -32,6 +32,6 @@ def generate_team_password(attempts=1, max_attempts=30):
         if attempts >= max_attempts:
             raise StopIteration("Cannot generate a team password, too many attempts")
 
-        return generate_team_password(attempts + 1)
+        return generate_team_password(attempts=attempts + 1, max_attempts=max_attempts)
 
     return password

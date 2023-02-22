@@ -1,29 +1,24 @@
+# code_generator.py
+"""
+Functions used for auto-generating a team password.
+"""
+
 from django.conf import settings
 import random
 
-DEFAULT_WORD_FILE = settings.BASE_DIR / "game/word_lists/positive.txt"
 
-
-def generate_code(word_liszt):
+def generate_code(word_liszt, sep="-"):
     three_words = []
     while len(three_words) < 3:
         word_index = random.randint(0, len(word_liszt) - 1)
         three_words.append(word_liszt[word_index])
-    separator = "-"
 
-    return separator.join(three_words)
+    return sep.join(three_words)
 
 
-def get_code(filename=None, max_chars=21):
-    if filename is None:
-        filename = DEFAULT_WORD_FILE
-
-    word_liszt = []
-    with open(filename, "r") as file_object:
-        filecontents = file_object.readlines()
-        for line in filecontents:
-            current_place = line[:-1]
-            word_liszt.append(current_place)
+def get_code(word_liszt=None, max_chars=21):
+    if word_liszt is None:
+        word_liszt = settings.WORD_LISZT
 
     code = ""
     while len(code) == 0 or len(code) > max_chars:
