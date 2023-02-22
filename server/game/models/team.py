@@ -25,7 +25,7 @@ class Team(models.Model):
 def generate_team_password(attempts=1, max_attempts=30):
     """
     Generate a team password from the list of available words.
-    Raises StopIteration if a unique password is not generated in max_attpempts.
+    Raises StopIteration if a unique password is not generated in max_attempts.
     """
     password = get_code()
     if password in [i.password for i in Team.objects.all()]:
