@@ -35,6 +35,40 @@ const selectTeam: Action = async ({ fetch, request, url }) => {
     throw redirect(302, next);
 };
 
-export const actions = {
-    default: selectTeam
+// TODO: should this one not redirect but give the nice note as in the curdrent app?
+// it would contain a link to /game/join
+const createTeam: Action = async ({ fetch, request, url }) => {
+    const data = Object.fromEntries((await request.formData()).entries());
+
+    const response = await fetch(`${apiHost}/team/create`, {
+        method: 'POST',
+        body: JSON.stringify(data)
+    });
+
+    const responseData = await response.json();
+    if (!response.ok) {
+        return fail(response.status, { error: responseData.detail });
+    }
+
+    const next = url.searchParams.get('next') || '/game/join';
+    throw redirect(302, next);
 };
+
+const submitTeamPassord: Action = async ({ fetch, request, url }) => {
+    const data = Object.fromEntries((await request.formData()).entries());
+
+    const response = await fetch(`${apiHost}/team/create`, {
+        method: 'POST',
+        body: JSON.stringify(data)
+    });
+
+    const responseData = await response.json();
+    if (!response.ok) {
+        return fail(response.status, { error: responseData.detail });
+    }
+
+    const next = url.searchParams.get('next') || '/game/join';
+    throw redirect(302, next);
+};
+
+export const actions = { selectTeam, createTeam, submitTeamPassord };

@@ -23,18 +23,19 @@
         Create a New Team
     </button>
 
-    <form class:hidecreateteam on:submit|preventDefault>
+    <form action="?/createTeam" method="POST" class:hidecreateteam on:submit|preventDefault>
         <h3>Enter Your Team Name</h3>
         <div class="input-container">
-            <input type="text" placeholder="Team Name" required />
+            <input type="text" name="team_name" required />
+            <label for="team_name">Team Name</label>
         </div>
-        <input class="button button-tertirary" type="submit" name="" id="" value="Submit" />
+        <input class="button button-tertirary" type="submit" id="team-create-submit" value="Submit" />
     </form>
 
     <h1>Or Play with an Existing Team</h1>
 
     {#if $userData?.teams.length > 0}
-        <form method="POST">
+        <form action="?/selectTeam" method="POST">
             {#if form?.error}<p class="error">{form?.error}</p>{/if}
 
             <label class="select-label" for="team-select">Choose A Team</label>
@@ -56,11 +57,12 @@
         Enter Team Password
     </button>
 
-    <form class:hideteampassword on:submit|preventDefault>
-        <div class="input-element">
-            <input type="text" name="team-password" placeholder="Team Password" />
+    <form action="?/submitTeamPassword" method="POST" class:hideteampassword on:submit|preventDefault>
+        <div class="input-container">
+            <input type="text" name="team_password" required />
+            <label for="team_password">Team Password</label>
         </div>
-        <input class="button button-white" type="submit" name="" id="team-password-submit" value="Submit" />
+        <input class="button button-white" id="team-password-submit" value="Submit" />
     </form>
 </main>
 
