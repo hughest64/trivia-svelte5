@@ -10,10 +10,15 @@
     <a href="/">{anchorText}</a>
     <h3>Some things you can do in this demo:</h3>
     <ul>
-        <li>- Login via the login form (if you have an account in the demo)</li>
-        <li>- Play as a guest (though it's a single user called "guest", so everyone shares it></li>
+        <li>- Create a user</li>
+        <li>- Login via the login form</li>
+        <li>- Play as a guest (though it's a single user called "guest", so everyone shares it</li>
+        <li>- Create a team</li>
+        <li>- Join a team via password</li>
+        <li>- Join event 1234</li>
         <li>- Navigate event 1234</li>
         <li>- Answer questions (though you'll be guessing in the image round)</li>
+        <li>- View the public leaderboard (though it does not yet show rank or points)</li>
         <li>- Host a game (if you are a staff member)</li>
         <li>- Reveal questions (as a host)</li>
         <li>- Lock rounds (as a host)</li>
@@ -22,9 +27,6 @@
 
     <h3>Some things you cannot do:</h3>
     <ul>
-        <li>- Create a user - though if you an account in the demo you can login</li>
-        <li>- Create a team - though you can play with one of several (poorly named) pre-existing teams</li>
-        <li>- Join a team via password</li>
         <li>- Login with Google or Github</li>
         <li>- Create events</li>
         <li>
@@ -41,9 +43,9 @@
     <h3>Some obvious missing features:</h3>
     <ul>
         <li>- Megarounds</li>
-        <li>- Leaderboards</li>
         <li>- Chat</li>
         <li>- Private Events</li>
+        <li>- Airtable Imports (this works via the command line but not in the admin)</li>
     </ul>
     <a href="/">{anchorText}</a>
 </div>
