@@ -19,7 +19,7 @@
         flex-direction: column;
         height: 100%;
         margin: 1em;
-        color: var(--color-white);
+        color: var(--color-tertiary);
         font-weight: bold;
     }
     li {
@@ -30,14 +30,14 @@
     }
     a {
         text-decoration: none;
-        color: var(--color-white);
+        color: var(--color-tertiary);
     }
     button {
         width: fit-content;
         text-align: right;
         align-self: flex-end;
         font-size: 2em;
-        color: var(--color-white);
+        color: var(--color-tertiary);
         background-color: inherit;
         border: none;
         margin-bottom: 1em;

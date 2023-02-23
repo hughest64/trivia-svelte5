@@ -1,6 +1,12 @@
+import json
+import timeit
+
 from django.test import TestCase
 
+from rest_framework.test import APIClient
+
 from game.models import *
+from user.models import User
 
 
 class ResponseGradeTestCase(TestCase):
@@ -14,7 +20,7 @@ class ResponseGradeTestCase(TestCase):
         QuestionResponse.objects.all().delete()
 
     def test_response_auto_grade(self):
-        """test auto grader"""
+        """responses auto grade when created/updated as long as they are not locked"""
         # create a correct response to q 1.1
         q1 = self.event.game.game_questions.all().get(round_number=1, question_number=1)
         resp = QuestionResponse.objects.create(
@@ -43,29 +49,61 @@ class ResponseGradeTestCase(TestCase):
         resp.save()
         self.assertEqual(resp.points_awarded, 0.0)
 
-    def test_new_qustion(self):
-        """new questions should not auto set accepted answers but a response
-        to a related game_questions should still score correctly
+
+class HostResponseGrading(TestCase):
+    fixtures = ["data-2-13-23.json"]
+
+    def setUp(self) -> None:
+        self.client = APIClient()
+        self.client.force_authenticate(user=User.objects.get(username="sample_admin"))
+
+    def test_sort_round_reponses(self):
+        """test fetching responses for single round."""
+        resp = self.client.get("/host/9998/score/1")
+        data = resp.data.get("response_data", [])
+        self.assertTrue(all([r.get("round_number") == 1 for r in data]))
+
+    def test_get_sorted_responses(self):
         """
-        answer = QuestionAnswer.objects.last()
-        question = Question.objects.create(
-            question_text="what is the answer?", display_answer=answer
-        )
-        game_question = GameQuestion.objects.create(
-            question=question, game=self.event.game, round_number=9, question_number=1
-        )
-        # expect no accepted_answers
-        self.assertFalse(game_question.question.accepted_answers.all().exists())
+        fetch, group, and sort all responses for an event with > 80 teams (~3600 reponses)
+        and log how long it takes
+        """
+        timed = timeit.timeit(lambda: self.client.get("/host/9998/score"), number=1)
+        # TODO: make this a log
+        print(timed)
 
-        resp = QuestionResponse.objects.create(
-            recorded_answer=answer,
-            team=self.team,
-            game_question=game_question,
-            event=self.event,
+    def test_update_funny_values(self) -> None:
+        responses_to_update = QuestionResponse.objects.filter(
+            event__joincode=9998, funny=False, points_awarded=1
+        )[:5]
+        resp_ids = [resp.id for resp in responses_to_update]
+        self.client.post(
+            "/host/9998/score",
+            data={
+                "points_awarded": 1,
+                "funny": "true",
+                "response_ids": json.dumps(resp_ids),
+            },
         )
-        resp.grade()
-        resp.save()
+        updated_reponses = QuestionResponse.objects.filter(id__in=resp_ids)
+        self.assertTrue(all([r.funny for r in updated_reponses]))
 
-        # expect points to be 1.0
-        self.assertEqual(resp.points_awarded, 1.0)
-        self.assertEqual(resp.fuzz_ratio, 100)
+    def test_update_points_values(self) -> None:
+        responses_to_update = QuestionResponse.objects.filter(
+            event__joincode=9998, funny=False, points_awarded=0
+        )[:5]
+        resp_ids = [resp.id for resp in responses_to_update]
+        self.client.post(
+            "/host/9998/score",
+            data={
+                "points_awarded": 0.5,
+                "funny": "false",
+                "response_ids": json.dumps(resp_ids),
+            },
+        )
+        updated_reponses = QuestionResponse.objects.filter(id__in=resp_ids)
+        self.assertTrue(
+            all(
+                [r.funny == False and r.points_awarded == 0.5 for r in updated_reponses]
+            )
+        )

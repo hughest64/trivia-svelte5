@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any*/
 
+import type { ServerLoadEvent } from '@sveltejs/kit';
+
 export interface JwtPayload {
     // user.id
     id?: number;
@@ -25,13 +27,29 @@ export interface UserData {
     user_is_anonymous?: boolean;
     user_home_locations?: string[];
 }
-
 export interface UserTeam {
     id: string | number;
     name: string;
     password: string;
     members?: string[];
 }
+
+export interface LeaderboardEntry {
+    team_id: number;
+    team_name: string;
+    rank?: number;
+    total_points: number;
+}
+
+export interface PublicLeaderboard {
+    through_round?: number;
+    leaderboard_entries: LeaderboardEntry[];
+}
+
+// TODO
+// export interface HostLeaderboard extends PublicLeaderboard {
+//     //
+// }
 
 export interface LocationSelectData {
     location_id: string | number;
@@ -91,6 +109,8 @@ export interface EventData {
     current_question_number: number;
 }
 
+export type PlayerJoined = boolean;
+
 export interface CurrentEventData {
     round_number: number;
     question_number: number;
@@ -146,6 +166,12 @@ export type StoreKey =
     | 'responseData'
     | 'hostResponseData'
     | 'popupData'
-    | 'eventPageData';
+    | 'eventPageData'
+    | 'publicLeaderboard'
+    | 'playerJoined';
 
 export type MessageHandler = Record<string, (message: any) => unknown>;
+
+interface CustomLoadEvent extends ServerLoadEvent {
+    endPoint?: string;
+}

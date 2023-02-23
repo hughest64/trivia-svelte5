@@ -1,4 +1,6 @@
 <script lang="ts">
+    import Question from './Question.svelte';
+    import Note from './Note.svelte';
     import { fly } from 'svelte/transition';
     import { sineInOut } from 'svelte/easing';
     import { page } from '$app/stores';
@@ -79,7 +81,7 @@
     <div class="question-row">
         {#key $activeEventData.activeQuestionKey}
             <div
-                class="flex-column question"
+                class="flex-column"
                 in:fly|local={{
                     easing: sineInOut,
                     opacity: 100,
@@ -90,51 +92,9 @@
                 use:swipeQuestion
                 on:swipe={handleQuestionSelect}
             >
-                <!-- slot represents the question and note components -->
-                <slot />
+                <Question />
+                <Note />
             </div>
         {/key}
     </div>
 </div>
-
-<style lang="scss">
-    .question-box {
-        overflow-x: hidden;
-        border: 2px solid var(--color-black);
-        border-radius: 0.5em;
-        width: 50em;
-        max-width: calc(100% - 2em);
-        margin-top: 1em;
-        padding-top: 1em;
-        box-shadow: 10px 0px 5px -5px rgb(0 0 0 / 80%);
-        & > * {
-            max-width: 100%;
-        }
-    }
-    .question-row {
-        display: flex;
-        justify-content: center;
-        width: 100%;
-        & > * {
-            max-width: 100%;
-        }
-    }
-    .question-selector {
-        display: flex;
-        gap: 0.5em;
-        button {
-            width: 2.5em;
-            height: 2.5em;
-            font-weight: bold;
-            border: 2px solid var(--color-black);
-            border-radius: 50%;
-            cursor: pointer;
-        }
-    }
-    .question {
-        width: 100%;
-    }
-    button.current {
-        border-color: var(--color-current);
-    }
-</style>

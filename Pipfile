@@ -12,6 +12,9 @@ channels-redis = "*"
 whitenoise = "*"
 fuzzywuzzy = "*"
 python-levenshtein = "*"
+pandas = "*"
+requests = "*"
+django-environ = "*"
 
 [dev-packages]
 black = "*"

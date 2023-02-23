@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
-import { authRedirects, login } from './utils.js';
+import { authRedirects, getBrowserPage, login, resetEventData } from './utils.js';
+import { PlayerGamePage } from './gamePages.js';
 import type { Page } from '@playwright/test';
 
 const adminUser = 'sample_admin';
@@ -100,4 +101,22 @@ test.describe('navigate to trivia event as host', async () => {
         await page.locator('button:has-text("Begin Event")').click();
         await expect(page).toHaveURL(/\/host\/\d+\/?$/i);
     });
+});
+
+test('navigate directly to a game', async ({ browser }) => {
+    const p1 = new PlayerGamePage(await getBrowserPage(browser), { pageUrl: '/game/1234' });
+    p1.login();
+    // expect the message to appear
+    const linkText = p1.page.locator('button', { hasText: 'Click here' });
+    await expect(linkText).toBeVisible();
+    // expect the anwer input to be disabled
+    await expect(p1.responseInput).toBeDisabled();
+    // click the link
+    await linkText.click();
+    // expect the answer input to be editable
+    await expect(p1.responseInput).toBeEditable();
+    // expect the message to go away
+    await expect(linkText).not.toBeVisible();
+
+    await resetEventData();
 });

@@ -1,6 +1,11 @@
 import { fail, redirect } from '@sveltejs/kit';
 import { PUBLIC_API_HOST as apiHost } from '$env/static/public';
-import type { Action } from './$types';
+import { handleHostAuth } from '$lib/utils';
+import type { Action, PageServerLoad } from './$types';
+
+export const load: PageServerLoad = async (loadEvent) => {
+    return handleHostAuth({ ...loadEvent, endPoint: '/host/event-setup' });
+};
 
 const fetchEventData: Action = async ({ fetch, request }) => {
     const data = await request.formData();

@@ -27,7 +27,7 @@
 <div class="pop-content">
     <h4>Confirm Round Unlock</h4>
     <p>Your Are about to unlock round {roundNumber}. Please confirm using the button below.</p>
-    <button class="button button-red" on:click={unlock}>Unlock it!</button>
+    <button class="button button-primary" on:click={unlock}>Unlock it!</button>
 </div>
 
 <CloseButton on:click={resetPopup} />
@@ -35,5 +35,8 @@
 <style lang="scss">
     .pop-content {
         padding-top: 0.75em;
+    }
+    button {
+        align-self: center;
     }
 </style>

@@ -1,4 +1,4 @@
-import { test } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 import { PlayerGamePage } from './gamePages.js';
 import { asyncTimeout, getBrowserPage, resetEventData } from './utils.js';
 import type { TestConfig } from './utils.js';
@@ -23,9 +23,13 @@ let p4: PlayerGamePage; // different event same team as p3
 
 test.beforeEach(async ({ browser }) => {
     p1 = new PlayerGamePage(await getBrowserPage(browser), testconfigs.p1);
+    p1.login('1234');
     p2 = new PlayerGamePage(await getBrowserPage(browser), testconfigs.p2);
+    p2.login('1234');
     p3 = new PlayerGamePage(await getBrowserPage(browser), testconfigs.p3);
+    p3.login('1234');
     p4 = new PlayerGamePage(await getBrowserPage(browser), testconfigs.p4);
+    p4.login('9999');
 });
 
 test.afterEach(async () => {

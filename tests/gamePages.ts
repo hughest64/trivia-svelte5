@@ -18,12 +18,21 @@ class BasePage {
         this.dismissButton = page.locator('.pop').locator('button', { hasText: 'X' });
     }
 
-    async login() {
-        await this.page.goto(this.testConfig?.pageUrl as string);
-        await this.page.locator('a', { hasText: 'Login' }).click();
+    async login(joincode: string | null = null) {
+        let destination = '/user/login?next=/game/join';
+        if (joincode === null) {
+            destination = `/user/login?next=${this.testConfig?.pageUrl as string}`;
+        }
+
+        await this.page.goto(destination);
         await this.page.locator('input[name="username"]').fill(this.testConfig?.username as string);
         await this.page.locator('input[name="password"]').fill(this.testConfig?.password as string);
         await this.page.locator('input[value="Submit"]').click();
+        // join the game
+        if (joincode !== null) {
+            await this.page.locator('input[name="joincode"]').fill(joincode as string);
+            await this.page.locator('button[type="submit"]').click();
+        }
     }
 
     async logout() {
@@ -47,12 +56,13 @@ export class PlayerGamePage extends BasePage {
         super(page, testConfig);
         this.responseInput = page.locator('input[name="response_text"]');
         this.submitButton = page.locator('button', { hasText: 'Submit' });
-        this.login();
-        this.expectToLandOnGameUrl();
+        // TODO: bring back auto-login, we'll need a testconfig arg for joincode in order to do so
+        // this.login();
+        // this.expectToLandOnGameUrl();
     }
 
     questionHeading(text: string): Locator {
-        return this.page.locator('h2', { hasText: text });
+        return this.page.locator('h4', { hasText: text });
     }
 
     questionTextField(text: string): Locator {

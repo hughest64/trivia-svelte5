@@ -1,59 +1,46 @@
 <script lang="ts">
     import { page } from '$app/stores';
+    import { enhance } from '$app/forms';
     import { getStore } from '$lib/utils';
     import Round from './Round.svelte';
-    import Question from './Question.svelte';
-    import Note from './Note.svelte';
-    import type { CurrentEventData, ActiveEventData, GameRound } from '$lib/types';
+    import RoundSelector from './RoundSelector.svelte';
+    import type { ActiveEventData, GameRound, PlayerJoined } from '$lib/types';
 
-    const roundNumbers = $page.data?.rounds?.map((rd) => rd.round_number) || [];
     $: activeEventData = getStore<ActiveEventData>('activeEventData');
-    $: currentEventData = getStore<CurrentEventData>('currentEventData');
     $: activeRound = $page.data?.rounds?.find(
         (rd) => rd.round_number === $activeEventData.activeRoundNumber
     ) as GameRound;
 
-    $: joincode = $page.params?.joincode;
-
-    const handleRoundSelect = async (event: MouseEvent) => {
-        const target = <HTMLButtonElement>event.target;
-
-        $activeEventData = {
-            activeQuestionNumber: 1,
-            activeRoundNumber: Number(target.id),
-            activeQuestionKey: `${target.id}.1`
-        };
-
-        // post to the game endpoint to set active round and question in a cookie
-        await fetch('/update', {
-            method: 'POST',
-            body: JSON.stringify({ activeEventData: $activeEventData, joincode })
-        });
-    };
+    $: playerJoined = getStore<PlayerJoined>('playerJoined');
 </script>
 
-<h3>{activeRound?.title}</h3>
+<h2>{activeRound?.title}</h2>
 
-<div class="round-selector">
-    {#each roundNumbers as roundNum}
-        <button
-            class:active={$activeEventData.activeRoundNumber === roundNum}
-            class:current={$currentEventData.round_number === roundNum}
-            id={String(roundNum)}
-            on:click={handleRoundSelect}
-        >
-            {roundNum}
-        </button>
-    {/each}
-</div>
+<RoundSelector />
 
-<Round {activeRound}>
-    <Question />
-    <Note />
-</Round>
+{#if !$playerJoined}
+    <h3 class="not-joined-warning">
+        You are currently in view mode.
+        <form action="?/joinevent" method="post" use:enhance>
+            <button class="submit" type="submit"><h3>Click here</h3></button>to join the game!
+        </form>
+    </h3>
+{/if}
+
+<Round {activeRound} />
 
 <style lang="scss">
+    .not-joined-warning {
+        margin: 1rem 0;
+    }
     h3 {
-        margin: 0.5em 0.25em;
+        font-size: 1.5rem;
+    }
+    form {
+        display: inline;
+    }
+    .submit {
+        text-decoration: underline;
+        color: var(--color-primary);
     }
 </style>

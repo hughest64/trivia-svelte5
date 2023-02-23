@@ -10,80 +10,42 @@
     <a href="/">{anchorText}</a>
     <h3>Some things you can do in this demo:</h3>
     <ul>
-        <li>
-            <p>- Login via the login form (if you have an account in the demo)</p>
-        </li>
-        <li>
-            <p>- Play as a guest (though it's a single user called "guest", so everyone shares it</p>
-        </li>
-        <li>
-            <p>- Navigate event 1234</p>
-        </li>
-        <li>
-            <p>- Answer questions (though you'll be guessing in the image round)</p>
-        </li>
-        <li>
-            <p>- Host a game (if you are a staff member)</p>
-        </li>
-        <li>
-            <p>- Reveal questions (as a host)</p>
-        </li>
-        <li>
-            <p>- Lock rounds (as a host)</p>
-        </li>
-        <li>
-            <p>- Score responses (as a host)</p>
-        </li>
+        <li>- Create a user</li>
+        <li>- Login via the login form</li>
+        <li>- Play as a guest (though it's a single user called "guest", so everyone shares it</li>
+        <li>- Create a team</li>
+        <li>- Join a team via password</li>
+        <li>- Join event 1234</li>
+        <li>- Navigate event 1234</li>
+        <li>- Answer questions (though you'll be guessing in the image round)</li>
+        <li>- View the public leaderboard (though it does not yet show rank or points)</li>
+        <li>- Host a game (if you are a staff member)</li>
+        <li>- Reveal questions (as a host)</li>
+        <li>- Lock rounds (as a host)</li>
+        <li>- Score responses (as a host)</li>
     </ul>
 
     <h3>Some things you cannot do:</h3>
     <ul>
+        <li>- Login with Google or Github</li>
+        <li>- Create events</li>
         <li>
-            <p>- Create a user - though if you an account in the demo you can login</p>
+            - Use a join code other than <span style="font-weight: bold;">1234</span> (anything else will net you a
+            <span style="font-weight: bold;">404</span>)
         </li>
         <li>
-            <p>- Create a team - though you can play with one of several (poorly named) pre-existing teams</p>
+            - Well, technically event <span style="font-weight: bold;">9998</span> is playable, but consider it reserved
+            for load testing responses
         </li>
-        <li>
-            <p>- Join a team via password</p>
-        </li>
-        <li>
-            <p>- Login with Google or Github</p>
-        </li>
-        <li>
-            <p>- Create events</p>
-        </li>
-        <li>
-            <p>
-                - Use a join code other than <span style="font-weight: bold;">1234</span> (anything else will net you a
-                <span style="font-weight: bold;">404</span>)
-            </p>
-        </li>
-        <li>
-            <p>
-                - Well, technically event <span style="font-weight: bold;">9998</span> is playable, but consider it reserved
-                for load testing responses
-            </p>
-        </li>
-        <li>
-            <p>- Record Answer Notes</p>
-        </li>
+        <li>- Record Answer Notes</li>
     </ul>
 
     <h3>Some obvious missing features:</h3>
     <ul>
-        <li>
-            <p>- Megarounds</p>
-        </li>
-        <li>
-            <p>- Leaderboards</p>
-        </li>
-        <li>
-            <p>- Chat</p>
-        </li>
-        <li>
-            <p>- Private Events</p>
-        </li>
+        <li>- Megarounds</li>
+        <li>- Chat</li>
+        <li>- Private Events</li>
+        <li>- Airtable Imports (this works via the command line but not in the admin)</li>
     </ul>
     <a href="/">{anchorText}</a>
 </div>
