@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { enhance } from '$app/forms';
     import { slide } from 'svelte/transition';
     import { getStore } from '$lib/utils';
     import type { UserData } from '$lib/types';
@@ -26,7 +27,7 @@
     </button>
 
     {#key hidecreateteam}
-        <form transition:slide action="?/createTeam" method="POST" class:hidecreateteam on:submit|preventDefault>
+        <form transition:slide|local class:hidecreateteam action="?/createTeam" method="POST" use:enhance>
             <h3>Enter Your Team Name</h3>
             <div class="input-container">
                 <input type="text" name="team_name" required />
@@ -61,12 +62,12 @@
     </button>
 
     {#key hideteampassword}
-        <form transition:slide action="?/joinTeam" method="POST" class:hideteampassword on:submit|preventDefault>
+        <form transition:slide|local class:hideteampassword action="?/joinTeam" method="POST" use:enhance>
             <div class="input-container">
                 <input type="text" name="team_password" required />
                 <label for="team_password">Team Password</label>
             </div>
-            <button class="button button-tertiary" id="team-password-submit">Submit</button>
+            <button class="button button-tertiary" type="submit" id="team-password-submit">Submit</button>
         </form>
     {/key}
 </main>

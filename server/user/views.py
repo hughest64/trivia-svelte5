@@ -128,7 +128,6 @@ class LoginView(APIView):
 class UserView(APIView):
     authentication_classes = [JwtAuthentication]
 
-    @method_decorator(csrf_protect)
     def get(self, request):
         user_data = request.user.to_json()
 

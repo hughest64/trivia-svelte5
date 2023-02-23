@@ -10,12 +10,15 @@
         QuestionState,
         PopupData,
         Response,
-        HostResponse
+        HostResponse,
+        UserData
     } from './types';
 
     $: data = $page.data;
 
-    $: createStore('userData', data?.user_data || {});
+    const userData = createStore<UserData>('userData', data?.user_data || ({} as UserData));
+    $: data?.user_data && userData.set(data.user_data);
+
     $: createStore('eventData', data?.event_data || {});
     $: createStore<PopupData>('popupData', { is_displayed: false, popup_type: '' });
 

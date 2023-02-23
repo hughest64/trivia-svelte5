@@ -38,7 +38,7 @@ class TeamCreateView(APIView):
     def post(self, request):
         user: User = request.user
         data = DataCleaner(request.data)
-        team_name = data.as_string("name")
+        team_name = data.as_string("team_name")
         try:
             password = generate_team_password()
         except StopIteration:
