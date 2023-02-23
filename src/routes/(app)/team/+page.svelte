@@ -1,8 +1,10 @@
 <script lang="ts">
+    import { slide } from 'svelte/transition';
     import { getStore } from '$lib/utils';
     import type { UserData } from '$lib/types';
     import type { ActionData } from './$types';
 
+    // TODO: handle form error (might need a bit of nesting to get it on the right form)
     export let form: ActionData;
     let hidecreateteam = true;
     let hideteampassword = true;
@@ -23,15 +25,16 @@
         Create a New Team
     </button>
 
-    <form action="?/createTeam" method="POST" class:hidecreateteam on:submit|preventDefault>
-        <h3>Enter Your Team Name</h3>
-        <div class="input-container">
-            <input type="text" name="team_name" required />
-            <label for="team_name">Team Name</label>
-        </div>
-        <input class="button button-tertirary" type="submit" id="team-create-submit" value="Submit" />
-    </form>
-
+    {#key hidecreateteam}
+        <form transition:slide action="?/createTeam" method="POST" class:hidecreateteam on:submit|preventDefault>
+            <h3>Enter Your Team Name</h3>
+            <div class="input-container">
+                <input type="text" name="team_name" required />
+                <label for="team_name">Team Name</label>
+            </div>
+            <button class="button button-tertiary" id="team-create-submit">Submit</button>
+        </form>
+    {/key}
     <h1>Or Play with an Existing Team</h1>
 
     {#if $userData?.teams.length > 0}
@@ -57,13 +60,15 @@
         Enter Team Password
     </button>
 
-    <form action="?/submitTeamPassword" method="POST" class:hideteampassword on:submit|preventDefault>
-        <div class="input-container">
-            <input type="text" name="team_password" required />
-            <label for="team_password">Team Password</label>
-        </div>
-        <input class="button button-white" id="team-password-submit" value="Submit" />
-    </form>
+    {#key hideteampassword}
+        <form transition:slide action="?/joinTeam" method="POST" class:hideteampassword on:submit|preventDefault>
+            <div class="input-container">
+                <input type="text" name="team_password" required />
+                <label for="team_password">Team Password</label>
+            </div>
+            <button class="button button-tertiary" id="team-password-submit">Submit</button>
+        </form>
+    {/key}
 </main>
 
 <style lang="scss">

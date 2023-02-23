@@ -19,8 +19,9 @@ export const load: PageServerLoad = async (loadEvent) => {
 
 const selectTeam: Action = async ({ fetch, request, url }) => {
     const { selectedteam, currentteam } = Object.fromEntries((await request.formData()).entries());
+
     if (selectedteam !== currentteam) {
-        const response = await fetch(`${apiHost}/team/join`, {
+        const response = await fetch(`${apiHost}/team/select`, {
             method: 'POST',
             body: JSON.stringify({ team_id: selectedteam })
         });
@@ -35,7 +36,7 @@ const selectTeam: Action = async ({ fetch, request, url }) => {
     throw redirect(302, next);
 };
 
-// TODO: should this one not redirect but give the nice note as in the curdrent app?
+// TODO: should this one not redirect but give the nice note as in the currrent app?
 // it would contain a link to /game/join
 const createTeam: Action = async ({ fetch, request, url }) => {
     const data = Object.fromEntries((await request.formData()).entries());
@@ -54,10 +55,10 @@ const createTeam: Action = async ({ fetch, request, url }) => {
     throw redirect(302, next);
 };
 
-const submitTeamPassord: Action = async ({ fetch, request, url }) => {
+const joinTeam: Action = async ({ fetch, request, url }) => {
     const data = Object.fromEntries((await request.formData()).entries());
 
-    const response = await fetch(`${apiHost}/team/create`, {
+    const response = await fetch(`${apiHost}/team/join`, {
         method: 'POST',
         body: JSON.stringify(data)
     });
@@ -71,4 +72,4 @@ const submitTeamPassord: Action = async ({ fetch, request, url }) => {
     throw redirect(302, next);
 };
 
-export const actions = { selectTeam, createTeam, submitTeamPassord };
+export const actions = { selectTeam, createTeam, joinTeam };

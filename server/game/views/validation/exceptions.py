@@ -42,6 +42,12 @@ class EventJoinRequired(APIException):
     default_code = "join_required"
 
 
+class TeamNotFound(APIException):
+    status_code = HTTP_400_BAD_REQUEST
+    default_detail = "No Trivia Team Found"
+    default_code = "team_not_found"
+
+
 def event_exception_handler(exc, context):
     if isinstance(exc, APIException):
         response = exception_handler(exc, context)
