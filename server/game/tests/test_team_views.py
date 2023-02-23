@@ -57,3 +57,42 @@ class TeamViewsTestCase(TestCase):
         self.assertTrue(user in team.members.all())
         # user's active team should my "My Team"
         self.assertTrue(user.active_team == team)
+
+    def test_join_team(self):
+        # post a bad password
+        bad_resp = self.client.post(
+            "/team/join", data={"team_password": "this is a bad passwiord"}
+        )
+        self.assertEqual(bad_resp.status_code, 400)
+
+        # post a good password
+        # silent-pros-earnest - password for "for all The marbles"
+        team = Team.objects.get(password="silent-pros-earnest")
+        user = User.objects.get(username="player")
+        self.assertFalse(user in team.members.all())
+
+        good_resp = self.client.post(
+            "/team/join", data={"team_password": "silent-pros-earnest"}
+        )
+        self.assertEqual(good_resp.status_code, 200)
+        self.assertTrue("user_data" in good_resp.data)
+        team = Team.objects.get(password="silent-pros-earnest")
+        user = User.objects.get(username="player")
+        self.assertTrue(user in team.members.all())
+        self.assertEqual(user.active_team, team)
+
+    def test_select_team(self):
+        # post the id of a team a player doesn't belong to
+        bad_resp = self.client.post("/team/select", data={"team_id": 8000})
+        # should get a 400 response
+        self.assertEqual(bad_resp.status_code, 400)
+        # players active team should not be updated
+        user = User.objects.get(username="player")
+        # current active team is not the same as the requested team
+        self.assertNotEqual(user.active_team.id, 5)
+        # post the id if a team a player belongs to
+        good_resp = self.client.post("/team/select", data={"team_id": 5})
+        self.assertEqual(good_resp.status_code, 200)
+        self.assertEqual(good_resp.data.get("active_team_id"), 5)
+        user = User.objects.get(username="player")
+        self.assertEqual(user.active_team.id, 5)

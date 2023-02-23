@@ -7,6 +7,7 @@ class Team(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     # TODO: unique?
     name = models.CharField(max_length=200)
+    # TODO: db_index=True
     password = models.CharField(max_length=200, unique=True)
     members = models.ManyToManyField("user.User", related_name="teams")
 
