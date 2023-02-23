@@ -1,8 +1,11 @@
 <script lang="ts">
+    import { enhance } from '$app/forms';
+    import { slide } from 'svelte/transition';
     import { getStore } from '$lib/utils';
     import type { UserData } from '$lib/types';
     import type { ActionData } from './$types';
 
+    // TODO: handle form error (might need a bit of nesting to get it on the right form)
     export let form: ActionData;
     let hidecreateteam = true;
     let hideteampassword = true;
@@ -23,18 +26,20 @@
         Create a New Team
     </button>
 
-    <form class:hidecreateteam on:submit|preventDefault>
-        <h3>Enter Your Team Name</h3>
-        <div class="input-container">
-            <input type="text" placeholder="Team Name" required />
-        </div>
-        <input class="button button-tertirary" type="submit" name="" id="" value="Submit" />
-    </form>
-
+    {#key hidecreateteam}
+        <form transition:slide|local class:hidecreateteam action="?/createTeam" method="POST" use:enhance>
+            <h3>Enter Your Team Name</h3>
+            <div class="input-container">
+                <input type="text" name="team_name" required />
+                <label for="team_name">Team Name</label>
+            </div>
+            <button class="button button-tertiary" id="team-create-submit">Submit</button>
+        </form>
+    {/key}
     <h1>Or Play with an Existing Team</h1>
 
     {#if $userData?.teams.length > 0}
-        <form method="POST">
+        <form action="?/selectTeam" method="POST">
             {#if form?.error}<p class="error">{form?.error}</p>{/if}
 
             <label class="select-label" for="team-select">Choose A Team</label>
@@ -56,12 +61,15 @@
         Enter Team Password
     </button>
 
-    <form class:hideteampassword on:submit|preventDefault>
-        <div class="input-element">
-            <input type="text" name="team-password" placeholder="Team Password" />
-        </div>
-        <input class="button button-white" type="submit" name="" id="team-password-submit" value="Submit" />
-    </form>
+    {#key hideteampassword}
+        <form transition:slide|local class:hideteampassword action="?/joinTeam" method="POST" use:enhance>
+            <div class="input-container">
+                <input type="text" name="team_password" required />
+                <label for="team_password">Team Password</label>
+            </div>
+            <button class="button button-tertiary" type="submit" id="team-password-submit">Submit</button>
+        </form>
+    {/key}
 </main>
 
 <style lang="scss">
