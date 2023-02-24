@@ -1,7 +1,7 @@
 import { test, expect } from './fixtures.js';
 import { asyncTimeout, resetEventData } from './utils.js';
 
-test.afterEach(async () => {
+test.beforeEach(async () => {
     await resetEventData();
 });
 

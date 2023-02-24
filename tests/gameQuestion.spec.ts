@@ -1,7 +1,6 @@
-import { expect, test } from '@playwright/test';
-import { defaultQuestionText, PlayerGamePage, HostGamePage } from './gamePages.js';
-import { asyncTimeout, getBrowserPage, resetEventData } from './utils.js';
-import type { TestConfig } from './utils.js';
+import { expect, test } from './fixtures.js';
+import { defaultQuestionText } from './gamePages.js';
+import { asyncTimeout, resetEventData } from './utils.js';
 
 // TODO future:
 // test image and sound rounds should be auto-revealed,
@@ -14,184 +13,163 @@ const revealDelay = 1000;
 
 const current = /current/;
 
-const triviaEventOne = '/game/1234';
-const triviaEventTwo = '/game/9999';
-
-const testconfigs: Record<string, TestConfig> = {
-    p1: { pageUrl: triviaEventOne },
-    p2: { pageUrl: triviaEventOne, username: 'player_two', password: 'player_two' },
-    p3: { pageUrl: triviaEventTwo, username: 'player_three', password: 'player_three' },
-    host: { pageUrl: '/host/1234', username: 'sample_admin', password: 'sample_admin' }
-};
-
-let p1: PlayerGamePage; // game 1234 w/ auto reveal
-let p2: PlayerGamePage; // game 1234 no auto reveal
-let p3: PlayerGamePage; // game 9999 w/ auto reveal
-let host: HostGamePage; // game 1234
-
-test.beforeEach(async ({ browser }) => {
-    p1 = new PlayerGamePage(await getBrowserPage(browser), testconfigs.p1);
-    p1.login('1234');
-    p2 = new PlayerGamePage(await getBrowserPage(browser), testconfigs.p2);
-    p2.login('1234');
-    p3 = new PlayerGamePage(await getBrowserPage(browser), testconfigs.p3);
-    p3.login('9999');
-    host = new HostGamePage(await getBrowserPage(browser), testconfigs.host);
-});
-
-test.afterEach(async () => {
-    await p1.logout();
-    await p2.logout();
-    await p3.logout();
-    await host.logout();
-
+test.beforeEach(async () => {
     await resetEventData();
 });
 
-test('all players start on round one question one', async () => {
-    // everyone is on the right question
-    await p1.expectCorrectQuestionHeading('1.1');
-    await p2.expectCorrectQuestionHeading('1.1');
-    await p3.expectCorrectQuestionHeading('1.1');
-    await host.expectRoundToBe('1');
-});
+test('active round and question classes are applied properly', async ({ p1Page, hostPage }) => {
+    await p1Page.joinGame('1234');
+    await hostPage.page.goto('/host/1234');
 
-test('active round and question classes are applied properly', async () => {
     // check for current class on 1.1
-    await expect(host.roundButton('1')).toHaveClass(current);
-    await expect(p1.roundButton('1')).toHaveClass(current);
-    await expect(p1.questionSelector('1.1')).toHaveClass(current);
+    await expect(hostPage.roundButton('1')).toHaveClass(current);
+    await expect(p1Page.roundButton('1')).toHaveClass(current);
+    await expect(p1Page.questionSelector('1.1')).toHaveClass(current);
 
     // host got to rd 2, reveal question2
-    await host.roundButton('2').click();
-    await host.revealQuestion('2.1');
+    await hostPage.roundButton('2').click();
+    await hostPage.revealQuestion('2.1');
 
     // 2.1 should be current
     await asyncTimeout(revealDelay);
-    await expect(host.roundButton('2')).toHaveClass(current);
-    await expect(p1.roundButton('2')).toHaveClass(current);
-    await expect(p1.questionSelector('2.1')).toHaveClass(current);
+    await expect(hostPage.roundButton('2')).toHaveClass(current);
+    await expect(p1Page.roundButton('2')).toHaveClass(current);
+    await expect(p1Page.questionSelector('2.1')).toHaveClass(current);
 
     // host go back to rd 1, reveal q5
     // 1.5 should not be set as current
-    await host.roundButton('1').click();
-    await host.revealQuestion('1.5');
+    await hostPage.roundButton('1').click();
+    await hostPage.revealQuestion('1.5');
 
-    await expect(host.roundButton('1')).not.toHaveClass(current);
+    await expect(hostPage.roundButton('1')).not.toHaveClass(current);
 
     // p1 should not be directed backwards? (not sure about this)
-    await expect(p1.roundButton('2')).toHaveClass(current);
-    await expect(p1.questionSelector('2.1')).toHaveClass(current);
+    await expect(p1Page.roundButton('2')).toHaveClass(current);
+    await expect(p1Page.questionSelector('2.1')).toHaveClass(current);
 });
 
-test('question text reveals properly for players', async () => {
+test('question text reveals properly for players', async ({ p1Page, p2Page, p3Page, hostPage }) => {
+    await p1Page.joinGame('1234');
+    await p1Page.goToQuestion('1.1');
+    await p2Page.joinGame('1234');
+    await p2Page.goToQuestion('1.1');
+    await p3Page.joinGame('9999');
+    await hostPage.page.goto('/host/1234');
     // check 1.1 question text
-    await expect(p1.questionTextField('1.1')).toHaveText(defaultQuestionText);
-    await expect(p2.questionTextField('1.1')).toHaveText(defaultQuestionText);
-    await expect(p3.questionTextField('1.1')).toHaveText(defaultQuestionText);
+    await expect(p1Page.questionTextField('1.1')).toHaveText(defaultQuestionText);
+    await expect(p2Page.questionTextField('1.1')).toHaveText(defaultQuestionText);
+    await expect(p3Page.questionTextField('1.1')).toHaveText(defaultQuestionText);
 
     // host reveals 1.1
-    await host.expectQuestionToNotBeRevealed('1.1');
-    await host.revealQuestion('1.1');
-    await host.expectQuestionToBeRevealed('1.1');
+    await hostPage.expectQuestionToNotBeRevealed('1.1');
+    await hostPage.revealQuestion('1.1');
+    await hostPage.expectQuestionToBeRevealed('1.1');
 
     // popup should be displayed for p1 and host
-    await expect(p1.dismissButton).toBeVisible();
-    await expect(p2.dismissButton).toBeVisible();
-    await expect(host.dismissButton).toBeVisible();
-    await expect(p3.dismissButton).not.toBeVisible();
+    await expect(p1Page.dismissButton).toBeVisible();
+    await expect(p2Page.dismissButton).toBeVisible();
+    await expect(hostPage.dismissButton).toBeVisible();
+    await expect(p3Page.dismissButton).not.toBeVisible();
 
     // check question text
     await asyncTimeout(revealDelay);
-    await expect(p1.questionTextField('1.1')).not.toHaveText(defaultQuestionText);
-    await expect(p2.questionTextField('1.1')).not.toHaveText(defaultQuestionText);
-    await expect(p3.questionTextField('1.1')).toHaveText(defaultQuestionText);
+    await expect(p1Page.questionTextField('1.1')).not.toHaveText(defaultQuestionText);
+    await expect(p2Page.questionTextField('1.1')).not.toHaveText(defaultQuestionText);
+    await expect(p3Page.questionTextField('1.1')).toHaveText(defaultQuestionText);
 
     // test that the popup has closed
-    await expect(p1.dismissButton).not.toBeVisible();
-    await expect(host.dismissButton).not.toBeVisible();
+    await expect(p1Page.dismissButton).not.toBeVisible();
+    await expect(hostPage.dismissButton).not.toBeVisible();
 
     // test that no api error occured that would reset the reveal status
-    await host.expectQuestionToBeRevealed('1.1');
+    await hostPage.expectQuestionToBeRevealed('1.1');
 });
 
-test('auto reveal respects player settings', async () => {
+test('auto reveal respects player settings', async ({ p1Page, p2Page, p3Page, hostPage }) => {
+    await p1Page.joinGame('1234');
+    await p2Page.joinGame('1234');
+    await p3Page.joinGame('9999');
+    await hostPage.page.goto('/host/1234');
     // host reveals 1.2
-    await host.revealQuestion('1.2');
+    await hostPage.revealQuestion('1.2');
     await asyncTimeout(1500);
-    await host.expectQuestionToBeRevealed('1.2');
-    await p1.expectCorrectQuestionHeading('1.2');
-    await p2.expectCorrectQuestionHeading('1.1');
-    await p3.expectCorrectQuestionHeading('1.1');
+    await hostPage.expectQuestionToBeRevealed('1.2');
+    await p1Page.expectCorrectQuestionHeading('1.2');
+    await p2Page.expectCorrectQuestionHeading('1.1');
+    await p3Page.expectCorrectQuestionHeading('1.1');
 });
 
 // TODO: this test is slow and sucks (the loop is baaaaddd)
 // it's failing where p1 should be on question 2.1 and in the loop
 // auto-reveal does work, so FIXME during test cleanup - 2/16/23
-test.skip('reveal all reveals all questions for a round', async () => {
+test('reveal all reveals all questions for a round', async ({ p1Page, p2Page, hostPage }) => {
+    await p1Page.joinGame('1234');
+    await p2Page.joinGame('1234');
+    await hostPage.page.goto('/host/1234');
     // host reveals all for round 2
-    await host.roundButton('2').click();
-    await host.expectRoundToBe('2');
+    await hostPage.roundButton('2').click();
+    await hostPage.expectRoundToBe('2');
 
     // host find and click reveal all
-    await host.revealQuestion('all');
+    await hostPage.revealQuestion('all');
 
-    // await asyncTimeout(1500);
-    await p1.expectCorrectQuestionHeading('2.1');
-    await p2.expectCorrectQuestionHeading('1.1');
-    await p2.roundButton('2').click();
+    await asyncTimeout(1500);
+    await p1Page.expectCorrectQuestionHeading('2.1');
+    await p2Page.expectCorrectQuestionHeading('1.1');
+    await p2Page.roundButton('2').click();
 
     const questionNumbers = ['2.1', '2.2', '2.3', '2.4', '2.5'];
     for (const key of questionNumbers) {
-        await host.expectQuestionToBeRevealed(key);
+        await hostPage.expectQuestionToBeRevealed(key);
 
-        await p1.goToQuestion(key);
-        await p2.goToQuestion(key);
+        await p1Page.goToQuestion(key);
+        await p2Page.goToQuestion(key);
         // NOTE: this makes this test very slow, but it's necessary
         // in order to allow the question transition to complete
         await asyncTimeout(350);
 
-        await p1.expectCorrectQuestionHeading(key);
-        await p1.expectQuestionTextNotToBeDefault(key);
-        await p2.expectCorrectQuestionHeading(key);
-        await p2.expectQuestionTextNotToBeDefault(key);
+        await p1Page.expectCorrectQuestionHeading(key);
+        await p1Page.expectQuestionTextNotToBeDefault(key);
+        await p2Page.expectCorrectQuestionHeading(key);
+        await p2Page.expectQuestionTextNotToBeDefault(key);
     }
 });
 
-// TODO: this is failing on the first line, I've visually confirmned the proper behavior
-// so I suspect the log in method may not be joining the event properly, thus disabling
-// the input. FIXME in the next round of test cleanup - 2/16/23
-test.skip('round locks work properly', async () => {
-    await expect(p1.responseInput).toBeEditable();
-    await expect(p3.responseInput).toBeEditable();
+test('round locks work properly', async ({ p1Page, p3Page, hostPage }) => {
+    await p1Page.joinGame('1234');
+    await p3Page.joinGame('9999');
+    await hostPage.page.goto('/host/1234');
+    await expect(p1Page.responseInput).toBeEditable();
+    await expect(p3Page.responseInput).toBeEditable();
 
-    const lockIconLabel = host.lockIconLabel('1');
-    await host.expectLockedIconNotToBeVisible('1');
+    const lockIconLabel = hostPage.lockIconLabel('1');
+    await hostPage.expectLockedIconNotToBeVisible('1');
     await lockIconLabel.click();
 
-    await host.expectLockedIconToBeVisible('1');
-    await expect(p1.responseInput).toBeDisabled();
-    await expect(p3.responseInput).toBeEditable();
+    await hostPage.expectLockedIconToBeVisible('1');
+    await expect(p1Page.responseInput).toBeDisabled();
+    await expect(p3Page.responseInput).toBeEditable();
 });
 
-test('unlocking a round requires host confirmation', async () => {
+test('unlocking a round requires host confirmation', async ({ hostPage }) => {
+    await hostPage.page.goto('/host/1234');
     // goto round 3
-    await host.roundButton('3').click();
-    await host.expectRoundToBe('3');
+    await hostPage.roundButton('3').click();
+    await hostPage.expectRoundToBe('3');
 
     // lock the round
-    const lockIconLabel = host.lockIconLabel('3');
-    await host.expectLockedIconNotToBeVisible('3');
+    const lockIconLabel = hostPage.lockIconLabel('3');
+    await hostPage.expectLockedIconNotToBeVisible('3');
     await lockIconLabel.click();
-    await host.expectLockedIconToBeVisible('3');
+    await hostPage.expectLockedIconToBeVisible('3');
 
     // try to unlock the round
     await lockIconLabel.click();
-    await host.expectLockedIconToBeVisible('3');
+    await hostPage.expectLockedIconToBeVisible('3');
 
     // confirm the unlock
-    const btn = host.page.locator('.pop-content').locator('button');
+    const btn = hostPage.page.locator('.pop-content').locator('button');
     await btn.click();
     await expect(btn).not.toBeVisible();
-    await host.expectLockedIconNotToBeVisible('3');
+    await hostPage.expectLockedIconNotToBeVisible('3');
 });
