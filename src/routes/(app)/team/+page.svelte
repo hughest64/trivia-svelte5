@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { enhance } from '$app/forms';
     import { slide } from 'svelte/transition';
+    import { enhance } from '$app/forms';
     import { getStore } from '$lib/utils';
     import type { UserData } from '$lib/types';
     import type { ActionData } from './$types';

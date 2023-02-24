@@ -1,6 +1,7 @@
 <script lang="ts">
-    import { page } from '$app/stores';
+    import { slide } from 'svelte/transition';
     import { enhance } from '$app/forms';
+    import { page } from '$app/stores';
     import { getStore } from '$lib/utils';
     import Round from './Round.svelte';
     import RoundSelector from './RoundSelector.svelte';
@@ -19,7 +20,7 @@
 <RoundSelector />
 
 {#if !$playerJoined}
-    <h3 class="not-joined-warning">
+    <h3 out:slide|local class="not-joined-warning">
         You are currently in view mode.
         <form action="?/joinevent" method="post" use:enhance>
             <button class="submit" type="submit"><h3>Click here</h3></button>to join the game!

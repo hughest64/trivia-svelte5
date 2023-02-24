@@ -13,14 +13,14 @@
     <button class="button disabled" on:click={() => (hidden = !hidden)}>
         Notes for {activeQuestion?.key}
     </button>
-    {#if !hidden}
+    {#key hidden}
         <form transition:slide|local={{ duration: 200 }} class:hidden on:submit|preventDefault>
             <div class="input-container">
                 <!-- TODO: note icon -->
                 <input name="note" type="text" placeholder="Add a New Note" />
             </div>
         </form>
-    {/if}
+    {/key}
 </div>
 
 <style lang="scss">
