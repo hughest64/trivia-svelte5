@@ -1,78 +1,135 @@
-import { expect, test } from '@playwright/test';
-import {
-    PlayerGamePage
-    // HostGamePage
-} from './gamePages.js';
-import { loginToGame, getBrowserPage, resetEventData, asyncTimeout } from './utils.js';
-import type { TestConfig } from './utils.js';
-
-const testconfigs: Record<string, TestConfig> = {
-    // p1 auto joins
-    p1: { pageUrl: '/game/9999', joincode: '9999' },
-    // start player 3 on the join page
-    p3: { pageUrl: '/game/join', joincode: '9999', username: 'player_three', password: 'player_three' }
-    // host: { pageUrl: '/host/9999', username: 'sample_admin', password: 'sample_admin' }
-};
-
-let p1: PlayerGamePage;
-let p3: PlayerGamePage;
-// let host: HostGamePage;
-
-test.beforeEach(async ({ browser }) => {
-    // log p1 into the game directly
-    p1 = new PlayerGamePage(await getBrowserPage(browser), testconfigs.p1);
-    loginToGame(p1.page, testconfigs.p1);
-    // log p3 in, but don't join the game just yet
-    p3 = new PlayerGamePage(await getBrowserPage(browser), testconfigs.p3);
-    p3.login();
-    // host = new HostGamePage(await getBrowserPage(browser), testconfigs.host);
-});
+import { test, expect } from './fixtures.js';
+import { asyncTimeout, resetEventData } from './utils.js';
 
 test.afterEach(async () => {
-    await p1.logout();
-    await p3.logout();
-    // await host.logout();
-
     await resetEventData();
 });
 
-// TODO: actual locator (div w/ a classname?)
-test('player one leaderboard updates when another team joins', async () => {
-    // expect player 1's team to be on the leaderboard, but not p3
-    await asyncTimeout();
-    await expect(p1.page).toHaveURL('/game/9999');
-    await p1.page.goto('/game/9999/leaderboard');
-    await expect(p1.page).toHaveURL('/game/9999/leaderboard');
-    await expect(p1.page.locator('h3.team-name', { hasText: /hello world/i })).toBeVisible();
-    await expect(p1.page.locator('h3.team-name', { hasText: /for all the marbles/i })).not.toBeVisible();
+test('player one leaderboard updates when another team joins', async ({ p1Page, p3Page }) => {
+    await p1Page.joinGame('9999');
+    await p1Page.page.goto('/game/9999/leaderboard');
+    await expect(p1Page.page).toHaveURL('/game/9999/leaderboard');
 
-    // TODO: this is proabably worthy of it's own helper function
+    // expect player 1's team to be on the leaderboard, but not p3
+    await expect(p1Page.page.locator('h3.team-name', { hasText: /hello world/i })).toBeVisible();
+    await expect(p1Page.page.locator('h3.team-name', { hasText: /for all the marbles/i })).not.toBeVisible();
+
     // p3 joins the game
-    p3.page.goto('/game/join');
-    await p3.page.locator('input[name="joincode"]').fill('9999' as string);
-    await p3.page.locator('button[type="submit"]').click();
-    p3.page.goto('/game/9999/leaderboard');
-    await expect(p3.page).toHaveURL('/game/9999/leaderboard');
+    await p3Page.joinGame('9999');
+    p3Page.page.goto('/game/9999/leaderboard');
 
     // player 1 should now see player 3's team
-    await expect(p1.page.locator('h3.team-name', { hasText: /for all the marbles/i })).toBeVisible();
+    await expect(p1Page.page.locator('h3.team-name', { hasText: /for all the marbles/i })).toBeVisible();
+
     // player 3 should see both teams
-    await expect(p3.page.locator('h3.team-name', { hasText: /hello world/i })).toBeVisible();
-    await expect(p3.page.locator('h3.team-name', { hasText: /for all the marbles/i })).toBeVisible();
+    await expect(p3Page.page.locator('h3.team-name', { hasText: /hello world/i })).toBeVisible();
+    await expect(p3Page.page.locator('h3.team-name', { hasText: /for all the marbles/i })).toBeVisible();
 });
 
-test('round headers on the leaderboard navigate back to the game', async () => {
-    await asyncTimeout();
-    await expect(p1.page).toHaveURL('/game/9999');
-    await p1.page.goto('/game/9999/leaderboard');
-    await expect(p1.page).toHaveURL('/game/9999/leaderboard');
-
+test('round headers on the leaderboard navigate back to the game', async ({ p1Page }) => {
+    await p1Page.joinGame('9999');
+    await p1Page.page.goto('/game/9999/leaderboard');
+    await expect(p1Page.page).toHaveURL('/game/9999/leaderboard');
     // click on round 5
-    const rd5 = p1.page.locator('.round-selector').locator('button', { hasText: '5' });
+    const rd5 = p1Page.page.locator('.round-selector').locator('button', { hasText: '5' });
     await rd5.click();
     // expect to be back on the game and round 5 is active
-    await expect(p1.page).toHaveURL('/game/9999');
+    await expect(p1Page.page).toHaveURL('/game/9999');
     await expect(rd5).toHaveClass('active');
 });
 
 // TODO: test actual leaderboard updates (pts values) from the host, maybe tiebreakers here too
+
+const submission = 'a different answer';
+
+test('round question cookies work properly', async ({ p1Page }) => {
+    await p1Page.joinGame('1234');
+    await p1Page.expectCorrectQuestionHeading('1.1');
+
+    await p1Page.page.locator('.round-selector').locator('button:has-text("3")').click();
+    await p1Page.expectCorrectQuestionHeading('3.1');
+
+    const questionThree = p1Page.page.locator('.question-selector').locator('button:has-text("4")');
+    await questionThree.click();
+    await p1Page.expectCorrectQuestionHeading('3.4');
+
+    await p1Page.page.reload();
+    await p1Page.expectCorrectQuestionHeading('3.4');
+});
+
+test('arrow keys change the active question', async ({ p1Page }) => {
+    await p1Page.joinGame('1234');
+    await p1Page.expectCorrectQuestionHeading('1.1');
+    await p1Page.page.keyboard.press('ArrowRight');
+    await p1Page.expectCorrectQuestionHeading('1.2');
+});
+
+test('unsubmitted class is applied properly', async ({ p1Page }) => {
+    await p1Page.joinGame('1234');
+    const responseInput = p1Page.page.locator('input[name="response_text"]');
+    // expect the class not be to applied
+    await expect(p1Page.page.locator('div#response-container')).not.toHaveClass(/notsubmitted/);
+
+    await responseInput.fill(submission);
+    await expect(p1Page.page.locator('div#response-container')).toHaveClass(/notsubmitted/);
+
+    await p1Page.page.locator('button:has-text("Submit")').click();
+    await expect(p1Page.page.locator('div#response-container')).toHaveClass(/notsubmitted/);
+});
+
+test('navigating away from the event page and back retains the active question', async ({ p1Page }) => {
+    await p1Page.joinGame('1234');
+    await p1Page.expectCorrectQuestionHeading('1.1');
+    await p1Page.page.locator('.question-selector').locator('id=1.3').click();
+    await p1Page.expectCorrectQuestionHeading('1.3');
+
+    // navigate to another page
+    await p1Page.page.locator('p', { hasText: 'Chat' }).click();
+    await p1Page.page.locator('p', { hasText: 'Quiz' }).click();
+    await expect(p1Page.page.locator('h2', { hasText: 'General Knowledge' })).toBeVisible();
+
+    // try to move again
+    await p1Page.page.locator('.question-selector').locator('id=1.4').click();
+    await p1Page.expectCorrectQuestionHeading('1.4');
+});
+
+const submissionOne = 'answer for question';
+const submissionTwo = 'a different answer';
+
+test.afterAll(async () => {
+    await resetEventData();
+});
+
+test('responses only update for the same team on the same event', async ({ p1Page, p2Page, p3Page, p4Page }) => {
+    p1Page.joinGame('1234');
+    p2Page.joinGame('1234');
+    p3Page.joinGame('1234');
+    p4Page.joinGame('9999');
+    // everyone on the correct page/question
+    await p1Page.expectCorrectQuestionHeading('1.1');
+    await p2Page.expectCorrectQuestionHeading('1.1');
+    await p3Page.expectCorrectQuestionHeading('1.1');
+    await p4Page.expectCorrectQuestionHeading('1.1');
+
+    // no answers filled in for 1.1
+    await p1Page.expectInputValueToBeFalsy();
+    await p2Page.expectInputValueToBeFalsy();
+    await p3Page.expectInputValueToBeFalsy();
+    await p4Page.expectInputValueToBeFalsy();
+
+    // player one submits a response
+    await p1Page.setResponse(submissionOne, { submit: true });
+    await asyncTimeout(200);
+    await p1Page.expectInputValueToBe(submissionOne);
+    await p2Page.expectInputValueToBe(submissionOne);
+    await p3Page.expectInputValueToBeFalsy();
+    await p4Page.expectInputValueToBeFalsy();
+
+    // player 4 submits a response
+    await p4Page.setResponse(submissionTwo, { submit: true });
+    await asyncTimeout(200);
+    await p1Page.expectInputValueToBe(submissionOne);
+    await p2Page.expectInputValueToBe(submissionOne);
+    await p3Page.expectInputValueToBeFalsy();
+    await p4Page.expectInputValueToBe(submissionTwo);
+});

@@ -41,7 +41,7 @@
     };
 </script>
 
-<h4 class="question-key">{activeQuestion?.key}</h4>
+<h4 id={`${activeQuestion?.key}-key`} class="question-key">{activeQuestion?.key}</h4>
 
 <p id={`${activeQuestion?.key}-text`} class="question-text">
     {questionState?.question_displayed
@@ -61,7 +61,7 @@
 {/if}
 
 <form on:submit|preventDefault={handleSubmitResponse}>
-    <div class="input-container" class:notsubmitted>
+    <div id="response-container" class="input-container" class:notsubmitted>
         <input
             disabled={activeRoundState?.locked || !$playerJoined}
             required

@@ -26,9 +26,7 @@
         <label for="password">Password</label>
     </div>
 
-    <!-- not yet implemented, but the input will likely need to be a button with a formAction -->
     <a href="/user/forgot">Click Here to Reset your Password</a>
-    <!-- <input class="button button-primary" type="submit" value="Submit" /> -->
     <button type="submit" class="button button-primary">Submit</button>
 </form>
 

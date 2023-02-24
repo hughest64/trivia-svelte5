@@ -14,3 +14,5 @@ __pycache__/
 server/static/
 migrations/
 server/db.sqlite3
+
+playwright/.auth

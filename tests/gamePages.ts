@@ -18,6 +18,7 @@ class BasePage {
         this.dismissButton = page.locator('.pop').locator('button', { hasText: 'X' });
     }
 
+    // NOTE: not needed to use this with the custom fixtures as they auto-login
     async login(joincode: string | null = null) {
         let destination = '/user/login?next=/game/join';
         if (joincode === null) {
@@ -56,9 +57,6 @@ export class PlayerGamePage extends BasePage {
         super(page, testConfig);
         this.responseInput = page.locator('input[name="response_text"]');
         this.submitButton = page.locator('button', { hasText: 'Submit' });
-        // TODO: bring back auto-login, we'll need a testconfig arg for joincode in order to do so
-        // this.login();
-        // this.expectToLandOnGameUrl();
     }
 
     questionHeading(text: string): Locator {
@@ -73,6 +71,12 @@ export class PlayerGamePage extends BasePage {
         return this.page.locator('.question-selector').locator(`id=${text}`);
     }
 
+    async joinGame(joincode: string): Promise<void> {
+        this.page.goto('/game/join');
+        await this.page.locator('input[name="joincode"]').fill(joincode);
+        await this.page.locator('button[type="submit"]').click();
+    }
+
     async goToQuestion(text: string): Promise<void> {
         await this.questionSelector(text).click();
     }
@@ -84,8 +88,11 @@ export class PlayerGamePage extends BasePage {
         await expect(this.questionTextField(text)).not.toHaveText(defaultQuestionText);
     }
 
+    // NOTE: .first() is generally frowned on here as we shouldn't allow a seletor to resolve
+    // mutliple elements. However, we have a unique situation in how the question component is updated
+    // during the transition it appears there that there are two cards with the same class
     async expectCorrectQuestionHeading(text: string): Promise<void> {
-        await expect(this.questionHeading(text)).toHaveText(text);
+        await expect(this.page.locator('.question-key').first()).toHaveText(text);
     }
 
     async expectInputValueToBe(text: string): Promise<void> {
@@ -107,9 +114,8 @@ export class PlayerGamePage extends BasePage {
 }
 
 export class HostGamePage extends BasePage {
-    constructor(page: Page, testConfig: TestConfig) {
+    constructor(page: Page, testConfig: TestConfig = {}) {
         super(page, testConfig);
-        this.login();
     }
     questionSlider(text: string): Locator {
         return this.page.locator(`label[for="${text}"]`);

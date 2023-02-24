@@ -1,8 +1,8 @@
 import type { PlaywrightTestConfig } from '@playwright/test';
 
 const config: PlaywrightTestConfig = {
-    retries: 2,
-    timeout: 60000, // 1 minute
+    // retries: 2,
+    // timeout: 60000, // 1 minute
     webServer: [
         {
             command: 'npm run build -- --mode test && npm run preview',
