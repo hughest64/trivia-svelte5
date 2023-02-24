@@ -40,6 +40,11 @@ test('round headers on the leaderboard navigate back to the game', async ({ p1Pa
 
 // TODO: test actual leaderboard updates (pts values) from the host, maybe tiebreakers here too
 
+/**
+ * TODO: ideally, move all of these below back to their natural habitat
+ */
+
+// tests from gameNavigation.spec
 const submission = 'a different answer';
 
 test('round question cookies work properly', async ({ p1Page }) => {
@@ -93,12 +98,9 @@ test('navigating away from the event page and back retains the active question',
     await p1Page.expectCorrectQuestionHeading('1.4');
 });
 
+// test from gameResponse .spec (this one could live alongside others but probably not here)
 const submissionOne = 'answer for question';
 const submissionTwo = 'a different answer';
-
-test.afterAll(async () => {
-    await resetEventData();
-});
 
 test('responses only update for the same team on the same event', async ({ p1Page, p2Page, p3Page, p4Page }) => {
     p1Page.joinGame('1234');
