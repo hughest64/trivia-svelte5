@@ -1,5 +1,6 @@
 import { test } from '@playwright/test';
 import { PlayerGamePage } from './gamePages.js';
+import { authStorage } from './auth.setup.js';
 import { asyncTimeout, resetEventData } from './utils.js';
 
 const submissionOne = 'answer for question';
@@ -12,13 +13,13 @@ let p4Page: PlayerGamePage;
 
 // maybe just take these steps either as a method or in the constructor of the page class?
 test.beforeAll(async ({ browser }) => {
-    const p1Context = await browser.newContext({ storageState: 'authStorage.playerFile' });
+    const p1Context = await browser.newContext({ storageState: authStorage.playerFile });
     p1Page = new PlayerGamePage(await p1Context.newPage());
-    const p2Context = await browser.newContext({ storageState: 'authStorage.playerTwoFile' });
+    const p2Context = await browser.newContext({ storageState: authStorage.playerTwoFile });
     p2Page = new PlayerGamePage(await p2Context.newPage());
-    const p3Context = await browser.newContext({ storageState: 'authStorage.playerThreeFile' });
+    const p3Context = await browser.newContext({ storageState: authStorage.playerThreeFile });
     p3Page = new PlayerGamePage(await p3Context.newPage());
-    const p4Context = await browser.newContext({ storageState: 'authStorage.playerFourFile' });
+    const p4Context = await browser.newContext({ storageState: authStorage.playerFourFile });
     p4Page = new PlayerGamePage(await p4Context.newPage());
 });
 
