@@ -1,6 +1,7 @@
 <script lang="ts">
     import { slide } from 'svelte/transition';
     import { enhance } from '$app/forms';
+    import { page } from '$app/stores';
     import { getStore } from '$lib/utils';
     import type { UserData } from '$lib/types';
     import type { ActionData } from './$types';
@@ -11,6 +12,8 @@
     let hideteampassword = true;
 
     const userData = getStore<UserData>('userData');
+    $: next = $page.url.searchParams.get('next');
+    $: qp = next ? `&next=${next}` : '';
 </script>
 
 <svelte:head><title>TriviaMafia | Team Select</title></svelte:head>
@@ -27,7 +30,7 @@
     </button>
 
     {#key hidecreateteam}
-        <form transition:slide|local class:hidecreateteam action="?/createTeam" method="POST" use:enhance>
+        <form transition:slide|local class:hidecreateteam action={'?/createTeam' + qp} method="POST" use:enhance>
             <h3>Enter Your Team Name</h3>
             <div class="input-container">
                 <input type="text" name="team_name" required />
@@ -39,7 +42,7 @@
     <h1>Or Play with an Existing Team</h1>
 
     {#if $userData?.teams.length > 0}
-        <form action="?/selectTeam" method="POST">
+        <form action={'?/selectTeam' + qp} method="POST">
             {#if form?.error}<p class="error">{form?.error}</p>{/if}
 
             <label class="select-label" for="team-select">Choose A Team</label>
@@ -62,7 +65,7 @@
     </button>
 
     {#key hideteampassword}
-        <form transition:slide|local class:hideteampassword action="?/joinTeam" method="POST" use:enhance>
+        <form transition:slide|local class:hideteampassword action={'?/joinTeam' + qp} method="POST" use:enhance>
             <div class="input-container">
                 <input type="text" name="team_password" required />
                 <label for="team_password">Team Password</label>
