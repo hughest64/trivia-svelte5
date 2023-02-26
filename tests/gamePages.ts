@@ -19,21 +19,11 @@ class BasePage {
     }
 
     // NOTE: not needed to use this with the custom fixtures as they auto-login
-    async login(joincode: string | null = null) {
-        let destination = '/user/login?next=/game/join';
-        if (joincode === null) {
-            destination = `/user/login?next=${this.testConfig?.pageUrl as string}`;
-        }
-
-        await this.page.goto(destination);
+    async login() {
+        await this.page.goto('/user/login');
         await this.page.locator('input[name="username"]').fill(this.testConfig?.username as string);
         await this.page.locator('input[name="password"]').fill(this.testConfig?.password as string);
-        await this.page.locator('input[value="Submit"]').click();
-        // join the game
-        if (joincode !== null) {
-            await this.page.locator('input[name="joincode"]').fill(joincode as string);
-            await this.page.locator('button[type="submit"]').click();
-        }
+        await this.page.locator('button', { hasText: 'Submit' }).click();
     }
 
     async logout() {

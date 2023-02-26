@@ -36,18 +36,7 @@ export const login = async (page: Page, config: TestConfig = {}): Promise<void> 
     if (pageUrl) await page.goto(pageUrl);
     await page.locator('input[name="username"]').fill(username as string);
     await page.locator('input[name="password"]').fill(password as string);
-    await page.locator('input[value="Submit"]').click();
-};
-
-export const loginToGame = async (page: Page, config: TestConfig = {}): Promise<void> => {
-    const { joincode, username, password }: TestConfig = { ...defaultTestConfig, ...config };
-    await page.goto('/user/login');
-    await page.locator('input[name="username"]').fill(username as string);
-    await page.locator('input[name="password"]').fill(password as string);
-    await page.locator('input[value="Submit"]').click();
-    await page.goto('/game/join');
-    await page.locator('input[name="joincode"]').fill(joincode as string);
-    await page.locator('button[type="submit"]').click();
+    await page.locator('button', { hasText: 'Submit' }).click();
 };
 
 export const authRedirects = async (page: Page, config: TestConfig = {}) => {

@@ -104,8 +104,10 @@ test.describe('navigate to trivia event as host', async () => {
 });
 
 test('navigate directly to a game', async ({ browser }) => {
-    const p1 = new PlayerGamePage(await getBrowserPage(browser), { pageUrl: '/game/1234' });
-    p1.login();
+    await resetEventData({ joincode: '9906' });
+    const p1 = new PlayerGamePage(await getBrowserPage(browser));
+    await p1.login();
+    await p1.page.goto('/game/9906');
     // expect the message to appear
     const linkText = p1.page.locator('button', { hasText: 'Click here' });
     await expect(linkText).toBeVisible();
@@ -117,6 +119,4 @@ test('navigate directly to a game', async ({ browser }) => {
     await expect(p1.responseInput).toBeEditable();
     // expect the message to go away
     await expect(linkText).not.toBeVisible();
-
-    await resetEventData();
 });
