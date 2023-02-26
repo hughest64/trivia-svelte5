@@ -13,13 +13,18 @@ const revealDelay = 1000;
 
 const current = /current/;
 
+const joincode_1 = '9904';
+const joincode_2 = '9905';
+const hostUrl = `/host/${joincode_1}`;
+
 test.beforeEach(async () => {
-    await resetEventData();
+    await resetEventData({ joincode: joincode_1 });
+    await resetEventData({ joincode: joincode_2 });
 });
 
 test('active round and question classes are applied properly', async ({ p1Page, hostPage }) => {
-    await p1Page.joinGame('1234');
-    await hostPage.page.goto('/host/1234');
+    await p1Page.joinGame(joincode_1);
+    await hostPage.page.goto(hostUrl);
 
     // check for current class on 1.1
     await expect(hostPage.roundButton('1')).toHaveClass(current);
@@ -49,12 +54,12 @@ test('active round and question classes are applied properly', async ({ p1Page, 
 });
 
 test('question text reveals properly for players', async ({ p1Page, p2Page, p3Page, hostPage }) => {
-    await p1Page.joinGame('1234');
+    await p1Page.joinGame(joincode_1);
     await p1Page.goToQuestion('1.1');
-    await p2Page.joinGame('1234');
+    await p2Page.joinGame(joincode_1);
     await p2Page.goToQuestion('1.1');
-    await p3Page.joinGame('9999');
-    await hostPage.page.goto('/host/1234');
+    await p3Page.joinGame(joincode_2);
+    await hostPage.page.goto(hostUrl);
     // check 1.1 question text
     await expect(p1Page.questionTextField('1.1')).toHaveText(defaultQuestionText);
     await expect(p2Page.questionTextField('1.1')).toHaveText(defaultQuestionText);
@@ -86,10 +91,10 @@ test('question text reveals properly for players', async ({ p1Page, p2Page, p3Pa
 });
 
 test('auto reveal respects player settings', async ({ p1Page, p2Page, p3Page, hostPage }) => {
-    await p1Page.joinGame('1234');
-    await p2Page.joinGame('1234');
-    await p3Page.joinGame('9999');
-    await hostPage.page.goto('/host/1234');
+    await p1Page.joinGame(joincode_1);
+    await p2Page.joinGame(joincode_1);
+    await p3Page.joinGame(joincode_2);
+    await hostPage.page.goto(hostUrl);
     // host reveals 1.2
     await hostPage.revealQuestion('1.2');
     await asyncTimeout(1500);
@@ -103,9 +108,9 @@ test('auto reveal respects player settings', async ({ p1Page, p2Page, p3Page, ho
 // it's failing where p1 should be on question 2.1 and in the loop
 // auto-reveal does work, so FIXME during test cleanup - 2/16/23
 test('reveal all reveals all questions for a round', async ({ p1Page, p2Page, hostPage }) => {
-    await p1Page.joinGame('1234');
-    await p2Page.joinGame('1234');
-    await hostPage.page.goto('/host/1234');
+    await p1Page.joinGame(joincode_1);
+    await p2Page.joinGame(joincode_1);
+    await hostPage.page.goto(hostUrl);
     // host reveals all for round 2
     await hostPage.roundButton('2').click();
     await hostPage.expectRoundToBe('2');
@@ -136,9 +141,9 @@ test('reveal all reveals all questions for a round', async ({ p1Page, p2Page, ho
 });
 
 test('round locks work properly', async ({ p1Page, p3Page, hostPage }) => {
-    await p1Page.joinGame('1234');
-    await p3Page.joinGame('9999');
-    await hostPage.page.goto('/host/1234');
+    await p1Page.joinGame(joincode_1);
+    await p3Page.joinGame(joincode_2);
+    await hostPage.page.goto(hostUrl);
     await expect(p1Page.responseInput).toBeEditable();
     await expect(p3Page.responseInput).toBeEditable();
 
@@ -152,7 +157,7 @@ test('round locks work properly', async ({ p1Page, p3Page, hostPage }) => {
 });
 
 test('unlocking a round requires host confirmation', async ({ hostPage }) => {
-    await hostPage.page.goto('/host/1234');
+    await hostPage.page.goto(hostUrl);
     // goto round 3
     await hostPage.roundButton('3').click();
     await hostPage.expectRoundToBe('3');

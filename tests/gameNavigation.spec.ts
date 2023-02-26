@@ -5,15 +5,16 @@ import { resetEventData } from './utils.js';
  * TODO:
  * - test swiping (how to do this?)
  */
-
+const joincode = '9901';
+// const eventUrl = `/game/${joincode}`;
 const submission = 'a different answer';
 
 test.afterEach(async () => {
-    await resetEventData();
+    await resetEventData({ joincode });
 });
 
 test('round question cookies work properly', async ({ p1Page }) => {
-    await p1Page.joinGame('1234');
+    await p1Page.joinGame(joincode);
     await p1Page.expectCorrectQuestionHeading('1.1');
 
     await p1Page.page.locator('.round-selector').locator('button:has-text("3")').click();
@@ -28,14 +29,14 @@ test('round question cookies work properly', async ({ p1Page }) => {
 });
 
 test('arrow keys change the active question', async ({ p1Page }) => {
-    await p1Page.joinGame('1234');
+    await p1Page.joinGame(joincode);
     await p1Page.expectCorrectQuestionHeading('1.1');
     await p1Page.page.keyboard.press('ArrowRight');
     await p1Page.expectCorrectQuestionHeading('1.2');
 });
 
 test('unsubmitted class is applied properly', async ({ p1Page }) => {
-    await p1Page.joinGame('1234');
+    await p1Page.joinGame(joincode);
     const responseInput = p1Page.page.locator('input[name="response_text"]');
     // expect the class not be to applied
     await expect(p1Page.page.locator('div#response-container')).not.toHaveClass(/notsubmitted/);
@@ -48,7 +49,7 @@ test('unsubmitted class is applied properly', async ({ p1Page }) => {
 });
 
 test('navigating away from the event page and back retains the active question', async ({ p1Page }) => {
-    await p1Page.joinGame('1234');
+    await p1Page.joinGame(joincode);
     await p1Page.expectCorrectQuestionHeading('1.1');
     await p1Page.page.locator('.question-selector').locator('id=1.3').click();
     await p1Page.expectCorrectQuestionHeading('1.3');

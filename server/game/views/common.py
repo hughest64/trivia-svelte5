@@ -33,9 +33,11 @@ class LeaderboardView(APIView):
 
 
 # NOTE: for testing only!
+# TODO: raise if not settings.DEBUG, and use a better secret code (possibly a shared env variable?)
 class ClearEventDataView(APIView):
     def post(self, request):
         secret = request.data.get("secret")
+        joincode = request.data.get("joincode")
         if secret != "todd is great":
             return Response(
                 {"detail": "ah ah ah, you didn't say the magic word"},
@@ -43,7 +45,7 @@ class ClearEventDataView(APIView):
             )
 
         try:
-            msg = management.call_command("reset")
+            msg = management.call_command("reset", joincode=joincode)
             print(msg)
         except Exception as e:
             return Response({"detail": ""}, status=HTTP_400_BAD_REQUEST)

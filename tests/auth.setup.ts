@@ -14,7 +14,7 @@ export const authStorage: Record<string, string> = {
     hostFile: 'playwright/.auth/host.json'
 };
 
-const login = async (page: Page, config: AuthConfig) => {
+export const login = async (page: Page, config: AuthConfig) => {
     await page.goto('/user/login');
     await page.locator('input[name="username"]').fill(config.username as string);
     await page.locator('input[name="password"]').fill(config.password as string);

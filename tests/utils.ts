@@ -88,13 +88,13 @@ export const getBrowserPage = async (browser: Browser): Promise<Page> => {
     return browser.newContext().then((context) => context.newPage());
 };
 
-export const resetEventData = async () => {
+export const resetEventData = async (body: Record<string, unknown> = {}) => {
     const context = await request.newContext({
         baseURL: `http://localhost:${api_port}`
     });
     const response = await context.post('/reset-event-data', {
         headers: { 'content-type': 'application/json', accept: 'application/json' },
-        data: { secret: 'todd is great' }
+        data: { secret: 'todd is great', ...body }
     });
     expect(response.status()).toBe(200);
     context.dispose();
