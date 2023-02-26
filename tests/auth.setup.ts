@@ -6,7 +6,9 @@ interface AuthConfig {
     password: string;
 }
 
-export const authStorage: Record<string, string> = {
+type StorageKey = 'playerFile' | 'playerTwoFile' | 'playerThreeFile' | 'playerFourFile' | 'hostFile';
+
+export const authStorage: Record<StorageKey, string> = {
     playerFile: 'playwright/.auth/player.json',
     playerTwoFile: 'playwright/.auth/playertwo.json',
     playerThreeFile: 'playwright/.auth/playerthree.json',
