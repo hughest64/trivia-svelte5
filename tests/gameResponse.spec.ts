@@ -8,7 +8,7 @@ const submissionTwo = 'a different answer';
 const joincode_1 = '9902';
 const joincode_2 = '9903';
 
-test.afterAll(async () => {
+test.beforeAll(async () => {
     await resetEventData({ joincode: joincode_1 });
     await resetEventData({ joincode: joincode_2 });
 });

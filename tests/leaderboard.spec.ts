@@ -5,7 +5,7 @@ const joincode = '9900';
 const eventUrl = `/game/${joincode}`;
 const leaderboardUrl = `${eventUrl}/leaderboard`;
 
-test.afterEach(async () => {
+test.beforeEach(async () => {
     await resetEventData({ joincode });
 });
 

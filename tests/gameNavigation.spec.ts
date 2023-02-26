@@ -5,11 +5,11 @@ import { resetEventData } from './utils.js';
  * TODO:
  * - test swiping (how to do this?)
  */
+
 const joincode = '9901';
-// const eventUrl = `/game/${joincode}`;
 const submission = 'a different answer';
 
-test.afterEach(async () => {
+test.beforeEach(async () => {
     await resetEventData({ joincode });
 });
 

@@ -72,7 +72,7 @@ export class PlayerGamePage extends BasePage {
     }
 
     async joinGame(joincode: string): Promise<void> {
-        this.page.goto('/game/join');
+        await this.page.goto('/game/join');
         await this.page.locator('input[name="joincode"]').fill(joincode);
         await this.page.locator('button[type="submit"]').click();
     }
