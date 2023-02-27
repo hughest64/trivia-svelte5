@@ -103,20 +103,54 @@ test.describe('navigate to trivia event as host', async () => {
     });
 });
 
-test('navigate directly to a game', async ({ browser }) => {
-    await resetEventData({ joincode: '9906' });
-    const p1 = new PlayerGamePage(await getBrowserPage(browser));
-    await p1.login();
-    await p1.page.goto('/game/9906');
-    // expect the message to appear
-    const linkText = p1.page.locator('button', { hasText: 'Click here' });
-    await expect(linkText).toBeVisible();
-    // expect the anwer input to be disabled
-    await expect(p1.responseInput).toBeDisabled();
-    // click the link
-    await linkText.click();
-    // expect the answer input to be editable
-    await expect(p1.responseInput).toBeEditable();
-    // expect the message to go away
-    await expect(linkText).not.toBeVisible();
+test.describe('event specific rules', async () => {
+    test.beforeEach(async () => resetEventData({ joincode: '9906' }));
+
+    test('navigate directly to a game', async ({ browser }) => {
+        const p1 = new PlayerGamePage(await getBrowserPage(browser));
+        await p1.login();
+        await p1.page.goto('/game/9906');
+        // expect the message to appear
+        const linkText = p1.page.locator('button', { hasText: 'Click here' });
+        await expect(linkText).toBeVisible();
+        // expect the anwer input to be disabled
+        await expect(p1.responseInput).toBeDisabled();
+        // click the link
+        await linkText.click();
+        // expect the answer input to be editable
+        await expect(p1.responseInput).toBeEditable();
+        // expect the message to go away
+        await expect(linkText).not.toBeVisible();
+    });
+
+    test('two players cannot join an event with a player limit', async ({ browser }) => {
+        const p1 = new PlayerGamePage(await getBrowserPage(browser));
+        await p1.login();
+        await p1.joinGame('9906');
+
+        const p2 = new PlayerGamePage(await getBrowserPage(browser), {
+            username: 'player_two',
+            password: 'player_two'
+        });
+        await p2.login();
+        await p2.joinGame('9906');
+
+        // should still be on /game/join but with error text
+        await expect(p2.page).toHaveURL(/\/game\/join/);
+        await expect(p2.page.locator('p.error', { hasText: /team limit exceeded/i })).toBeVisible();
+        // direct navigate
+        await p2.page.goto('/game/9906');
+        // should be on error page
+        await expect(p2.page.locator('p', { hasText: /player limit/i })).toBeVisible();
+        // click join a different game
+        await p2.page.locator('a', { hasText: /different game/i }).click();
+        // should be on /game/join
+        await expect(p2.page).toHaveURL('/game/join');
+        // click back
+        await p2.page.goBack();
+        // click select a different team
+        await p2.page.locator('a', { hasText: /different team/i }).click();
+        // should b on /team
+        await expect(p2.page).toHaveURL('/team');
+    });
 });
