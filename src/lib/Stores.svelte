@@ -32,7 +32,7 @@
         question_key: data?.current_event_data?.question_key || '1.1'
     });
 
-    // TODO: this started causing problems when naviaging via footer links,
+    // TODO: this started causing problems when navigating via footer links,
     // but not sure why or why this change was made in the first place
     // const activeEventData = createStore<ActiveEventData | null>('activeEventData', null);
     // $: activeEventData.set({

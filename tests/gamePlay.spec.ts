@@ -104,9 +104,6 @@ test('auto reveal respects player settings', async ({ p1Page, p2Page, p3Page, ho
     await p3Page.expectCorrectQuestionHeading('1.1');
 });
 
-// TODO: this test is slow and sucks (the loop is baaaaddd)
-// it's failing where p1 should be on question 2.1 and in the loop
-// auto-reveal does work, so FIXME during test cleanup - 2/16/23
 test('reveal all reveals all questions for a round', async ({ p1Page, p2Page, hostPage }) => {
     await p1Page.joinGame(joincode_1);
     await p2Page.joinGame(joincode_1);
