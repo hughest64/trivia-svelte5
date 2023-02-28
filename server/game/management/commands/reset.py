@@ -23,6 +23,8 @@ class Command(BaseCommand):
             joincodes = [1234, 9998, 9999]
         print(joincodes)
 
+        Team.objects.filter(name="My Cool Team TEST").delete()
+
         events = TriviaEvent.objects.filter(joincode__in=joincodes)
         events.update(current_question_number=1, current_round_number=1)
         for event in events:

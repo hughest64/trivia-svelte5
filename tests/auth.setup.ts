@@ -1,7 +1,7 @@
 import { test as setup } from '@playwright/test';
 import type { Page } from '@playwright/test';
 
-interface AuthConfig {
+export interface AuthConfig {
     username: string;
     password: string;
 }

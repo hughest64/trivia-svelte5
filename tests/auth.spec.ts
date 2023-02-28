@@ -6,6 +6,19 @@ import type { Page } from '@playwright/test';
 const adminUser = 'sample_admin';
 const playerSelectedTeam = 'hello world';
 
+test('correct handling of user creation', async ({ page }) => {
+    // or we could goto / and click login then click create account
+    await page.goto('/user/create');
+    // fill in the form w/ a username that already exists
+    // expect error message
+
+    // fill in the form w/ passwords that don't match
+    // expect error message
+
+    // fill in the form correctly
+    // expect to be sent to /team (I think)
+});
+
 test('guest login', async ({ page }) => {
     await page.goto('/');
     // not logged in, we should land on the welcome page
