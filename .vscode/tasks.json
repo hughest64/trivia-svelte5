@@ -20,32 +20,15 @@
             "problemMatcher": []
         },
         {
-            "label": "django-test",
-            "type": "shell",
-            "detail": "run a Django test server which creates a test database from a fixture",
-            "command": "${command:python.interpreterPath}",
-            "args": ["manage.py", "testserver", "game/fixtures/dbdump.json", "--addrport", "7000"],
-            "options": {
-                "cwd": "${cwd}/server"
-            },
-            "problemMatcher": []
-        },
-        {
             "type": "npm",
-            "script": "test-db",
+            "script": "test",
             "group": {
                 "kind": "test",
                 "isDefault": true
             },
             "problemMatcher": [],
-            "label": "test-db",
+            "label": "test",
             "detail": "run playwright test using port 7000 to connect to the api (test server)"
-        },
-        {
-            "label": "run-tests",
-            "dependsOn": ["django-test", "test-db"],
-            "problemMatcher": [],
-            "detail": "start the Django test server and run playwright tests against it"
         }
     ]
 }
