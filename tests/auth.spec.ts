@@ -104,7 +104,7 @@ test.describe('navigate to trivia event as host', async () => {
 });
 
 test.describe('event specific rules', async () => {
-    test.beforeEach(async () => resetEventData({ joincode: '9906' }));
+    test.beforeEach(async () => resetEventData({ joincodes: 9906 }));
 
     test('navigate directly to a game', async ({ browser }) => {
         const p1 = new PlayerGamePage(await getBrowserPage(browser));

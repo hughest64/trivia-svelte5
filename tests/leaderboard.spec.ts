@@ -6,7 +6,7 @@ const eventUrl = `/game/${joincode}`;
 const leaderboardUrl = `${eventUrl}/leaderboard`;
 
 test.beforeEach(async () => {
-    await resetEventData({ joincode });
+    await resetEventData({ joincodes: joincode });
 });
 
 test('player one leaderboard updates when another team joins', async ({ p1Page, p3Page }) => {

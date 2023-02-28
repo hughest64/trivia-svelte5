@@ -18,8 +18,7 @@ const joincode_2 = '9905';
 const hostUrl = `/host/${joincode_1}`;
 
 test.beforeEach(async () => {
-    await resetEventData({ joincode: joincode_1 });
-    await resetEventData({ joincode: joincode_2 });
+    await resetEventData({ joincodes: [joincode_1, joincode_2] });
 });
 
 test('active round and question classes are applied properly', async ({ p1Page, hostPage }) => {

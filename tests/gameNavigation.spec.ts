@@ -10,7 +10,7 @@ const joincode = '9901';
 const submission = 'a different answer';
 
 test.beforeEach(async () => {
-    await resetEventData({ joincode });
+    await resetEventData({ joincodes: joincode });
 });
 
 test('round question cookies work properly', async ({ p1Page }) => {

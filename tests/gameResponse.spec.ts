@@ -9,8 +9,7 @@ const joincode_1 = '9902';
 const joincode_2 = '9903';
 
 test.beforeAll(async () => {
-    await resetEventData({ joincode: joincode_1 });
-    await resetEventData({ joincode: joincode_2 });
+    await resetEventData({ joincodes: [joincode_1, joincode_2] });
 });
 
 test('responses only update for the same team on the same event', async ({ p1Page, p2Page, p3Page, p4Page }) => {

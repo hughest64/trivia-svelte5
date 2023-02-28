@@ -8,20 +8,19 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser: CommandParser) -> None:
         parser.add_argument(
-            "-j",
-            "--joincode",
-            type=str,
+            "joincodes",
+            nargs="*",
+            type=int,
             help="the joincode for a specific event to reset",
         )
 
     def handle(self, *args, **kwargs):
         """reset all mutable event related data for an event with the joincode 1234"""
         self.stdout.write("reseting event data")
-        joincode = kwargs.get("joincode")
-        if joincode is None:
+
+        joincodes = kwargs.get("joincodes")
+        if not joincodes:
             joincodes = [1234, 9998, 9999]
-        else:
-            joincodes = [joincode]
         print(joincodes)
 
         events = TriviaEvent.objects.filter(joincode__in=joincodes)

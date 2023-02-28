@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.core import management
 
 from rest_framework.response import Response
@@ -33,11 +34,19 @@ class LeaderboardView(APIView):
 
 
 # NOTE: for testing only!
-# TODO: raise if not settings.DEBUG, and use a better secret code (possibly a shared env variable?)
+# TODO: and use a better secret code (possibly a shared env variable?)
 class ClearEventDataView(APIView):
     def post(self, request):
+        if not settings.DEBUG:
+            return Response(
+                {"detail": "that is not allowed"}, status=HTTP_400_BAD_REQUEST
+            )
+
         secret = request.data.get("secret")
-        joincode = request.data.get("joincode")
+        joincodes = request.data.get("joincodes", [])
+        if isinstance(joincodes, (str, int)):
+            joincodes = [joincodes]
+
         if secret != "todd is great":
             return Response(
                 {"detail": "ah ah ah, you didn't say the magic word"},
@@ -45,7 +54,7 @@ class ClearEventDataView(APIView):
             )
 
         try:
-            msg = management.call_command("reset", joincode=joincode)
+            msg = management.call_command("reset", *joincodes)
             print(msg)
         except Exception as e:
             return Response({"detail": ""}, status=HTTP_400_BAD_REQUEST)
