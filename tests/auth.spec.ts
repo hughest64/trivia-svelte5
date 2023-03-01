@@ -6,17 +6,48 @@ import type { Page } from '@playwright/test';
 const adminUser = 'sample_admin';
 const playerSelectedTeam = 'hello world';
 
-test('correct handling of user creation', async ({ page }) => {
-    // or we could goto / and click login then click create account
-    await page.goto('/user/create');
-    // fill in the form w/ a username that already exists
-    // expect error message
+test.describe('user creation', async () => {
+    test.afterAll(async () => await resetEventData());
 
-    // fill in the form w/ passwords that don't match
-    // expect error message
+    test('correct handling of user creation', async ({ page }) => {
+        const pass1 = 'abc123';
+        const pass2 = 'abd345';
 
-    // fill in the form correctly
-    // expect to be sent to /team (I think)
+        const usernameField = page.locator('input[name="username"]');
+        const pass1Field = page.locator('input[name="pass"]');
+        const pass2Field = page.locator('input[name="pass2"]');
+        const emailField = page.locator('input[name="email"]');
+        const submitButton = page.locator('button', { hasText: /sign up/i });
+
+        // or / and click login then click create account
+        await page.goto('/user/create');
+        // fill in the form w/ a username that already exists
+        await usernameField.fill('player');
+        await pass1Field.fill(pass1);
+        await pass2Field.fill(pass1);
+        await emailField.fill('no@no.no');
+        await submitButton.click();
+        await expect(page).toHaveURL('/user/create');
+        await expect(page.locator('p.error')).toHaveText(/username already exists/i);
+
+        // fill in the form w/ passwords that don't match
+        await usernameField.fill('testuser');
+        await pass1Field.fill(pass1);
+        await pass2Field.fill(pass2);
+        await emailField.fill('no@no.no');
+        await submitButton.click();
+        await expect(page).toHaveURL('/user/create');
+        await expect(page.locator('p.error')).toHaveText(/passwords do not match/i);
+
+        // fill in the form correctly
+        await usernameField.fill('testuser');
+        await pass1Field.fill(pass1);
+        await pass2Field.fill(pass1);
+        await emailField.fill('no@no.no');
+        await submitButton.click();
+
+        await expect(page).toHaveURL('/team');
+    });
 });
 
 test('guest login', async ({ page }) => {

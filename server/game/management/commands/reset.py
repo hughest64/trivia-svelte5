@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand, CommandParser
 
 from game.models import *
+from user.models import User
 
 
 class Command(BaseCommand):
@@ -24,6 +25,7 @@ class Command(BaseCommand):
         print(joincodes)
 
         Team.objects.filter(name="My Cool Team TEST").delete()
+        User.objects.filter(username="testuser").delete()
 
         events = TriviaEvent.objects.filter(joincode__in=joincodes)
         events.update(current_question_number=1, current_round_number=1)
