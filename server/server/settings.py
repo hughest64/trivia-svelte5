@@ -108,9 +108,7 @@ ASGI_APPLICATION = "server.asgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
-# TODO: use postgres, and create an alternate test_settings.py file
-# which defines a separate test db, will need a good way to keep
-# both databases in sync migration wise
+# TODO: use postgres
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
@@ -177,7 +175,3 @@ REST_FRAMEWORK = {
 
 with open(BASE_DIR / "game/word_lists/positive.txt", "r") as f:
     WORD_LISZT = f.read().split("\n")
-
-# TODO: we may not need this if we use a standard test db
-# reserve join codes >= 9900 for testing
-MAX_EVENT_JOIN_CODE = 9899

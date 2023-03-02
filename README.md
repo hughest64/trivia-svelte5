@@ -15,32 +15,35 @@ All required `.env` settings for development and testing are included in the rep
 
 ## Project Setup
 ### Database
+`TODO:` update with postgres information for standard and test databases\
+`NOTE:` it might just be easier to make a copy of the standard db to create the test db for the initial setup
 For simplicity the default `sqlite` is used
 ### Migrations
-- `python manage.py makemigrations`
-- `python manage.py migrate`
-### Load Seed Data
-- `python manage.py loaddata fixtures/dbdump.json`
-### Super User
-- `python manage.py createsuperuser` - follow the prompts
-- it's not currently possible to create teams in the ui, so you'll have to add yourself to one or more in the admin
+Migrations are tracked in the repo so there is no need to run `makemigrations` for the inital setup. After the initial setup commands will need to be invoked two times as shown below. Django explicitly does not migrate multiple databases simeltaneously.
+- `python manage.py makemigrations <app>` for the standard db
+- `python manage.py makemigrations <app> --settings=server.settings_tst` for the test database
+- `python manage.py migrate` for the standard db
+- `python manage.py migrate --settings=server.settings_tst` for the test database
 
-## Run the Dev Servers
-- With `pipenv` active from the `server` dir run `python manage.py runserver` to start Django at `localhost:8000`
-- From the root run `npm run dev` to start the SvetleKit dev server at `localhost:5173`
+### Load Initial Data
+Again, two commands are required
+- `python manage.py loaddata game/fixtures/initial.json`
+- `python manage.py loaddata game/fixtures/initial.json --settings=server.settings_tst`
+### Create a Super User
+- `python manage.py createsuperuser` - follow the prompts (same rule to set yourself up in the test database)
 
-## Run Playwright tests
-There are multiple methods for running tests. Using the provided vscode task `run-tests` is the easiest way. 
-This will start a Django test server at `localhost:7000`. Playwright will build the app and run tests against it. 
-This keeps the actual database isolated and prevents possible false negatives. Expect 2-3 flaky tests and ~56 passing tests.
+## Testing
+### Playwright
 
-`npm run test` will run all tests against the dev database and requires Django to be running on port 8000.
+`npm run test` will start a Django dev server on port 7000 using the test database and run all tests.
 
 Tests can also be run directly in vscode if the playwright extension is installed. Just open a test file and click the play button 
-next to the test. This also uses the dev database and Django must be running on port 8000.
+next to the test. (if it works, the extension can be a bit flaky)
 
-Note that the dev database must be in "fresh" state for all tests to pass meaning that round locks, question reveals, and responses
-need to be in the state of a brand new game.
+### Django
+`python manage.py test` will use the data from `game/fixtures/initial.json` to run tests against the api.
 
-You can use the command `python manage.py reset` to reset the database before the test run. 
-Subsequent test runs are guaranteed to have a "fresh" state as the tests themselves reset the data frequently.
+## Development
+### Run the Dev Servers
+- With `pipenv` active from `/server` run `python manage.py runserver` to start Django at `localhost:8000`
+- From the root: `npm run dev` to start the SvetleKit dev server at `localhost:5173`
