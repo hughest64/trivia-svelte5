@@ -9,7 +9,7 @@ from user.models import User
 
 
 class TeamViewsTestCase(TestCase):
-    fixtures = ["dbdump.json"]
+    fixtures = ["initial.json"]
 
     def setUp(self) -> None:
         self.client = APIClient()
@@ -30,6 +30,7 @@ class TeamViewsTestCase(TestCase):
         # expect a token in the cookies (?)
         return
 
+    # TODO: this probably belongs in user tests?
     def test_login(self):
         # post to /user/login w/ p2 credentials
         # expect user data in the reponse
@@ -43,14 +44,14 @@ class TeamViewsTestCase(TestCase):
         return
 
     def test_create_team(self):
-        post_data = {"name": "My Team"}
+        post_data = {"team_name": "My Team"}
         response = self.client.post("/team/create", data=post_data)
 
         self.assertEqual(response.status_code, 200)
         self.assertTrue("user_data" in response.data)
 
-        team = Team.objects.get(name="My Team")
         user = User.objects.get(username="player")
+        team = Team.objects.get(name="My Team")
         # team should have an auto-generated password
         self.assertTrue(team.password is not None)
         # user should be a member of the team
@@ -61,7 +62,7 @@ class TeamViewsTestCase(TestCase):
     def test_join_team(self):
         # post a bad password
         bad_resp = self.client.post(
-            "/team/join", data={"team_password": "this is a bad passwiord"}
+            "/team/join", data={"team_password": "this is a bad password"}
         )
         self.assertEqual(bad_resp.status_code, 400)
 

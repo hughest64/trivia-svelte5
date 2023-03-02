@@ -10,7 +10,7 @@ from user.models import User
 
 
 class ResponseGradeTestCase(TestCase):
-    fixtures = ["dbdump.json"]
+    fixtures = ["initial.json"]
 
     def setUp(self):
         self.event = TriviaEvent.objects.get(joincode=1234)
@@ -51,7 +51,8 @@ class ResponseGradeTestCase(TestCase):
 
 
 class HostResponseGrading(TestCase):
-    fixtures = ["data-2-13-23.json"]
+    # fixtures = ["data-2-13-23.json"]
+    fixtures = ["initial.json"]
 
     def setUp(self) -> None:
         self.client = APIClient()

@@ -10,9 +10,7 @@ const config: PlaywrightTestConfig = {
             port: 4173
         },
         {
-            // TODO: potentially add --settings=server.test_settings with the idea that
-            // test_settings.py is a file that would define a different default db used for testing
-            command: 'pipenv run python manage.py runserver 7000',
+            command: 'pipenv run python manage.py runserver 7000 --settings=server.settings_tst',
             cwd: 'server',
             port: 7000
         }

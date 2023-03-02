@@ -7,7 +7,7 @@ from user.models import User
 
 
 class EventViewTestCase(TestCase):
-    fixtures = ["dbdump.json"]
+    fixtures = ["initial.json"]
 
     def setUp(self):
         self.client = APIClient()
