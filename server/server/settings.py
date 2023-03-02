@@ -37,8 +37,19 @@ SECRET_KEY = env("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env("DEBUG")
 
+# TODO: split these out in different settings files, or use an env variable
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", "10.0.0.135", "api-backend"]
 
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:5173",
+    "http://10.0.0.135:5173",
+    "http://127.0.0.1:5173",
+    "http://10.0.0.135:3000",
+    "http://127.0.0.1:3000",
+    "http://api-backend",
+]
+
+# TODO: redis channel layer
 CHANNEL_LAYERS = {"default": {"BACKEND": "channels.layers.InMemoryChannelLayer"}}
 
 AUTH_USER_MODEL = "user.User"
@@ -62,6 +73,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    # TODO: remove this and the package
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -96,6 +108,9 @@ ASGI_APPLICATION = "server.asgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
+# TODO: use postgres, and create an alternate test_settings.py file
+# which defines a separate test db, will need a good way to keep
+# both databases in sync migration wise
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
@@ -146,15 +161,6 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:5173",
-    "http://10.0.0.135:5173",
-    "http://127.0.0.1:5173",
-    "http://10.0.0.135:3000",
-    "http://127.0.0.1:3000",
-    "http://api-backend",
-]
-
 # jwt settings
 
 # token expiration in minutes
@@ -172,5 +178,6 @@ REST_FRAMEWORK = {
 with open(BASE_DIR / "game/word_lists/positive.txt", "r") as f:
     WORD_LISZT = f.read().split("\n")
 
+# TODO: we may not need this if we use a standard test db
 # reserve join codes >= 9900 for testing
 MAX_EVENT_JOIN_CODE = 9899
