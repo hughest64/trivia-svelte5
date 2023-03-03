@@ -33,11 +33,12 @@ class LeaderboardView(APIView):
         )
 
 
-# NOTE: for testing only!
-# TODO: and use a better secret code (possibly a shared env variable?)
 class ClearEventDataView(APIView):
+    """Endpoint used for resetting event data during tests"""
+
     def post(self, request):
-        if not settings.DEBUG:
+        # TODO: this kinda get's buried in the test run (we only see the 400 response)
+        if not settings.ALLOW_RESET:
             return Response(
                 {"detail": "that is not allowed"}, status=HTTP_400_BAD_REQUEST
             )
@@ -47,6 +48,7 @@ class ClearEventDataView(APIView):
         if isinstance(joincodes, (str, int)):
             joincodes = [joincodes]
 
+        # TODO: probably better to keep the secret in a .env file and read it into settings
         if secret != "todd is great":
             return Response(
                 {"detail": "ah ah ah, you didn't say the magic word"},
