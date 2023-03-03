@@ -7,11 +7,14 @@ After=network.target
 
 [Service]
 Type=simple
-Group=todd
-User=todd
+Group=cotn
+User=triviamafia
 
-WorkingDirectory=/home/todd/dev/tm-svelte/server
-ExecStart=/home/todd/.local/share/virtualenvs/tm-svelte-bQq8cgGE/bin/daphne server.asgi:application -u /home/todd/dev/tm-svelte/tmp/tmdemo.sock
+# use the production settings module
+Environment="DJANGO_SETTINGS_MODULE=server.settings_prod"
+
+WorkingDirectory=/opt/cotn/triviamafia/app
+ExecStart=/home/triviamafia/.local/share/virtualenvs/tm-svelte-bQq8cgGE/bin/daphne server.asgi:application -u /opt/cotn/triviamafia/app/tmp/tmdemo.sock
 Restart=always
 RestartSec=10
 

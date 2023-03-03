@@ -37,17 +37,9 @@ SECRET_KEY = env("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env("DEBUG")
 
-# TODO: split these out in different settings files, or use an env variable
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "10.0.0.135", "api-backend"]
+ALLOWED_HOSTS = []
 
-CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:5173",
-    "http://10.0.0.135:5173",
-    "http://127.0.0.1:5173",
-    "http://10.0.0.135:3000",
-    "http://127.0.0.1:3000",
-    "http://api-backend",
-]
+CSRF_TRUSTED_ORIGINS = []
 
 # TODO: redis channel layer
 CHANNEL_LAYERS = {"default": {"BACKEND": "channels.layers.InMemoryChannelLayer"}}

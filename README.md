@@ -60,3 +60,8 @@ See the [testing readme](/tests/README.md) for information on creating Playwrigh
 ### Run the Dev Servers
 - With `pipenv` active from `/server` run `python manage.py runserver` to start Django at `localhost:8000`
 - From the root: `npm run dev` to start the SvetleKit dev server at `localhost:5173`
+
+## Deployment
+- add `server/server/settings_prod.py` with variables for `ALLOWED_HOSTS` and `CSRF_TRUSTED_ORIGINS`
+`TODO:`
+- detail service files and nginx config

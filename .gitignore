@@ -13,5 +13,7 @@ __pycache__/
 # built static files from Django
 server/static/
 server/db*.sqlite3
+# production settings
+server/server/settings_prod.py
 
 playwright/.auth
