@@ -247,7 +247,7 @@ class AirtableData:
         return df
 
     @classmethod
-    def _map_answers_list(cls, answers: str) -> list[str]:
+    def _map_answers_list(cls, answers: str):
         """Split a comma (and/or space) separated string of accepted answers into an array"""
         if not isinstance(answers, str):
             raise ValueError(
