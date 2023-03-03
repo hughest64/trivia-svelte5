@@ -6,8 +6,9 @@ from game.models import *
 from user.models import User
 
 
+# TODO: write some tests
 class QuestionResponseViewTestCase(TestCase):
-    fixtures = ["dbdump.json"]
+    fixtures = ["initial.json"]
 
     def setUp(self) -> None:
         self.client = APIClient()

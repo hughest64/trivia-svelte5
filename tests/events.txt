@@ -1,0 +1,9 @@
+joincode range reserved to testing = 9900 - 9999
+used:
+9900 - leaderboard.spec
+9901 - gameNavigation.spec
+9902 - gameResponse.spec
+9903 - gameResponse.spec
+9904 - gamePlay.spec
+9905 - gamePlay.spec
+9906 - auth.spec - 1 player limits set for this trivia event

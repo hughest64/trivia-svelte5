@@ -8,7 +8,7 @@ from game.processors import LeaderboardProcessor
 
 
 class LeaderboardSetup(TestCase):
-    fixtures = ["data-2-13-23.json"]
+    fixtures = ["initial.json"]
 
     def setUp(self) -> None:
         self.event = TriviaEvent.objects.get(joincode=9998)
@@ -43,6 +43,7 @@ class LeaderboardSetup(TestCase):
         # entries are sorted are ranked properly
         self.assertEqual(entries.filter(rank__isnull=False).count(), entry_count)
         self.assertEqual(entries.first().rank, 1)
+
         self.assertEqual(entries.last().rank, entry_count)
         # assert a <= b <= n... for all entries
         for i, e in enumerate(entries):

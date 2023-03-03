@@ -3,6 +3,19 @@ import type { Browser, Page } from '@playwright/test';
 
 const api_port = process.env.API_PORT || '8000';
 
+/**
+ * test refator ideas:
+ * use repeatable authentication (file based creds with storageState)
+ * - https://playwright.dev/docs/auth#multiple-signed-in-roles
+ * integrate that with POM classes
+ * - https://playwright.dev/docs/auth#testing-multiple-roles-with-pom-fixtures
+ * consider running tests in bigger files in parallel
+ * - https://playwright.dev/docs/test-parallel
+ * must figure out a better data reset system
+ * must use data that won't be modified by users (i.e. don't user event 1234)
+ * must reduce configurations (i.e. vscode tasks, playwright configs, npm tasks)
+ */
+
 export interface TestConfig {
     username?: string;
     password?: string;
@@ -23,18 +36,7 @@ export const login = async (page: Page, config: TestConfig = {}): Promise<void> 
     if (pageUrl) await page.goto(pageUrl);
     await page.locator('input[name="username"]').fill(username as string);
     await page.locator('input[name="password"]').fill(password as string);
-    await page.locator('input[value="Submit"]').click();
-};
-
-export const loginToGame = async (page: Page, config: TestConfig = {}): Promise<void> => {
-    const { joincode, username, password }: TestConfig = { ...defaultTestConfig, ...config };
-    await page.goto('/user/login');
-    await page.locator('input[name="username"]').fill(username as string);
-    await page.locator('input[name="password"]').fill(password as string);
-    await page.locator('input[value="Submit"]').click();
-    await page.goto('/game/join');
-    await page.locator('input[name="joincode"]').fill(joincode as string);
-    await page.locator('button[type="submit"]').click();
+    await page.locator('button', { hasText: 'Submit' }).click();
 };
 
 export const authRedirects = async (page: Page, config: TestConfig = {}) => {
@@ -75,13 +77,13 @@ export const getBrowserPage = async (browser: Browser): Promise<Page> => {
     return browser.newContext().then((context) => context.newPage());
 };
 
-export const resetEventData = async () => {
+export const resetEventData = async (body: Record<string, unknown> = {}) => {
     const context = await request.newContext({
         baseURL: `http://localhost:${api_port}`
     });
     const response = await context.post('/reset-event-data', {
         headers: { 'content-type': 'application/json', accept: 'application/json' },
-        data: { secret: 'todd is great' }
+        data: { secret: 'todd is great', ...body }
     });
     expect(response.status()).toBe(200);
     context.dispose();

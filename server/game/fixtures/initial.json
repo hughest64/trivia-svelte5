@@ -21,26 +21,6 @@
 },
 {
     "model": "user.user",
-    "pk": 2,
-    "fields": {
-        "password": "pbkdf2_sha256$390000$tbckRq1ERIT3Vf3GyHYYyj$IQw5RtSAR/7cO7sKOTxLj9B6w9qNHIQl+PfwQ7aAUK0=",
-        "last_login": null,
-        "is_superuser": false,
-        "username": "kieran",
-        "first_name": "",
-        "last_name": "",
-        "email": "",
-        "is_staff": false,
-        "is_active": true,
-        "date_joined": "2022-06-05T23:42:34.573Z",
-        "active_team": null,
-        "auto_reveal_questions": false,
-        "groups": [],
-        "user_permissions": []
-    }
-},
-{
-    "model": "user.user",
     "pk": 3,
     "fields": {
         "password": "pbkdf2_sha256$390000$HADuXutUAtSmjR170vNRgS$fDPC58WnyxNah/lIZHl44sGRg9b+dJNYiulr7CTu1y8=",
@@ -63,7 +43,7 @@
     "model": "user.user",
     "pk": 4,
     "fields": {
-        "password": "pbkdf2_sha256$390000$0HXMA8NvpRlu0YgB7kyRth$5d/4aojW+m7KO2XgK8cRyZBf42ty+9rDjiU9DXn8XE0=",
+        "password": "pbkdf2_sha256$480000$D8ZiPzPhQrry3QKzNmfZay$UIo97JZ7NKao/2e3hNqvTG5pTIfzSEcG44lH2qERWWA=",
         "last_login": null,
         "is_superuser": true,
         "username": "sample_admin",
@@ -83,7 +63,7 @@
     "model": "user.user",
     "pk": 5,
     "fields": {
-        "password": "pbkdf2_sha256$390000$FBHDX0p4ucXX7GoazHuEz5$TJC/P88jsJgQWISzpyHFA7gOlHphH0MF5V8sfJJ1P3A=",
+        "password": "pbkdf2_sha256$480000$gdVsfrBNejgS84ePuNyVsj$S1dCeEvyM74ObqY04YOQRm81WLpn6NmHWTPkBbXkWKc=",
         "last_login": null,
         "is_superuser": false,
         "username": "player",
@@ -103,7 +83,7 @@
     "model": "user.user",
     "pk": 7,
     "fields": {
-        "password": "pbkdf2_sha256$390000$Fzh6Zuq4n9UBLXYyOti7nS$dB4vtBhrNLGLz+/E32kWuuhrOT7USnwIFX3isM95c24=",
+        "password": "pbkdf2_sha256$480000$uZJXuwUrnnKQn87W5qNzuM$Mf54fwQokqU+ddV7QlQ2UQaMRMzYlv8zKW1/U1Lvd7I=",
         "last_login": null,
         "is_superuser": false,
         "username": "player_two",
@@ -123,7 +103,7 @@
     "model": "user.user",
     "pk": 8,
     "fields": {
-        "password": "pbkdf2_sha256$390000$1LSduvbWbwtHDs4KYsl1nM$vL/khEmEWo3VLIlD7y20UF93DJE+rPD6kQ0ChtmItzc=",
+        "password": "pbkdf2_sha256$480000$PLgvjMaW18mP8mPGs1D4oN$+rIc7W5E+EX+X+FPiEYtYAG7nuUoMINzDgfXM/Ft5P0=",
         "last_login": null,
         "is_superuser": false,
         "username": "player_three",
@@ -143,7 +123,7 @@
     "model": "user.user",
     "pk": 9,
     "fields": {
-        "password": "pbkdf2_sha256$390000$TXkAvhnzWMfBUk7FNvLNXi$BvCZNmczMZqi5rhkGxdA3ChbtBPBGYQOZeDa8zTZX4w=",
+        "password": "pbkdf2_sha256$480000$uWy0aEORGU98sFi89RLj0B$rYVJKYqtHsZrmUlFTlQA0V6eL+RhQ78/ed4fbvk3Y2g=",
         "last_login": null,
         "is_superuser": false,
         "username": "player_four",
@@ -157,18 +137,6 @@
         "auto_reveal_questions": false,
         "groups": [],
         "user_permissions": []
-    }
-},
-{
-    "model": "game.team",
-    "pk": 1,
-    "fields": {
-        "created_at": "2022-07-02T14:29:12.473Z",
-        "name": "grambon weekly",
-        "password": "robust-pamper-approve",
-        "members": [
-            1
-        ]
     }
 },
 {
@@ -192,7 +160,6 @@
         "name": "hello world",
         "password": "supurb-glorify-bright",
         "members": [
-            1,
             5,
             7
         ]
@@ -206,8 +173,6 @@
         "name": "The Best Team",
         "password": "leads-joy-blossom",
         "members": [
-            1,
-            2,
             4,
             5
         ]
@@ -221,7 +186,6 @@
         "name": "All the gold in utah",
         "password": "shine-bargain-woo",
         "members": [
-            2,
             5
         ]
     }
@@ -14897,12 +14861,8 @@
         "current_round_number": 1,
         "current_question_number": 1,
         "player_limit": null,
-        "players": [
-            1
-        ],
-        "event_teams": [
-            4
-        ]
+        "players": [],
+        "event_teams": []
     }
 },
 {
@@ -14917,12 +14877,8 @@
         "current_round_number": 1,
         "current_question_number": 1,
         "player_limit": 1,
-        "players": [
-            7
-        ],
-        "event_teams": [
-            3
-        ]
+        "players": [],
+        "event_teams": []
     }
 },
 {
@@ -14949,7 +14905,7 @@
         "date": "2023-02-11",
         "game": 7,
         "location": 1,
-        "joincode": "9900",
+        "joincode": "9997",
         "current_round_number": 8,
         "current_question_number": 1,
         "player_limit": null,
@@ -14962,675 +14918,202 @@
     }
 },
 {
-    "model": "game.eventquestionstate",
-    "pk": 1,
-    "fields": {
-        "created_at": "2022-11-10T10:23:58.177Z",
-        "event": 1,
-        "question_number": 1,
-        "round_number": 1,
-        "question_displayed": true,
-        "answer_displayed": false
-    }
-},
-{
-    "model": "game.eventquestionstate",
-    "pk": 2,
-    "fields": {
-        "created_at": "2022-11-10T10:23:58.195Z",
-        "event": 1,
-        "question_number": 2,
-        "round_number": 1,
-        "question_displayed": false,
-        "answer_displayed": false
-    }
-},
-{
-    "model": "game.eventquestionstate",
-    "pk": 3,
-    "fields": {
-        "created_at": "2022-11-10T10:23:58.214Z",
-        "event": 1,
-        "question_number": 3,
-        "round_number": 1,
-        "question_displayed": false,
-        "answer_displayed": false
-    }
-},
-{
-    "model": "game.eventquestionstate",
-    "pk": 4,
-    "fields": {
-        "created_at": "2022-11-10T10:23:58.231Z",
-        "event": 1,
-        "question_number": 4,
-        "round_number": 1,
-        "question_displayed": false,
-        "answer_displayed": false
-    }
-},
-{
-    "model": "game.eventquestionstate",
-    "pk": 5,
-    "fields": {
-        "created_at": "2022-11-10T10:23:58.247Z",
-        "event": 1,
-        "question_number": 5,
-        "round_number": 1,
-        "question_displayed": false,
-        "answer_displayed": false
-    }
-},
-{
-    "model": "game.eventquestionstate",
+    "model": "game.triviaevent",
     "pk": 6,
     "fields": {
-        "created_at": "2022-11-10T10:23:58.273Z",
-        "event": 1,
-        "question_number": 1,
-        "round_number": 2,
-        "question_displayed": false,
-        "answer_displayed": false
+        "created_at": "2023-02-26T14:42:00.538Z",
+        "date": "2023-02-26",
+        "game": 15,
+        "location": 2,
+        "joincode": "9900",
+        "current_round_number": 1,
+        "current_question_number": 1,
+        "player_limit": null,
+        "players": [
+            5
+        ],
+        "event_teams": [
+            3
+        ]
     }
 },
 {
-    "model": "game.eventquestionstate",
+    "model": "game.triviaevent",
     "pk": 7,
     "fields": {
-        "created_at": "2022-11-10T10:23:58.289Z",
-        "event": 1,
-        "question_number": 2,
-        "round_number": 2,
-        "question_displayed": false,
-        "answer_displayed": false
+        "created_at": "2023-02-26T14:42:16.497Z",
+        "date": "2023-02-26",
+        "game": 15,
+        "location": 2,
+        "joincode": "9901",
+        "current_round_number": 1,
+        "current_question_number": 1,
+        "player_limit": null,
+        "players": [
+            5
+        ],
+        "event_teams": [
+            3
+        ]
     }
 },
 {
-    "model": "game.eventquestionstate",
+    "model": "game.triviaevent",
     "pk": 8,
     "fields": {
-        "created_at": "2022-11-10T10:23:58.305Z",
-        "event": 1,
-        "question_number": 3,
-        "round_number": 2,
-        "question_displayed": false,
-        "answer_displayed": false
+        "created_at": "2023-02-26T14:42:28.912Z",
+        "date": "2023-02-26",
+        "game": 15,
+        "location": 2,
+        "joincode": "9902",
+        "current_round_number": 1,
+        "current_question_number": 1,
+        "player_limit": null,
+        "players": [
+            5,
+            7,
+            8
+        ],
+        "event_teams": [
+            2,
+            3
+        ]
     }
 },
 {
-    "model": "game.eventquestionstate",
+    "model": "game.triviaevent",
     "pk": 9,
     "fields": {
-        "created_at": "2022-11-10T10:23:58.320Z",
-        "event": 1,
-        "question_number": 4,
-        "round_number": 2,
-        "question_displayed": false,
-        "answer_displayed": false
+        "created_at": "2023-02-26T14:42:39.021Z",
+        "date": "2023-02-26",
+        "game": 15,
+        "location": 2,
+        "joincode": "9903",
+        "current_round_number": 1,
+        "current_question_number": 1,
+        "player_limit": null,
+        "players": [
+            9
+        ],
+        "event_teams": [
+            2
+        ]
     }
 },
 {
-    "model": "game.eventquestionstate",
+    "model": "game.triviaevent",
     "pk": 10,
     "fields": {
-        "created_at": "2022-11-10T10:23:58.336Z",
-        "event": 1,
-        "question_number": 5,
-        "round_number": 2,
-        "question_displayed": false,
-        "answer_displayed": false
+        "created_at": "2023-02-26T14:42:54.440Z",
+        "date": "2023-02-26",
+        "game": 15,
+        "location": 2,
+        "joincode": "9904",
+        "current_round_number": 1,
+        "current_question_number": 1,
+        "player_limit": null,
+        "players": [],
+        "event_teams": []
     }
 },
 {
-    "model": "game.eventquestionstate",
+    "model": "game.triviaevent",
     "pk": 11,
     "fields": {
-        "created_at": "2022-11-10T10:23:58.361Z",
-        "event": 1,
-        "question_number": 1,
-        "round_number": 3,
-        "question_displayed": false,
-        "answer_displayed": false
+        "created_at": "2023-02-26T14:43:06.962Z",
+        "date": "2023-02-26",
+        "game": 15,
+        "location": 2,
+        "joincode": "9905",
+        "current_round_number": 1,
+        "current_question_number": 1,
+        "player_limit": null,
+        "players": [],
+        "event_teams": []
     }
 },
 {
-    "model": "game.eventquestionstate",
+    "model": "game.triviaevent",
     "pk": 12,
     "fields": {
-        "created_at": "2022-11-10T10:23:58.377Z",
-        "event": 1,
-        "question_number": 2,
-        "round_number": 3,
-        "question_displayed": false,
-        "answer_displayed": false
+        "created_at": "2023-02-26T14:43:19.336Z",
+        "date": "2023-02-26",
+        "game": 15,
+        "location": 2,
+        "joincode": "9906",
+        "current_round_number": 1,
+        "current_question_number": 1,
+        "player_limit": 1,
+        "players": [
+            5
+        ],
+        "event_teams": [
+            3
+        ]
     }
 },
 {
-    "model": "game.eventquestionstate",
+    "model": "game.triviaevent",
     "pk": 13,
     "fields": {
-        "created_at": "2022-11-10T10:23:58.393Z",
-        "event": 1,
-        "question_number": 3,
-        "round_number": 3,
-        "question_displayed": false,
-        "answer_displayed": false
+        "created_at": "2023-02-26T14:45:20.601Z",
+        "date": "2023-02-26",
+        "game": 15,
+        "location": 2,
+        "joincode": "9907",
+        "current_round_number": 1,
+        "current_question_number": 1,
+        "player_limit": null,
+        "players": [],
+        "event_teams": []
     }
 },
 {
-    "model": "game.eventquestionstate",
+    "model": "game.triviaevent",
     "pk": 14,
     "fields": {
-        "created_at": "2022-11-10T10:23:58.409Z",
-        "event": 1,
-        "question_number": 4,
-        "round_number": 3,
-        "question_displayed": false,
-        "answer_displayed": false
+        "created_at": "2023-02-26T14:45:33.756Z",
+        "date": "2023-02-26",
+        "game": 15,
+        "location": 2,
+        "joincode": "9908",
+        "current_round_number": 1,
+        "current_question_number": 1,
+        "player_limit": null,
+        "players": [],
+        "event_teams": []
     }
 },
 {
-    "model": "game.eventquestionstate",
+    "model": "game.triviaevent",
     "pk": 15,
     "fields": {
-        "created_at": "2022-11-10T10:23:58.427Z",
-        "event": 1,
-        "question_number": 5,
-        "round_number": 3,
-        "question_displayed": false,
-        "answer_displayed": false
+        "created_at": "2023-02-26T14:45:46.437Z",
+        "date": "2023-02-26",
+        "game": 15,
+        "location": 2,
+        "joincode": "9909",
+        "current_round_number": 1,
+        "current_question_number": 1,
+        "player_limit": null,
+        "players": [],
+        "event_teams": []
     }
 },
 {
-    "model": "game.eventquestionstate",
+    "model": "game.triviaevent",
     "pk": 16,
     "fields": {
-        "created_at": "2022-11-10T10:23:58.454Z",
-        "event": 1,
-        "question_number": 1,
-        "round_number": 4,
-        "question_displayed": false,
-        "answer_displayed": false
-    }
-},
-{
-    "model": "game.eventquestionstate",
-    "pk": 17,
-    "fields": {
-        "created_at": "2022-11-10T10:23:58.469Z",
-        "event": 1,
-        "question_number": 2,
-        "round_number": 4,
-        "question_displayed": false,
-        "answer_displayed": false
-    }
-},
-{
-    "model": "game.eventquestionstate",
-    "pk": 18,
-    "fields": {
-        "created_at": "2022-11-10T10:23:58.484Z",
-        "event": 1,
-        "question_number": 3,
-        "round_number": 4,
-        "question_displayed": false,
-        "answer_displayed": false
-    }
-},
-{
-    "model": "game.eventquestionstate",
-    "pk": 19,
-    "fields": {
-        "created_at": "2022-11-10T10:23:58.500Z",
-        "event": 1,
-        "question_number": 4,
-        "round_number": 4,
-        "question_displayed": false,
-        "answer_displayed": false
-    }
-},
-{
-    "model": "game.eventquestionstate",
-    "pk": 20,
-    "fields": {
-        "created_at": "2022-11-10T10:23:58.515Z",
-        "event": 1,
-        "question_number": 5,
-        "round_number": 4,
-        "question_displayed": false,
-        "answer_displayed": false
-    }
-},
-{
-    "model": "game.eventquestionstate",
-    "pk": 21,
-    "fields": {
-        "created_at": "2022-11-10T10:23:58.529Z",
-        "event": 1,
-        "question_number": 6,
-        "round_number": 4,
-        "question_displayed": false,
-        "answer_displayed": false
-    }
-},
-{
-    "model": "game.eventquestionstate",
-    "pk": 22,
-    "fields": {
-        "created_at": "2022-11-10T10:23:58.544Z",
-        "event": 1,
-        "question_number": 7,
-        "round_number": 4,
-        "question_displayed": false,
-        "answer_displayed": false
-    }
-},
-{
-    "model": "game.eventquestionstate",
-    "pk": 23,
-    "fields": {
-        "created_at": "2022-11-10T10:23:58.559Z",
-        "event": 1,
-        "question_number": 8,
-        "round_number": 4,
-        "question_displayed": false,
-        "answer_displayed": false
-    }
-},
-{
-    "model": "game.eventquestionstate",
-    "pk": 24,
-    "fields": {
-        "created_at": "2022-11-10T10:23:58.576Z",
-        "event": 1,
-        "question_number": 9,
-        "round_number": 4,
-        "question_displayed": false,
-        "answer_displayed": false
-    }
-},
-{
-    "model": "game.eventquestionstate",
-    "pk": 25,
-    "fields": {
-        "created_at": "2022-11-10T10:23:58.593Z",
-        "event": 1,
-        "question_number": 10,
-        "round_number": 4,
-        "question_displayed": false,
-        "answer_displayed": false
-    }
-},
-{
-    "model": "game.eventquestionstate",
-    "pk": 26,
-    "fields": {
-        "created_at": "2022-11-10T10:23:58.620Z",
-        "event": 1,
-        "question_number": 1,
-        "round_number": 5,
-        "question_displayed": false,
-        "answer_displayed": false
-    }
-},
-{
-    "model": "game.eventquestionstate",
-    "pk": 27,
-    "fields": {
-        "created_at": "2022-11-10T10:23:58.636Z",
-        "event": 1,
-        "question_number": 2,
-        "round_number": 5,
-        "question_displayed": false,
-        "answer_displayed": false
-    }
-},
-{
-    "model": "game.eventquestionstate",
-    "pk": 28,
-    "fields": {
-        "created_at": "2022-11-10T10:23:58.651Z",
-        "event": 1,
-        "question_number": 3,
-        "round_number": 5,
-        "question_displayed": false,
-        "answer_displayed": false
-    }
-},
-{
-    "model": "game.eventquestionstate",
-    "pk": 29,
-    "fields": {
-        "created_at": "2022-11-10T10:23:58.667Z",
-        "event": 1,
-        "question_number": 4,
-        "round_number": 5,
-        "question_displayed": false,
-        "answer_displayed": false
-    }
-},
-{
-    "model": "game.eventquestionstate",
-    "pk": 30,
-    "fields": {
-        "created_at": "2022-11-10T10:23:58.684Z",
-        "event": 1,
-        "question_number": 5,
-        "round_number": 5,
-        "question_displayed": false,
-        "answer_displayed": false
-    }
-},
-{
-    "model": "game.eventquestionstate",
-    "pk": 31,
-    "fields": {
-        "created_at": "2022-11-10T10:23:58.712Z",
-        "event": 1,
-        "question_number": 1,
-        "round_number": 6,
-        "question_displayed": false,
-        "answer_displayed": false
-    }
-},
-{
-    "model": "game.eventquestionstate",
-    "pk": 32,
-    "fields": {
-        "created_at": "2022-11-10T10:23:58.729Z",
-        "event": 1,
-        "question_number": 2,
-        "round_number": 6,
-        "question_displayed": false,
-        "answer_displayed": false
-    }
-},
-{
-    "model": "game.eventquestionstate",
-    "pk": 33,
-    "fields": {
-        "created_at": "2022-11-10T10:23:58.746Z",
-        "event": 1,
-        "question_number": 3,
-        "round_number": 6,
-        "question_displayed": false,
-        "answer_displayed": false
-    }
-},
-{
-    "model": "game.eventquestionstate",
-    "pk": 34,
-    "fields": {
-        "created_at": "2022-11-10T10:23:58.763Z",
-        "event": 1,
-        "question_number": 4,
-        "round_number": 6,
-        "question_displayed": false,
-        "answer_displayed": false
-    }
-},
-{
-    "model": "game.eventquestionstate",
-    "pk": 35,
-    "fields": {
-        "created_at": "2022-11-10T10:23:58.780Z",
-        "event": 1,
-        "question_number": 5,
-        "round_number": 6,
-        "question_displayed": false,
-        "answer_displayed": false
-    }
-},
-{
-    "model": "game.eventquestionstate",
-    "pk": 36,
-    "fields": {
-        "created_at": "2022-11-10T10:23:58.807Z",
-        "event": 1,
-        "question_number": 1,
-        "round_number": 7,
-        "question_displayed": false,
-        "answer_displayed": false
-    }
-},
-{
-    "model": "game.eventquestionstate",
-    "pk": 37,
-    "fields": {
-        "created_at": "2022-11-10T10:23:58.825Z",
-        "event": 1,
-        "question_number": 2,
-        "round_number": 7,
-        "question_displayed": false,
-        "answer_displayed": false
-    }
-},
-{
-    "model": "game.eventquestionstate",
-    "pk": 38,
-    "fields": {
-        "created_at": "2022-11-10T10:23:58.841Z",
-        "event": 1,
-        "question_number": 3,
-        "round_number": 7,
-        "question_displayed": false,
-        "answer_displayed": false
-    }
-},
-{
-    "model": "game.eventquestionstate",
-    "pk": 39,
-    "fields": {
-        "created_at": "2022-11-10T10:23:58.861Z",
-        "event": 1,
-        "question_number": 4,
-        "round_number": 7,
-        "question_displayed": false,
-        "answer_displayed": false
-    }
-},
-{
-    "model": "game.eventquestionstate",
-    "pk": 40,
-    "fields": {
-        "created_at": "2022-11-10T10:23:58.878Z",
-        "event": 1,
-        "question_number": 5,
-        "round_number": 7,
-        "question_displayed": false,
-        "answer_displayed": false
-    }
-},
-{
-    "model": "game.eventquestionstate",
-    "pk": 41,
-    "fields": {
-        "created_at": "2022-11-10T10:23:58.906Z",
-        "event": 1,
-        "question_number": 1,
-        "round_number": 8,
-        "question_displayed": false,
-        "answer_displayed": false
-    }
-},
-{
-    "model": "game.eventquestionstate",
-    "pk": 42,
-    "fields": {
-        "created_at": "2022-11-10T10:23:58.923Z",
-        "event": 1,
-        "question_number": 2,
-        "round_number": 8,
-        "question_displayed": false,
-        "answer_displayed": false
-    }
-},
-{
-    "model": "game.eventquestionstate",
-    "pk": 43,
-    "fields": {
-        "created_at": "2022-11-10T10:23:58.939Z",
-        "event": 1,
-        "question_number": 3,
-        "round_number": 8,
-        "question_displayed": false,
-        "answer_displayed": false
-    }
-},
-{
-    "model": "game.eventquestionstate",
-    "pk": 44,
-    "fields": {
-        "created_at": "2022-11-10T10:23:58.956Z",
-        "event": 1,
-        "question_number": 4,
-        "round_number": 8,
-        "question_displayed": false,
-        "answer_displayed": false
-    }
-},
-{
-    "model": "game.eventquestionstate",
-    "pk": 45,
-    "fields": {
-        "created_at": "2022-11-10T10:23:58.973Z",
-        "event": 1,
-        "question_number": 5,
-        "round_number": 8,
-        "question_displayed": false,
-        "answer_displayed": false
-    }
-},
-{
-    "model": "game.eventquestionstate",
-    "pk": 110,
-    "fields": {
-        "created_at": "2022-12-23T14:49:25.456Z",
-        "event": 3,
-        "question_number": 1,
-        "round_number": 5,
-        "question_displayed": false,
-        "answer_displayed": false
-    }
-},
-{
-    "model": "game.eventquestionstate",
-    "pk": 111,
-    "fields": {
-        "created_at": "2022-12-23T14:49:36.317Z",
-        "event": 3,
-        "question_number": 2,
-        "round_number": 5,
-        "question_displayed": false,
-        "answer_displayed": false
-    }
-},
-{
-    "model": "game.eventquestionstate",
-    "pk": 112,
-    "fields": {
-        "created_at": "2022-12-23T14:49:36.324Z",
-        "event": 3,
-        "question_number": 3,
-        "round_number": 5,
-        "question_displayed": false,
-        "answer_displayed": false
-    }
-},
-{
-    "model": "game.eventquestionstate",
-    "pk": 113,
-    "fields": {
-        "created_at": "2022-12-23T14:49:36.330Z",
-        "event": 3,
-        "question_number": 4,
-        "round_number": 5,
-        "question_displayed": false,
-        "answer_displayed": false
-    }
-},
-{
-    "model": "game.eventquestionstate",
-    "pk": 114,
-    "fields": {
-        "created_at": "2022-12-23T14:49:36.337Z",
-        "event": 3,
-        "question_number": 5,
-        "round_number": 5,
-        "question_displayed": false,
-        "answer_displayed": false
-    }
-},
-{
-    "model": "game.eventquestionstate",
-    "pk": 115,
-    "fields": {
-        "created_at": "2022-12-23T15:01:01.939Z",
-        "event": 3,
-        "question_number": 1,
-        "round_number": 3,
-        "question_displayed": false,
-        "answer_displayed": false
-    }
-},
-{
-    "model": "game.eventquestionstate",
-    "pk": 116,
-    "fields": {
-        "created_at": "2022-12-23T15:01:01.946Z",
-        "event": 3,
-        "question_number": 2,
-        "round_number": 3,
-        "question_displayed": false,
-        "answer_displayed": false
-    }
-},
-{
-    "model": "game.eventquestionstate",
-    "pk": 117,
-    "fields": {
-        "created_at": "2022-12-23T15:01:01.952Z",
-        "event": 3,
-        "question_number": 6,
-        "round_number": 3,
-        "question_displayed": false,
-        "answer_displayed": false
-    }
-},
-{
-    "model": "game.eventquestionstate",
-    "pk": 118,
-    "fields": {
-        "created_at": "2022-12-23T15:01:01.959Z",
-        "event": 3,
-        "question_number": 3,
-        "round_number": 3,
-        "question_displayed": false,
-        "answer_displayed": false
-    }
-},
-{
-    "model": "game.eventquestionstate",
-    "pk": 119,
-    "fields": {
-        "created_at": "2022-12-23T15:01:01.965Z",
-        "event": 3,
-        "question_number": 4,
-        "round_number": 3,
-        "question_displayed": false,
-        "answer_displayed": false
-    }
-},
-{
-    "model": "game.eventquestionstate",
-    "pk": 120,
-    "fields": {
-        "created_at": "2022-12-23T15:01:01.971Z",
-        "event": 3,
-        "question_number": 5,
-        "round_number": 3,
-        "question_displayed": false,
-        "answer_displayed": false
+        "created_at": "2023-02-26T14:46:01.166Z",
+        "date": "2023-02-26",
+        "game": 15,
+        "location": 1,
+        "joincode": "9910",
+        "current_round_number": 1,
+        "current_question_number": 1,
+        "player_limit": null,
+        "players": [],
+        "event_teams": []
     }
 },
 {
@@ -16175,110 +15658,11 @@
 },
 {
     "model": "game.eventroundstate",
-    "pk": 1,
+    "pk": 71,
     "fields": {
-        "created_at": "2022-11-10T10:23:58.158Z",
-        "event": 1,
-        "round_number": 1,
-        "locked": true,
-        "scored": false
-    }
-},
-{
-    "model": "game.eventroundstate",
-    "pk": 2,
-    "fields": {
-        "created_at": "2022-11-10T10:23:58.256Z",
-        "event": 1,
-        "round_number": 2,
-        "locked": false,
-        "scored": false
-    }
-},
-{
-    "model": "game.eventroundstate",
-    "pk": 3,
-    "fields": {
-        "created_at": "2022-11-10T10:23:58.346Z",
-        "event": 1,
+        "created_at": "2023-03-01T11:43:42.327Z",
+        "event": 10,
         "round_number": 3,
-        "locked": false,
-        "scored": false
-    }
-},
-{
-    "model": "game.eventroundstate",
-    "pk": 4,
-    "fields": {
-        "created_at": "2022-11-10T10:23:58.437Z",
-        "event": 1,
-        "round_number": 4,
-        "locked": false,
-        "scored": false
-    }
-},
-{
-    "model": "game.eventroundstate",
-    "pk": 5,
-    "fields": {
-        "created_at": "2022-11-10T10:23:58.603Z",
-        "event": 1,
-        "round_number": 5,
-        "locked": false,
-        "scored": false
-    }
-},
-{
-    "model": "game.eventroundstate",
-    "pk": 6,
-    "fields": {
-        "created_at": "2022-11-10T10:23:58.695Z",
-        "event": 1,
-        "round_number": 6,
-        "locked": false,
-        "scored": false
-    }
-},
-{
-    "model": "game.eventroundstate",
-    "pk": 7,
-    "fields": {
-        "created_at": "2022-11-10T10:23:58.790Z",
-        "event": 1,
-        "round_number": 7,
-        "locked": false,
-        "scored": false
-    }
-},
-{
-    "model": "game.eventroundstate",
-    "pk": 8,
-    "fields": {
-        "created_at": "2022-11-10T10:23:58.890Z",
-        "event": 1,
-        "round_number": 8,
-        "locked": false,
-        "scored": false
-    }
-},
-{
-    "model": "game.eventroundstate",
-    "pk": 10,
-    "fields": {
-        "created_at": "2022-12-23T14:11:14.993Z",
-        "event": 3,
-        "round_number": 1,
-        "locked": false,
-        "scored": false
-    }
-},
-{
-    "model": "game.eventroundstate",
-    "pk": 11,
-    "fields": {
-        "created_at": "2022-12-23T15:06:19.501Z",
-        "event": 3,
-        "round_number": 5,
         "locked": false,
         "scored": false
     }
@@ -53297,34 +52681,6 @@
 },
 {
     "model": "game.leaderboardentry",
-    "pk": 1,
-    "fields": {
-        "created_at": "2023-02-13T22:52:32.194Z",
-        "leaderboard_type": 1,
-        "event": 3,
-        "leaderboard": null,
-        "team": 7,
-        "rank": null,
-        "tiebreaker_rank": null,
-        "total_points": 0.0
-    }
-},
-{
-    "model": "game.leaderboardentry",
-    "pk": 2,
-    "fields": {
-        "created_at": "2023-02-13T22:52:32.203Z",
-        "leaderboard_type": 0,
-        "event": 3,
-        "leaderboard": null,
-        "team": 7,
-        "rank": null,
-        "tiebreaker_rank": null,
-        "total_points": 0.0
-    }
-},
-{
-    "model": "game.leaderboardentry",
     "pk": 3,
     "fields": {
         "created_at": "2023-02-13T22:52:32.210Z",
@@ -54886,6 +54242,174 @@
         "event": 3,
         "leaderboard": null,
         "team": 63,
+        "rank": null,
+        "tiebreaker_rank": null,
+        "total_points": 0.0
+    }
+},
+{
+    "model": "game.leaderboardentry",
+    "pk": 2517,
+    "fields": {
+        "created_at": "2023-03-01T11:43:12.382Z",
+        "leaderboard_type": 0,
+        "event": 7,
+        "leaderboard": null,
+        "team": 3,
+        "rank": null,
+        "tiebreaker_rank": null,
+        "total_points": 0.0
+    }
+},
+{
+    "model": "game.leaderboardentry",
+    "pk": 2518,
+    "fields": {
+        "created_at": "2023-03-01T11:43:12.392Z",
+        "leaderboard_type": 1,
+        "event": 7,
+        "leaderboard": null,
+        "team": 3,
+        "rank": null,
+        "tiebreaker_rank": null,
+        "total_points": 0.0
+    }
+},
+{
+    "model": "game.leaderboardentry",
+    "pk": 2529,
+    "fields": {
+        "created_at": "2023-03-01T11:43:23.819Z",
+        "leaderboard_type": 0,
+        "event": 12,
+        "leaderboard": null,
+        "team": 3,
+        "rank": null,
+        "tiebreaker_rank": null,
+        "total_points": 0.0
+    }
+},
+{
+    "model": "game.leaderboardentry",
+    "pk": 2530,
+    "fields": {
+        "created_at": "2023-03-01T11:43:23.851Z",
+        "leaderboard_type": 1,
+        "event": 12,
+        "leaderboard": null,
+        "team": 3,
+        "rank": null,
+        "tiebreaker_rank": null,
+        "total_points": 0.0
+    }
+},
+{
+    "model": "game.leaderboardentry",
+    "pk": 2533,
+    "fields": {
+        "created_at": "2023-03-01T11:43:26.789Z",
+        "leaderboard_type": 0,
+        "event": 8,
+        "leaderboard": null,
+        "team": 3,
+        "rank": null,
+        "tiebreaker_rank": null,
+        "total_points": 0.0
+    }
+},
+{
+    "model": "game.leaderboardentry",
+    "pk": 2534,
+    "fields": {
+        "created_at": "2023-03-01T11:43:26.797Z",
+        "leaderboard_type": 1,
+        "event": 8,
+        "leaderboard": null,
+        "team": 3,
+        "rank": null,
+        "tiebreaker_rank": null,
+        "total_points": 0.0
+    }
+},
+{
+    "model": "game.leaderboardentry",
+    "pk": 2537,
+    "fields": {
+        "created_at": "2023-03-01T11:43:28.642Z",
+        "leaderboard_type": 0,
+        "event": 8,
+        "leaderboard": null,
+        "team": 2,
+        "rank": null,
+        "tiebreaker_rank": null,
+        "total_points": 0.0
+    }
+},
+{
+    "model": "game.leaderboardentry",
+    "pk": 2538,
+    "fields": {
+        "created_at": "2023-03-01T11:43:28.682Z",
+        "leaderboard_type": 1,
+        "event": 8,
+        "leaderboard": null,
+        "team": 2,
+        "rank": null,
+        "tiebreaker_rank": null,
+        "total_points": 0.0
+    }
+},
+{
+    "model": "game.leaderboardentry",
+    "pk": 2539,
+    "fields": {
+        "created_at": "2023-03-01T11:43:29.502Z",
+        "leaderboard_type": 0,
+        "event": 9,
+        "leaderboard": null,
+        "team": 2,
+        "rank": null,
+        "tiebreaker_rank": null,
+        "total_points": 0.0
+    }
+},
+{
+    "model": "game.leaderboardentry",
+    "pk": 2540,
+    "fields": {
+        "created_at": "2023-03-01T11:43:29.508Z",
+        "leaderboard_type": 1,
+        "event": 9,
+        "leaderboard": null,
+        "team": 2,
+        "rank": null,
+        "tiebreaker_rank": null,
+        "total_points": 0.0
+    }
+},
+{
+    "model": "game.leaderboardentry",
+    "pk": 2547,
+    "fields": {
+        "created_at": "2023-03-01T11:43:33.476Z",
+        "leaderboard_type": 0,
+        "event": 6,
+        "leaderboard": null,
+        "team": 3,
+        "rank": null,
+        "tiebreaker_rank": null,
+        "total_points": 0.0
+    }
+},
+{
+    "model": "game.leaderboardentry",
+    "pk": 2548,
+    "fields": {
+        "created_at": "2023-03-01T11:43:33.483Z",
+        "leaderboard_type": 1,
+        "event": 6,
+        "leaderboard": null,
+        "team": 3,
         "rank": null,
         "tiebreaker_rank": null,
         "total_points": 0.0

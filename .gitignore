@@ -12,5 +12,8 @@ tmp/
 __pycache__/
 # built static files from Django
 server/static/
-migrations/
-server/db.sqlite3
+server/db*.sqlite3
+# production settings
+server/server/settings_prod.py
+
+playwright/.auth

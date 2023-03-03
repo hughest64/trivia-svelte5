@@ -5,16 +5,16 @@ Description=TM SvelteKit
 
 [Service]
 Type=simple
-Group=todd
-User=todd
+Group=cotn
+User=triviamafia
 
 # match the proxy_pass host in the nginx config (default port is already 3000)
 Environment="HOST=127.0.0.1"
 
 # match the server_name in the ngnix config
-Environment="ORIGIN=http://10.0.0.135"
+Environment="ORIGIN=https://play.triviamafia.com"
 
-WorkingDirectory=/home/todd/dev/tm-svelte/build
+WorkingDirectory=/opt/cotn/triviamafia/app/build
 ExecStart=node index.js
 Restart=always
 RestartSec=10

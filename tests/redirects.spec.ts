@@ -44,18 +44,19 @@ test.describe('logged in users cannot access login routes', async () => {
         await login(page);
     });
 
-    test('logged in user is redirect to /team when trying to go to /user/login', async ({ page }) => {
+    test('logged in user is redirected to /team when trying to go to /user/login', async ({ page }) => {
         await expect(page).toHaveURL(/team/i);
         await page.goto('/user/login');
         await expect(page).toHaveURL(/team/i);
     });
 
-    test('logged in user is redirect to /team when trying to go to /', async ({ page }) => {
+    test('logged in user is redirected to /team when trying to go to /', async ({ page }) => {
         await expect(page).toHaveURL(/team/i);
         await page.goto('/');
         await expect(page).toHaveURL(/team/i);
     });
 
+    // TODO: this is a legit fail and the code around it needs to be fixed
     test('/team with a next query param redirects to next', async ({ page }) => {
         await page.goto('/team?next=game/1234');
         await page.selectOption('select#team-select', { label: playerSelectedTeam });
