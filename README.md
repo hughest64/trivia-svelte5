@@ -1,6 +1,6 @@
-# Trivia Mafia - SvelteKit Edition
+# Welcome to Trivia Mafia!
 
-A demonstration of the Trivia Mafia app using the awesome SvelteKit framework and Django as an api backend.
+The Trivia Mafia app built with SveletKit, Django, and lots of TLC
 
 ## Installation
 
@@ -11,12 +11,22 @@ Make sure you have `node >=16` then `npm i` to install the dependencies
 `cd server` then `pipenv install` to add the python dependencies
 
 ### Environment Variables
-All required `.env` settings for development and testing are included in the repo
+A`.env` file containing settings for SvelteKit development and testing is included in the repo.\
+A separate `.env.production` file will be required for deployment to production environments.\
+For Django you will need to add `.env.django` to the root of the project with the following keys:
+```bash
+# change to False in prod
+DEBUG=True
+SECRET_KEY="some long random string"
+AIRTABLE_API_TOKEN="get this value from last pass"
+# This may not be used in the end game but default to False for now, TBD
+PRIVATE_EVENT=
+```
 
 ## Project Setup
 ### Database
 `TODO:` update with postgres information for standard and test databases\
-`NOTE:` it might just be easier to make a copy of the standard db to create the test db for the initial setup
+`NOTE:` it might just be easier to make a copy of the standard db to create the test db for the initial setup\
 For simplicity the default `sqlite` is used
 ### Migrations
 Migrations are tracked in the repo so there is no need to run `makemigrations` for the inital setup. After the initial setup commands will need to be invoked two times as shown below. Django explicitly does not migrate multiple databases simeltaneously.
