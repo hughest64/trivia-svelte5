@@ -51,7 +51,7 @@ Add a `playwright/.auth` folder to the root of the project. This is used to stor
 Tests can also be run directly in vscode if the playwright extension is installed. Just open a test file and click the play button 
 next to the test. (if it works, the extension can be a bit flaky)
 
-See the [testing readme](/tests/readme.md) for information on creating Playwright tests for the project.
+See the [testing readme](/tests/README.md) for information on creating Playwright tests for the project.
 
 ### Django
 `python manage.py test` will use the data from `game/fixtures/initial.json` to run tests against the api.
