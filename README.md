@@ -44,6 +44,7 @@ Again, two commands are required
 
 ## Testing
 ### Playwright
+Add a `playwright/.auth` folder to the root of the project. This is used to store credentials during tests.
 
 `npm run test` will start a Django dev server on port 7000 using the test database and run all tests.
 
