@@ -113,19 +113,20 @@
     onMount(() => {
         webSocket.onmessage = (event) => {
             const data: SocketMessage = JSON.parse(event.data);
+            const msgType = data.msg_type;
 
             // no active_team_id
-            if (data.type === 'unauthorized') {
+            if (msgType === 'unauthorized') {
                 // TODO: error message to user?
                 goto(`/team?next=${location.pathname}`, { invalidateAll: true });
 
                 // anonymous user in the socket connection
-            } else if (data.type === 'unauthenticated') {
+            } else if (msgType === 'unauthenticated') {
                 webSocket.send(JSON.stringify({ type: 'authenticate', message: { token: $page.data.jwt } }));
-            } else if (handlers[data.type]) {
-                handlers[data.type](data.message);
+            } else if (handlers[msgType]) {
+                handlers[msgType](data.message);
             } else {
-                console.error(`message type ${data.type} does not have a handler function!`);
+                console.error(`message type ${msgType} does not have a handler function!`);
             }
         };
     });

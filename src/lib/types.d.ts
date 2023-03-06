@@ -150,7 +150,7 @@ export interface ActiveEventData {
 }
 
 export interface SocketMessage {
-    type: string;
+    msg_type: string;
     message: any;
 }
 

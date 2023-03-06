@@ -38,7 +38,7 @@ class ClearEventDataView(APIView):
 
     def post(self, request):
         # TODO: this kinda get's buried in the test run (we only see the 400 response)
-        if not settings.ALLOW_RESET:
+        if not settings.ALLOW_EVENT_RESET:
             return Response(
                 {"detail": "that is not allowed"}, status=HTTP_400_BAD_REQUEST
             )

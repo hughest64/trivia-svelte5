@@ -1,7 +1,7 @@
 import type { PlaywrightTestConfig } from '@playwright/test';
 
 const config: PlaywrightTestConfig = {
-    // retries: 2,
+    retries: 1,
     workers: 2,
     timeout: 30000,
     webServer: [

@@ -104,11 +104,14 @@ ASGI_APPLICATION = "server.asgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
-# TODO: use postgres
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "triviamafia_main",
+        "USER": env.str("POSTGRES_USER", default="triviamafia"),
+        "PASSWORD": env.str("POSTGRES_PASSWORD", default="supergoodpassword"),
+        "HOST": "127.0.0.1",
+        "PORT": "5432",
     }
 }
 
