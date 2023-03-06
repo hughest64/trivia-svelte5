@@ -15,9 +15,9 @@
         const postData = {
             activeQuestionNumber: 1,
             activeRoundNumber: Number(target.id),
-            activeQuestionKey: `1.${target.id}`
+            activeQuestionKey: `${target.id}.1`
         };
-        if (!willNavigate) $activeEventData = postData;
+        $activeEventData = postData;
 
         // post to the game endpoint to set active round and question in a cookie
         await fetch('/update', {

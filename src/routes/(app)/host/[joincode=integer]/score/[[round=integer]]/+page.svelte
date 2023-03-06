@@ -39,6 +39,7 @@
                     activeQuestionNumber: 1,
                     activeQuestionKey: `${nextRound}.1`
                 };
+                $activeEventData = postData;
                 await fetch('/update', {
                     method: 'post',
                     body: JSON.stringify({ activeEventData: postData, joincode: joincode })
@@ -61,14 +62,15 @@
             const minRound = Math.min(...roundNumbers);
             const previousround = roundNumber - 1;
             if (roundNumber > minRound) {
-                const preveiousRoundMaxQ = Math.max(
+                const previousRoundMaxQ = Math.max(
                     ...allQuestions.filter((q) => q.round_number === previousround).map((q) => q.question_number)
                 );
                 const postData = {
                     activeRoundNumber: previousround,
-                    activeQuestionNumber: preveiousRoundMaxQ,
-                    activeQuestionKey: `${previousround}.${preveiousRoundMaxQ}`
+                    activeQuestionNumber: previousRoundMaxQ,
+                    activeQuestionKey: `${previousround}.${previousRoundMaxQ}`
                 };
+                $activeEventData = postData;
                 await fetch('/update', {
                     method: 'post',
                     body: JSON.stringify({ activeEventData: postData, joincode: joincode })
