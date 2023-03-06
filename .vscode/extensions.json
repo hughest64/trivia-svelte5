@@ -3,6 +3,6 @@
         "ms-playwright.playwright",
         "rvest.vs-code-prettier-eslint",
         "dbaeumer.vscode-eslint",
-        "svelte.svelte-vscode",
+        "svelte.svelte-vscode"
     ]
 }
