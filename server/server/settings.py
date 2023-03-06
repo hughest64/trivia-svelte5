@@ -41,17 +41,14 @@ ALLOWED_HOSTS = []
 
 CSRF_TRUSTED_ORIGINS = []
 
-# TODO: redis channel layer
-CHANNEL_LAYERS = {"default": {"BACKEND": "channels.layers.InMemoryChannelLayer"}}
-
-# CHANNEL_LAYERS = {
-#     "default": {
-#         "BACKEND": "channels_redis.core.RedisChannelLayer",
-#         "CONFIG": {
-#             "hosts": [("127.0.0.1", 6379)],
-#         },
-#     },
-# }
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}
 
 AUTH_USER_MODEL = "user.User"
 
@@ -101,8 +98,8 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "server.wsgi.application"
-ASGI_APPLICATION = "server.asgi.application"
 
+ASGI_APPLICATION = "server.asgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
@@ -114,7 +111,6 @@ DATABASES = {
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
