@@ -35,14 +35,8 @@ class SocketConsumer(AsyncJsonWebsocketConsumer):
         """
         # TODO: should the fallback be AnonymousUser? (probably)
         user = self.scope.get("user", {})
-        kwargs = self.scope.get("url_route", {}).get("kwargs", {})
 
         if user.is_anonymous:
-            await self.send_json(self.unauthenticated_msg)
-            return
-
-        # the game socket requires an active team, but on the host socket
-        if not user.active_team_id and kwargs.get("gametype") != "host":
             await self.send_json(self.unauthenticated_msg)
             return
 
