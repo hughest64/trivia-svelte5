@@ -9,7 +9,6 @@ djangorestframework = "*"
 pyjwt = "*"
 channels = {extras = ["daphne"], version = "*"}
 channels-redis = "*"
-whitenoise = "*"
 fuzzywuzzy = "*"
 python-levenshtein = "*"
 pandas = "*"
