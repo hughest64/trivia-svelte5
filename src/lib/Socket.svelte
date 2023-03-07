@@ -17,7 +17,7 @@
     let retries = 0;
 
     // TODO: something is causing an issue with reconnection of the socket when the server goes down and comes back online
-    // reloading the page 'fixes' the issue, but we should seek a proper solution
+    // reloading the page 'fixes' the issue, but we should seek a proper solution as this is very inefficient
     let loaded = false;
     let needsreload = false;
     $: if (loaded && needsreload) {

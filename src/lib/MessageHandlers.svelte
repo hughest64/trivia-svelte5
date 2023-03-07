@@ -56,11 +56,7 @@
             roundStates.update((states) => {
                 const newStates = [...states];
                 const roundStateIndex = newStates.findIndex((rs) => rs.round_number === message.round_number);
-                if (roundStateIndex > -1) {
-                    newStates[roundStateIndex] = message;
-                } else {
-                    newStates.push(message);
-                }
+                roundStateIndex > -1 ? (newStates[roundStateIndex] = message) : newStates.push(message);
 
                 return newStates;
             });
@@ -82,11 +78,8 @@
                 const newStates = [...states];
                 message.question_states.forEach((state) => {
                     const currentIndex = newStates.findIndex((qs) => qs.key === state.key);
-                    if (currentIndex > -1) {
-                        newStates[currentIndex] = state;
-                    } else {
-                        newStates.push(state);
-                    }
+                    currentIndex > -1 ? (newStates[currentIndex] = state) : newStates.push(state);
+
                     return true;
                 });
                 return newStates;
