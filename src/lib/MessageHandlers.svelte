@@ -56,11 +56,7 @@
             roundStates.update((states) => {
                 const newStates = [...states];
                 const roundStateIndex = newStates.findIndex((rs) => rs.round_number === message.round_number);
-                if (roundStateIndex > -1) {
-                    newStates[roundStateIndex] = message;
-                } else {
-                    newStates.push(message);
-                }
+                roundStateIndex > -1 ? (newStates[roundStateIndex] = message) : newStates.push(message);
 
                 return newStates;
             });
@@ -82,11 +78,8 @@
                 const newStates = [...states];
                 message.question_states.forEach((state) => {
                     const currentIndex = newStates.findIndex((qs) => qs.key === state.key);
-                    if (currentIndex > -1) {
-                        newStates[currentIndex] = state;
-                    } else {
-                        newStates.push(state);
-                    }
+                    currentIndex > -1 ? (newStates[currentIndex] = state) : newStates.push(state);
+
                     return true;
                 });
                 return newStates;
@@ -113,19 +106,20 @@
     onMount(() => {
         webSocket.onmessage = (event) => {
             const data: SocketMessage = JSON.parse(event.data);
+            const msgType = data.msg_type;
 
             // no active_team_id
-            if (data.type === 'unauthorized') {
+            if (msgType === 'unauthorized') {
                 // TODO: error message to user?
                 goto(`/team?next=${location.pathname}`, { invalidateAll: true });
 
                 // anonymous user in the socket connection
-            } else if (data.type === 'unauthenticated') {
+            } else if (msgType === 'unauthenticated') {
                 webSocket.send(JSON.stringify({ type: 'authenticate', message: { token: $page.data.jwt } }));
-            } else if (handlers[data.type]) {
-                handlers[data.type](data.message);
+            } else if (handlers[msgType]) {
+                handlers[msgType](data.message);
             } else {
-                console.error(`message type ${data.type} does not have a handler function!`);
+                console.error(`message type ${msgType} does not have a handler function!`);
             }
         };
     });

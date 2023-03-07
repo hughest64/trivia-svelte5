@@ -8,13 +8,13 @@ django = "*"
 djangorestframework = "*"
 pyjwt = "*"
 channels = {extras = ["daphne"], version = "*"}
-channels-redis = "*"
-whitenoise = "*"
 fuzzywuzzy = "*"
 python-levenshtein = "*"
 pandas = "*"
 requests = "*"
 django-environ = "*"
+psycopg2 = "*"
+channels-redis = "<=3.4.1"
 
 [dev-packages]
 black = "*"

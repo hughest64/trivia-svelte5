@@ -16,9 +16,18 @@
     let interval: ReturnType<typeof setTimeout>;
     let retries = 0;
 
+    // TODO: something is causing an issue with reconnection of the socket when the server goes down and comes back online
+    // reloading the page 'fixes' the issue, but we should seek a proper solution as this is very inefficient
+    let loaded = false;
+    let needsreload = false;
+    $: if (loaded && needsreload) {
+        window.location.reload();
+    }
+
     const createSocket = () => {
         const webSocket = new WebSocket(socketUrl);
         webSocket.onopen = () => {
+            loaded = true;
             clearTimeout(interval);
             retries = 0;
         };
@@ -27,18 +36,23 @@
             if (event.code === 4010) {
                 goto('/user/logout', { invalidateAll: true });
             } else if (!event.wasClean && event.code !== 4010 && reconnect && retries <= maxRetries) {
+                needsreload = true;
                 retries++;
                 interval = setTimeout(createSocket, retryInterval);
             } else {
+                needsreload = false;
                 clearTimeout(interval);
             }
+            loaded = false;
         };
         return webSocket;
     };
 
     let socket: WebSocket;
     if (browser) socket = setContext<WebSocket>('socket', createSocket());
-    onDestroy(() => socket?.close());
+    onDestroy(() => {
+        socket?.close();
+    });
 </script>
 
 <MessageHandlers />

@@ -7,10 +7,13 @@ from game.utils.socket_classes import get_event_group, get_team_group, get_user_
 
 class SocketConsumer(AsyncJsonWebsocketConsumer):
     unauthorized_msg = {
-        "type": "unauthorized",
+        "msg_type": "unauthorized",
         "message": "You must be on a team to to play trivia",
     }
-    unauthenticated_msg = {"type": "unauthenticated", "message": "You need to log in"}
+    unauthenticated_msg = {
+        "msg_type": "unauthenticated",
+        "message": "You need to log in",
+    }
 
     user = None
     event_group = ""
@@ -35,20 +38,14 @@ class SocketConsumer(AsyncJsonWebsocketConsumer):
         """
         # TODO: should the fallback be AnonymousUser? (probably)
         user = self.scope.get("user", {})
-        kwargs = self.scope.get("url_route", {}).get("kwargs", {})
 
         if user.is_anonymous:
             await self.send_json(self.unauthenticated_msg)
             return
 
-        # the game socket requires an active team, but on the host socket
-        if not user.active_team_id and kwargs.get("gametype") != "host":
-            await self.send_json(self.unauthenticated_msg)
-            return
-
         await self._set_attrs()
         await self.join_socket_groups()
-        await self.send_json({"type": "connected", "message": "hello Svelte!"})
+        await self.send_json({"msg_type": "connected", "message": "hello Svelte!"})
 
         # TODO: proper log statement
         print(
@@ -104,7 +101,7 @@ class SocketConsumer(AsyncJsonWebsocketConsumer):
     #####################
 
     async def team_update(self, data):
-        data["type"] = data.pop("msg_type", "")
+        # data["type"] = data.pop("msg_type", "")
         await self.send_json(data)
 
     ######################
@@ -112,5 +109,5 @@ class SocketConsumer(AsyncJsonWebsocketConsumer):
     ######################
 
     async def event_update(self, data):
-        data["type"] = data.pop("msg_type", "")
+        # data["type"] = data.pop("msg_type", "")
         await self.send_json(data)

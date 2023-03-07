@@ -41,8 +41,14 @@ ALLOWED_HOSTS = []
 
 CSRF_TRUSTED_ORIGINS = []
 
-# TODO: redis channel layer
-CHANNEL_LAYERS = {"default": {"BACKEND": "channels.layers.InMemoryChannelLayer"}}
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}
 
 AUTH_USER_MODEL = "user.User"
 
@@ -65,8 +71,6 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    # TODO: remove this and the package
-    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -94,20 +98,22 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "server.wsgi.application"
-ASGI_APPLICATION = "server.asgi.application"
 
+ASGI_APPLICATION = "server.asgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
-# TODO: use postgres
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "triviamafia_main",
+        "USER": env.str("POSTGRES_USER", default="triviamafia"),
+        "PASSWORD": env.str("POSTGRES_PASSWORD", default="supergoodpassword"),
+        "HOST": "127.0.0.1",
+        "PORT": "5432",
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
