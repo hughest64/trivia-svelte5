@@ -44,7 +44,7 @@ PRIVATE_EVENT=
 
 ## Project Setup
 
-### Database
+### Database(s)
 
 Two Postgres databases are used in the project, `triviamafia_main` and a testing database called `triviamafia_tst`
 
@@ -116,7 +116,7 @@ See the [testing readme](/tests/README.md) for information on creating Playwrigh
 2. from the remote server, `git fetch origin main` then `git pull origin main`
 3. if necessary `pipenv run python manage.py migrate` and/or `pipenv run python manage.py collectstatic`
 4. run tests, `npm run test` and `pipenv run python manage.py test`
-5. if all tests pass, `npm run build` and restart the service(s)
+5. if all tests pass, `npm run build` and restart the service(s):
     - `sudo sytemctl restart tmdemo`
     - `sudo sytemctl restart tmapi`
 
