@@ -6,9 +6,7 @@ const config: PlaywrightTestConfig = {
     timeout: 30000,
     webServer: [
         {
-            // NOTE: I'm currently unsure about the outDir bit
             command: 'npm run build && npm run preview -- --mode test',
-            // command: 'npm run build:test -- --mode test && npm run preview -- --outDir .svelte-test',
             port: 4173
         },
         {
