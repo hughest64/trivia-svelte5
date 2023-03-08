@@ -58,12 +58,12 @@ ALTER USER triviamafia CREATEDB;
 # create the db
 CREATE DATABASE triviamafia_main OWNER triviamafia;
 ```
-The test database can be created manually as above or with this command *AFTER* following the migration steps in the next section.\
+The test database can be created manually as above or with this command *AFTER* following the migration steps in the next sections.\
 `CREATE DATABASE triviamafia_tst WITH TEMPLATE triviamafia_main OWNER triviamafia;`
 
 ### Migrations
 
-Migrations are tracked in the repo so there is no need to run `makemigrations` for the inital setup. These commands *WILL* need to be invoked two times as shown below for any migrations after that. Django explicitly does not migrate multiple databases simeltaneously.
+Migrations are tracked in the repo so there is no need to run `makemigrations` for the inital setup. These commands *WILL* need to be invoked two times as shown below for all migrations after that. Django explicitly does not migrate multiple databases simeltaneously.
 
 -   `python manage.py makemigrations <appname>` for the standard db
 -   `python manage.py makemigrations <appname> --settings=server.settings_tst` for the test database
@@ -71,10 +71,8 @@ Migrations are tracked in the repo so there is no need to run `makemigrations` f
 -   `python manage.py migrate --settings=server.settings_tst` for the test database
 
 ### Load Initial Data
-The second comman isonly required if you don't create copy of the main database for the test database.
-
 -   `python manage.py loaddata game/fixtures/initial.json`
--   `python manage.py loaddata game/fixtures/initial.json --settings=server.settings_tst`
+-   `python manage.py loaddata game/fixtures/initial.json --settings=server.settings_tst` (only required if *NOT* copying the main database)
 
 ### Create a Super User
 
@@ -118,5 +116,8 @@ See the [testing readme](/tests/README.md) for information on creating Playwrigh
 2. from the remote server, `git fetch origin main` then `git pull origin main`
 3. if necessary `pipenv run python manage.py migrate` and/or `pipenv run python manage.py collectstatic`
 4. run tests, `npm run test` and `pipenv run python manage.py test`
-5. if all tests pass, build the app `npm run build` and restart the service(s) `sudo sytemctl restart tmdemo` and `sudo sytemctl restart tmapi`
+5. if all tests pass, `npm run build` and restart the service(s)
+    - `sudo sytemctl restart tmdemo`
+    - `sudo sytemctl restart tmapi`
+
 
