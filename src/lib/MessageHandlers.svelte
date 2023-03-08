@@ -3,7 +3,10 @@
     import { goto } from '$app/navigation';
     import { page } from '$app/stores';
     import { createQuestionKey } from '$lib/utils';
-    import { PUBLIC_QUESTION_REVEAL_TIMEOUT as updateDelay } from '$env/static/public';
+    // TODO: the timeout should probably come from $page.data
+    // via the handle hook to avoid the load of all env variables here
+    // import { PUBLIC_QUESTION_REVEAL_TIMEOUT as updateDelay } from '$env/static/public';
+    import { env } from '$env/dynamic/public';
     import type { Writable } from 'svelte/store';
     import type {
         CurrentEventData,
@@ -68,7 +71,7 @@
                 popupStore.set({
                     is_displayed: true,
                     popup_type: 'question_reveal',
-                    timer_value: Math.round(Number(updateDelay) / 1000),
+                    timer_value: Math.round(Number(env.PUBLIC_QUESTION_REVEAL_TIMEOUT) / 1000),
                     data: message
                 });
         },

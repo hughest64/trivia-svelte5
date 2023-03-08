@@ -1,12 +1,12 @@
 import type { PlaywrightTestConfig } from '@playwright/test';
 
 const config: PlaywrightTestConfig = {
-    retries: 1,
+    // retries: 1,
     workers: 2,
     timeout: 30000,
     webServer: [
         {
-            command: 'npm run build -- --mode test && npm run preview',
+            command: 'npm run build:test && npm run preview:test -- --mode test',
             port: 4173
         },
         {

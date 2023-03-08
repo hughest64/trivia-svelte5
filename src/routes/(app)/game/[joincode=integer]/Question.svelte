@@ -35,9 +35,8 @@
         data.set('key', activeQuestion?.key || '');
         data.set('response_text', responseText);
 
-        const response = await fetch('?/submitresponse', { method: 'post', body: data });
         // TODO: error handling
-        console.log(await response.json());
+        await fetch('?/submitresponse', { method: 'post', body: data });
     };
 </script>
 
