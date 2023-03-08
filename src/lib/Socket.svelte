@@ -3,12 +3,13 @@
     import { browser } from '$app/environment';
     import { goto } from '$app/navigation';
     import { page } from '$app/stores';
-    import { PUBLIC_WEBSOCKET_HOST as apiHost } from '$env/static/public';
+    // TODO: add the socket host to page data via the handle hook to avoid the variable import here
+    import { env } from '$env/dynamic/public';
     import MessageHandlers from '$lib/MessageHandlers.svelte';
 
     const path = $page.url.pathname;
-
-    export let socketUrl = `${apiHost}/ws${path}/`;
+    const socketHost = env.PUBLIC_WEBSOCKET_HOST;
+    export let socketUrl = `${socketHost}/ws${path}/`;
     export let maxRetries = 50;
     export let retryInterval = 1000;
     export let reconnect = true;

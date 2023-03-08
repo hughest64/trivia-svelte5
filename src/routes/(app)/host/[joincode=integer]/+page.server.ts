@@ -1,6 +1,6 @@
 import { fail } from '@sveltejs/kit';
 import { resolveBool } from '$lib/utils';
-import { PUBLIC_API_HOST as apiHost, PUBLIC_QUESTION_REVEAL_TIMEOUT as updateDelay } from '$env/static/public';
+import { env } from '$env/dynamic/public';
 import type { Action } from './$types';
 
 async function asyncTimeout(ms = 100): Promise<ReturnType<typeof setTimeout>> {
@@ -10,6 +10,7 @@ async function asyncTimeout(ms = 100): Promise<ReturnType<typeof setTimeout>> {
 const reveal: Action = async ({ fetch, request, params }) => {
     const formData = await request.formData();
     const data = Object.fromEntries(formData.entries());
+    const apiHost = env.PUBLIC_API_HOST;
     const requestUrl = `${apiHost}/host/${params.joincode}/reveal`;
 
     if (!data.update) {
@@ -25,7 +26,7 @@ const reveal: Action = async ({ fetch, request, params }) => {
     }
 
     // 5 seconds by default on reveal only
-    resolveBool(data.reveal as string) && (await asyncTimeout(Number(updateDelay)));
+    resolveBool(data.reveal as string) && (await asyncTimeout(Number(env.PUBLIC_QUESTION_REVEAL_TIMEOUT)));
     const updateResponse = await fetch(requestUrl, {
         method: 'post',
         body: JSON.stringify({ ...data, update: true })
@@ -43,6 +44,7 @@ const lock: Action = async ({ fetch, params, request }) => {
     const formData = await request.formData();
     const data = Object.fromEntries(formData.entries());
 
+    const apiHost = env.PUBLIC_API_HOST;
     const response = await fetch(`${apiHost}/host/${params.joincode}/lock`, {
         method: 'post',
         body: JSON.stringify(data)

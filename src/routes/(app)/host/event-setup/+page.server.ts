@@ -1,5 +1,5 @@
 import { fail, redirect } from '@sveltejs/kit';
-import { PUBLIC_API_HOST as apiHost } from '$env/static/public';
+import { env } from '$env/dynamic/public';
 import { handleHostAuth } from '$lib/utils';
 import type { Action, PageServerLoad } from './$types';
 
@@ -12,6 +12,7 @@ const fetchEventData: Action = async ({ fetch, request }) => {
     const gameId = data.get('game-select');
     const locationId = data.get('location-select');
 
+    const apiHost = env.PUBLIC_API_HOST;
     const response = await fetch(`${apiHost}/host/event-setup/`, {
         method: 'POST',
         body: JSON.stringify({ gameId, locationId })

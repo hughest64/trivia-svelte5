@@ -1,5 +1,5 @@
 import { error, redirect } from '@sveltejs/kit';
-import { PUBLIC_API_HOST as apiHost } from '$env/static/public';
+import { env } from '$env/dynamic/public';
 import { getContext, setContext } from 'svelte';
 import { writable, type Writable } from 'svelte/store';
 import jwt_decode from 'jwt-decode';
@@ -102,6 +102,7 @@ export const handlePlayerAuth = async ({
     if (!locals.validtoken) throw redirect(302, `/user/logout?next=${url.pathname}`);
 
     const apiEndpoint = apiMap.get(endPoint || '') || endPoint;
+    const apiHost = env.PUBLIC_API_HOST;
     const response = await fetch(`${apiHost}${apiEndpoint}/`);
 
     let data = {};
@@ -135,6 +136,7 @@ export const handleHostAuth = async ({ locals, fetch, url, endPoint }: CustomLoa
     if (!locals.validtoken) throw redirect(302, `/user/logout?next=${url.pathname}`);
     if (!locals.staffuser) throw redirect(302, '/team');
 
+    const apiHost = env.PUBLIC_API_HOST;
     const response = await fetch(`${apiHost}${apiEndpoint}/`);
 
     let data = {};

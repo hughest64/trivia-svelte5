@@ -2,6 +2,7 @@
 node_modules
 /build
 /.svelte-kit
+/.svelte-test
 /package
 .env
 .env.production
