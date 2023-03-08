@@ -1,12 +1,14 @@
 import * as cookie from 'cookie';
 import { fail, redirect } from '@sveltejs/kit';
-import { PUBLIC_API_HOST as apiHost, PUBLIC_SECURE_COOKIE as secureCookie } from '$env/static/public';
+// import { PUBLIC_API_HOST as apiHost, PUBLIC_SECURE_COOKIE as secureCookie } from '$env/static/public';
+import { env } from '$env/dynamic/public';
 import type { Action, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ cookies, locals }) => {
     if (locals.validtoken) throw redirect(302, '/team');
 
     // get a csrf token from the api
+    const apiHost = env.PUBLIC_API_HOST;
     const getResponse = await fetch(`${apiHost}/user/login/`);
     if (!getResponse.ok) {
         const getResponseData = await getResponse.json();
@@ -34,6 +36,7 @@ const login: Action = async ({ cookies, request, url }) => {
     }
     const csrftoken = cookies.get('csrftoken') || '';
 
+    const apiHost = env.PUBLIC_API_HOST;
     const response = await fetch(`${apiHost}/user/login/`, {
         method: 'POST',
         headers: {
@@ -51,9 +54,10 @@ const login: Action = async ({ cookies, request, url }) => {
         return fail(responseData.status, { error: responseData.detail });
     }
 
+    const secureCookie = url.protocol === 'https:';
     const responseCookies = response.headers.get('set-cookie') || '';
     const jwt = cookie.parse(responseCookies)?.jwt;
-    jwt && cookies.set('jwt', jwt, { path: '/', httpOnly: true, secure: Boolean(secureCookie) });
+    jwt && cookies.set('jwt', jwt, { path: '/', httpOnly: true, secure: secureCookie });
 
     const next = url.searchParams.get('next') || (responseData?.user_data?.is_staff ? '/host/choice' : '/team');
 

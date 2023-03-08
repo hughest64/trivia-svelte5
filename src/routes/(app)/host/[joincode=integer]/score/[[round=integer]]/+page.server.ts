@@ -1,10 +1,11 @@
-import { PUBLIC_API_HOST as apiHost } from '$env/static/public';
+import { env } from '$env/dynamic/public';
 import { fail } from '@sveltejs/kit';
 import type { Action } from './$types';
 
 const updateresponse: Action = async ({ fetch, request, params }) => {
     const data = Object.fromEntries((await request.formData()).entries());
 
+    const apiHost = env.PUBLIC_API_HOST;
     const response = await fetch(`${apiHost}/host/${params.joincode}/score`, {
         method: 'post',
         body: JSON.stringify(data)

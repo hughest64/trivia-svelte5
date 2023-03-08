@@ -1,6 +1,6 @@
 import * as cookie from 'cookie';
 import { fail, redirect } from '@sveltejs/kit';
-import { PUBLIC_API_HOST as apiHost, PUBLIC_SECURE_COOKIE as secureCookie } from '$env/static/public';
+import { env } from '$env/dynamic/public';
 import type { Actions } from './$types';
 
 // TODO:
@@ -25,6 +25,7 @@ export const actions: Actions = {
 
         const csrftoken = cookies.get('csrftoken') || '';
 
+        const apiHost = env.PUBLIC_API_HOST;
         const response = await fetch(`${apiHost}/user/create`, {
             method: 'post',
             headers: {
@@ -41,6 +42,7 @@ export const actions: Actions = {
             return fail(response.status, { error: respData.detail });
         }
 
+        const secureCookie = url.protocol === 'https:';
         const responseCookies = response.headers.get('set-cookie') || '';
         const jwt = cookie.parse(responseCookies)?.jwt;
         jwt && cookies.set('jwt', jwt, { path: '/', httpOnly: true, secure: Boolean(secureCookie) });
