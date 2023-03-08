@@ -9,7 +9,7 @@ export const POST: RequestHandler = async ({ cookies, request }) => {
             path: '/',
             httpOnly: true,
             secure: Boolean(env.PUBLIC_SECURE_COOKIE),
-            maxAge: Number(env.PUBLIC_COOKIE_MAX_AGE) || 60 * 60
+            maxAge: Number(env.PUBLIC_COOKIE_MAX_AGE) || 60 * 60 // default of 1 hour
         });
     }
 
