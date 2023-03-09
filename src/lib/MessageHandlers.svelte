@@ -1,3 +1,6 @@
+<!-- NOTE: this component was previously rendered inside the Socket component for some code seprartion
+That however was causing the message handler to fail in the case of auto-reconnection. The content has
+been moved directly into Socket.svelte -->
 <script lang="ts">
     import { getContext, getAllContexts, onMount } from 'svelte';
     import { goto } from '$app/navigation';
