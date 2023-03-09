@@ -11,6 +11,8 @@ declare namespace App {
         activeRoundNumber?: string | number;
         activeQuestionNumber?: string | number;
         activeQuestionKey?: string;
+        websocketHost?: string;
+        updateDelay?: number;
     }
     interface PageData {
         user_data?: import('$lib/types').UserData;

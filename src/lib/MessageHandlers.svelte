@@ -1,12 +1,11 @@
+<!-- NOTE: this component was previously rendered inside the Socket component for some code seprartion
+That however was causing the message handler to fail in the case of auto-reconnection. The content has
+been moved directly into Socket.svelte -->
 <script lang="ts">
     import { getContext, getAllContexts, onMount } from 'svelte';
     import { goto } from '$app/navigation';
     import { page } from '$app/stores';
     import { createQuestionKey } from '$lib/utils';
-    // TODO: the timeout should probably come from $page.data
-    // via the handle hook to avoid the load of all env variables here
-    // import { PUBLIC_QUESTION_REVEAL_TIMEOUT as updateDelay } from '$env/static/public';
-    import { env } from '$env/dynamic/public';
     import type { Writable } from 'svelte/store';
     import type {
         CurrentEventData,
@@ -71,7 +70,7 @@
                 popupStore.set({
                     is_displayed: true,
                     popup_type: 'question_reveal',
-                    timer_value: Math.round(Number(env.PUBLIC_QUESTION_REVEAL_TIMEOUT) / 1000),
+                    timer_value: Math.round($page.data.updateDelay / 1000),
                     data: message
                 });
         },
