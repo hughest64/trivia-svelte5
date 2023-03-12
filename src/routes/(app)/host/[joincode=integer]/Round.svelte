@@ -14,7 +14,7 @@
         .map((q) => q.question_number);
 
     $: roundQuestions = questions.filter((question) => question.round_number === activeRound?.round_number);
-    $: questionStates = getStore('questionStates');
+    const questionStates = getStore('questionStates');
     $: roundQuestionStates = $questionStates.filter((qs) => qs.round_number === activeRound?.round_number);
 
     $: allQuestionsRevealed =

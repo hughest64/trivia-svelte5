@@ -5,8 +5,8 @@
 
     const roundNumbers = $page.data.rounds?.map((rd) => rd.round_number) || [];
     const joincode = $page.params.joincode;
-    $: activeEventData = getStore('activeEventData');
-    $: currentEventData = getStore('currentEventData');
+    const activeEventData = getStore('activeEventData');
+    const currentEventData = getStore('currentEventData');
 
     const handleRoundSelect = async (event: MouseEvent) => {
         const target = <HTMLButtonElement>event.target;

@@ -5,12 +5,12 @@
     import type { ActionData } from './$types';
 
     $: form = <ActionData>$page.form;
-    $: userData = getStore('userData');
-    $: activeEventData = getStore('activeEventData');
-    $: responses = getStore('responseData') || [];
-    $: roundStates = getStore('roundStates') || [];
-    $: questionStates = getStore('questionStates') || [];
-    $: playerJoined = getStore('playerJoined');
+    const userData = getStore('userData');
+    const activeEventData = getStore('activeEventData');
+    const responses = getStore('responseData') || [];
+    const roundStates = getStore('roundStates') || [];
+    const questionStates = getStore('questionStates') || [];
+    const playerJoined = getStore('playerJoined');
 
     $: activeQuestion = $page.data.questions?.find((q) => q.key === $activeEventData.activeQuestionKey);
     $: activeResponse = $responses.find((resp) => resp.key === $activeEventData.activeQuestionKey);

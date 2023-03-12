@@ -7,12 +7,12 @@
     import RoundSelector from './RoundSelector.svelte';
     import type { GameRound } from '$lib/types';
 
-    $: activeEventData = getStore('activeEventData');
+    const activeEventData = getStore('activeEventData');
+    const playerJoined = getStore('playerJoined');
+
     $: activeRound = $page.data?.rounds?.find(
         (rd) => rd.round_number === $activeEventData.activeRoundNumber
     ) as GameRound;
-
-    $: playerJoined = getStore('playerJoined');
 </script>
 
 <h2>{activeRound?.title}</h2>

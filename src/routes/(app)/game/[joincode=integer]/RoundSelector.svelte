@@ -4,8 +4,8 @@
     import { getStore } from '$lib/utils';
 
     const roundNumbers = $page.data?.rounds?.map((rd) => rd.round_number) || [];
-    $: activeEventData = getStore('activeEventData');
-    $: currentEventData = getStore('currentEventData');
+    const activeEventData = getStore('activeEventData');
+    const currentEventData = getStore('currentEventData');
     $: joincode = $page.params?.joincode;
 
     const handleRoundSelect = async (event: MouseEvent) => {

@@ -8,7 +8,7 @@
     import MenuIcon from './icons/MenuIcon.svelte';
     import ScoringIcon from './icons/ScoringIcon.svelte';
 
-    $: activeEventData = getStore('activeEventData');
+    const activeEventData = getStore('activeEventData');
 
     const reg = /^\/\(\w+\)\/(game|host)\/[[=\w]+]\/?/;
     const joinCode = $page.params?.joincode;

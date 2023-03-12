@@ -5,7 +5,7 @@
     import { getStore } from '$lib/utils';
     import type { SvelteComponent } from 'svelte';
 
-    $: popupData = getStore('popupData');
+    const popupData = getStore('popupData');
 
     const components: Record<string, typeof SvelteComponent> = {
         question_reveal: QuestionReveal,

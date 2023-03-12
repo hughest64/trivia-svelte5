@@ -7,7 +7,7 @@
     export let question: GameQuestion;
     let formError: string;
 
-    $: questionStates = getStore('questionStates') || [];
+    const questionStates = getStore('questionStates') || [];
     $: questionRevealed = $questionStates.find((qs) => qs.key === question.key)?.question_displayed;
     $: hasImage = question.question_type.toLocaleLowerCase().startsWith('image');
     let displayLightbox = false;

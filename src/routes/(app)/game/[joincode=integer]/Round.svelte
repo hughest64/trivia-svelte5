@@ -13,8 +13,8 @@
 
     export let activeRound: GameRound;
 
-    $: activeEventData = getStore('activeEventData');
-    $: currentEventData = getStore('currentEventData');
+    const activeEventData = getStore('activeEventData');
+    const currentEventData = getStore('currentEventData');
     $: questionKeys = getQuestionKeys($page.data.questions || [], activeRound);
 
     let swipeDirection = 'right'; // or 'left'

@@ -7,9 +7,9 @@
     import type { GameRound } from '$lib/types';
 
     const eventData = $page.data.event_data;
-    $: popupData = getStore('popupData');
-    $: activeEventData = getStore('activeEventData');
-    $: roundStates = getStore('roundStates') || [];
+    const popupData = getStore('popupData');
+    const activeEventData = getStore('activeEventData');
+    const roundStates = getStore('roundStates') || [];
 
     $: activeRound = $page.data.rounds?.find(
         (rd) => rd.round_number === $activeEventData.activeRoundNumber
