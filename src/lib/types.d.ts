@@ -155,22 +155,6 @@ export interface SocketMessage {
     message: any;
 }
 
-export type StoreKey =
-    | 'userData'
-    | 'eventData'
-    | 'activeEventData'
-    | 'currentEventData'
-    | 'rounds'
-    | 'questions'
-    | 'roundStates'
-    | 'questionStates'
-    | 'responseData'
-    | 'hostResponseData'
-    | 'popupData'
-    | 'eventPageData'
-    | 'publicLeaderboard'
-    | 'playerJoined';
-
 export interface StoreTypes {
     userData: Writable<UserData>;
     eventData: Writable<EventData>; // Readable?
