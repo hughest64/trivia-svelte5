@@ -4,15 +4,14 @@
     import { getStore } from '$lib/utils';
     import RoundSelector from '../../RoundSelector.svelte';
     import ResponseGroup from './ResponseGroup.svelte';
-    import type { ActiveEventData, HostResponse } from '$lib/types';
 
     const roundNumbers = $page.data.rounds?.map((rd) => rd.round_number) || [];
     const allQuestions = $page.data?.questions || [];
     const joincode = $page.params.joincode;
 
     $: roundNumber = Number($page.params.round);
-    $: activeEventData = getStore<ActiveEventData>('activeEventData');
-    $: responses = getStore<HostResponse[]>('hostResponseData');
+    $: activeEventData = getStore('activeEventData');
+    $: responses = getStore('hostResponseData');
 
     $: roundQuestions = allQuestions.filter((q) => q.round_number === roundNumber);
     $: roundQuestionNumbers = roundQuestions?.map((q) => q.question_number) || [];

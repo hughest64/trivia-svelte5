@@ -2,12 +2,11 @@
     import { page } from '$app/stores';
     import { goto } from '$app/navigation';
     import { getStore } from '$lib/utils';
-    import type { ActiveEventData, CurrentEventData } from '$lib/types';
 
     const roundNumbers = $page.data.rounds?.map((rd) => rd.round_number) || [];
     const joincode = $page.params.joincode;
-    $: activeEventData = getStore<ActiveEventData>('activeEventData');
-    $: currentEventData = getStore<CurrentEventData>('currentEventData');
+    $: activeEventData = getStore('activeEventData');
+    $: currentEventData = getStore('currentEventData');
 
     const handleRoundSelect = async (event: MouseEvent) => {
         const target = <HTMLButtonElement>event.target;

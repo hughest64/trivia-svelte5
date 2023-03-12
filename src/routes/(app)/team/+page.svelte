@@ -3,7 +3,6 @@
     import { enhance } from '$app/forms';
     import { page } from '$app/stores';
     import { getStore } from '$lib/utils';
-    import type { UserData } from '$lib/types';
     import type { ActionData } from './$types';
 
     // TODO: handle form error (might need a bit of nesting to get it on the right form)
@@ -11,7 +10,7 @@
     let hidecreateteam = true;
     let hideteampassword = true;
 
-    const userData = getStore<UserData>('userData');
+    const userData = getStore('userData');
     $: next = $page.url.searchParams.get('next');
     $: qp = next ? `&next=${next}` : '';
 </script>

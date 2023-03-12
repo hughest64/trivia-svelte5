@@ -2,9 +2,8 @@
     import '$lib/styles/popup.scss';
     import CloseButton from './CloseButton.svelte';
     import { getStore } from '$lib/utils';
-    import type { PopupData } from '$lib/types';
 
-    $: popupData = getStore<PopupData>('popupData');
+    $: popupData = getStore('popupData');
     $: roundNumber = $popupData.data?.roundNumber;
 
     // TODO: this should be imported form a reusable place, or have a default on the Popup container

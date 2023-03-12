@@ -3,15 +3,14 @@
     import { page } from '$app/stores';
     import { getStore } from '$lib/utils';
     import type { ActionData } from './$types';
-    import type { ActiveEventData, Response, RoundState, PlayerJoined, QuestionState, UserData } from '$lib/types';
 
     $: form = <ActionData>$page.form;
-    $: userData = getStore<UserData>('userData');
-    $: activeEventData = getStore<ActiveEventData>('activeEventData');
-    $: responses = getStore<Response[]>('responseData') || [];
-    $: roundStates = getStore<RoundState[]>('roundStates') || [];
-    $: questionStates = getStore<QuestionState[]>('questionStates') || [];
-    $: playerJoined = getStore<PlayerJoined>('playerJoined');
+    $: userData = getStore('userData');
+    $: activeEventData = getStore('activeEventData');
+    $: responses = getStore('responseData') || [];
+    $: roundStates = getStore('roundStates') || [];
+    $: questionStates = getStore('questionStates') || [];
+    $: playerJoined = getStore('playerJoined');
 
     $: activeQuestion = $page.data.questions?.find((q) => q.key === $activeEventData.activeQuestionKey);
     $: activeResponse = $responses.find((resp) => resp.key === $activeEventData.activeQuestionKey);

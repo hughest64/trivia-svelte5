@@ -4,12 +4,12 @@
     import { deserialize } from '$app/forms';
     import Round from './Round.svelte';
     import RoundSelector from './RoundSelector.svelte';
-    import type { ActiveEventData, GameRound, RoundState, PopupData } from '$lib/types';
+    import type { GameRound } from '$lib/types';
 
     const eventData = $page.data.event_data;
-    $: popupData = getStore<PopupData>('popupData');
-    $: activeEventData = getStore<ActiveEventData>('activeEventData');
-    $: roundStates = getStore<RoundState[]>('roundStates') || [];
+    $: popupData = getStore('popupData');
+    $: activeEventData = getStore('activeEventData');
+    $: roundStates = getStore('roundStates') || [];
 
     $: activeRound = $page.data.rounds?.find(
         (rd) => rd.round_number === $activeEventData.activeRoundNumber

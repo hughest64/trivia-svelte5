@@ -5,14 +5,14 @@
     import { getStore } from '$lib/utils';
     import Round from './Round.svelte';
     import RoundSelector from './RoundSelector.svelte';
-    import type { ActiveEventData, GameRound, PlayerJoined } from '$lib/types';
+    import type { GameRound } from '$lib/types';
 
-    $: activeEventData = getStore<ActiveEventData>('activeEventData');
+    $: activeEventData = getStore('activeEventData');
     $: activeRound = $page.data?.rounds?.find(
         (rd) => rd.round_number === $activeEventData.activeRoundNumber
     ) as GameRound;
 
-    $: playerJoined = getStore<PlayerJoined>('playerJoined');
+    $: playerJoined = getStore('playerJoined');
 </script>
 
 <h2>{activeRound?.title}</h2>

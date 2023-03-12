@@ -7,9 +7,8 @@
     import MegaroundIcon from './icons/MegaroundIcon.svelte';
     import MenuIcon from './icons/MenuIcon.svelte';
     import ScoringIcon from './icons/ScoringIcon.svelte';
-    import type { ActiveEventData } from '$lib/types';
 
-    $: activeEventData = getStore<ActiveEventData>('activeEventData');
+    $: activeEventData = getStore('activeEventData');
 
     const reg = /^\/\(\w+\)\/(game|host)\/[[=\w]+]\/?/;
     const joinCode = $page.params?.joincode;
