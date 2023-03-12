@@ -160,7 +160,7 @@ export interface StoreTypes {
     eventData: Writable<EventData>; // Readable?
     activeEventData: Writable<ActiveEventData>;
     currentEventData: Writable<CurrentEventData>;
-    rounds: Writable<GameRound[]>;
+    rounds: Writable<GameRound[]>; // Readable?
     questions: Writable<GameQuestion[]>; // Readable?
     roundStates: Writable<RoundState[]>;
     questionStates: Writable<QuestionState[]>;
@@ -169,7 +169,7 @@ export interface StoreTypes {
     popupData: Writable<PopupData>;
     // eventPageData: unknown; // this is not used?
     publicLeaderboard: Writable<PublicLeaderboard>;
-    playerJoined: Writable<boolean>;
+    playerJoined: Writable<PlayerJoined>;
 }
 
 export type MessageHandler = Record<string, (message: any) => unknown>;
