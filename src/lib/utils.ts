@@ -1,10 +1,9 @@
 import { error, redirect } from '@sveltejs/kit';
 import { env } from '$env/dynamic/public';
 import { getContext, setContext } from 'svelte';
-import { writable, type Writable } from 'svelte/store';
 import jwt_decode from 'jwt-decode';
 import type { Cookies } from '@sveltejs/kit';
-import type { CustomLoadEvent, GameQuestion, GameRound, JwtPayload, StoreKey, UserTeam } from './types';
+import type { CustomLoadEvent, GameQuestion, GameRound, JwtPayload, StoreTypes, UserTeam } from './types';
 
 /**
  * take one or many cookie keys and invalidate them by creating new cookies with an exipiration
@@ -19,11 +18,11 @@ export const invalidateCookies = (cookies: Cookies, keys: string | string[]): vo
     });
 };
 
-export function createStore<T>(key: StoreKey, data: T): Writable<T> {
-    return setContext(key, writable(data));
+export function createStore<K extends keyof StoreTypes>(key: K, store: StoreTypes[K]): StoreTypes[K] {
+    return setContext(key, store);
 }
 
-export function getStore<T>(key: StoreKey): Writable<T> {
+export function getStore<K extends keyof StoreTypes>(key: K): StoreTypes[K] {
     return getContext(key);
 }
 

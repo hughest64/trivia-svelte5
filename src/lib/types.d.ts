@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any*/
 
 import type { ServerLoadEvent } from '@sveltejs/kit';
+import type { Writable } from 'svelte/store';
 
 export interface JwtPayload {
     // user.id
@@ -169,6 +170,23 @@ export type StoreKey =
     | 'eventPageData'
     | 'publicLeaderboard'
     | 'playerJoined';
+
+export interface StoreTypes {
+    userData: Writable<UserData>;
+    eventData: Writable<EventData>; // Readable?
+    activeEventData: Writable<ActiveEventData>;
+    currentEventData: Writable<CurrentEventData>;
+    rounds: Writable<GameRound[]>;
+    questions: Writable<GameQuestion[]>; // Readable?
+    roundStates: Writable<RoundState[]>;
+    questionStates: Writable<QuestionState[]>;
+    responseData: Writable<Response[]>;
+    hostResponseData: Writable<HostResponse[]>;
+    popupData: Writable<PopupData>;
+    // eventPageData: unknown; // this is not used?
+    publicLeaderboard: Writable<PublicLeaderboard | null>;
+    playerJoined: Writable<boolean>;
+}
 
 export type MessageHandler = Record<string, (message: any) => unknown>;
 
