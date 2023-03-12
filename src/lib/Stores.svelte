@@ -38,7 +38,7 @@
     $: createStore('questionStates', writable(data?.question_states || []));
     $: createStore('responseData', writable(data?.response_data || []));
 
-    const publicLeaderboard = createStore('publicLeaderboard', writable(null));
+    const publicLeaderboard = createStore('publicLeaderboard', writable());
     $: publicLeaderboard.set(data?.leaderboard_data || {});
 
     const hostResponses = createStore('hostResponseData', writable([]));

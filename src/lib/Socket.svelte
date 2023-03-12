@@ -1,16 +1,13 @@
 <script lang="ts">
-    import { getAllContexts, onDestroy, setContext } from 'svelte';
+    import { onDestroy, setContext } from 'svelte';
     import { browser } from '$app/environment';
     import { goto } from '$app/navigation';
     import { page } from '$app/stores';
-    import { createQuestionKey } from '$lib/utils';
-    import type { Writable } from 'svelte/store';
+    import { createQuestionKey, getStore } from '$lib/utils';
     import type {
         CurrentEventData,
         MessageHandler,
         LeaderboardEntry,
-        PopupData,
-        PublicLeaderboard,
         QuestionState,
         Response,
         RoundState,
@@ -34,12 +31,16 @@
         question_number: number;
     }
 
-    const allStores = getAllContexts();
+    const publicStore = getStore('publicLeaderboard');
+    const responseStore = getStore('responseData');
+    const roundStates = getStore('roundStates');
+    const popupStore = getStore('popupData');
+    const questionStateStore = getStore('questionStates');
+    const currentEventStore = getStore('currentEventData');
+
     const handlers: MessageHandler = {
         connected: () => console.log('connected!'),
         leaderboard_join: (message: LeaderboardEntry) => {
-            const publicStore = <Writable<PublicLeaderboard>>allStores.get('publicLeaderboard');
-
             publicStore.update((lb) => {
                 const newLB = { ...lb };
                 const existingIndex = lb.leaderboard_entries.findIndex((e) => e.team_id === message.team_id);
@@ -48,8 +49,7 @@
             });
         },
         team_response_update: (message: Response) => {
-            const responsStore = <Writable<Response[]>>allStores.get('responseData');
-            responsStore.update((responses) => {
+            responseStore.update((responses) => {
                 const newResponses = [...responses];
                 const updateIndex = newResponses.findIndex((response) => response.key === message.key);
                 updateIndex > -1
@@ -60,7 +60,6 @@
             });
         },
         round_update: (message: RoundState) => {
-            const roundStates = <Writable<RoundState[]>>allStores.get('roundStates');
             roundStates.update((states) => {
                 const newStates = [...states];
                 const roundStateIndex = newStates.findIndex((rs) => rs.round_number === message.round_number);
@@ -70,7 +69,6 @@
             });
         },
         question_reveal_popup: (message: Record<string, string | boolean>) => {
-            const popupStore = <Writable<PopupData>>allStores.get('popupData');
             const revealed = message.reveal;
             revealed &&
                 popupStore.set({
@@ -81,7 +79,6 @@
                 });
         },
         question_state_update: (message: QuestionStateUpdate) => {
-            const questionStateStore = <Writable<QuestionState[]>>allStores.get('questionStates');
             questionStateStore.update((states) => {
                 const newStates = [...states];
                 message.question_states.forEach((state) => {
@@ -93,7 +90,6 @@
                 return newStates;
             });
             if (message.event_updated) {
-                const currentEventStore = <Writable<CurrentEventData>>allStores.get('currentEventData');
                 currentEventStore.set({
                     question_number: message.question_number,
                     round_number: message.round_number,
@@ -102,8 +98,7 @@
             }
         },
         current_data_update: (message: CurrentEventData) => {
-            const currentDataStore = <Writable<CurrentEventData>>allStores.get('currentEventData');
-            currentDataStore.set(message);
+            currentEventStore.set(message);
         },
         score_update: (message: Record<string, string>) => {
             // TODO: update host AND player responses, no need to filter by team since ids are unique

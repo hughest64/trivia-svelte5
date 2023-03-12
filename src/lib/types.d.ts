@@ -184,7 +184,7 @@ export interface StoreTypes {
     hostResponseData: Writable<HostResponse[]>;
     popupData: Writable<PopupData>;
     // eventPageData: unknown; // this is not used?
-    publicLeaderboard: Writable<PublicLeaderboard | null>;
+    publicLeaderboard: Writable<PublicLeaderboard>;
     playerJoined: Writable<boolean>;
 }
 
