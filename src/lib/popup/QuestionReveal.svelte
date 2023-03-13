@@ -7,8 +7,8 @@
 
     const userData = $page.data.user_data;
 
-    $: activeEventData = getStore('activeEventData');
-    $: popupData = getStore('popupData');
+    const activeEventData = getStore('activeEventData');
+    const popupData = getStore('popupData');
     $: count = $popupData.timer_value || 0;
 
     const resetPopup = () => ($popupData = { is_displayed: false, popup_type: '' });
