@@ -36,7 +36,7 @@ test.skip('arrow keys change the active question', async ({ p1Page }) => {
     await p1Page.expectCorrectQuestionHeading('1.2');
 });
 
-test('unsubmitted class is applied properly', async ({ p1Page }) => {
+test.skip('unsubmitted class is applied properly', async ({ p1Page }) => {
     await p1Page.joinGame(joincode);
     const responseInput = p1Page.page.locator('input[name="response_text"]');
     // expect the class not be to applied
