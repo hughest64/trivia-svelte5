@@ -14,7 +14,7 @@ User=triviamafia
 Environment="DJANGO_SETTINGS_MODULE=server.settings_prod"
 
 WorkingDirectory=/opt/cotn/triviamafia/app
-ExecStart=/home/triviamafia/.local/share/virtualenvs/tm-svelte-bQq8cgGE/bin/daphne server.asgi:application -u /opt/cotn/triviamafia/app/tmp/tmdemo.sock
+ExecStart=/home/triviamafia/.local/share/virtualenvs/tm-svelte-bQq8cgGE/bin/daphne server.asgi:application -u /opt/cotn/triviamafia/app/tmp/tmapi.sock
 Restart=always
 RestartSec=10
 
