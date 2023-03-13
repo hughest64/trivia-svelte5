@@ -2,7 +2,7 @@
 
 The Trivia Mafia app built with SveletKit and Django
 
-## Stytem Dependencies
+## System Dependencies
 `redis-server`, `postgresql`, `pipenv` (python pip install), `node 16`
 
 ## Installation
