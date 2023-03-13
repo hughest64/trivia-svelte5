@@ -84,6 +84,8 @@ Migrations are tracked in the repo so there is no need to run `makemigrations` f
 
 Add a `playwright/.auth` folder to the root of the project. This is used to store credentials during tests.
 
+You may need to run `npx playwright install` to get the latest browser packages before tests will run properly.
+
 `npm run test` will start a Django dev server on port 7000 using the test database and run all tests.
 
 Tests can also be run directly in vscode if the playwright extension is installed. Just open a test file and click the play button
@@ -105,6 +107,9 @@ See the [testing readme](/tests/README.md) for information on creating Playwrigh
 -   From the root: `npm run dev` to start the SvetleKit dev server at `localhost:5173`
 
 ## Deployment
+
+### Setup
+- Example deployment configuration files are located in `/deploy` and they are set up to run the app as a user called `triviamafia`.
 
 ### Additional files
 -  `server/server/settings_prod.py` with variables for `ALLOWED_HOSTS` and `CSRF_TRUSTED_ORIGINS`
