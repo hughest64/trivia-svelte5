@@ -88,12 +88,11 @@ You may need to run `npx playwright install` to get the latest browser packages 
 
 `npm run test` will start a Django dev server on port 7000 using the test database and run all tests.
 
-Tests can also be run directly in vscode if the playwright extension is installed. Just open a test file and click the play button
-next to the test. (if it works, the extension can be a bit flaky.)
+Tests can also be run directly in vscode if the playwright extension is installed. Just open a test file and click the play button next to the test. (if it works, the extension can be a bit flaky.)
 
 Note that this will use the development database/server which should be running on `127.0.0.01:8000`
 
-See the [testing readme](/tests/README.md) for information on creating Playwright tests for the project and how the test configuration works.
+See the [testing readme](/tests/README.md) for information on creating Playwright tests and how the test configuration works.
 
 ### Django
 
