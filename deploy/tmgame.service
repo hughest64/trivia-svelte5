@@ -14,8 +14,8 @@ Environment="HOST=127.0.0.1"
 # match the server_name in the ngnix config
 Environment="ORIGIN=https://play.triviamafia.com"
 
-WorkingDirectory=/opt/cotn/triviamafia/app/build
-ExecStart=node index.js
+WorkingDirectory=/opt/cotn/triviamafia/app
+ExecStart=/home/triviamafia/.nvm/versions/node/v16.18.1/bin/node -r dotenv/config build
 Restart=always
 RestartSec=10
 

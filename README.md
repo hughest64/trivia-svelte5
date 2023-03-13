@@ -1,6 +1,6 @@
 # Welcome to Trivia Mafia!
 
-The Trivia Mafia app built with SveletKit, Django, and lots of TLC
+The Trivia Mafia app built with SveletKit and Django
 
 ## Stytem Dependencies
 `redis-server`, `postgresql`, `pipenv` (python pip install), `node 16`
@@ -44,7 +44,7 @@ PRIVATE_EVENT=
 
 ## Project Setup
 
-### Database(s)
+### Databases
 
 Two Postgres databases are used in the project, `triviamafia_main` and a testing database called `triviamafia_tst`
 
@@ -84,14 +84,15 @@ Migrations are tracked in the repo so there is no need to run `makemigrations` f
 
 Add a `playwright/.auth` folder to the root of the project. This is used to store credentials during tests.
 
+You may need to run `npx playwright install` to get the latest browser packages before tests will run properly.
+
 `npm run test` will start a Django dev server on port 7000 using the test database and run all tests.
 
-Tests can also be run directly in vscode if the playwright extension is installed. Just open a test file and click the play button
-next to the test. (if it works, the extension can be a bit flaky.)
+Tests can also be run directly in vscode if the playwright extension is installed. Just open a test file and click the play button next to the test. (if it works, the extension can be a bit flaky.)
 
 Note that this will use the development database/server which should be running on `127.0.0.01:8000`
 
-See the [testing readme](/tests/README.md) for information on creating Playwright tests for the project and how the test configuration works.
+See the [testing readme](/tests/README.md) for information on creating Playwright tests and how the test configuration works.
 
 ### Django
 
@@ -105,6 +106,9 @@ See the [testing readme](/tests/README.md) for information on creating Playwrigh
 -   From the root: `npm run dev` to start the SvetleKit dev server at `localhost:5173`
 
 ## Deployment
+
+### Setup
+- Example deployment configuration files are located in `/deploy` and they are set up to run the app as a user called `triviamafia`.
 
 ### Additional files
 -  `server/server/settings_prod.py` with variables for `ALLOWED_HOSTS` and `CSRF_TRUSTED_ORIGINS`
