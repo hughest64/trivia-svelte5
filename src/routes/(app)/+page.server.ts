@@ -3,7 +3,7 @@ import { fail, redirect } from '@sveltejs/kit';
 import { env } from '$env/dynamic/public';
 import type { Action, PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ cookies, locals, url }) => {
+export const load: PageServerLoad = async ({ cookies, fetch, locals, url }) => {
     const apiHost = env.PUBLIC_API_HOST;
     const secureCookie = url.protocol === 'https:';
 
@@ -32,7 +32,7 @@ export const load: PageServerLoad = async ({ cookies, locals, url }) => {
 };
 
 // guest login
-const guestLogin: Action = async ({ cookies, url }) => {
+const guestLogin: Action = async ({ cookies, fetch, url }) => {
     const apiHost = env.PUBLIC_API_HOST;
     const secureCookie = url.protocol === 'https:';
     const csrftoken = cookies.get('csrftoken') || '';

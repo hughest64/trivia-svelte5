@@ -1,10 +1,8 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import type { ActionData } from './$types';
     import type { GameSelectData, LocationSelectData } from '$lib/types';
 
-    export let form: ActionData;
-
+    $: form = $page.form;
     $: gameSelectData = <GameSelectData[]>$page.data?.game_select_data || [];
     $: locationSelectData = <LocationSelectData[]>$page.data?.location_select_data || [];
 

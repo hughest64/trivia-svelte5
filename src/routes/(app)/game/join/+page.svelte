@@ -1,9 +1,8 @@
 <script lang="ts">
+    import { page } from '$app/stores';
     import { getStore } from '$lib/utils';
-    import type { ActionData } from './$types';
 
-    export let form: ActionData;
-
+    $: form = $page.form;
     const userData = getStore('userData');
     $: activeTeam = $userData?.teams.find((team) => team.id === $userData?.active_team_id);
 </script>

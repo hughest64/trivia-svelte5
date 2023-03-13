@@ -2,9 +2,8 @@
     import Lightbox from '$lib/Lightbox.svelte';
     import { page } from '$app/stores';
     import { getStore } from '$lib/utils';
-    import type { ActionData } from './$types';
 
-    $: form = <ActionData>$page.form;
+    $: form = $page.form;
     const userData = getStore('userData');
     const activeEventData = getStore('activeEventData');
     const responses = getStore('responseData') || [];
