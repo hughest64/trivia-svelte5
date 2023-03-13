@@ -2,12 +2,12 @@
     import Lightbox from '$lib/Lightbox.svelte';
     import { getStore } from '$lib/utils';
     import { deserialize } from '$app/forms';
-    import type { GameQuestion, QuestionState } from '$lib/types';
+    import type { GameQuestion } from '$lib/types';
 
     export let question: GameQuestion;
     let formError: string;
 
-    $: questionStates = getStore<QuestionState[]>('questionStates') || [];
+    const questionStates = getStore('questionStates') || [];
     $: questionRevealed = $questionStates.find((qs) => qs.key === question.key)?.question_displayed;
     $: hasImage = question.question_type.toLocaleLowerCase().startsWith('image');
     let displayLightbox = false;

@@ -4,12 +4,11 @@
     import { page } from '$app/stores';
     import CloseButton from './CloseButton.svelte';
     import { createQuestionKey, getStore } from '$lib/utils';
-    import type { ActiveEventData, PopupData } from '$lib/types';
 
     const userData = $page.data.user_data;
 
-    $: activeEventData = getStore<ActiveEventData>('activeEventData');
-    $: popupData = getStore<PopupData>('popupData');
+    $: activeEventData = getStore('activeEventData');
+    $: popupData = getStore('popupData');
     $: count = $popupData.timer_value || 0;
 
     const resetPopup = () => ($popupData = { is_displayed: false, popup_type: '' });

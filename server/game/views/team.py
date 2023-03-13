@@ -55,8 +55,6 @@ class TeamCreateView(APIView):
         return Response({"user_data": user.to_json()})
 
 
-# TODO: why are there two views here? should one handle join by password and the other by id?
-# or should both be handled in the same view?
 class TeamJoinView(APIView):
     """Add an existing team to a players teams and set active"""
 
@@ -76,8 +74,6 @@ class TeamJoinView(APIView):
         except Team.DoesNotExist:
             raise TeamNotFound
 
-        # TODO: is this what we want? I think so, then the frontend can update the user store
-        # or would it be fetch in the next call?
         return Response({"user_data": user.to_json()})
 
 

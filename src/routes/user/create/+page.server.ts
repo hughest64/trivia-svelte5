@@ -9,7 +9,7 @@ import type { Actions } from './$types';
 // (i.e, did't come from the log in page)
 
 export const actions: Actions = {
-    default: async ({ cookies, request, url }) => {
+    default: async ({ cookies, fetch, request, url }) => {
         const formData = await request.formData();
         const username = formData.get('username');
         const pass = formData.get('pass');

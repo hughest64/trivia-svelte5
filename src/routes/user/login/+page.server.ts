@@ -4,7 +4,7 @@ import { fail, redirect } from '@sveltejs/kit';
 import { env } from '$env/dynamic/public';
 import type { Action, PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ cookies, locals }) => {
+export const load: PageServerLoad = async ({ cookies, fetch, locals }) => {
     if (locals.validtoken) throw redirect(302, '/team');
 
     // get a csrf token from the api
@@ -26,7 +26,7 @@ export const load: PageServerLoad = async ({ cookies, locals }) => {
     });
 };
 
-const login: Action = async ({ cookies, request, url }) => {
+const login: Action = async ({ cookies, fetch, request, url }) => {
     const formData = await request.formData();
     const username = formData.get('username');
     const password = formData.get('password');

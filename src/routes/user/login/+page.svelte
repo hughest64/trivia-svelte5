@@ -1,7 +1,7 @@
 <script lang="ts">
-    import type { ActionData } from './$types';
+    import { page } from '$app/stores';
 
-    export let form: ActionData;
+    $: form = $page.form;
 </script>
 
 <svelte:head><title>Trivia Mafia | Login</title></svelte:head>

@@ -2,8 +2,10 @@
 /node_modules
 /build
 /.svelte-kit
+/.svelte-test
 /package
 /server
+*.json
 .env
 .env.*
 !.env.example
@@ -12,3 +14,4 @@
 pnpm-lock.yaml
 package-lock.json
 yarn.lock
+Pipfile.lock

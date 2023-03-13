@@ -1,10 +1,9 @@
 <script lang="ts">
     import { getStore } from '$lib/utils';
-    import type { PublicLeaderboard } from '$lib/types';
     import Entry from '$lib/leaderboards/Entry.svelte';
     import RoundSelector from '../RoundSelector.svelte';
 
-    $: leaderboard = getStore<PublicLeaderboard>('publicLeaderboard');
+    const leaderboard = getStore('publicLeaderboard');
 </script>
 
 <h1>Team Standings</h1>

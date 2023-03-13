@@ -6,15 +6,15 @@
     import { page } from '$app/stores';
     import { swipeQuestion } from './swipe';
     import { getStore, getQuestionKeys, splitQuestionKey } from '$lib/utils';
-    import type { CurrentEventData, ActiveEventData, GameQuestion, GameRound } from '$lib/types';
+    import type { GameQuestion, GameRound } from '$lib/types';
 
     const joincode = $page.params?.joincode;
     const questions: GameQuestion[] = $page.data.questions || [];
 
     export let activeRound: GameRound;
 
-    $: activeEventData = getStore<ActiveEventData>('activeEventData');
-    $: currentEventData = getStore<CurrentEventData>('currentEventData');
+    const activeEventData = getStore('activeEventData');
+    const currentEventData = getStore('currentEventData');
     $: questionKeys = getQuestionKeys($page.data.questions || [], activeRound);
 
     let swipeDirection = 'right'; // or 'left'

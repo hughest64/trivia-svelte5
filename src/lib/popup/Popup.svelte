@@ -4,9 +4,8 @@
     import ConfirmRoundUnlock from './ConfirmRoundUnlock.svelte';
     import { getStore } from '$lib/utils';
     import type { SvelteComponent } from 'svelte';
-    import type { PopupData } from '$lib/types';
 
-    $: popupData = getStore<PopupData>('popupData');
+    const popupData = getStore('popupData');
 
     const components: Record<string, typeof SvelteComponent> = {
         question_reveal: QuestionReveal,

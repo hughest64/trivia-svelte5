@@ -2,6 +2,9 @@
 
 The Trivia Mafia app built with SveletKit, Django, and lots of TLC
 
+## Stytem Dependencies
+`redis-server`, `postgresql`, `pipenv` (python pip install), `node 16`
+
 ## Installation
 
 ### SvelteKit
@@ -10,16 +13,28 @@ Make sure you have `node >=16` then `npm i` to install the dependencies
 
 ### Python
 
-`cd server` then `pipenv install` to add the python dependencies
+`pipenv install` to add the python dependencies
 
 ### Environment Variables
-
-A`.env` file containing settings for SvelteKit development and testing is included in the repo.\
-A separate `.env.production` file will be required for deployment to production environments.\
-For Django you will need to add `.env.django` to the root of the project with the following keys:
-
+The following files are required at the root of the project but are git ignored as the values may vary between environments:\
+`.env`
 ```bash
-# change to False in prod
+PUBLIC_API_HOST='http://127.0.0.1:8000'
+PUBLIC_WEBSOCKET_HOST='ws://127.0.0.1:8000'
+PUBLIC_COOKIE_MAX_AGE=18000 # 5 hours
+PUBLIC_QUESTION_REVEAL_TIMEOUT=5000 # ms
+```
+
+`.env.test`
+```bash
+PUBLIC_API_HOST='http://127.0.0.1:7000'
+PUBLIC_WEBSOCKET_HOST='ws://127.0.0.1:7000'
+PUBLIC_QUESTION_REVEAL_TIMEOUT=1000
+```
+
+`.env.django`
+```bash
+# change to False in production
 DEBUG=True
 SECRET_KEY="some long random string"
 AIRTABLE_API_TOKEN="get this value from last pass"
@@ -29,27 +44,35 @@ PRIVATE_EVENT=
 
 ## Project Setup
 
-### Database
+### Database(s)
 
-`TODO:` update with postgres information for standard and test databases\
-`NOTE:` it might just be easier to make a copy of the standard db to create the test db for the initial setup\
-For simplicity the default `sqlite` is used
+Two Postgres databases are used in the project, `triviamafia_main` and a testing database called `triviamafia_tst`
+
+Create the main database:
+```bash
+# start psql
+sudo -u postres psql
+# create the triviamafia user and grant privileges (if the user doesn't already exist)
+CREATE USER triviamafia WITH PASSWORD 'supergoodpassword';
+ALTER USER triviamafia CREATEDB;
+# create the db
+CREATE DATABASE triviamafia_main OWNER triviamafia;
+```
+The test database can be created manually as above or with this command *AFTER* following the migration steps in the next sections.\
+`CREATE DATABASE triviamafia_tst WITH TEMPLATE triviamafia_main OWNER triviamafia;`
 
 ### Migrations
 
-Migrations are tracked in the repo so there is no need to run `makemigrations` for the inital setup. After the initial setup commands will need to be invoked two times as shown below. Django explicitly does not migrate multiple databases simeltaneously.
+Migrations are tracked in the repo so there is no need to run `makemigrations` for the inital setup. These commands *WILL* need to be invoked two times as shown below for all migrations after that. Django explicitly does not migrate multiple databases simeltaneously.
 
--   `python manage.py makemigrations <app>` for the standard db
--   `python manage.py makemigrations <app> --settings=server.settings_tst` for the test database
+-   `python manage.py makemigrations <appname>` for the standard db
+-   `python manage.py makemigrations <appname> --settings=server.settings_tst` for the test database
 -   `python manage.py migrate` for the standard db
 -   `python manage.py migrate --settings=server.settings_tst` for the test database
 
 ### Load Initial Data
-
-Again, two commands are required
-
 -   `python manage.py loaddata game/fixtures/initial.json`
--   `python manage.py loaddata game/fixtures/initial.json --settings=server.settings_tst`
+-   `python manage.py loaddata game/fixtures/initial.json --settings=server.settings_tst` (only required if *NOT* copying the main database)
 
 ### Create a Super User
 
@@ -64,9 +87,11 @@ Add a `playwright/.auth` folder to the root of the project. This is used to stor
 `npm run test` will start a Django dev server on port 7000 using the test database and run all tests.
 
 Tests can also be run directly in vscode if the playwright extension is installed. Just open a test file and click the play button
-next to the test. (if it works, the extension can be a bit flaky)
+next to the test. (if it works, the extension can be a bit flaky.)
 
-See the [testing readme](/tests/README.md) for information on creating Playwright tests for the project.
+Note that this will use the development database/server which should be running on `127.0.0.01:8000`
+
+See the [testing readme](/tests/README.md) for information on creating Playwright tests for the project and how the test configuration works.
 
 ### Django
 
@@ -81,6 +106,18 @@ See the [testing readme](/tests/README.md) for information on creating Playwrigh
 
 ## Deployment
 
--   add `server/server/settings_prod.py` with variables for `ALLOWED_HOSTS` and `CSRF_TRUSTED_ORIGINS`
-    `TODO:`
--   detail service files and nginx config
+### Additional files
+-  `server/server/settings_prod.py` with variables for `ALLOWED_HOSTS` and `CSRF_TRUSTED_ORIGINS`
+- `/tmp` folder, this is where the unix socket file is placed for production
+
+### Deployment procedure
+`Note` that this is a work in progress, and ideally will be fully automated with pipelines.
+1. merge production ready code into the `main` branch
+2. from the remote server, `git fetch origin main` then `git pull origin main`
+3. if necessary `pipenv run python manage.py migrate` and/or `pipenv run python manage.py collectstatic`
+4. run tests, `npm run test` and `pipenv run python manage.py test`
+5. if all tests pass, `npm run build` and restart the service(s):
+    - `sudo sytemctl restart tmdemo`
+    - `sudo sytemctl restart tmapi`
+
+

@@ -1,8 +1,7 @@
 <script lang="ts">
     import { getStore } from '$lib/utils';
-    import type { PublicLeaderboard } from '$lib/types';
 
-    $: leaderboard = getStore<PublicLeaderboard>('publicLeaderboard');
+    $: leaderboard = getStore('publicLeaderboard');
 </script>
 
 <h1>Host - Leaderboard</h1>
