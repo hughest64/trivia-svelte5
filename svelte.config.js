@@ -10,7 +10,9 @@ const config = {
     preprocess: vitePreprocess(),
 
     kit: {
-        adapter: adapter(),
+        adapter: adapter({
+            out: testMode ? 'build_test' : 'build'
+        }),
         outDir: testMode ? '.svelte-test' : '.svelte-kit'
     }
 };
