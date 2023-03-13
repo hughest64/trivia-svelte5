@@ -2,9 +2,8 @@
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
     import { fade, fly, scale } from 'svelte/transition';
-    import type { ActionData } from './$types';
 
-    export let form: ActionData;
+    $: form = $page.form;
     let showContent = false;
     onMount(() => (showContent = true));
 </script>
