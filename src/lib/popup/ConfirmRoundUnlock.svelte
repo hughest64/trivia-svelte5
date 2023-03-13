@@ -3,8 +3,8 @@
     import CloseButton from './CloseButton.svelte';
     import { getStore } from '$lib/utils';
 
-    $: popupData = getStore('popupData');
-    $: roundNumber = $popupData.data?.roundNumber;
+    const popupData = getStore('popupData');
+    const roundNumber = $popupData.data?.roundNumber;
 
     // TODO: this should be imported form a reusable place, or have a default on the Popup container
     const resetPopup = () => ($popupData = { is_displayed: false, popup_type: '' });

@@ -10,8 +10,8 @@
     const joincode = $page.params.joincode;
 
     $: roundNumber = Number($page.params.round);
-    $: activeEventData = getStore('activeEventData');
-    $: responses = getStore('hostResponseData');
+    const activeEventData = getStore('activeEventData');
+    const responses = getStore('hostResponseData');
 
     $: roundQuestions = allQuestions.filter((q) => q.round_number === roundNumber);
     $: roundQuestionNumbers = roundQuestions?.map((q) => q.question_number) || [];
