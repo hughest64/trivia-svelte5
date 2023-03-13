@@ -15,11 +15,3 @@
         <slot />
     </Socket>
 </main>
-
-<style lang="scss">
-    // allow the question panel background to take up 100% width with no margin
-    // :global(main) {
-    //     padding-left: 0;
-    //     padding-right: 0;
-    // }
-</style>

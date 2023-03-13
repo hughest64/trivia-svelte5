@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { goto } from '$app/navigation';
+    // import { goto } from '$app/navigation';
     import { getStore } from '$lib/utils';
 
     const roundNumbers = $page.data.rounds?.map((rd) => rd.round_number) || [];
@@ -10,7 +10,7 @@
 
     const handleRoundSelect = async (event: MouseEvent) => {
         const target = <HTMLButtonElement>event.target;
-        const willNavigate = $page.url.pathname.includes('score');
+        // const willNavigate = $page.url.pathname.includes('score');
         const postData = {
             activeQuestionNumber: 1,
             activeRoundNumber: Number(target.id),
@@ -23,7 +23,7 @@
             method: 'POST',
             body: JSON.stringify({ activeEventData: postData, joincode: joincode })
         });
-        willNavigate && goto(`/host/${joincode}/score/${target.id}`);
+        // willNavigate && goto(`/host/${joincode}/score/${target.id}`);
     };
 </script>
 

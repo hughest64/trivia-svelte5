@@ -1,30 +1,33 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { goto } from '$app/navigation';
     import { getStore } from '$lib/utils';
-    import RoundSelector from '../../RoundSelector.svelte';
+    import RoundSelector from '../RoundSelector.svelte';
     import ResponseGroup from './ResponseGroup.svelte';
 
     const roundNumbers = $page.data.rounds?.map((rd) => rd.round_number) || [];
     const allQuestions = $page.data?.questions || [];
     const joincode = $page.params.joincode;
 
-    $: roundNumber = Number($page.params.round);
-    $: activeEventData = getStore('activeEventData');
-    $: responses = getStore('hostResponseData');
+    const activeEventData = getStore('activeEventData');
+    const responses = getStore('hostResponseData');
 
+    $: roundNumber = $activeEventData.activeRoundNumber;
     $: roundQuestions = allQuestions.filter((q) => q.round_number === roundNumber);
     $: roundQuestionNumbers = roundQuestions?.map((q) => q.question_number) || [];
 
-    $: scoringQuestionNumber = $activeEventData.activeQuestionNumber || roundNumber || 1;
+    $: scoringQuestionNumber = $activeEventData.activeQuestionNumber || 1;
     $: scoringQuestion = roundQuestions.find((q) => q.question_number === scoringQuestionNumber);
-    $: scoringResponses = $responses && $responses.filter((r) => r.question_number === scoringQuestionNumber);
+    $: scoringResponses = $responses && $responses.filter((r) => r.key === $activeEventData.activeQuestionKey);
 
     const advance = async () => {
         const next = scoringQuestionNumber + 1;
         const maxQuestion = Math.max(...roundQuestionNumbers);
         if (next <= maxQuestion) {
-            activeEventData.update((data) => ({ ...data, activeQuestionNumber: next }));
+            activeEventData.update((data) => ({
+                ...data,
+                activeQuestionKey: `${roundNumber}.${next}`,
+                activeQuestionNumber: next
+            }));
             await fetch('/update', {
                 method: 'post',
                 body: JSON.stringify({ activeEventData: $activeEventData, joincode: joincode })
@@ -43,7 +46,6 @@
                     method: 'post',
                     body: JSON.stringify({ activeEventData: postData, joincode: joincode })
                 });
-                goto(`/host/${joincode}/score/${nextRound}`);
             }
         }
     };
@@ -52,7 +54,11 @@
         const previousQ = scoringQuestionNumber - 1;
         const minQuestion = Math.min(...roundQuestionNumbers);
         if (previousQ >= minQuestion) {
-            activeEventData.update((data) => ({ ...data, activeQuestionNumber: previousQ }));
+            activeEventData.update((data) => ({
+                ...data,
+                activeQuestionKey: `${roundNumber}.${previousQ}`,
+                activeQuestionNumber: previousQ
+            }));
             await fetch('/update', {
                 method: 'post',
                 body: JSON.stringify({ activeEventData: $activeEventData, joincode: joincode })
@@ -74,7 +80,6 @@
                     method: 'post',
                     body: JSON.stringify({ activeEventData: postData, joincode: joincode })
                 });
-                goto(`/host/${joincode}/score/${previousround}`);
             }
         }
     };
@@ -92,28 +97,30 @@
 
 <h1>Scoring</h1>
 <RoundSelector />
-{#if roundNumber && $responses}
+
+{#if scoringResponses.length > 0}
     <div class="host-question-panel">
         <h2>Round {scoringQuestion?.round_number} Question {scoringQuestion?.question_number}</h2>
         <p>{scoringQuestion?.question_text}</p>
     </div>
+
     <h4 class="answer">Answer: {scoringQuestion?.display_answer}</h4>
+
     <div class="button-container">
         <button class="button button-secondary" on:click={goBack}>Previous</button>
         <button class="button button-secondary" on:click={advance}>Next</button>
     </div>
+
     <ul>
         {#each scoringResponses as response}
             <ResponseGroup {response} />
         {/each}
     </ul>
+
     <div class="button-container">
         <button class="button button-secondary" on:click={goBack}>Previous</button>
         <button class="button button-secondary" on:click={advance}>Next</button>
     </div>
-{:else if $responses}
-    <!-- TODO: do something with all responses or eliminate the ability to fetch all responses -->
-    <h4>{$responses.length} Total responses for Event {$page.params.joincode}</h4>
 {:else}
     <h2>All Caught Up!</h2>
 {/if}
