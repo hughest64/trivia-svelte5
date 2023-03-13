@@ -1,6 +1,6 @@
 # Welcome to Trivia Mafia!
 
-The Trivia Mafia app built with SveletKit, Django, and lots of TLC
+The Trivia Mafia app built with SveletKit and Django
 
 ## Stytem Dependencies
 `redis-server`, `postgresql`, `pipenv` (python pip install), `node 16`
@@ -44,7 +44,7 @@ PRIVATE_EVENT=
 
 ## Project Setup
 
-### Database(s)
+### Databases
 
 Two Postgres databases are used in the project, `triviamafia_main` and a testing database called `triviamafia_tst`
 
