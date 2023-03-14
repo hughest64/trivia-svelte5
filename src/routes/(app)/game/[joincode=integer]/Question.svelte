@@ -6,12 +6,13 @@
     $: form = $page.form;
     const userData = getStore('userData');
     const activeEventData = getStore('activeEventData');
+    const questions = getStore('questions');
     const responses = getStore('responseData') || [];
     const roundStates = getStore('roundStates') || [];
     const questionStates = getStore('questionStates') || [];
     const playerJoined = getStore('playerJoined');
 
-    $: activeQuestion = $page.data.questions?.find((q) => q.key === $activeEventData.activeQuestionKey);
+    $: activeQuestion = $questions.find((q) => q.key === $activeEventData.activeQuestionKey);
     $: activeResponse = $responses.find((resp) => resp.key === $activeEventData.activeQuestionKey);
     $: questionState = $questionStates.find((qs) => qs.key === $activeEventData.activeQuestionKey);
     $: activeRoundState = $roundStates.find((rs) => rs.round_number === $activeEventData.activeRoundNumber);

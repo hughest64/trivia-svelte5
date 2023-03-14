@@ -3,7 +3,8 @@
     // import { goto } from '$app/navigation';
     import { getStore } from '$lib/utils';
 
-    const roundNumbers = $page.data.rounds?.map((rd) => rd.round_number) || [];
+    const rounds = getStore('rounds');
+    const roundNumbers = $rounds.map((rd) => rd.round_number) || [];
     const joincode = $page.params.joincode;
     const activeEventData = getStore('activeEventData');
     const currentEventData = getStore('currentEventData');

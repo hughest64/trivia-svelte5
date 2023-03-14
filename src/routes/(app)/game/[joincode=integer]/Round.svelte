@@ -6,23 +6,23 @@
     import { page } from '$app/stores';
     import { swipeQuestion } from './swipe';
     import { getStore, getQuestionKeys, splitQuestionKey } from '$lib/utils';
-    import type { GameQuestion, GameRound } from '$lib/types';
+    import type { GameRound } from '$lib/types';
 
     const joincode = $page.params?.joincode;
-    const questions: GameQuestion[] = $page.data.questions || [];
+    const questions = getStore('questions');
 
     export let activeRound: GameRound;
 
     const activeEventData = getStore('activeEventData');
     const currentEventData = getStore('currentEventData');
-    $: questionKeys = getQuestionKeys($page.data.questions || [], activeRound);
+    $: questionKeys = getQuestionKeys($questions || [], activeRound);
 
     let swipeDirection = 'right'; // or 'left'
     $: swipeXValue = swipeDirection === 'right' ? 1000 : -4000;
     const inSwipeDuration = 600;
     $: outSwipeDuration = swipeDirection === 'right' ? 100 : 350;
 
-    const allQuestionKeys: string[] = questions.map((q) => q.key);
+    const allQuestionKeys: string[] = $questions.map((q) => q.key);
     const handleQuestionSelect = async (event: MouseEvent | CustomEvent | KeyboardEvent) => {
         const target = <HTMLElement>event.target;
         const eventDirection = event.detail?.direction;

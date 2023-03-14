@@ -1,19 +1,18 @@
 <script lang="ts">
     import Question from './Question.svelte';
-    import { page } from '$app/stores';
     import { deserialize } from '$app/forms';
     import { getStore } from '$lib/utils';
-    import type { GameQuestion, GameRound } from '$lib/types';
+    import type { GameRound } from '$lib/types';
 
     export let activeRound: GameRound;
 
     let error: string;
-    const questions: GameQuestion[] = $page.data.questions || [];
-    $: roundQuestionNumbers = questions
+    const questions = getStore('questions');
+    $: roundQuestionNumbers = $questions
         .filter((q) => q.round_number === activeRound?.round_number)
         .map((q) => q.question_number);
 
-    $: roundQuestions = questions.filter((question) => question.round_number === activeRound?.round_number);
+    $: roundQuestions = $questions.filter((question) => question.round_number === activeRound?.round_number);
     const questionStates = getStore('questionStates');
     $: roundQuestionStates = $questionStates.filter((qs) => qs.round_number === activeRound?.round_number);
 

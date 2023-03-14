@@ -4,15 +4,17 @@
     import RoundSelector from '../RoundSelector.svelte';
     import ResponseGroup from './ResponseGroup.svelte';
 
-    const roundNumbers = $page.data.rounds?.map((rd) => rd.round_number) || [];
-    const allQuestions = $page.data?.questions || [];
+    const rounds = getStore('rounds');
+    const allQuestions = getStore('questions');
+    const roundNumbers = $rounds.map((rd) => rd.round_number) || [];
+    // const allQuestions = $questions || [];
     const joincode = $page.params.joincode;
 
     const activeEventData = getStore('activeEventData');
     const responses = getStore('hostResponseData');
 
     $: roundNumber = $activeEventData.activeRoundNumber;
-    $: roundQuestions = allQuestions.filter((q) => q.round_number === roundNumber);
+    $: roundQuestions = $allQuestions.filter((q) => q.round_number === roundNumber);
     $: roundQuestionNumbers = roundQuestions?.map((q) => q.question_number) || [];
 
     $: scoringQuestionNumber = $activeEventData.activeQuestionNumber || 1;
@@ -68,7 +70,7 @@
             const previousround = roundNumber - 1;
             if (roundNumber > minRound) {
                 const previousRoundMaxQ = Math.max(
-                    ...allQuestions.filter((q) => q.round_number === previousround).map((q) => q.question_number)
+                    ...$allQuestions.filter((q) => q.round_number === previousround).map((q) => q.question_number)
                 );
                 const postData = {
                     activeRoundNumber: previousround,

@@ -1,10 +1,10 @@
 <script lang="ts">
     import { slide } from 'svelte/transition';
-    import { page } from '$app/stores';
     import { getStore } from '$lib/utils';
 
     const activeEventData = getStore('activeEventData');
-    $: activeQuestion = $page.data.questions?.find((q) => q.key === $activeEventData.activeQuestionKey);
+    const questions = getStore('questions');
+    $: activeQuestion = $questions.find((q) => q.key === $activeEventData.activeQuestionKey);
     let hidden = true;
 </script>
 
