@@ -1,9 +1,10 @@
 <script lang="ts">
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
-    import { fade, fly, scale } from 'svelte/transition';
+    import { fly, scale } from 'svelte/transition';
 
     $: form = $page.form;
+    $: loaderror = $page.data.loaderror;
     let showContent = false;
     onMount(() => (showContent = true));
 </script>
@@ -12,20 +13,20 @@
 
 <main>
     {#if showContent}
-        <div transition:fade|local={{ delay: 500, duration: 1000 }} class="demo-note flex-column">
-            <h4>Welcome to the Trivia Mafia SvelteKit Demo!</h4>
-            <a href="/about">Click for details</a>
-        </div>
         <div transition:scale|local={{ duration: 1500 }} class="logo-container">
             <img src="TM2021-Flat-Stacked-WhiteBackground.svg" alt="Trivia Mafia" />
         </div>
 
         <div transition:fly|local={{ y: 500, duration: 1500 }} class="form-container flex-column">
-            <a class="button button-primary" href={`/user/login${$page.url.search}`}> Login/Create Account </a>
-            <form action="" method="POST">
-                <input class="button button-tertiary" type="submit" value="Play as a Guest" />
-            </form>
-            {#if form?.error}<p>{form?.error}</p>{/if}
+            {#if loaderror}
+                <h3>{loaderror}</h3>
+            {:else}
+                <a class="button button-primary" href={`/user/login${$page.url.search}`}> Login/Create Account </a>
+                <form action="" method="POST">
+                    <input class="button button-tertiary" type="submit" value="Play as a Guest" />
+                </form>
+                {#if form?.error}<p>{form?.error}</p>{/if}
+            {/if}
         </div>
     {/if}
 </main>
@@ -47,19 +48,5 @@
     }
     .form-container {
         width: 100%;
-    }
-    .demo-note {
-        padding: 0.75rem;
-        background-color: var(--color-primary);
-        color: var(--color-tertiary);
-        width: 100vw;
-        h4 {
-            margin: 0 0 0.5rem;
-        }
-        a {
-            color: var(--color-primry);
-            text-decoration: underline;
-            font-weight: bold;
-        }
     }
 </style>

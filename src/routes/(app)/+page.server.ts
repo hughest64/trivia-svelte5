@@ -28,6 +28,7 @@ export const load: PageServerLoad = async ({ cookies, fetch, locals, url }) => {
         });
     } catch (e) {
         console.error('cound not connect to', apiHost);
+        return { loaderror: 'Error: Could Not Connect to the Server' };
     }
 };
 
