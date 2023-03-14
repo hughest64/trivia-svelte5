@@ -20,9 +20,6 @@ urlpatterns = [
         host.ScoreRoundView.as_view(),
         name="score_round",
     ),
-    re_path(
-        r"^host/(?P<joincode>\d+)/leaderboard/?$", common.LeaderboardView.as_view()
-    ),
     re_path(r"^host/(?P<joincode>\d+)/reveal/?$", host.QuestionRevealView.as_view()),
     re_path(r"^host/event-setup/?$", host.EventSetupView.as_view()),
     re_path(r"^host/(?P<joincode>\d+)[/\w]*/?$", host.EventHostView.as_view()),
