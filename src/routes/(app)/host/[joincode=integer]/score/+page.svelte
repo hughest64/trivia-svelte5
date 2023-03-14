@@ -17,7 +17,7 @@
 
     $: scoringQuestionNumber = $activeEventData.activeQuestionNumber || 1;
     $: scoringQuestion = roundQuestions.find((q) => q.question_number === scoringQuestionNumber);
-    $: scoringResponses = $responses && $responses.filter((r) => r.key === $activeEventData.activeQuestionKey);
+    $: scoringResponses = ($responses && $responses.filter((r) => r.key === $activeEventData.activeQuestionKey)) || [];
 
     const advance = async () => {
         const next = scoringQuestionNumber + 1;
