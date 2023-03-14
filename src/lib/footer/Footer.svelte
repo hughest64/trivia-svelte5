@@ -51,7 +51,7 @@
             </li>
         {:else if routeId === 'host' && isEventRoute}
             <li class:active={setActive('score')}>
-                <a data-sveltekit-preload-code="tap" href={`/host/${joinCode}/score`}>
+                <a data-sveltekit-preload-code="tap" data-sveltekit-reload href={`/host/${joinCode}/score`}>
                     <ScoringIcon cls="svg" />
                     <p>Scoring</p>
                 </a>
