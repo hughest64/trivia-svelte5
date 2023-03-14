@@ -15,6 +15,7 @@ declare namespace App {
         updateDelay?: number;
     }
     interface PageData {
+        loaderror?: string;
         user_data?: import('$lib/types').UserData;
         event_data?: import('$lib/types').EventData;
         current_event_data?: import('$lib/types').CurrentEventData;

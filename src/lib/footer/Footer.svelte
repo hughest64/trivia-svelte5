@@ -1,6 +1,5 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { getStore } from '$lib/utils';
     import QuizIcon from '$lib/footer/icons/QuizIcon.svelte';
     import ChatIcon from './icons/ChatIcon.svelte';
     import LeaderboardIcon from './icons/LeaderboardIcon.svelte';
@@ -8,14 +7,17 @@
     import MenuIcon from './icons/MenuIcon.svelte';
     import ScoringIcon from './icons/ScoringIcon.svelte';
 
-    const activeEventData = getStore('activeEventData');
-
     const reg = /^\/\(\w+\)\/(game|host)\/[[=\w]+]\/?/;
     const joinCode = $page.params?.joincode;
 
     $: routeId = $page.route.id?.split('/')[2];
     $: isEventRoute = reg.test($page.route.id || '');
     $: setActive = (link: string) => $page.url.pathname.endsWith(link);
+
+    // TODO: consisder this when navigating to /score:
+    // use beforeNavigate to update $activeEventData to the lowest round that has not been scored
+    // that makes it it nice an easy for the host to get to gettin'
+    // for the case of "edit this rounds scores", we could look for a query param and use that instead
 </script>
 
 <nav>
@@ -48,11 +50,8 @@
                 </a>
             </li>
         {:else if routeId === 'host' && isEventRoute}
-            <li class:active={setActive($page.params.round ? `score/${$page.params.round}` : 'score')}>
-                <a
-                    data-sveltekit-preload-data="tap"
-                    href={`/host/${joinCode}/score/${$activeEventData.activeRoundNumber || 1}`}
-                >
+            <li class:active={setActive('score')}>
+                <a data-sveltekit-preload-code="tap" href={`/host/${joinCode}/score`}>
                     <ScoringIcon cls="svg" />
                     <p>Scoring</p>
                 </a>

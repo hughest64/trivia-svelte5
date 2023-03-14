@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any*/
 
 import type { ServerLoadEvent } from '@sveltejs/kit';
-import type { Writable } from 'svelte/store';
+import type { Readable, Writable } from 'svelte/store';
 
 export interface JwtPayload {
     // user.id
@@ -157,17 +157,16 @@ export interface SocketMessage {
 
 export interface StoreTypes {
     userData: Writable<UserData>;
-    eventData: Writable<EventData>; // Readable?
+    eventData: Readable<EventData>;
     activeEventData: Writable<ActiveEventData>;
     currentEventData: Writable<CurrentEventData>;
-    rounds: Writable<GameRound[]>; // Readable?
-    questions: Writable<GameQuestion[]>; // Readable?
+    rounds: Readable<GameRound[]>;
+    questions: Readable<GameQuestion[]>;
     roundStates: Writable<RoundState[]>;
     questionStates: Writable<QuestionState[]>;
     responseData: Writable<Response[]>;
     hostResponseData: Writable<HostResponse[]>;
     popupData: Writable<PopupData>;
-    // eventPageData: unknown; // this is not used?
     publicLeaderboard: Writable<PublicLeaderboard>;
     playerJoined: Writable<PlayerJoined>;
 }

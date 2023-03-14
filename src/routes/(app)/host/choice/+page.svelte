@@ -1,13 +1,13 @@
 <script lang="ts">
-    import { page } from '$app/stores';
+    import { getStore } from '$lib/utils';
 
-    $: userData = $page.data?.user_data;
+    $: userData = getStore('userData');
 </script>
 
 <svelte:head><title>Trivia Mafia | Host or Play</title></svelte:head>
 
 <main class="short">
-    <h1>Greetings {userData?.username || ''}</h1>
+    <h1>Greetings {$userData?.username || ''}</h1>
 
     <h3>Do you want to:</h3>
 

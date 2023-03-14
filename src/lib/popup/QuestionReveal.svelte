@@ -5,15 +5,15 @@
     import CloseButton from './CloseButton.svelte';
     import { createQuestionKey, getStore } from '$lib/utils';
 
-    const userData = $page.data.user_data;
+    const userData = getStore('userData');
 
-    $: activeEventData = getStore('activeEventData');
-    $: popupData = getStore('popupData');
+    const activeEventData = getStore('activeEventData');
+    const popupData = getStore('popupData');
     $: count = $popupData.timer_value || 0;
 
     const resetPopup = () => ($popupData = { is_displayed: false, popup_type: '' });
     const gotoQuestion = async () => {
-        if (userData?.auto_reveal_questions && !$page.url.pathname.startsWith('/host')) {
+        if ($userData?.auto_reveal_questions && !$page.url.pathname.startsWith('/host')) {
             const popData = $popupData.data;
             $activeEventData = {
                 activeQuestionKey: createQuestionKey(popData?.round_number, popData?.question_number),

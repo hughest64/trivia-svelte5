@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { writable } from 'svelte/store';
+    import { readable, writable } from 'svelte/store';
     import { createStore } from '$lib/utils';
     import type { UserData, EventData } from './types';
 
@@ -9,7 +9,9 @@
     const userData = createStore('userData', writable(data?.user_data || ({} as UserData)));
     $: data?.user_data && userData.set(data.user_data);
 
-    $: createStore('eventData', writable(data?.event_data || ({} as EventData)));
+    $: createStore('eventData', readable(data?.event_data || ({} as EventData)));
+    $: createStore('rounds', readable($page.data.rounds || []));
+    $: createStore('questions', readable($page.data.questions || []));
     $: createStore('popupData', writable({ is_displayed: false, popup_type: '' }));
 
     // is the player stored as a participant for the event?

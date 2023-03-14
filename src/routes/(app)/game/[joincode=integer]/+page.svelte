@@ -1,7 +1,6 @@
 <script lang="ts">
     import { slide } from 'svelte/transition';
     import { enhance } from '$app/forms';
-    import { page } from '$app/stores';
     import { getStore } from '$lib/utils';
     import Round from './Round.svelte';
     import RoundSelector from './RoundSelector.svelte';
@@ -9,10 +8,9 @@
 
     const activeEventData = getStore('activeEventData');
     const playerJoined = getStore('playerJoined');
+    const rounds = getStore('rounds');
 
-    $: activeRound = $page.data?.rounds?.find(
-        (rd) => rd.round_number === $activeEventData.activeRoundNumber
-    ) as GameRound;
+    $: activeRound = $rounds.find((rd) => rd.round_number === $activeEventData.activeRoundNumber) as GameRound;
 </script>
 
 <h2>{activeRound?.title}</h2>
