@@ -6,7 +6,7 @@
     import RoundSelector from './RoundSelector.svelte';
     import type { GameRound } from '$lib/types';
 
-    const eventData = $page.data.event_data;
+    const eventData = getStore('eventData');
     const popupData = getStore('popupData');
     const activeEventData = getStore('activeEventData');
     const roundStates = getStore('roundStates') || [];
@@ -48,7 +48,7 @@
 <div class="title-container flex-column">
     <h1>Host Game</h1>
     <h4>Event Join Code: <strong>{joincode}</strong></h4>
-    <h4>Details: <strong>{eventData?.location}, {eventData?.game_title}</strong></h4>
+    <h4>Details: <strong>{$eventData?.location}, {$eventData?.game_title}</strong></h4>
 </div>
 <RoundSelector />
 

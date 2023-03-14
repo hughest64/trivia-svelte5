@@ -43,7 +43,6 @@
 
     const hostResponses = createStore('hostResponseData', writable([]));
     $: hostResponses.set(data?.host_response_data);
-    // $: console.log('host resps:', $hostResponses?.length);
 </script>
 
 <slot />
