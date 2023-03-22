@@ -44,13 +44,12 @@ export interface LeaderboardEntry {
 
 export interface PublicLeaderboard {
     through_round?: number;
-    leaderboard_entries: LeaderboardEntry[];
+    public_leaderboard_entries: LeaderboardEntry[];
 }
 
-// TODO
-// export interface HostLeaderboard extends PublicLeaderboard {
-//     //
-// }
+export interface HostLeaderboard {
+    host_leaderboard_entries: LeaderboardEntry[];
+}
 
 export interface LocationSelectData {
     location_id: string | number;
@@ -168,6 +167,7 @@ export interface StoreTypes {
     hostResponseData: Writable<HostResponse[]>;
     popupData: Writable<PopupData>;
     publicLeaderboard: Writable<PublicLeaderboard>;
+    hostLeaderboard: Writable<HostLeaderboard>;
     playerJoined: Writable<PlayerJoined>;
 }
 

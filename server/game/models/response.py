@@ -74,7 +74,7 @@ class Leaderboard(models.Model):
     host_through_round = models.IntegerField(blank=True, null=True)
 
     def __str__(self):
-        return f"{self.event} - {LEADERBOARD_TYPE_DICT[self.leaderboard_type]}"
+        return f"{self.event} @ {self.event.location}"
 
 
 class LeaderboardEntry(models.Model):

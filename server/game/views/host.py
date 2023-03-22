@@ -26,6 +26,7 @@ from game.models import (
     QuestionResponse,
     LeaderboardEntry,
     LEADERBOARD_TYPE_PUBLIC,
+    LEADERBOARD_TYPE_HOST,
 )
 from game.models.utils import queryset_to_json
 from game.utils.socket_classes import SendEventMessage
@@ -43,16 +44,25 @@ class EventHostView(APIView):
         user_data = request.user.to_json()
         event = get_event_or_404(joincode=joincode)
         # TODO: host side as well and make this a helper
-        public_lb_entries = LeaderboardEntry.objects.filter(
-            event=event,
-            leaderboard_type=LEADERBOARD_TYPE_PUBLIC,
-        )
+        lb_entries = LeaderboardEntry.objects.filter(event=event)
+        public_lb_entries = lb_entries.filter(leaderboard_type=LEADERBOARD_TYPE_PUBLIC)
+        host_lb_entries = lb_entries.filter(leaderboard_type=LEADERBOARD_TYPE_HOST)
+        through_round = None
+        try:
+            through_round = public_lb_entries.first().leaderboard.public_through_round
+
+        except AttributeError:
+            pass
 
         return Response(
             {
                 **event.to_json(),
                 "user_data": user_data,
-                "leaderboard_data": queryset_to_json(public_lb_entries),
+                "leaderboard_data": {
+                    "public_leaderboard_entries": queryset_to_json(public_lb_entries),
+                    "host_leaderboard_entries": queryset_to_json(host_lb_entries),
+                    "through_round": through_round,
+                },
             }
         )
 
@@ -217,10 +227,15 @@ class ScoreRoundView(APIView):
 
     def get(self, request, joincode, round_number=None) -> Response:
         event = get_event_or_404(joincode)
-        public_lb_entries = LeaderboardEntry.objects.filter(
-            event=event,
-            leaderboard_type=LEADERBOARD_TYPE_PUBLIC,
-        )
+        lb_entries = LeaderboardEntry.objects.filter(event=event)
+        public_lb_entries = lb_entries.filter(leaderboard_type=LEADERBOARD_TYPE_PUBLIC)
+        host_lb_entries = lb_entries.filter(leaderboard_type=LEADERBOARD_TYPE_HOST)
+        through_round = None
+        try:
+            through_round = public_lb_entries.first().leaderboard.public_through_round
+        except AttributeError:
+            pass
+
         if (
             round_number is not None
             and not event.game.game_rounds.filter(round_number=round_number).exists()
@@ -270,7 +285,11 @@ class ScoreRoundView(APIView):
             {
                 "user_data": request.user.to_json(),
                 **event.to_json(),
-                "leaderboard_data": queryset_to_json(public_lb_entries),
+                "leaderboard_data": {
+                    "public_leaderboard_entries": queryset_to_json(public_lb_entries),
+                    "host_leaderboard_entries": queryset_to_json(host_lb_entries),
+                    "through_round": through_round,
+                },
                 "host_response_data": response_data,
             }
         )

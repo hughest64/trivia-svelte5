@@ -74,7 +74,7 @@ class EventView(APIView):
                 "user_data": user.to_json(),
                 "response_data": queryset_to_json(question_responses),
                 "leaderboard_data": {
-                    "leaderboard_entries": queryset_to_json(public_lb_entries),
+                    "public_leaderboard_entries": queryset_to_json(public_lb_entries),
                     "through_round": through_round,
                 },
                 "player_joined": player_joined,
