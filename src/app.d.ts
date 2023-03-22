@@ -34,9 +34,8 @@ declare namespace App {
     }
 }
 
-declare namespace svelte.JSX {
-    /* eslint-disable-next-line @typescript-eslint/no-unused-vars*/
+declare namespace svelteHTML {
     interface HTMLAttributes {
-        onswipe?: (event: CustomEvent) => Promise<void>;
+        'on:swipe'?: (event: CustomEvent) => Promise<void>;
     }
 }
