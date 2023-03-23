@@ -3,8 +3,7 @@
     import Entry from '$lib/leaderboards/Entry.svelte';
     import RoundSelector from '../RoundSelector.svelte';
 
-    const publicLeaderboard = getStore('publicLeaderboard');
-    const hostLeaderboard = getStore('hostLeaderboard');
+    const leaderboard = getStore('leaderboard');
 
     type LbView = 'public' | 'host';
     let lbView: LbView = 'public';
@@ -17,8 +16,8 @@
     <button class="button button-secondary" on:click={() => (lbView = 'public')}>Public View</button>
 </div>
 
-{#if $publicLeaderboard.through_round && lbView === 'public'}
-    <h3>Through Round {$publicLeaderboard.through_round}</h3>
+{#if $leaderboard.through_round && lbView === 'public'}
+    <h3>Through Round {$leaderboard.through_round}</h3>
 {/if}
 
 <RoundSelector />
@@ -27,14 +26,14 @@
 {#if lbView === 'public'}
     <h4>Public Leaderboard</h4>
     <ul class="leaderboard-rankings">
-        {#each $publicLeaderboard.public_leaderboard_entries as entry}
+        {#each $leaderboard.public_leaderboard_entries as entry}
             <Entry {entry} />
         {/each}
     </ul>
 {:else}
     <h4>Host Leaderboard</h4>
     <ul class="leaderboard-rankings">
-        {#each $hostLeaderboard.host_leaderboard_entries as entry}
+        {#each $leaderboard.host_leaderboard_entries as entry}
             <Entry {entry} />
         {/each}
     </ul>

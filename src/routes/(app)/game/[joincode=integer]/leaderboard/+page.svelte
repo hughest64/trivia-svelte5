@@ -3,7 +3,7 @@
     import Entry from '$lib/leaderboards/Entry.svelte';
     import RoundSelector from '../RoundSelector.svelte';
 
-    const leaderboard = getStore('publicLeaderboard');
+    const leaderboard = getStore('leaderboard');
 </script>
 
 <h1>Team Standings</h1>

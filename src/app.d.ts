@@ -34,8 +34,10 @@ declare namespace App {
     }
 }
 
-declare namespace svelteHTML {
+// NOTE: this should be converted to declare namespace svelteHTML, but it causes npm run check to fail
+declare namespace svelte.JSX {
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars*/
     interface HTMLAttributes {
-        'on:swipe'?: (event: CustomEvent) => Promise<void>;
+        onswipe?: (event: CustomEvent) => Promise<void>;
     }
 }

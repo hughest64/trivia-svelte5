@@ -42,15 +42,11 @@ export interface LeaderboardEntry {
     total_points: number;
 }
 
-export interface PublicLeaderboard {
+export interface Leaderboard {
     through_round?: number;
     public_leaderboard_entries: LeaderboardEntry[];
-}
-
-export interface HostLeaderboard {
     host_leaderboard_entries: LeaderboardEntry[];
 }
-
 export interface LocationSelectData {
     location_id: string | number;
     location_name: string;
@@ -166,8 +162,7 @@ export interface StoreTypes {
     responseData: Writable<Response[]>;
     hostResponseData: Writable<HostResponse[]>;
     popupData: Writable<PopupData>;
-    publicLeaderboard: Writable<PublicLeaderboard>;
-    hostLeaderboard: Writable<HostLeaderboard>;
+    leaderboard: Writable<Leaderboard>;
     playerJoined: Writable<PlayerJoined>;
 }
 

@@ -31,7 +31,7 @@
         question_number: number;
     }
 
-    const publicStore = getStore('publicLeaderboard');
+    const publicStore = getStore('leaderboard');
     const responseStore = getStore('responseData');
     const roundStates = getStore('roundStates');
     const popupStore = getStore('popupData');
@@ -43,8 +43,8 @@
         leaderboard_join: (message: LeaderboardEntry) => {
             publicStore.update((lb) => {
                 const newLB = { ...lb };
-                const existingIndex = lb.leaderboard_entries.findIndex((e) => e.team_id === message.team_id);
-                existingIndex === -1 && newLB.leaderboard_entries.push(message);
+                const existingIndex = lb.public_leaderboard_entries.findIndex((e) => e.team_id === message.team_id);
+                existingIndex === -1 && newLB.public_leaderboard_entries.push(message);
                 return newLB;
             });
         },

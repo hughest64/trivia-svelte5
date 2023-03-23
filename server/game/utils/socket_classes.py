@@ -20,6 +20,10 @@ def get_user_group(user_id):
     return f"user_id_{user_id}"
 
 
+def get_host_group(joincode):
+    return f"host_{joincode}"
+
+
 class BaseSocketMessage(ABC):
     """Base class for message handling. It cannot be instantiaed directly."""
 

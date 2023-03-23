@@ -75,6 +75,7 @@ class EventView(APIView):
                 "response_data": queryset_to_json(question_responses),
                 "leaderboard_data": {
                     "public_leaderboard_entries": queryset_to_json(public_lb_entries),
+                    "host_leaderboard_entries": [],
                     "through_round": through_round,
                 },
                 "player_joined": player_joined,
