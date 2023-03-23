@@ -44,6 +44,8 @@ test('round headers on the leaderboard navigate back to the game', async ({ p1Pa
 
 // TODO:
 // test host leaderboard also updates when teams join
+// test host leaderboard public vs. host views
+// test host leaderboard when update btn should and should not appear
 // test actual leaderboard updates (pts values) from the host, maybe tiebreakers here too
-// test host leaderboard updates independently of the public leaderboard (scorint, tibebreakers, etc)
+// test host leaderboard updates independently of the public leaderboard (scoring, tibebreakers, etc)
 // test that the public leaderboard updates when the host clicks "update leaderboard"
