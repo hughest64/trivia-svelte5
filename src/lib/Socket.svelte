@@ -31,7 +31,7 @@
         question_number: number;
     }
 
-    const publicStore = getStore('leaderboard');
+    const leaderboardStore = getStore('leaderboard');
     const responseStore = getStore('responseData');
     const roundStates = getStore('roundStates');
     const popupStore = getStore('popupData');
@@ -41,10 +41,18 @@
     const handlers: MessageHandler = {
         connected: () => console.log('connected!'),
         leaderboard_join: (message: LeaderboardEntry) => {
-            publicStore.update((lb) => {
+            leaderboardStore.update((lb) => {
                 const newLB = { ...lb };
-                const existingIndex = lb.public_leaderboard_entries.findIndex((e) => e.team_id === message.team_id);
-                existingIndex === -1 && newLB.public_leaderboard_entries.push(message);
+                const existingPubIndex = lb.public_leaderboard_entries.findIndex((e) => e.team_id === message.team_id);
+                existingPubIndex === -1 && newLB.public_leaderboard_entries.push(message);
+
+                // only update the host lb entries on host routes
+                if ($page.url.pathname.startsWith('/host')) {
+                    const existingHostIndex = lb.host_leaderboard_entries.findIndex(
+                        (e) => e.team_id === message.team_id
+                    );
+                    existingHostIndex === -1 && newLB.host_leaderboard_entries.push(message);
+                }
                 return newLB;
             });
         },
