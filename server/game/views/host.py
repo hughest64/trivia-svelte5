@@ -29,7 +29,8 @@ from game.models import (
     LEADERBOARD_TYPE_HOST,
 )
 from game.models.utils import queryset_to_json
-from game.utils.socket_classes import SendEventMessage
+from game.processors import LeaderboardProcessor
+from game.utils.socket_classes import SendEventMessage, SendHostMessage
 
 # TODO: remove once creating event is implemented
 DEMO_EVENT_JOIN_CODE = 1234
@@ -206,6 +207,22 @@ class RoundLockView(APIView):
             event=event, game_question__round_number=round_number
         ).update(locked=locked)
 
+        if locked:
+            # update the host leaderboard
+            lb_processor = LeaderboardProcessor(event)
+            entries = lb_processor.update_host_leaderboard(
+                through_round=event.max_locked_round() or round_state.round_number
+            )
+
+            # send host message
+            SendHostMessage(
+                joincode,
+                {
+                    "msg_type": "host_leaderboard_update",
+                    "message": queryset_to_json(entries),
+                },
+            )
+
         SendEventMessage(
             joincode,
             {
@@ -319,22 +336,26 @@ class ScoreRoundView(APIView):
         return Response({"success": True})
 
 
-class HostLeaderboardView(APIView):
-    authentication_classes = [JwtAuthentication]
-    permission_classes = [IsAdminUser]
-
-    def get(self, request, joincode):
-        # look up both leaderboards and return them
-        return Response({"success": True})
-
-
-class UpdateLeaderbaord(APIView):
+class UpdatePublicLeaderboardView(APIView):
     authentication_classes = [JwtAuthentication]
     permission_classes = [IsAdminUser]
 
     @method_decorator(csrf_protect)
     def post(self, request, joincode):
-        # read in "leaderboard_type" from request.data
-        # look up the appropriate leaderboard
-        # use the leaderboard helper class to update the leaderboard and return it (socket)
+        event = get_event_or_404(joincode=joincode)
+
+        lb_processor = LeaderboardProcessor(event=event)
+        (entries, through_round) = lb_processor.sync_leaderboards()
+
+        SendEventMessage(
+            joincode,
+            {
+                "msg_type": "public_leaderboard_update",
+                "message": {
+                    "public_leaderboard_entries": queryset_to_json(entries),
+                    "through_round": through_round,
+                },
+            },
+        )
+
         return Response({"success": True})

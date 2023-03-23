@@ -8,6 +8,7 @@
         CurrentEventData,
         MessageHandler,
         LeaderboardEntry,
+        Leaderboard,
         QuestionState,
         Response,
         RoundState,
@@ -54,6 +55,21 @@
                     existingHostIndex === -1 && newLB.host_leaderboard_entries.push(message);
                 }
                 return newLB;
+            });
+        },
+        host_leaderboard_update: (msg: LeaderboardEntry[]) => {
+            leaderboardStore.update((lb) => {
+                const newLb = { ...lb };
+                Object.assign(newLb.host_leaderboard_entries, msg);
+                return newLb;
+            });
+        },
+        public_leaderboard_update: (msg: Leaderboard) => {
+            leaderboardStore.update((lb) => {
+                const newLb = { ...lb };
+                Object.assign(newLb.public_leaderboard_entries, msg.public_leaderboard_entries);
+                newLb.through_round = msg.through_round;
+                return newLb;
             });
         },
         team_response_update: (message: Response) => {

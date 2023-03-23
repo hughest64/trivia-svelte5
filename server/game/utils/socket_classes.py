@@ -60,3 +60,10 @@ class SendTeamMessage(BaseSocketMessage):
         group = get_team_group(team_id, joincode)
         message.update({"type": "team_update"})
         super().__init__(group, message, **kwargs)
+
+
+class SendHostMessage(BaseSocketMessage):
+    def __init__(self, joincode: int, message: dict, **kwargs) -> None:
+        group = get_host_group(joincode)
+        message.update({"type": "event_update"})
+        super().__init__(group, message, **kwargs)

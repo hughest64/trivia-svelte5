@@ -215,6 +215,12 @@ class TriviaEvent(models.Model):
             return None
         return round_states.last().round_number
 
+    def max_locked_round(self):
+        round_states = self.round_states.filter(locked=True).order_by("round_number")
+        if not round_states.exists():
+            return None
+        return round_states.last().round_number
+
     def __str__(self):
         return f"{self.game.title} on {self.date} - {self.joincode}"
 

@@ -107,7 +107,7 @@ class LeaderboardEntry(models.Model):
 
     class Meta:
         unique_together = ("team", "event", "leaderboard_type")
-        ordering = ["event", "rank", "tiebreaker_rank", "pk"]
+        ordering = ["event", "-leaderboard_type", "rank", "tiebreaker_rank", "pk"]
         verbose_name_plural = "Leaderboard Entries"
 
     def _get_through_rounds(self):
@@ -128,7 +128,7 @@ class LeaderboardEntry(models.Model):
         return through_rounds[type]
 
     def __str__(self):
-        return f"{self.team} - {self.event}"
+        return f"{LEADERBOARD_TYPE_DICT[self.leaderboard_type]} @ {self.event} - {self.team}"
 
     def to_json(self):
         return {

@@ -84,13 +84,15 @@ class LeaderboardProcessor:
                 )
 
             # TODO: log?
-            return {"status": f"Host leaderboard updated through round {through_round}"}
+            # return {"status": f"Host leaderboard updated through round {through_round}"}
 
         except Exception as e:
             # TODO: proper log
             print(f"Could not update leaderboard. Reason: {e}")
 
         self.processing = False
+
+        return entries
 
     def sync_leaderboards(self):
         """use host leaderboard and entry data to update the public leaderboard"""
@@ -103,8 +105,9 @@ class LeaderboardProcessor:
             event_lb.public_through_round = event_lb.host_through_round
             event_lb.save()
 
+            public_entries = []
             for e in host_lb_entries:
-                LeaderboardEntry.objects.update_or_create(
+                lbe, _ = LeaderboardEntry.objects.update_or_create(
                     event=self.event,
                     leaderboard_type=LEADERBOARD_TYPE_PUBLIC,
                     team=e.team,
@@ -115,3 +118,6 @@ class LeaderboardProcessor:
                         "total_points": e.total_points,
                     },
                 )
+                public_entries.append(lbe)
+
+            return (public_entries, event_lb.public_through_round)
