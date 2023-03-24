@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { getStore } from '$lib/utils';
     import Funny from '$lib/icons/Funny.svelte';
     import NotFunny from '$lib/icons/NotFunny.svelte';
     import Correct from '$lib/icons/Correct.svelte';
@@ -8,6 +9,8 @@
     import type { HostResponse } from '$lib/types';
 
     export let response: HostResponse;
+    const activeEventData = getStore('activeEventData');
+
     let updating = false;
     const answerValueMap: Record<string, typeof SvelteComponent> = {
         '0': Wrong,
@@ -31,6 +34,7 @@
         data.set('funny', String(funny));
         data.set('points_awarded', String(points));
         data.set('response_ids', JSON.stringify(response.response_ids));
+        data.set('question_key', $activeEventData.activeQuestionKey);
 
         const updateResponse = await fetch('?/updateresponse', {
             method: 'post',

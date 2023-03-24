@@ -11,7 +11,8 @@
         QuestionState,
         Response,
         RoundState,
-        SocketMessage
+        SocketMessage,
+        HostResponse
     } from './types';
 
     const path = $page.url.pathname;
@@ -37,6 +38,7 @@
     const popupStore = getStore('popupData');
     const questionStateStore = getStore('questionStates');
     const currentEventStore = getStore('currentEventData');
+    const hostResponseStore = getStore('hostResponseData');
 
     const handlers: MessageHandler = {
         connected: () => console.log('connected!'),
@@ -118,9 +120,41 @@
         current_data_update: (message: CurrentEventData) => {
             currentEventStore.set(message);
         },
-        score_update: (message: Record<string, string>) => {
-            // TODO: update host AND player responses, no need to filter by team since ids are unique
-            console.log(message);
+
+        // TODO: a better type for message here
+        /* eslint-disable @typescript-eslint/no-explicit-any*/
+        score_update: (message: Record<string, any>) => {
+            const { response_ids, points_awarded, funny, question_key } = message;
+
+            // update team response if appropriate
+            if ($page.url.pathname.startsWith('/game')) {
+                responseStore.update((resps) => {
+                    const newResps = [...resps];
+                    const respToUpdate = resps.find((resp) => resp.key === question_key) as Response;
+
+                    if (respToUpdate) {
+                        respToUpdate.points_awarded = points_awarded;
+                        respToUpdate.funny = funny;
+                    }
+
+                    return newResps;
+                });
+            }
+
+            // update host reponses if appropriate
+            if ($page.url.pathname.startsWith('/host')) {
+                hostResponseStore.update((resps) => {
+                    const newResps = [...resps];
+                    // TODO: it seems likely that relying in the first index to match is not a good idea!
+                    const respsToUpdate = newResps.find(
+                        (resp) => resp.response_ids[0] === response_ids[0]
+                    ) as HostResponse;
+                    respsToUpdate.points_awarded = Number(points_awarded);
+                    respsToUpdate.funny = Boolean(funny);
+
+                    return newResps;
+                });
+            }
         }
     };
 

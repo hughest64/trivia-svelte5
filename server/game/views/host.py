@@ -1,3 +1,4 @@
+import json
 from typing import List
 
 from django.db.models import QuerySet
@@ -325,6 +326,7 @@ class ScoreRoundView(APIView):
     def post(self, request, joincode):
         try:
             data = DataCleaner(request.data)
+            print(request.data)
             id_list = data.as_int_array("response_ids", deserialize=True)
             funny = data.as_bool("funny")
             points_awarded = data.as_float("points_awarded")
@@ -335,11 +337,15 @@ class ScoreRoundView(APIView):
             points_awarded=points_awarded, funny=funny
         )
 
+        msg_data = request.data
+        # deserialize the the response id array
+        if isinstance(msg_data["response_ids"], str):
+            msg_data["response_ids"] = json.loads(request.data["response_ids"])
         SendEventMessage(
             joincode,
             {
                 "msg_type": "score_update",
-                "message": request.data,  # NOTE: the id array will be serialized!
+                "message": request.data,
             },
         )
 
