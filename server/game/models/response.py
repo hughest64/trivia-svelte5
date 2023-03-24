@@ -72,6 +72,8 @@ class Leaderboard(models.Model):
     )
     public_through_round = models.IntegerField(blank=True, null=True)
     host_through_round = models.IntegerField(blank=True, null=True)
+    # do the two sets of entires match? note that this is not toally dependent upon through rounds matching
+    synced = models.BooleanField(default=True)
 
     def __str__(self):
         return f"{self.event} @ {self.event.location}"

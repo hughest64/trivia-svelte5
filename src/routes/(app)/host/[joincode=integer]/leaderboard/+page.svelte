@@ -39,11 +39,12 @@
         {/each}
     </ul>
 {:else}
-    <!-- TOOD: button to sync leaderboards when not synced "Update Public View"
-    NOTE: this also reveals the correct answer AND pts awarded to individual teams/players -->
-    <form action="?/updateleaderboard" method="post" use:enhance>
-        <button type="submit" class="button button-primary">Update Public View</button>
-    </form>
+    <!-- NOTE: this also needs to reveal the correct answer AND pts awarded to individual teams/players -->
+    {#if !$leaderboard.synced}
+        <form action="?/updateleaderboard" method="post" use:enhance>
+            <button type="submit" class="button button-primary">Update Public View</button>
+        </form>
+    {/if}
 
     <h4>Host Leaderboard</h4>
 

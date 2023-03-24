@@ -1,12 +1,14 @@
 from django.db import transaction
 
 from game.models import (
+    EventRoundState,
     Leaderboard,
     LeaderboardEntry,
     TriviaEvent,
     QuestionResponse,
     LEADERBOARD_TYPE_HOST,
     LEADERBOARD_TYPE_PUBLIC,
+    queryset_to_json,
 )
 
 
@@ -80,7 +82,8 @@ class LeaderboardProcessor:
                 self._set_leaderboard_rank(entries)
                 LeaderboardEntry.objects.bulk_update(entries, ["total_points", "rank"])
                 Leaderboard.objects.update_or_create(
-                    event=self.event, defaults={"host_through_round": through_round}
+                    event=self.event,
+                    defaults={"host_through_round": through_round, "synced": False},
                 )
 
             # TODO: log?
@@ -92,7 +95,7 @@ class LeaderboardProcessor:
 
         self.processing = False
 
-        return entries
+        return {"host_leaderboard_entries": queryset_to_json(entries), "synced": False}
 
     def sync_leaderboards(self):
         """use host leaderboard and entry data to update the public leaderboard"""
@@ -103,7 +106,14 @@ class LeaderboardProcessor:
 
             event_lb, _ = Leaderboard.objects.get_or_create(event=self.event)
             event_lb.public_through_round = event_lb.host_through_round
+            event_lb.synced = True
             event_lb.save()
+
+            # mark rounds scored through the current round
+            round_states = EventRoundState.objects.filter(
+                event=self.event, round_number__lte=event_lb.host_through_round
+            )
+            round_states.update(scored=True)
 
             public_entries = []
             for e in host_lb_entries:
@@ -120,4 +130,9 @@ class LeaderboardProcessor:
                 )
                 public_entries.append(lbe)
 
-            return (public_entries, event_lb.public_through_round)
+            return {
+                "public_leaderboard_entries": queryset_to_json(public_entries),
+                "through_round": event_lb.public_through_round,
+                "synced": event_lb.synced,
+                "round_states": queryset_to_json(round_states),
+            }

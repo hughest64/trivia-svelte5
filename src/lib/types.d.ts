@@ -44,6 +44,7 @@ export interface LeaderboardEntry {
 
 export interface Leaderboard {
     through_round?: number;
+    synced?: boolean;
     public_leaderboard_entries: LeaderboardEntry[];
     host_leaderboard_entries: LeaderboardEntry[];
 }

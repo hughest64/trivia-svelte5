@@ -8,7 +8,6 @@
         CurrentEventData,
         MessageHandler,
         LeaderboardEntry,
-        Leaderboard,
         QuestionState,
         Response,
         RoundState,
@@ -57,18 +56,13 @@
                 return newLB;
             });
         },
-        host_leaderboard_update: (msg: LeaderboardEntry[]) => {
+        // TODO: bettery typings
+        leaderboard_update: (msg: Record<string, unknown>) => {
+            const { round_states, ...leaderboard } = msg;
             leaderboardStore.update((lb) => {
                 const newLb = { ...lb };
-                Object.assign(newLb.host_leaderboard_entries, msg);
-                return newLb;
-            });
-        },
-        public_leaderboard_update: (msg: Leaderboard) => {
-            leaderboardStore.update((lb) => {
-                const newLb = { ...lb };
-                Object.assign(newLb.public_leaderboard_entries, msg.public_leaderboard_entries);
-                newLb.through_round = msg.through_round;
+                Object.assign(newLb, leaderboard);
+                Object.assign(roundStates, round_states);
                 return newLb;
             });
         },

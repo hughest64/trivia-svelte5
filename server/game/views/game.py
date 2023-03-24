@@ -58,7 +58,7 @@ class EventView(APIView):
         # the player's active team does not have a leaderboard entry
         except IndexError:
             player_joined = False
-        # the leaderboard exists, but a through round has not yet been set
+        # the leaderboard instanace doesn't exist or a through round has not yet been set
         except AttributeError:
             pass
 

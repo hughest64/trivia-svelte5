@@ -49,8 +49,12 @@ class EventHostView(APIView):
         public_lb_entries = lb_entries.filter(leaderboard_type=LEADERBOARD_TYPE_PUBLIC)
         host_lb_entries = lb_entries.filter(leaderboard_type=LEADERBOARD_TYPE_HOST)
         through_round = None
+        synced = True
+        # TODO: consider indexing and except IndexError (it's probably a better lookup in this situation)
         try:
-            through_round = public_lb_entries.first().leaderboard.public_through_round
+            first = public_lb_entries.first()
+            through_round = first.leaderboard.public_through_round
+            synced = first.leaderboard.synced
 
         except AttributeError:
             pass
@@ -63,6 +67,7 @@ class EventHostView(APIView):
                     "public_leaderboard_entries": queryset_to_json(public_lb_entries),
                     "host_leaderboard_entries": queryset_to_json(host_lb_entries),
                     "through_round": through_round,
+                    "synced": synced,
                 },
             }
         )
@@ -202,6 +207,7 @@ class RoundLockView(APIView):
             round_number=round_number,
             defaults={"locked": locked},
         )
+        # TODO: bind these so we can send the updated values back in the socket
         # lock or unlock responses for the round
         QuestionResponse.objects.filter(
             event=event, game_question__round_number=round_number
@@ -210,7 +216,7 @@ class RoundLockView(APIView):
         if locked:
             # update the host leaderboard
             lb_processor = LeaderboardProcessor(event)
-            entries = lb_processor.update_host_leaderboard(
+            leaderboard_data = lb_processor.update_host_leaderboard(
                 through_round=event.max_locked_round() or round_state.round_number
             )
 
@@ -218,8 +224,8 @@ class RoundLockView(APIView):
             SendHostMessage(
                 joincode,
                 {
-                    "msg_type": "host_leaderboard_update",
-                    "message": queryset_to_json(entries),
+                    "msg_type": "leaderboard_update",
+                    "message": leaderboard_data,
                 },
             )
 
@@ -248,8 +254,11 @@ class ScoreRoundView(APIView):
         public_lb_entries = lb_entries.filter(leaderboard_type=LEADERBOARD_TYPE_PUBLIC)
         host_lb_entries = lb_entries.filter(leaderboard_type=LEADERBOARD_TYPE_HOST)
         through_round = None
+        synced = True
         try:
-            through_round = public_lb_entries.first().leaderboard.public_through_round
+            first = public_lb_entries.first()
+            through_round = first.leaderboard.public_through_round
+            synced = first.leaderboard.synced
         except AttributeError:
             pass
 
@@ -306,6 +315,7 @@ class ScoreRoundView(APIView):
                     "public_leaderboard_entries": queryset_to_json(public_lb_entries),
                     "host_leaderboard_entries": queryset_to_json(host_lb_entries),
                     "through_round": through_round,
+                    "synced": synced,
                 },
                 "host_response_data": response_data,
             }
@@ -345,17 +355,12 @@ class UpdatePublicLeaderboardView(APIView):
         event = get_event_or_404(joincode=joincode)
 
         lb_processor = LeaderboardProcessor(event=event)
-        (entries, through_round) = lb_processor.sync_leaderboards()
+        # public lb entries, public through round, and update event round states
+        updated_lb_data = lb_processor.sync_leaderboards()
 
         SendEventMessage(
             joincode,
-            {
-                "msg_type": "public_leaderboard_update",
-                "message": {
-                    "public_leaderboard_entries": queryset_to_json(entries),
-                    "through_round": through_round,
-                },
-            },
+            {"msg_type": "leaderboard_update", "message": updated_lb_data},
         )
 
         return Response({"success": True})

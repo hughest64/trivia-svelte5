@@ -40,8 +40,7 @@
     $: createStore('questionStates', writable(data?.question_states || []));
     $: createStore('responseData', writable(data?.response_data || []));
 
-    const leaderboard = createStore('leaderboard', writable());
-    $: leaderboard.set(data?.leaderboard_data || {});
+    $: createStore('leaderboard', writable(data?.leaderboard_data || {}));
 
     const hostResponses = createStore('hostResponseData', writable([]));
     $: hostResponses.set(data?.host_response_data);
