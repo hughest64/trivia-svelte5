@@ -324,14 +324,10 @@ class ScoreRoundView(APIView):
 
     @method_decorator(csrf_protect)
     def post(self, request, joincode):
-        try:
-            data = DataCleaner(request.data)
-            print(request.data)
-            id_list = data.as_int_array("response_ids", deserialize=True)
-            funny = data.as_bool("funny")
-            points_awarded = data.as_float("points_awarded")
-        except DataValidationError as e:
-            return Response(e.response)
+        data = DataCleaner(request.data)
+        id_list = data.as_int_array("response_ids", deserialize=True)
+        funny = data.as_bool("funny")
+        points_awarded = data.as_float("points_awarded")
 
         QuestionResponse.objects.filter(id__in=id_list).update(
             points_awarded=points_awarded, funny=funny
@@ -361,7 +357,7 @@ class UpdatePublicLeaderboardView(APIView):
         event = get_event_or_404(joincode=joincode)
 
         lb_processor = LeaderboardProcessor(event=event)
-        # public lb entries, public through round, and update event round states
+        # public lb entries, public through round, and updated event round states
         updated_lb_data = lb_processor.sync_leaderboards()
 
         SendEventMessage(
