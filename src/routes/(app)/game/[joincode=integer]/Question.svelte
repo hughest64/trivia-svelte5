@@ -58,6 +58,17 @@
     <p>Image Missing</p>
 {/if}
 
+{#if activeRoundState?.scored}
+    <!--  TODO: we might not need a class here?-->
+    <div class="answer-summary">
+        <p>Correct Answer: <strong>answer</strong></p>
+        <!-- TODO multiply by megaround vals if appropriate-->
+        <p>You Received X pts for this question</p>
+        <!-- if funny -->
+        <p>This answer was marked as a funny answer!</p>
+    </div>
+{/if}
+
 <form on:submit|preventDefault={handleSubmitResponse}>
     <div id="response-container" class="input-container" class:notsubmitted>
         <input
