@@ -138,7 +138,7 @@
         // TODO: a better type for message here
         /* eslint-disable @typescript-eslint/no-explicit-any*/
         score_update: (message: Record<string, any>) => {
-            const { response_ids, points_awarded, funny, question_key } = message;
+            const { response_ids, points_awarded, funny, question_key, leaderboard_data } = message;
 
             // update team response if appropriate
             if ($page.url.pathname.startsWith('/game')) {
@@ -168,6 +168,13 @@
 
                     return newResps;
                 });
+                leaderboardStore.update((lb) => {
+                    const newLb = { ...lb };
+                    Object.assign(newLb, leaderboard_data);
+
+                    return newLb;
+                });
+                console.log(leaderboard_data);
             }
         }
     };
