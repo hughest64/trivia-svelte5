@@ -222,6 +222,8 @@ class RoundLockView(APIView):
                 through_round=event.max_locked_round() or round_state.round_number
             )
 
+            # TODO: perhaps we don't need to send this as a separate host message
+            # maybe we just ignore the piece of data if the broswer is on a /game route
             # send host message
             SendHostMessage(
                 joincode,

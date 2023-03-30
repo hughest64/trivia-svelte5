@@ -53,3 +53,4 @@ test('round headers on the leaderboard navigate back to the game', async ({ p1Pa
 // test unlocking a round and allowing a player to update a response
 // - should re-autograde properly (but I was getting a 400 from the api)
 // - make sure respones for a round are unlocking when the round is unlocked
+// test clicking score this round goes to scoring and shows grouped resps

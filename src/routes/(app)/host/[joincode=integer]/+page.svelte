@@ -15,6 +15,7 @@
     $: activeRound = $rounds.find((rd) => rd.round_number === $activeEventData.activeRoundNumber) as GameRound;
     $: activeRoundState = $roundStates.find((rs) => rs.round_number === $activeEventData.activeRoundNumber);
     $: locked = activeRoundState?.locked;
+    $: scoreButtonText = activeRoundState?.scored ? 'Edit This Rounds Scores' : 'Score This Round';
 
     $: joincode = $page.params?.joincode;
 
@@ -65,6 +66,8 @@
 </div>
 {#if error}<p>{error}</p>{/if}
 
-<!-- <button class="button button-primary" on:click|preventDefault>Score/Edit This Round</button> -->
+{#if locked}
+    <a class="button button-primary" data-sveltekit-reload href={`/host/${joincode}/score`}>{scoreButtonText}</a>
+{/if}
 
 <Round {activeRound} />
