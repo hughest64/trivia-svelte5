@@ -210,9 +210,10 @@ class RoundLockView(APIView):
         )
         # TODO: bind these so we can send the updated values back in the socket
         # lock or unlock responses for the round
-        QuestionResponse.objects.filter(
+        resps = QuestionResponse.objects.filter(
             event=event, game_question__round_number=round_number
-        ).update(locked=locked)
+        )
+        resps.update(locked=locked)
 
         if locked:
             # update the host leaderboard
@@ -234,7 +235,10 @@ class RoundLockView(APIView):
             joincode,
             {
                 "msg_type": "round_update",
-                "message": round_state.to_json(),
+                "message": {
+                    "round_state": round_state.to_json(),
+                    "responses": queryset_to_json(resps),
+                },
             },
         )
 

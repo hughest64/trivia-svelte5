@@ -58,7 +58,7 @@
                 return newLB;
             });
         },
-        // TODO: bettery typings
+        // TODO: better typings
         leaderboard_update: (msg: Record<string, unknown>) => {
             const { round_states, ...leaderboard } = msg;
             leaderboardStore.update((lb) => {
@@ -79,14 +79,28 @@
                 return newResponses;
             });
         },
-        round_update: (message: RoundState) => {
+        round_update: (message: Record<string, RoundState | Response[]>) => {
+            const rs = <RoundState>message.round_state;
             roundStates.update((states) => {
                 const newStates = [...states];
-                const roundStateIndex = newStates.findIndex((rs) => rs.round_number === message.round_number);
-                roundStateIndex > -1 ? (newStates[roundStateIndex] = message) : newStates.push(message);
+                const roundStateIndex = newStates.findIndex((rs) => rs.round_number === rs.round_number);
+                roundStateIndex > -1 ? (newStates[roundStateIndex] = rs) : newStates.push(rs);
 
                 return newStates;
             });
+            // update player responses based on id
+            if (rs.locked) {
+                const responses = <Response[]>message.responses;
+                responseStore.update((resps) => {
+                    const newResps = [...resps];
+                    responses.forEach((updatedResp) => {
+                        const respIndex = newResps.findIndex((resp) => resp.id === updatedResp.id);
+                        if (respIndex > -1) newResps[respIndex] = updatedResp;
+                    });
+
+                    return newResps;
+                });
+            }
         },
         question_reveal_popup: (message: Record<string, string | boolean>) => {
             const revealed = message.reveal;

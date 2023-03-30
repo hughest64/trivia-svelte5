@@ -50,3 +50,6 @@ test('round headers on the leaderboard navigate back to the game', async ({ p1Pa
 // test host leaderboard updates independently of the public leaderboard (scoring, tibebreakers, etc)
 // test that the public leaderboard updates when the host clicks "update leaderboard"
 // test pts/funny/answers visible after scoring a round but not before
+// test unlocking a round and allowing a player to update a response
+// - should re-autograde properly (but I was getting a 400 from the api)
+// - make sure respones for a round are unlocking when the round is unlocked
