@@ -59,13 +59,13 @@
 {/if}
 
 {#if activeRoundState?.scored}
-    <!--  TODO: we might not need a class here?-->
     <div class="answer-summary">
-        <p>Correct Answer: <strong>answer</strong></p>
-        <!-- TODO multiply by megaround vals if appropriate-->
-        <p>You Received X pts for this question</p>
-        <!-- if funny -->
-        <p>This answer was marked as a funny answer!</p>
+        <p>Correct Answer: <strong>{activeQuestion?.display_answer}</strong></p>
+        <!-- TODO multiply by megaround vals if appropriate, properly pluralize-->
+        <p>You Received {activeResponse?.points_awarded || 0} pt(s) for this question</p>
+        {#if activeResponse?.funny}
+            <p>This answer was marked as a funny answer!</p>
+        {/if}
     </div>
 {/if}
 
@@ -101,7 +101,9 @@
     .question-text {
         padding: 0 0.5rem;
     }
-
+    .answer-summary {
+        max-width: var(--max-element-width);
+    }
     .notsubmitted {
         input {
             border-color: var(--color-primary);
