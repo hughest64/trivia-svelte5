@@ -59,6 +59,7 @@ class LeaderboardProcessor:
             # TODO: should it be this way, or maybe just no rank if no question's were answered?
             # don't assign rank for 0 points
             if lbe.total_points == 0:
+                lbe.rank = None
                 continue
             rank = pts_vals.index(lbe.total_points) + 1
             if lbe.tiebreaker_rank is not None:
