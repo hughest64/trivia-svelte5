@@ -19,7 +19,7 @@ const config: PlaywrightTestConfig = {
             port: 4173
         },
         {
-            command: 'pipenv run python manage.py runserver 7000 --settings=server.settings_tst',
+            command: 'DJANGO_SETTINGS_MODULE=server.settings_tst pipenv run daphne -p 7000 server.asgi:application ',
             cwd: 'server',
             port: 7000
         }
