@@ -56,6 +56,10 @@ class LeaderboardProcessor:
         )
         tb_index = 0
         for lbe in leaderboard_entries:
+            # TODO: should it be this way, or maybe just no rank if no question's were answered?
+            # don't assign rank for 0 points
+            if lbe.total_points == 0:
+                continue
             rank = pts_vals.index(lbe.total_points) + 1
             if lbe.tiebreaker_rank is not None:
                 rank += tb_index
@@ -95,7 +99,12 @@ class LeaderboardProcessor:
 
         self.processing = False
 
-        return {"host_leaderboard_entries": queryset_to_json(entries), "synced": False}
+        return {
+            "host_leaderboard_entries": queryset_to_json(
+                entries.order_by("rank", "pk")
+            ),
+            "synced": False,
+        }
 
     def sync_leaderboards(self):
         """use host leaderboard and entry data to update the public leaderboard"""

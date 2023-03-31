@@ -334,14 +334,18 @@ class ScoreRoundView(APIView):
         id_list = data.as_int_array("response_ids", deserialize=True)
         funny = data.as_bool("funny")
         points_awarded = data.as_float("points_awarded")
+        update_type = data.as_string("update_type")
 
         resps = QuestionResponse.objects.filter(id__in=id_list)
         resps.update(points_awarded=points_awarded, funny=funny)
 
-        event = get_event_or_404(joincode=joincode)
-        lb_entries = LeaderboardProcessor(event=event).update_host_leaderboard(
-            event.max_locked_round()
-        )
+        # update the host leaderboard on point changes
+        lb_entries = None
+        if update_type == "points":
+            event = get_event_or_404(joincode=joincode)
+            lb_entries = LeaderboardProcessor(event=event).update_host_leaderboard(
+                event.max_locked_round()
+            )
 
         msg_data = request.data
         # deserialize the the response id array

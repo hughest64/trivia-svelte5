@@ -3,7 +3,7 @@
     import { browser } from '$app/environment';
     import { goto } from '$app/navigation';
     import { page } from '$app/stores';
-    import { createQuestionKey, getStore } from '$lib/utils';
+    import { createQuestionKey, getStore, resolveBool } from '$lib/utils';
     import type {
         CurrentEventData,
         MessageHandler,
@@ -148,7 +148,7 @@
 
                     if (respToUpdate) {
                         respToUpdate.points_awarded = points_awarded;
-                        respToUpdate.funny = funny;
+                        respToUpdate.funny = resolveBool(funny);
                     }
 
                     return newResps;
@@ -164,17 +164,17 @@
                         (resp) => resp.response_ids[0] === response_ids[0]
                     ) as HostResponse;
                     respsToUpdate.points_awarded = Number(points_awarded);
-                    respsToUpdate.funny = Boolean(funny);
-
+                    respsToUpdate.funny = resolveBool(funny);
                     return newResps;
                 });
-                leaderboardStore.update((lb) => {
-                    const newLb = { ...lb };
-                    Object.assign(newLb, leaderboard_data);
+                if (leaderboard_data) {
+                    leaderboardStore.update((lb) => {
+                        const newLb = { ...lb };
+                        Object.assign(newLb, leaderboard_data);
 
-                    return newLb;
-                });
-                console.log(leaderboard_data);
+                        return newLb;
+                    });
+                }
             }
         }
     };

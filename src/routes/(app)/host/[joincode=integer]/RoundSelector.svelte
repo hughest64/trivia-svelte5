@@ -5,7 +5,7 @@
 
     const joincode = $page.params.joincode;
     const rounds = getStore('rounds');
-    const roundStates = getStore('roundStates');
+    // const roundStates = getStore('roundStates');
     const activeEventData = getStore('activeEventData');
     const currentEventData = getStore('currentEventData');
 
@@ -31,15 +31,15 @@
 
 <div class="round-selector">
     {#each roundNumbers as roundNum}
-        {#if !isScoringPage || !!$roundStates.find((rd) => rd.round_number === roundNum)?.locked}
-            <button
-                id={String(roundNum)}
-                on:click={handleRoundSelect}
-                class:active={$activeEventData.activeRoundNumber === roundNum}
-                class:current={$currentEventData.round_number === roundNum}
-            >
-                {roundNum}
-            </button>
-        {/if}
+        <!-- {#if !isScoringPage || !!$roundStates.find((rd) => rd.round_number === roundNum)?.locked} -->
+        <button
+            id={String(roundNum)}
+            on:click={handleRoundSelect}
+            class:active={$activeEventData.activeRoundNumber === roundNum}
+            class:current={$currentEventData.round_number === roundNum}
+        >
+            {roundNum}
+        </button>
+        <!-- {/if} -->
     {/each}
 </div>

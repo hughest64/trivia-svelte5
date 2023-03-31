@@ -26,13 +26,15 @@
         return newScore;
     };
 
-    const updateResponse = async (type: string) => {
+    const updateResponse = async (updateType: string) => {
         updating = true;
         const data = new FormData();
-        const funny = (response.funny = type === 'funny' ? !response.funny : response.funny);
-        const points = type === 'points' ? setScore() : response.points_awarded;
+        const funny = (response.funny = updateType === 'funny' ? !response.funny : response.funny);
+        const points = updateType === 'points' ? setScore() : response.points_awarded;
+
         data.set('funny', String(funny));
         data.set('points_awarded', String(points));
+        data.set('update_type', updateType);
         data.set('response_ids', JSON.stringify(response.response_ids));
         data.set('question_key', $activeEventData.activeQuestionKey);
 
@@ -48,6 +50,7 @@
     };
 </script>
 
+<!-- TODO: this submission set up is very un-kit and should probably be changed to align with other form submissions -->
 <li class="scoring-response">
     <button type="submit" class="funny-button" class:updating on:click={() => updateResponse('funny')}>
         <svelte:component this={funnyIcon} />
