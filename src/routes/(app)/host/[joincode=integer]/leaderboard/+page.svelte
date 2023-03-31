@@ -10,50 +10,52 @@
     let lbView: LbView = 'host';
 </script>
 
-<h1>Host - Leaderboard</h1>
+<div class="host-container flex-column">
+    <h1>Host - Leaderboard</h1>
 
-<div class="btn-group">
-    <button
-        class="button {lbView === 'host' ? 'button-primary' : 'button-secondary'}"
-        on:click={() => (lbView = 'host')}>Host View</button
-    >
-    <button
-        class="button {lbView === 'public' ? 'button-primary' : 'button-secondary'}"
-        on:click={() => (lbView = 'public')}>Public View</button
-    >
-</div>
+    <div class="btn-group">
+        <button
+            class="button {lbView === 'host' ? 'button-primary' : 'button-secondary'}"
+            on:click={() => (lbView = 'host')}>Host View</button
+        >
+        <button
+            class="button {lbView === 'public' ? 'button-primary' : 'button-secondary'}"
+            on:click={() => (lbView = 'public')}>Public View</button
+        >
+    </div>
 
-<RoundSelector />
+    <RoundSelector />
 
-<!-- TODO: and nice slide transition would be cool here -->
-{#if lbView === 'public'}
-    {#if $leaderboard.through_round}
-        <h4>Public Leaderboard Through Round {$leaderboard.through_round}</h4>
+    <!-- TODO: and nice slide transition would be cool here -->
+    {#if lbView === 'public'}
+        {#if $leaderboard.through_round}
+            <h4>Public Leaderboard Through Round {$leaderboard.through_round}</h4>
+        {:else}
+            <h4>Public Leaderboard</h4>
+        {/if}
+
+        <ul class="leaderboard-rankings">
+            {#each $leaderboard.public_leaderboard_entries as entry}
+                <Entry {entry} />
+            {/each}
+        </ul>
     {:else}
-        <h4>Public Leaderboard</h4>
+        <!-- NOTE: this also needs to reveal the correct answer AND pts awarded to individual teams/players -->
+        {#if !$leaderboard.synced}
+            <form action="?/updateleaderboard" method="post" use:enhance>
+                <button type="submit" class="button button-primary">Update Public View</button>
+            </form>
+        {/if}
+
+        <h4>Host Leaderboard</h4>
+
+        <ul class="leaderboard-rankings">
+            {#each $leaderboard.host_leaderboard_entries as entry}
+                <Entry {entry} />
+            {/each}
+        </ul>
     {/if}
-
-    <ul class="leaderboard-rankings">
-        {#each $leaderboard.public_leaderboard_entries as entry}
-            <Entry {entry} />
-        {/each}
-    </ul>
-{:else}
-    <!-- NOTE: this also needs to reveal the correct answer AND pts awarded to individual teams/players -->
-    {#if !$leaderboard.synced}
-        <form action="?/updateleaderboard" method="post" use:enhance>
-            <button type="submit" class="button button-primary">Update Public View</button>
-        </form>
-    {/if}
-
-    <h4>Host Leaderboard</h4>
-
-    <ul class="leaderboard-rankings">
-        {#each $leaderboard.host_leaderboard_entries as entry}
-            <Entry {entry} />
-        {/each}
-    </ul>
-{/if}
+</div>
 
 <style lang="scss">
     .btn-group {

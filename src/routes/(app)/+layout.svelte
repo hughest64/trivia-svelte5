@@ -47,7 +47,7 @@
         justify-self: center;
         height: calc(100% - calc(var(--footer-height) + 0.5rem));
         width: 100%;
-        max-width: var(--max-continer-width);
+        max-width: var(--max-container-width);
         margin: 0 auto;
         border-bottom-left-radius: 3em;
         border-bottom-right-radius: 3em;

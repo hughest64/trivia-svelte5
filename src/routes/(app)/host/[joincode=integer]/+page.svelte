@@ -45,29 +45,30 @@
     };
 </script>
 
-<div class="title-container flex-column">
+<div class="host-container flex-column">
     <h1>Host Game</h1>
     <h4>Event Join Code: <strong>{joincode}</strong></h4>
     <h4>Details: <strong>{$eventData?.location}, {$eventData?.game_title}</strong></h4>
-</div>
-<RoundSelector />
 
-<div class="lock-container">
-    <label id={`rd-${activeRound?.round_number}`} for="round-lock" class="lock">
-        <input
-            type="checkbox"
-            name="round-lock"
-            id="round-lock"
-            bind:checked={locked}
-            on:click|preventDefault={handleLockRound}
-        />
-        <span class:checked={locked} />
-    </label>
-</div>
-{#if error}<p>{error}</p>{/if}
+    <RoundSelector />
 
-{#if locked}
-    <a class="button button-primary" data-sveltekit-reload href={`/host/${joincode}/score`}>{scoreButtonText}</a>
-{/if}
+    <div class="lock-container">
+        <label id={`rd-${activeRound?.round_number}`} for="round-lock" class="lock">
+            <input
+                type="checkbox"
+                name="round-lock"
+                id="round-lock"
+                bind:checked={locked}
+                on:click|preventDefault={handleLockRound}
+            />
+            <span class:checked={locked} />
+        </label>
+    </div>
+    {#if error}<p>{error}</p>{/if}
+
+    {#if locked}
+        <a class="button button-primary" data-sveltekit-reload href={`/host/${joincode}/score`}>{scoreButtonText}</a>
+    {/if}
+</div>
 
 <Round {activeRound} />

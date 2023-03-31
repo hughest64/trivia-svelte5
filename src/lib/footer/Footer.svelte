@@ -80,7 +80,7 @@
         align-items: center;
         margin: 0 auto;
         width: 100%;
-        max-width: var(--max-continer-width);
+        max-width: var(--max-container-width);
         background-color: var(--color-tertiary);
     }
     li {

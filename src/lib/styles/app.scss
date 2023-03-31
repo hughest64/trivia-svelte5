@@ -1,7 +1,7 @@
 :root {
     font-family: 'Montserrat', sans-serif;
     // applied to first children of <body>
-    --max-continer-width: 75rem;
+    --max-container-width: 75rem;
     // buttons, inputs, etc
     --max-element-width: 30rem;
     --footer-height: 5rem;
@@ -105,7 +105,7 @@ main {
     align-items: center;
     margin: 0 auto;
     padding: 1rem;
-    max-width: var(--max-continer-width);
+    max-width: var(--max-container-width);
     &.short {
         // height of the footer + some breathing room
         padding-bottom: calc(var(--footer-height) + 0.5rem);
