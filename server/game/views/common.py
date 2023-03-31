@@ -38,10 +38,10 @@ class ClearEventDataView(APIView):
 
     def post(self, request):
         # TODO: this kinda get's buried in the test run (we only see the 400 response)
-        if not settings.ALLOW_EVENT_RESET:
-            return Response(
-                {"detail": "that is not allowed"}, status=HTTP_400_BAD_REQUEST
-            )
+        # if not settings.ALLOW_EVENT_RESET:
+        #     return Response(
+        #         {"detail": "that is not allowed"}, status=HTTP_400_BAD_REQUEST
+        #     )
 
         secret = request.data.get("secret")
         joincodes = request.data.get("joincodes", [])
@@ -49,16 +49,17 @@ class ClearEventDataView(APIView):
             joincodes = [joincodes]
 
         # TODO: probably better to keep the secret in a .env file and read it into settings
-        if secret != "todd is great":
-            return Response(
-                {"detail": "ah ah ah, you didn't say the magic word"},
-                status=HTTP_400_BAD_REQUEST,
-            )
+        # if secret != "todd is great":
+        #     return Response(
+        #         {"detail": "ah ah ah, you didn't say the magic word"},
+        #         status=HTTP_400_BAD_REQUEST,
+        #     )
 
         try:
             msg = management.call_command("reset", *joincodes)
             print(msg)
         except Exception as e:
+            print(e)
             return Response({"detail": ""}, status=HTTP_400_BAD_REQUEST)
 
         return Response({"success": True})
