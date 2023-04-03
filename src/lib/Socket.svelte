@@ -160,9 +160,8 @@
                 hostResponseStore.update((resps) => {
                     const newResps = [...resps];
                     // TODO: it seems likely that relying in the first index to match is not a good idea!
-                    const respsToUpdate = newResps.find(
-                        (resp) => resp.response_ids[0] === response_ids[0]
-                    ) as HostResponse;
+                    const respsToUpdate =
+                        newResps.find((resp) => resp.response_ids[0] === response_ids[0]) || ({} as HostResponse);
                     respsToUpdate.points_awarded = Number(points_awarded);
                     respsToUpdate.funny = resolveBool(funny);
                     return newResps;
