@@ -14,7 +14,7 @@
 
 <RoundSelector />
 
-<ul class="leaderboard-rankings">
+<ul id="player-leaderboard-view" class="leaderboard-rankings">
     {#each $leaderboard.public_leaderboard_entries as entry}
         <Entry {entry} />
     {/each}

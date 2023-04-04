@@ -19,9 +19,8 @@ class Command(BaseCommand):
         """reset all mutable event related data for an event with the joincode 1234"""
         self.stdout.write("reseting event data")
 
-        default_join_codes = (1234, 9998, 9999)
-        joincodes = kwargs.get("joincodes", default_join_codes)
-        print(joincodes)
+        default_join_codes = {1234, 9998, 9999}
+        joincodes = set(kwargs.get("joincodes", [])).union(default_join_codes)
 
         Team.objects.filter(name="My Cool Team TEST").delete()
         User.objects.filter(username="testuser").delete()
@@ -39,8 +38,12 @@ class Command(BaseCommand):
             event__joincode=9998
         ).delete()
 
+        Leaderboard.objects.filter(event__joincode__in=joincodes).exclude(
+            event__joincode=9998
+        ).delete()
+
         QuestionResponse.objects.exclude(
-            event__joincode__in=set(joincodes).union(default_join_codes)
+            event__joincode__in=default_join_codes
         ).delete()
 
         self.stdout.write("finished resetting event data")

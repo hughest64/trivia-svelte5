@@ -88,6 +88,7 @@ class LeaderboardEntry(models.Model):
         related_query_name="leaderboard_entry",
         on_delete=models.CASCADE,
     )
+    # TODO: is this relation useful or necessary? both things are tied to the event so...
     leaderboard = models.ForeignKey(
         Leaderboard,
         related_name="entries",

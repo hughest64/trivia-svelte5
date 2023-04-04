@@ -16,10 +16,12 @@
     <div class="btn-group">
         <button
             class="button {lbView === 'host' ? 'button-primary' : 'button-secondary'}"
+            id="host-view"
             on:click={() => (lbView = 'host')}>Host View</button
         >
         <button
             class="button {lbView === 'public' ? 'button-primary' : 'button-secondary'}"
+            id="public-view"
             on:click={() => (lbView = 'public')}>Public View</button
         >
     </div>
@@ -34,22 +36,21 @@
             <h4>Public Leaderboard</h4>
         {/if}
 
-        <ul class="leaderboard-rankings">
+        <ul id="public-leaderboard-view" class="leaderboard-rankings">
             {#each $leaderboard.public_leaderboard_entries as entry}
                 <Entry {entry} />
             {/each}
         </ul>
     {:else}
-        <!-- NOTE: this also needs to reveal the correct answer AND pts awarded to individual teams/players -->
         {#if !$leaderboard.synced}
             <form action="?/updateleaderboard" method="post" use:enhance>
-                <button type="submit" class="button button-primary">Update Public View</button>
+                <button id="sync-button" type="submit" class="button button-primary">Update Public View</button>
             </form>
         {/if}
 
         <h4>Host Leaderboard</h4>
 
-        <ul class="leaderboard-rankings">
+        <ul id="host-leaderboard-view" class="leaderboard-rankings">
             {#each $leaderboard.host_leaderboard_entries as entry}
                 <Entry {entry} />
             {/each}

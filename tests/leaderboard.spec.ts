@@ -1,5 +1,5 @@
 import { test, expect } from './fixtures.js';
-import { resetEventData } from './utils.js';
+import { asyncTimeout, resetEventData } from './utils.js';
 
 const joincode = '9900';
 const eventUrl = `/game/${joincode}`;
@@ -10,7 +10,7 @@ test.beforeEach(async () => {
     await resetEventData({ joincodes: joincode });
 });
 
-// test.afterAll(async () => {
+// test.afterEach(async () => {
 //     await resetEventData({ joincodes: joincode });
 // });
 
@@ -37,41 +37,102 @@ test('player one leaderboard updates when another team joins', async ({ p1Page, 
     // TODO: test host leaderboard also updates when teams join
 });
 
-test('leaderboards update properly', async ({ p1Page, p3Page, hostPage }) => {
+test('host leaderboard updates on round lock, public updates on btn click', async ({ p1Page, p3Page, hostPage }) => {
     // host reveals r1q1
     await hostPage.page.goto(hostUrl);
-    await hostPage.revealQuestion('1.1');
 
     // p1 & p3 each answer the same question (1 correct 1 incorrect)
     await p1Page.joinGame(joincode);
     await p3Page.joinGame(joincode);
 
-    await p1Page.setResponse('baseball', { submit: true });
+    // incorrect answer
+    await p1Page.setResponse('football', { submit: true });
+    // correct answer
     await p3Page.setResponse('basketball', { submit: true });
 
     // host locks the round and goes to leaderboard
     await hostPage.lockIconLabel('1').click();
-    const scoreBtn = hostPage.page.locator('a', { hasText: 'Score This Round' });
-    await expect(scoreBtn).toBeVisible();
-    await hostPage.page.goto(`${hostUrl}/score`);
-    // expect host lb to have p1 w/ rank 1, 1pt & p3 w/ rank '-', 0 pts
+    await hostPage.page.goto(`${hostUrl}/leaderboard`);
 
-    // host goes back to quiz and clicks "score this round"
-    await hostPage.page.goto(hostUrl);
-    await scoreBtn.click();
+    // TODO: how to tell we are viewing the host lb? (perhaps once we add drop downs for each team that will be easier?)
+    // expect host lb to have p1 w/ rank 1, 1pt & p3 w/ rank '-', 0 pts
+    const hostlb = hostPage.page.locator('ul#host-leaderboard-view').locator('li.leaderboard-entry-container');
+    await expect(hostlb).toHaveCount(2);
+    // 1st place
+    const hostEntry1 = hostlb.nth(0);
+    await expect(hostEntry1.locator('h3.team-name')).toHaveText(/for all the marbles/i);
+    await expect(hostEntry1.locator('h3.rank')).toHaveText('1');
+    await expect(hostEntry1.locator('h3.points')).toHaveText('1');
+    // not ranked
+    const hostEntry2 = hostlb.nth(1);
+    await expect(hostEntry2.locator('h3.team-name')).toHaveText(/hello world/i);
+    await expect(hostEntry2.locator('h3.rank')).toHaveText('-');
+    await expect(hostEntry2.locator('h3.points')).toHaveText('0');
+
+    // public leaderbaord has not been updated
+    await hostPage.page.locator('button#public-view').click();
+    const publiclb = hostPage.page.locator('ul#public-leaderboard-view').locator('li.leaderboard-entry-container');
+    await expect(publiclb).toHaveCount(2);
+    // not ranked
+    const pubEntry2 = publiclb.nth(0);
+    await expect(pubEntry2.locator('h3.team-name')).toHaveText(/hello world/i);
+    await expect(pubEntry2.locator('h3.rank')).toHaveText('-');
+    await expect(pubEntry2.locator('h3.points')).toHaveText('0');
+    // not ranked
+    const pubEntry1 = publiclb.nth(1);
+    await expect(pubEntry1.locator('h3.team-name')).toHaveText(/for all the marbles/i);
+    await expect(pubEntry1.locator('h3.rank')).toHaveText('-');
+    await expect(pubEntry1.locator('h3.points')).toHaveText('0');
+
+    // sync the leaderboards
+    await hostPage.page.locator('button#host-view').click();
+    await hostPage.page.locator('button#sync-button').click();
+
+    await asyncTimeout(200);
+    await hostPage.page.locator('button#public-view').click();
+    await expect(hostPage.page.locator('button#sync-button')).not.toBeVisible();
+
+    const updatedPubliclb = hostPage.page
+        .locator('ul#public-leaderboard-view')
+        .locator('li.leaderboard-entry-container');
+    const updatedPubEntry1 = updatedPubliclb.nth(0);
+    await expect(updatedPubEntry1.locator('h3.team-name')).toHaveText(/for all the marbles/i);
+    await expect(updatedPubEntry1.locator('h3.rank')).toHaveText('1');
+    await expect(updatedPubEntry1.locator('h3.points')).toHaveText('1');
+    // not ranked
+    const updatedPubEntry2 = updatedPubliclb.nth(1);
+    await expect(updatedPubEntry2.locator('h3.team-name')).toHaveText(/hello world/i);
+    await expect(updatedPubEntry2.locator('h3.rank')).toHaveText('-');
+    await expect(updatedPubEntry2.locator('h3.points')).toHaveText('0');
+
+    // player should see updated board after host update
+    await p1Page.page.goto(`${eventUrl}/leaderboard`); // TODO: we should probably click the link in the footer
+    const playerlb = p1Page.page.locator('ul#player-leaderboard-view').locator('li.leaderboard-entry-container');
+    await expect(playerlb).toHaveCount(2);
+    const p1entry1 = playerlb.nth(0);
+    await expect(p1entry1.locator('h3.team-name')).toHaveText(/for all the marbles/i);
+    await expect(p1entry1.locator('h3.rank')).toHaveText('1');
+    await expect(p1entry1.locator('h3.points')).toHaveText('1');
+    // not ranked
+    const p1entry2 = playerlb.nth(1);
+    await expect(p1entry2.locator('h3.team-name')).toHaveText(/hello world/i);
+    await expect(p1entry2.locator('h3.rank')).toHaveText('-');
+    await expect(p1entry2.locator('h3.points')).toHaveText('0');
 });
+
+// player should see pts summary after host update
+// await expect(p1Page.page).toHaveURL(eventUrl);
+// const answerSummary = p1Page.page.locator('div.question-selector').locator('p', { hasText: 'Correct Answer' });
+// await expect(answerSummary).toBeVisible();
+// host goes back to quiz and clicks "score this round"
+// const scoreBtn = hostPage.page.locator('a', { hasText: 'Score This Round' });
+// await expect(scoreBtn).toBeVisible();
+// await hostPage.page.goto(hostUrl);
+// await scoreBtn.click();
 // change p3 score to 1/2
 // expect rank 2, 1/2 pts
 // change p2 score to 1
-// expect both to have rank 1, 1 pt
-// should we test ordering?
-// host click public leaderboard
-// expect no ranks or pts
-// expect sync btn to be visible
-// host click sync btn
-// expect btn to disappear
-// expect both to teams to have rank 1, pts 1
-// expect players to see the same on the lb page
+// expect player to see there answer/pts awarded on the quiz pg for the question
 
 test('round headers on the leaderboard navigate back to the game', async ({ p1Page }) => {
     // await p1Page.joinGame(joincode);/
@@ -83,7 +144,6 @@ test('round headers on the leaderboard navigate back to the game', async ({ p1Pa
     // expect to be back on the game and round 5 is active
     await expect(p1Page.page).toHaveURL(eventUrl);
     await expect(rd1).toHaveClass(/active/);
-    // TODO: expect player to see there answer/pts awarded on the quiz pg for the question
 });
 
 // TODO:

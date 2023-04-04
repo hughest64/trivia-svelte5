@@ -77,19 +77,22 @@ class LeaderboardProcessor:
         self.processing = True
         try:
             with transaction.atomic():
-                # an alternative here would be to loop event.teams and get_or_create on each team to ensure that every team has an entry
+                lb, _ = Leaderboard.objects.update_or_create(
+                    event=self.event,
+                    defaults={"host_through_round": through_round, "synced": False},
+                )
                 entries = LeaderboardEntry.objects.filter(
                     event=self.event, leaderboard_type=LEADERBOARD_TYPE_HOST
                 )
                 for entry in entries:
                     self._set_team_score(entry, through_round)
+                    entry.leaderboard = lb
 
                 self._set_leaderboard_rank(entries)
-                LeaderboardEntry.objects.bulk_update(entries, ["total_points", "rank"])
-                Leaderboard.objects.update_or_create(
-                    event=self.event,
-                    defaults={"host_through_round": through_round, "synced": False},
+                LeaderboardEntry.objects.bulk_update(
+                    entries, ["total_points", "rank", "leaderboard"]
                 )
+                print(entries[0].leaderboard)
 
             # TODO: log?
             # return {"status": f"Host leaderboard updated through round {through_round}"}

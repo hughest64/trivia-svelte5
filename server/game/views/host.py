@@ -25,6 +25,7 @@ from game.models import (
     EventQuestionState,
     TriviaEvent,
     QuestionResponse,
+    Leaderboard,
     LeaderboardEntry,
     LEADERBOARD_TYPE_PUBLIC,
     LEADERBOARD_TYPE_HOST,
@@ -51,13 +52,13 @@ class EventHostView(APIView):
         host_lb_entries = lb_entries.filter(leaderboard_type=LEADERBOARD_TYPE_HOST)
         through_round = None
         synced = True
-        # TODO: consider indexing and except IndexError (it's probably a better lookup in this situation)
-        try:
-            first = public_lb_entries.first()
-            through_round = first.leaderboard.public_through_round
-            synced = first.leaderboard.synced
 
-        except AttributeError:
+        try:
+            lb = Leaderboard.objects.get(event=event)
+            through_round = getattr(lb, "public_through_round")
+            synced = lb.synced
+
+        except Leaderboard.DoesNotExist:
             pass
 
         return Response(
