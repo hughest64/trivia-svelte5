@@ -37,6 +37,7 @@ test('player one leaderboard updates when another team joins', async ({ p1Page, 
     // TODO: test host leaderboard also updates when teams join
 });
 
+// TODO: a helper for checking each entry would be great!
 test('host leaderboard updates on round lock, public updates on btn click', async ({ p1Page, p3Page, hostPage }) => {
     // host reveals r1q1
     await hostPage.page.goto(hostUrl);
@@ -50,11 +51,16 @@ test('host leaderboard updates on round lock, public updates on btn click', asyn
     // correct answer
     await p3Page.setResponse('basketball', { submit: true });
 
+    await p1Page.page.goto(`${eventUrl}/leaderboard`); // TODO: we should probably click the link in the footer
+
     // host locks the round and goes to leaderboard
     await hostPage.lockIconLabel('1').click();
+    await asyncTimeout(500);
     await hostPage.page.goto(`${hostUrl}/leaderboard`);
 
-    // TODO: how to tell we are viewing the host lb? (perhaps once we add drop downs for each team that will be easier?)
+    const syncBtn = hostPage.page.locator('button#sync-button');
+    await expect(syncBtn).toBeVisible();
+
     // expect host lb to have p1 w/ rank 1, 1pt & p3 w/ rank '-', 0 pts
     const hostlb = hostPage.page.locator('ul#host-leaderboard-view').locator('li.leaderboard-entry-container');
     await expect(hostlb).toHaveCount(2);
@@ -69,7 +75,7 @@ test('host leaderboard updates on round lock, public updates on btn click', asyn
     await expect(hostEntry2.locator('h3.rank')).toHaveText('-');
     await expect(hostEntry2.locator('h3.points')).toHaveText('0');
 
-    // public leaderbaord has not been updated
+    // public leaderboard has not been updated
     await hostPage.page.locator('button#public-view').click();
     const publiclb = hostPage.page.locator('ul#public-leaderboard-view').locator('li.leaderboard-entry-container');
     await expect(publiclb).toHaveCount(2);
@@ -86,9 +92,7 @@ test('host leaderboard updates on round lock, public updates on btn click', asyn
 
     // sync the leaderboards
     await hostPage.page.locator('button#host-view').click();
-    await hostPage.page.locator('button#sync-button').click();
-
-    await asyncTimeout(200);
+    await syncBtn.click();
     await hostPage.page.locator('button#public-view').click();
     await expect(hostPage.page.locator('button#sync-button')).not.toBeVisible();
 
@@ -105,8 +109,6 @@ test('host leaderboard updates on round lock, public updates on btn click', asyn
     await expect(updatedPubEntry2.locator('h3.rank')).toHaveText('-');
     await expect(updatedPubEntry2.locator('h3.points')).toHaveText('0');
 
-    // player should see updated board after host update
-    await p1Page.page.goto(`${eventUrl}/leaderboard`); // TODO: we should probably click the link in the footer
     const playerlb = p1Page.page.locator('ul#player-leaderboard-view').locator('li.leaderboard-entry-container');
     await expect(playerlb).toHaveCount(2);
     const p1entry1 = playerlb.nth(0);
