@@ -64,9 +64,11 @@
             leaderboardStore.update((lb) => {
                 const newLb = { ...lb };
                 Object.assign(newLb, leaderboard);
-                Object.assign(roundStates, round_states);
+
                 return newLb;
             });
+            // TODO: I think this is fine as we should get all round states here, but we could use .update if called for
+            roundStates.set(round_states as RoundState[]);
         },
         team_response_update: (message: Response) => {
             responseStore.update((responses) => {

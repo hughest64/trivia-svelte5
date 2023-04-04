@@ -33,8 +33,6 @@ test('player one leaderboard updates when another team joins', async ({ p1Page, 
     // player 3 should see both teams
     await expect(p3Page.page.locator('h3.team-name', { hasText: /hello world/i })).toBeVisible();
     await expect(p3Page.page.locator('h3.team-name', { hasText: /for all the marbles/i })).toBeVisible();
-
-    // TODO: test host leaderboard also updates when teams join
 });
 
 // TODO: a helper for checking each entry would be great!
@@ -122,20 +120,6 @@ test('host leaderboard updates on round lock, public updates on btn click', asyn
     await expect(p1entry2.locator('h3.points')).toHaveText('0');
 });
 
-// player should see pts summary after host update
-// await expect(p1Page.page).toHaveURL(eventUrl);
-// const answerSummary = p1Page.page.locator('div.question-selector').locator('p', { hasText: 'Correct Answer' });
-// await expect(answerSummary).toBeVisible();
-// host goes back to quiz and clicks "score this round"
-// const scoreBtn = hostPage.page.locator('a', { hasText: 'Score This Round' });
-// await expect(scoreBtn).toBeVisible();
-// await hostPage.page.goto(hostUrl);
-// await scoreBtn.click();
-// change p3 score to 1/2
-// expect rank 2, 1/2 pts
-// change p2 score to 1
-// expect player to see there answer/pts awarded on the quiz pg for the question
-
 test('round headers on the leaderboard navigate back to the game', async ({ p1Page }) => {
     // await p1Page.joinGame(joincode);/
     await p1Page.page.goto(leaderboardUrl);
@@ -152,4 +136,3 @@ test('round headers on the leaderboard navigate back to the game', async ({ p1Pa
 // test unlocking a round and allowing a player to update a response
 // - should re-autograde properly (but I was getting a 400 from the api)
 // - make sure respones for a round are unlocking when the round is unlocked
-// test clicking score this round goes to scoring and shows grouped resps

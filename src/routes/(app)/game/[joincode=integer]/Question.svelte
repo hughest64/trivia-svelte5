@@ -16,6 +16,7 @@
     $: activeResponse = $responses.find((resp) => resp.key === $activeEventData.activeQuestionKey);
     $: questionState = $questionStates.find((qs) => qs.key === $activeEventData.activeQuestionKey);
     $: activeRoundState = $roundStates.find((rs) => rs.round_number === $activeEventData.activeRoundNumber);
+    $: console.log(activeRoundState);
 
     $: hasImage = activeQuestion?.question_type.toLocaleLowerCase().startsWith('image');
     let displayLightbox = false;
