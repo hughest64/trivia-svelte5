@@ -348,16 +348,15 @@ class ScoreRoundView(APIView):
                 event.max_locked_round()
             )
 
-        msg_data = request.data
-        # deserialize the the response id array
-        if isinstance(msg_data["response_ids"], str):
-            msg_data["response_ids"] = json.loads(request.data["response_ids"])
+        msg_data = dict(request.data)
+        # ensure we are sending back a deserialized list
+        msg_data["response_ids"] = id_list
 
         SendEventMessage(
             joincode,
             {
                 "msg_type": "score_update",
-                "message": {**request.data, "leaderboard_data": lb_entries},
+                "message": {**msg_data, "leaderboard_data": lb_entries},
             },
         )
 

@@ -92,7 +92,6 @@ class LeaderboardProcessor:
                 LeaderboardEntry.objects.bulk_update(
                     entries, ["total_points", "rank", "leaderboard"]
                 )
-                print(entries[0].leaderboard)
 
             # TODO: log?
             # return {"status": f"Host leaderboard updated through round {through_round}"}
