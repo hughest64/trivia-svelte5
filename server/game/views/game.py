@@ -46,6 +46,7 @@ class EventView(APIView):
 
         player_joined = check_player_limit(event, user, join_required=False)
 
+        # TODO: just pass the event (not join code)
         public_lb_entries = LeaderboardEntry.objects.filter(
             event__joincode=joincode, leaderboard_type=LEADERBOARD_TYPE_PUBLIC
         )

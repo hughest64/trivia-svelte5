@@ -5,14 +5,15 @@
     import Correct from '$lib/icons/Correct.svelte';
     import HalfCredit from '$lib/icons/HalfCredit.svelte';
     import Wrong from '$lib/icons/Wrong.svelte';
-    import type { SvelteComponent } from 'svelte';
+    import type { ComponentType } from 'svelte';
     import type { HostResponse } from '$lib/types';
 
     export let response: HostResponse;
     const activeEventData = getStore('activeEventData');
 
     let updating = false;
-    const answerValueMap: Record<string, typeof SvelteComponent> = {
+
+    const answerValueMap: Record<string, ComponentType> = {
         '0': Wrong,
         '0.5': HalfCredit,
         '1': Correct
@@ -54,6 +55,7 @@
 <li class="scoring-response">
     <button type="submit" class="funny-button" class:updating on:click={() => updateResponse('funny')}>
         <svelte:component this={funnyIcon} />
+        <p>{response.funny ? 'Funny' : 'Not Funny'}</p>
     </button>
     <div class="scoring-details" class:updating>
         <p>{response.recorded_answer}</p>

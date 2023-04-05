@@ -3,11 +3,11 @@
     import QuestionReveal from './QuestionReveal.svelte';
     import ConfirmRoundUnlock from './ConfirmRoundUnlock.svelte';
     import { getStore } from '$lib/utils';
-    import type { SvelteComponent } from 'svelte';
+    import type { ComponentType } from 'svelte';
 
     const popupData = getStore('popupData');
 
-    const components: Record<string, typeof SvelteComponent> = {
+    const components: Record<string, ComponentType> = {
         question_reveal: QuestionReveal,
         round_unlock: ConfirmRoundUnlock
     };

@@ -10,7 +10,7 @@
     const currentEventData = getStore('currentEventData');
 
     const roundNumbers = $rounds.map((rd) => rd.round_number) || [];
-    $: isScoringPage = $page.url.pathname.includes('score');
+    // $: isScoringPage = $page.url.pathname.includes('score');
 
     const handleRoundSelect = async (event: MouseEvent) => {
         const target = <HTMLButtonElement>event.target;

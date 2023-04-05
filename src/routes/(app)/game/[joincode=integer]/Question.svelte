@@ -16,7 +16,7 @@
     $: activeResponse = $responses.find((resp) => resp.key === $activeEventData.activeQuestionKey);
     $: questionState = $questionStates.find((qs) => qs.key === $activeEventData.activeQuestionKey);
     $: activeRoundState = $roundStates.find((rs) => rs.round_number === $activeEventData.activeRoundNumber);
-    $: console.log(activeRoundState);
+    $: points = activeResponse?.points_awarded || 0;
 
     $: hasImage = activeQuestion?.question_type.toLocaleLowerCase().startsWith('image');
     let displayLightbox = false;
@@ -63,7 +63,10 @@
     <div class="answer-summary">
         <p>Correct Answer: <strong>{activeQuestion?.display_answer}</strong></p>
         <!-- TODO multiply by megaround vals if appropriate, properly pluralize-->
-        <p>You Received {activeResponse?.points_awarded || 0} pt(s) for this question</p>
+        <p>
+            You Received {points}
+            {points > 0 && points <= 1 ? 'pt' : 'pts'} for this question
+        </p>
         {#if activeResponse?.funny}
             <p>This answer was marked as a funny answer!</p>
         {/if}

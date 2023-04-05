@@ -115,7 +115,7 @@
         <button class="button button-secondary" on:click={advance}>Next</button>
     </div>
 
-    <ul>
+    <ul id="response-groups">
         {#each scoringResponses as response}
             <ResponseGroup {response} />
         {/each}
