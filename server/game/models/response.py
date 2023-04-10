@@ -58,6 +58,23 @@ class QuestionResponse(models.Model):
             else:
                 self.points_awarded = 0
 
+    @staticmethod
+    def summarize(event):
+        all_resps = QuestionResponse.objects.filter(event=event)
+        summarized = {}
+        for resp in all_resps:
+            key = resp.game_question.key
+            summarized.setdefault(key, {"correct": 0, "half": 0, "total": 0})
+            values = summarized[key]
+            if resp.points_awarded == 1:
+                values["correct"] += 1
+            elif resp.points_awarded == 0.5:
+                values["half"] += 1
+
+            values["total"] += 1
+
+        return summarized
+
     def save(self, *args, **kwargs):
         self.full_clean()
         super().save(*args, **kwargs)

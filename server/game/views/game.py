@@ -63,9 +63,10 @@ class EventView(APIView):
         except AttributeError:
             pass
 
-        question_responses = QuestionResponse.objects.filter(
-            event=event, team=user.active_team
-        )
+        response_summary = QuestionResponse.summarize(event)
+        print(response_summary)
+
+        question_responses = QuestionResponse.objects.filter(team=user.active_team)
 
         # TODO: chats (last 50 for the players active team on this event)
 
@@ -74,6 +75,7 @@ class EventView(APIView):
                 **event.to_json(),
                 "user_data": user.to_json(),
                 "response_data": queryset_to_json(question_responses),
+                "response_summary": response_summary,
                 "leaderboard_data": {
                     "public_leaderboard_entries": queryset_to_json(public_lb_entries),
                     "host_leaderboard_entries": [],

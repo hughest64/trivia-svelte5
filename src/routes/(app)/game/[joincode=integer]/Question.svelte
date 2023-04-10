@@ -2,6 +2,8 @@
     import Lightbox from '$lib/Lightbox.svelte';
     import { page } from '$app/stores';
     import { getStore } from '$lib/utils';
+    import AnswerSummary from './AnswerSummary.svelte';
+    import type { GameQuestion, Response } from '$lib/types';
 
     $: form = $page.form;
     const userData = getStore('userData');
@@ -12,11 +14,10 @@
     const questionStates = getStore('questionStates') || [];
     const playerJoined = getStore('playerJoined');
 
-    $: activeQuestion = $questions.find((q) => q.key === $activeEventData.activeQuestionKey);
-    $: activeResponse = $responses.find((resp) => resp.key === $activeEventData.activeQuestionKey);
+    $: activeQuestion = $questions.find((q) => q.key === $activeEventData.activeQuestionKey) as GameQuestion;
+    $: activeResponse = $responses.find((resp) => resp.key === $activeEventData.activeQuestionKey) as Response;
     $: questionState = $questionStates.find((qs) => qs.key === $activeEventData.activeQuestionKey);
     $: activeRoundState = $roundStates.find((rs) => rs.round_number === $activeEventData.activeRoundNumber);
-    $: points = activeResponse?.points_awarded || 0;
 
     $: hasImage = activeQuestion?.question_type.toLocaleLowerCase().startsWith('image');
     let displayLightbox = false;
@@ -60,17 +61,7 @@
 {/if}
 
 {#if activeRoundState?.scored}
-    <div class="answer-summary">
-        <p>Correct Answer: <strong>{activeQuestion?.display_answer}</strong></p>
-        <!-- TODO multiply by megaround vals if appropriate, properly pluralize-->
-        <p>
-            You Received {points}
-            {points > 0 && points <= 1 ? 'pt' : 'pts'} for this question
-        </p>
-        {#if activeResponse?.funny}
-            <p>This answer was marked as a funny answer!</p>
-        {/if}
-    </div>
+    <AnswerSummary {activeQuestion} {activeResponse} />
 {/if}
 
 <form on:submit|preventDefault={handleSubmitResponse}>
@@ -104,9 +95,6 @@
 <style lang="scss">
     .question-text {
         padding: 0 0.5rem;
-    }
-    .answer-summary {
-        max-width: var(--max-element-width);
     }
     .notsubmitted {
         input {

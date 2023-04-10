@@ -130,6 +130,15 @@ export interface HostResponse extends Omit<Response, ['id', 'locked']> {
     fuzz_ratio?: number;
 }
 
+export interface ResponseSummaryValues {
+    correct: number;
+    half: number;
+    total: number;
+}
+export interface ResponseSummary {
+    [k: string]: ResponseSummaryValues;
+}
+
 export interface PopupData {
     is_displayed: boolean;
     popup_type: string;
@@ -161,6 +170,7 @@ export interface StoreTypes {
     roundStates: Writable<RoundState[]>;
     questionStates: Writable<QuestionState[]>;
     responseData: Writable<Response[]>;
+    responseSummary: Writable<ResponseSummary>;
     hostResponseData: Writable<HostResponse[]>;
     popupData: Writable<PopupData>;
     leaderboard: Writable<Leaderboard>;
