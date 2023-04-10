@@ -31,7 +31,7 @@
     <p><strong>Scores of {totalResponses} team{totalResponses !== 1 ? 's' : ''}</strong></p>
     <div class="resultbar-labels">
         <p>{correctResponses}/{totalResponses}</p>
-        {#if halfCorrectResponses > 0}<p>{halfCorrectResponses}/{totalResponses}</p>{/if}
+        <p>{halfCorrectResponses}/{totalResponses}</p>
         <p>{wrongResponses}/{totalResponses}</p>
     </div>
 
@@ -39,7 +39,7 @@
 
     <div class="resultbar-labels">
         <p>1 pt</p>
-        {#if halfCorrectResponses > 0}<p>.5 pts</p>{/if}
+        <p>.5 pts</p>
         <p>0 pts</p>
     </div>
 </div>
