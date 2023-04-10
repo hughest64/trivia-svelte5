@@ -95,4 +95,6 @@ test('scoring updates properly update the leaderboards', async ({ p1Page, p3Page
     await expect(answer).toBeVisible();
     await expect(points).toHaveText(/1 pt/);
     await expect(funny).not.toBeVisible();
+
+    // TODO: add test for the stats bar (once it's finalized)
 });
