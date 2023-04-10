@@ -28,7 +28,7 @@
     {#if activeResponse?.funny}
         <p>This answer was marked as a funny answer!</p>
     {/if}
-    <p><strong>Scores of {activeResponseSummary?.total || 0} teams</strong></p>
+    <p><strong>Scores of {totalResponses} team{totalResponses !== 1 ? 's' : ''}</strong></p>
     <div class="resultbar-labels">
         <p>{correctResponses}/{totalResponses}</p>
         {#if halfCorrectResponses > 0}<p>{halfCorrectResponses}/{totalResponses}</p>{/if}

@@ -10,6 +10,7 @@
         LeaderboardEntry,
         QuestionState,
         Response,
+        ResponseSummary,
         RoundState,
         SocketMessage,
         HostResponse
@@ -39,6 +40,7 @@
     const questionStateStore = getStore('questionStates');
     const currentEventStore = getStore('currentEventData');
     const hostResponseStore = getStore('hostResponseData');
+    const responseSummaryStore = getStore('responseSummary');
 
     const handlers: MessageHandler = {
         connected: () => console.log('connected!'),
@@ -81,7 +83,7 @@
                 return newResponses;
             });
         },
-        round_update: (message: Record<string, RoundState | Response[]>) => {
+        round_update: (message: Record<string, RoundState | Response[] | ResponseSummary>) => {
             const rs = <RoundState>message.round_state;
             roundStates.update((states) => {
                 const newStates = [...states];
@@ -102,6 +104,7 @@
 
                     return newResps;
                 });
+                responseSummaryStore.set(message.response_summary as ResponseSummary);
             }
         },
         question_reveal_popup: (message: Record<string, string | boolean>) => {
@@ -140,7 +143,12 @@
         // TODO: a better type for message here
         /* eslint-disable @typescript-eslint/no-explicit-any*/
         score_update: (message: Record<string, any>) => {
-            const { response_ids, points_awarded, funny, question_key, leaderboard_data } = message;
+            const { response_ids, points_awarded, funny, question_key, leaderboard_data, response_summary } = message;
+
+            // update the response summary TODO: this should be selective for more efficient db processing
+            if (response_summary) {
+                responseSummaryStore.set(response_summary);
+            }
 
             // update team response if appropriate
             if ($page.url.pathname.startsWith('/game')) {

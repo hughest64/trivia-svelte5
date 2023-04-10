@@ -64,7 +64,6 @@ class EventView(APIView):
             pass
 
         response_summary = QuestionResponse.summarize(event)
-        print(response_summary)
 
         question_responses = QuestionResponse.objects.filter(team=user.active_team)
 

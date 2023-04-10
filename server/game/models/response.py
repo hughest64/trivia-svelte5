@@ -58,6 +58,7 @@ class QuestionResponse(models.Model):
             else:
                 self.points_awarded = 0
 
+    # TODO: add a key=None kwarg, use it to filter specific keys and selectively update on the frontend
     @staticmethod
     def summarize(event):
         all_resps = QuestionResponse.objects.filter(event=event)

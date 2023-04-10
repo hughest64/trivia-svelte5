@@ -216,7 +216,9 @@ class RoundLockView(APIView):
         )
         resps.update(locked=locked)
 
+        resp_summary = None
         if locked:
+            resp_summary = QuestionResponse.summarize(event=event)
             # update the host leaderboard
             lb_processor = LeaderboardProcessor(event)
             leaderboard_data = lb_processor.update_host_leaderboard(
@@ -241,6 +243,7 @@ class RoundLockView(APIView):
                 "message": {
                     "round_state": round_state.to_json(),
                     "responses": queryset_to_json(resps),
+                    "response_summary": resp_summary,
                 },
             },
         )
@@ -342,11 +345,15 @@ class ScoreRoundView(APIView):
 
         # update the host leaderboard on point changes
         lb_entries = None
+        response_summary = None
         if update_type == "points":
             event = get_event_or_404(joincode=joincode)
             lb_entries = LeaderboardProcessor(event=event).update_host_leaderboard(
                 event.max_locked_round()
             )
+            # TODO: selective updating would be MUCH preferred here
+            # seems pretty easy to do if we add key=None as a kwarg to the method (or an array?)
+            response_summary = QuestionResponse.summarize(event=event)
 
         msg_data = dict(request.data)
         # ensure we are sending back a deserialized list
@@ -356,7 +363,11 @@ class ScoreRoundView(APIView):
             joincode,
             {
                 "msg_type": "score_update",
-                "message": {**msg_data, "leaderboard_data": lb_entries},
+                "message": {
+                    **msg_data,
+                    "leaderboard_data": lb_entries,
+                    "response_summary": response_summary,
+                },
             },
         )
 
@@ -379,5 +390,20 @@ class UpdatePublicLeaderboardView(APIView):
             joincode,
             {"msg_type": "leaderboard_update", "message": updated_lb_data},
         )
+
+        return Response({"success": True})
+
+
+# TODO
+class RevealAnswers(APIView):
+    authentication_classes = [JwtAuthentication]
+    permission_classes = [IsAdminUser]
+
+    @method_decorator(csrf_protect)
+    def post(self, request, joincode):
+        # get round number from payload
+        # mark the event round state obj as "revealed" (new column)
+        # push updated round state(s) back through the socket
+        event = get_event_or_404(joincode=joincode)
 
         return Response({"success": True})
