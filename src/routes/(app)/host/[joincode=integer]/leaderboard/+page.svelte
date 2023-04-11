@@ -46,11 +46,11 @@
             <!-- TODO: perhaps one button that changes jobs is better than two buttons? i.e. reveal first the update
         maybe use a query param on the action to indicate what is what -->
             <div class="btn-group">
-                <form action="?/updateleaderboard" method="post" use:enhance>
-                    <button id="sync-button" type="submit" class="button button-primary">Update Public View</button>
-                </form>
                 <form action="?/revealanswers" method="post" use:enhance>
                     <button id="reveal-button" class="button button-secondary">Reveal Answers</button>
+                </form>
+                <form action="?/updateleaderboard" method="post" use:enhance>
+                    <button id="sync-button" type="submit" class="button button-primary">Update Public View</button>
                 </form>
             </div>
         {/if}
