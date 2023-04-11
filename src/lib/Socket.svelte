@@ -86,7 +86,7 @@
         round_update: (message: Record<string, RoundState | Response[] | ResponseSummary>) => {
             const rs = <RoundState>message.round_state;
             roundStates.update((states) => {
-                const newStates = [...states];
+                const newStates = states ? [...states] : [];
                 const roundStateIndex = newStates.findIndex((rs) => rs.round_number === rs.round_number);
                 roundStateIndex > -1 ? (newStates[roundStateIndex] = rs) : newStates.push(rs);
 
