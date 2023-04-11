@@ -1,12 +1,14 @@
 from django.db import transaction
 
 from game.models import (
+    EventRoundState,
     Leaderboard,
     LeaderboardEntry,
     TriviaEvent,
     QuestionResponse,
     LEADERBOARD_TYPE_HOST,
     LEADERBOARD_TYPE_PUBLIC,
+    queryset_to_json,
 )
 
 
@@ -54,6 +56,11 @@ class LeaderboardProcessor:
         )
         tb_index = 0
         for lbe in leaderboard_entries:
+            # TODO: should it be this way, or maybe just no rank if no question's were answered?
+            # don't assign rank for 0 points
+            if lbe.total_points == 0:
+                lbe.rank = None
+                continue
             rank = pts_vals.index(lbe.total_points) + 1
             if lbe.tiebreaker_rank is not None:
                 rank += tb_index
@@ -70,27 +77,37 @@ class LeaderboardProcessor:
         self.processing = True
         try:
             with transaction.atomic():
-                # an alternative here would be to loop event.teams and get_or_create on each team to ensure that every team has an entry
+                lb, _ = Leaderboard.objects.update_or_create(
+                    event=self.event,
+                    defaults={"host_through_round": through_round, "synced": False},
+                )
                 entries = LeaderboardEntry.objects.filter(
                     event=self.event, leaderboard_type=LEADERBOARD_TYPE_HOST
                 )
                 for entry in entries:
                     self._set_team_score(entry, through_round)
+                    entry.leaderboard = lb
 
                 self._set_leaderboard_rank(entries)
-                LeaderboardEntry.objects.bulk_update(entries, ["total_points", "rank"])
-                Leaderboard.objects.update_or_create(
-                    event=self.event, defaults={"host_through_round": through_round}
+                LeaderboardEntry.objects.bulk_update(
+                    entries, ["total_points", "rank", "leaderboard"]
                 )
 
             # TODO: log?
-            return {"status": f"Host leaderboard updated through round {through_round}"}
+            # return {"status": f"Host leaderboard updated through round {through_round}"}
 
         except Exception as e:
             # TODO: proper log
             print(f"Could not update leaderboard. Reason: {e}")
 
         self.processing = False
+
+        return {
+            "host_leaderboard_entries": queryset_to_json(
+                entries.order_by("rank", "pk")
+            ),
+            "synced": False,
+        }
 
     def sync_leaderboards(self):
         """use host leaderboard and entry data to update the public leaderboard"""
@@ -101,10 +118,18 @@ class LeaderboardProcessor:
 
             event_lb, _ = Leaderboard.objects.get_or_create(event=self.event)
             event_lb.public_through_round = event_lb.host_through_round
+            event_lb.synced = True
             event_lb.save()
 
+            # mark rounds scored through the current round
+            round_states = EventRoundState.objects.filter(
+                event=self.event, round_number__lte=event_lb.host_through_round
+            )
+            round_states.update(scored=True)
+
+            public_entries = []
             for e in host_lb_entries:
-                LeaderboardEntry.objects.update_or_create(
+                lbe, _ = LeaderboardEntry.objects.update_or_create(
                     event=self.event,
                     leaderboard_type=LEADERBOARD_TYPE_PUBLIC,
                     team=e.team,
@@ -115,3 +140,11 @@ class LeaderboardProcessor:
                         "total_points": e.total_points,
                     },
                 )
+                public_entries.append(lbe)
+
+            return {
+                "public_leaderboard_entries": queryset_to_json(public_entries),
+                "through_round": event_lb.public_through_round,
+                "synced": event_lb.synced,
+                "round_states": queryset_to_json(round_states),
+            }

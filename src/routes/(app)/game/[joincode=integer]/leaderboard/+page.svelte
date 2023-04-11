@@ -3,7 +3,7 @@
     import Entry from '$lib/leaderboards/Entry.svelte';
     import RoundSelector from '../RoundSelector.svelte';
 
-    const leaderboard = getStore('publicLeaderboard');
+    const leaderboard = getStore('leaderboard');
 </script>
 
 <h1>Team Standings</h1>
@@ -12,12 +12,10 @@
     <h3>Through Round {$leaderboard.through_round}</h3>
 {/if}
 
-<!-- existing had buttons for the host to switch between leaderboards here-->
-
 <RoundSelector />
 
-<ul class="leaderboard-rankings">
-    {#each $leaderboard.leaderboard_entries as entry}
+<ul id="player-leaderboard-view" class="leaderboard-rankings">
+    {#each $leaderboard.public_leaderboard_entries as entry}
         <Entry {entry} />
     {/each}
 </ul>

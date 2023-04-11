@@ -39,12 +39,9 @@
     $: createStore('roundStates', writable(data?.round_states || []));
     $: createStore('questionStates', writable(data?.question_states || []));
     $: createStore('responseData', writable(data?.response_data || []));
-
-    const publicLeaderboard = createStore('publicLeaderboard', writable());
-    $: publicLeaderboard.set(data?.leaderboard_data || {});
-
-    const hostResponses = createStore('hostResponseData', writable([]));
-    $: hostResponses.set(data?.host_response_data);
+    $: createStore('responseSummary', writable(data?.response_summary || {}));
+    $: createStore('leaderboard', writable(data?.leaderboard_data || {}));
+    $: createStore('hostResponseData', writable(data?.host_response_data || []));
 </script>
 
 <slot />

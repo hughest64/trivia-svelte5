@@ -16,7 +16,7 @@
         z-index: 98;
         height: 100vh;
         width: 100%;
-        max-width: var(--max-continer-width);
+        max-width: var(--max-container-width);
         background: rgba(0, 0, 0, 0.75);
         display: flex;
         flex-direction: column;
@@ -39,7 +39,7 @@
         color: #fcfcfc;
         display: block;
         width: 100%;
-        max-width: var(--max-continer-width);
+        max-width: var(--max-container-width);
         background: rgba(0, 0, 0, 0.75);
         margin: 0;
         padding: 1rem 0;

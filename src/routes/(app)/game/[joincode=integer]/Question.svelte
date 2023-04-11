@@ -2,6 +2,8 @@
     import Lightbox from '$lib/Lightbox.svelte';
     import { page } from '$app/stores';
     import { getStore } from '$lib/utils';
+    import AnswerSummary from './AnswerSummary.svelte';
+    import type { GameQuestion, Response } from '$lib/types';
 
     $: form = $page.form;
     const userData = getStore('userData');
@@ -12,8 +14,8 @@
     const questionStates = getStore('questionStates') || [];
     const playerJoined = getStore('playerJoined');
 
-    $: activeQuestion = $questions.find((q) => q.key === $activeEventData.activeQuestionKey);
-    $: activeResponse = $responses.find((resp) => resp.key === $activeEventData.activeQuestionKey);
+    $: activeQuestion = $questions.find((q) => q.key === $activeEventData.activeQuestionKey) as GameQuestion;
+    $: activeResponse = $responses.find((resp) => resp.key === $activeEventData.activeQuestionKey) as Response;
     $: questionState = $questionStates.find((qs) => qs.key === $activeEventData.activeQuestionKey);
     $: activeRoundState = $roundStates.find((rs) => rs.round_number === $activeEventData.activeRoundNumber);
 
@@ -58,6 +60,10 @@
     <p>Image Missing</p>
 {/if}
 
+{#if activeRoundState?.revealed}
+    <AnswerSummary {activeQuestion} {activeResponse} />
+{/if}
+
 <form on:submit|preventDefault={handleSubmitResponse}>
     <div id="response-container" class="input-container" class:notsubmitted>
         <input
@@ -90,7 +96,6 @@
     .question-text {
         padding: 0 0.5rem;
     }
-
     .notsubmitted {
         input {
             border-color: var(--color-primary);

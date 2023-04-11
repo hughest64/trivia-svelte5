@@ -14,7 +14,7 @@
     $: isEventRoute = reg.test($page.route.id || '');
     $: setActive = (link: string) => $page.url.pathname.endsWith(link);
 
-    // TODO: consisder this when navigating to /score:
+    // TODO: consider this when navigating to /score:
     // use beforeNavigate to update $activeEventData to the lowest round that has not been scored
     // that makes it it nice an easy for the host to get to gettin'
     // for the case of "edit this rounds scores", we could look for a query param and use that instead
@@ -80,7 +80,7 @@
         align-items: center;
         margin: 0 auto;
         width: 100%;
-        max-width: var(--max-continer-width);
+        max-width: var(--max-container-width);
         background-color: var(--color-tertiary);
     }
     li {

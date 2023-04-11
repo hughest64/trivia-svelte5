@@ -42,16 +42,12 @@ export interface LeaderboardEntry {
     total_points: number;
 }
 
-export interface PublicLeaderboard {
+export interface Leaderboard {
     through_round?: number;
-    leaderboard_entries: LeaderboardEntry[];
+    synced?: boolean;
+    public_leaderboard_entries: LeaderboardEntry[];
+    host_leaderboard_entries: LeaderboardEntry[];
 }
-
-// TODO
-// export interface HostLeaderboard extends PublicLeaderboard {
-//     //
-// }
-
 export interface LocationSelectData {
     location_id: string | number;
     location_name: string;
@@ -98,6 +94,7 @@ export interface RoundState {
     round_number: number;
     locked: boolean;
     scored: boolean;
+    revealed: boolean;
 }
 
 export interface EventData {
@@ -134,6 +131,15 @@ export interface HostResponse extends Omit<Response, ['id', 'locked']> {
     fuzz_ratio?: number;
 }
 
+export interface ResponseSummaryValues {
+    correct: number;
+    half: number;
+    total: number;
+}
+export interface ResponseSummary {
+    [k: string]: ResponseSummaryValues;
+}
+
 export interface PopupData {
     is_displayed: boolean;
     popup_type: string;
@@ -165,9 +171,10 @@ export interface StoreTypes {
     roundStates: Writable<RoundState[]>;
     questionStates: Writable<QuestionState[]>;
     responseData: Writable<Response[]>;
+    responseSummary: Writable<ResponseSummary>;
     hostResponseData: Writable<HostResponse[]>;
     popupData: Writable<PopupData>;
-    publicLeaderboard: Writable<PublicLeaderboard>;
+    leaderboard: Writable<Leaderboard>;
     playerJoined: Writable<PlayerJoined>;
 }
 

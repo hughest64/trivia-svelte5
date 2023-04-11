@@ -7,3 +7,4 @@ used:
 9904 - gamePlay.spec
 9905 - gamePlay.spec
 9906 - auth.spec - 1 player limits set for this trivia event
+9907 - scoring.spec

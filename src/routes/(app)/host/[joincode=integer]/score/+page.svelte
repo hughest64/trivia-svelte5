@@ -97,8 +97,10 @@
 
 <svelte:window on:keyup={handleKeyPress} />
 
-<h1>Scoring</h1>
-<RoundSelector />
+<div class="host-container flex-column">
+    <h1>Scoring</h1>
+    <RoundSelector />
+</div>
 
 {#if scoringResponses.length > 0}
     <div class="host-question-panel">
@@ -113,7 +115,7 @@
         <button class="button button-secondary" on:click={advance}>Next</button>
     </div>
 
-    <ul>
+    <ul id="response-groups">
         {#each scoringResponses as response}
             <ResponseGroup {response} />
         {/each}

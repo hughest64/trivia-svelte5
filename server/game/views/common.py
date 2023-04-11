@@ -59,6 +59,7 @@ class ClearEventDataView(APIView):
             msg = management.call_command("reset", *joincodes)
             print(msg)
         except Exception as e:
+            print(e)
             return Response({"detail": ""}, status=HTTP_400_BAD_REQUEST)
 
         return Response({"success": True})

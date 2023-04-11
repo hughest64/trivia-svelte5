@@ -46,6 +46,7 @@ class EventView(APIView):
 
         player_joined = check_player_limit(event, user, join_required=False)
 
+        # TODO: just pass the event (not join code)
         public_lb_entries = LeaderboardEntry.objects.filter(
             event__joincode=joincode, leaderboard_type=LEADERBOARD_TYPE_PUBLIC
         )
@@ -58,13 +59,13 @@ class EventView(APIView):
         # the player's active team does not have a leaderboard entry
         except IndexError:
             player_joined = False
-        # the leaderboard exists, but a through round has not yet been set
+        # the leaderboard instanace doesn't exist or a through round has not yet been set
         except AttributeError:
             pass
 
-        question_responses = QuestionResponse.objects.filter(
-            event=event, team=user.active_team
-        )
+        response_summary = QuestionResponse.summarize(event)
+
+        question_responses = QuestionResponse.objects.filter(team=user.active_team)
 
         # TODO: chats (last 50 for the players active team on this event)
 
@@ -73,8 +74,10 @@ class EventView(APIView):
                 **event.to_json(),
                 "user_data": user.to_json(),
                 "response_data": queryset_to_json(question_responses),
+                "response_summary": response_summary,
                 "leaderboard_data": {
-                    "leaderboard_entries": queryset_to_json(public_lb_entries),
+                    "public_leaderboard_entries": queryset_to_json(public_lb_entries),
+                    "host_leaderboard_entries": [],
                     "through_round": through_round,
                 },
                 "player_joined": player_joined,

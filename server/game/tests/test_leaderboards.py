@@ -57,6 +57,7 @@ class LeaderboardSetup(TestCase):
             LeaderboardProcessor(self.event).update_host_leaderboard(through_round=9)
 
     def test_leaderboard_sync(self):
+        LeaderboardProcessor(self.event).update_host_leaderboard(8)
         LeaderboardProcessor(self.event).sync_leaderboards()
         host_entries = LeaderboardEntry.objects.filter(
             event=self.event, leaderboard_type=LEADERBOARD_TYPE_HOST

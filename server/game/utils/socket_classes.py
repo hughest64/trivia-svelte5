@@ -20,6 +20,10 @@ def get_user_group(user_id):
     return f"user_id_{user_id}"
 
 
+def get_host_group(joincode):
+    return f"host_{joincode}"
+
+
 class BaseSocketMessage(ABC):
     """Base class for message handling. It cannot be instantiaed directly."""
 
@@ -55,4 +59,11 @@ class SendTeamMessage(BaseSocketMessage):
     def __init__(self, joincode, team_id: int, message: dict, **kwargs) -> None:
         group = get_team_group(team_id, joincode)
         message.update({"type": "team_update"})
+        super().__init__(group, message, **kwargs)
+
+
+class SendHostMessage(BaseSocketMessage):
+    def __init__(self, joincode: int, message: dict, **kwargs) -> None:
+        group = get_host_group(joincode)
+        message.update({"type": "event_update"})
         super().__init__(group, message, **kwargs)

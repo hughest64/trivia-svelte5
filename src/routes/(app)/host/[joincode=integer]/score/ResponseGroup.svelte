@@ -1,15 +1,19 @@
 <script lang="ts">
+    import { getStore } from '$lib/utils';
     import Funny from '$lib/icons/Funny.svelte';
     import NotFunny from '$lib/icons/NotFunny.svelte';
     import Correct from '$lib/icons/Correct.svelte';
     import HalfCredit from '$lib/icons/HalfCredit.svelte';
     import Wrong from '$lib/icons/Wrong.svelte';
-    import type { SvelteComponent } from 'svelte';
+    import type { ComponentType } from 'svelte';
     import type { HostResponse } from '$lib/types';
 
     export let response: HostResponse;
+    const activeEventData = getStore('activeEventData');
+
     let updating = false;
-    const answerValueMap: Record<string, typeof SvelteComponent> = {
+
+    const answerValueMap: Record<string, ComponentType> = {
         '0': Wrong,
         '0.5': HalfCredit,
         '1': Correct
@@ -23,14 +27,17 @@
         return newScore;
     };
 
-    const updateResponse = async (type: string) => {
+    const updateResponse = async (updateType: string) => {
         updating = true;
         const data = new FormData();
-        const funny = (response.funny = type === 'funny' ? !response.funny : response.funny);
-        const points = type === 'points' ? setScore() : response.points_awarded;
+        const funny = (response.funny = updateType === 'funny' ? !response.funny : response.funny);
+        const points = updateType === 'points' ? setScore() : response.points_awarded;
+
         data.set('funny', String(funny));
         data.set('points_awarded', String(points));
+        data.set('update_type', updateType);
         data.set('response_ids', JSON.stringify(response.response_ids));
+        data.set('question_key', $activeEventData.activeQuestionKey);
 
         const updateResponse = await fetch('?/updateresponse', {
             method: 'post',
@@ -44,9 +51,11 @@
     };
 </script>
 
+<!-- TODO: this submission set up is very un-kit and should probably be changed to align with other form submissions -->
 <li class="scoring-response">
     <button type="submit" class="funny-button" class:updating on:click={() => updateResponse('funny')}>
         <svelte:component this={funnyIcon} />
+        <p>{response.funny ? 'Funny' : 'Not Funny'}</p>
     </button>
     <div class="scoring-details" class:updating>
         <p>{response.recorded_answer}</p>

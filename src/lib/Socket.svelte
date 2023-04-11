@@ -3,15 +3,17 @@
     import { browser } from '$app/environment';
     import { goto } from '$app/navigation';
     import { page } from '$app/stores';
-    import { createQuestionKey, getStore } from '$lib/utils';
+    import { createQuestionKey, getStore, resolveBool } from '$lib/utils';
     import type {
         CurrentEventData,
         MessageHandler,
         LeaderboardEntry,
         QuestionState,
         Response,
+        ResponseSummary,
         RoundState,
-        SocketMessage
+        SocketMessage,
+        HostResponse
     } from './types';
 
     const path = $page.url.pathname;
@@ -31,22 +33,44 @@
         question_number: number;
     }
 
-    const publicStore = getStore('publicLeaderboard');
+    const leaderboardStore = getStore('leaderboard');
     const responseStore = getStore('responseData');
     const roundStates = getStore('roundStates');
     const popupStore = getStore('popupData');
     const questionStateStore = getStore('questionStates');
     const currentEventStore = getStore('currentEventData');
+    const hostResponseStore = getStore('hostResponseData');
+    const responseSummaryStore = getStore('responseSummary');
 
     const handlers: MessageHandler = {
         connected: () => console.log('connected!'),
         leaderboard_join: (message: LeaderboardEntry) => {
-            publicStore.update((lb) => {
+            leaderboardStore.update((lb) => {
                 const newLB = { ...lb };
-                const existingIndex = lb.leaderboard_entries.findIndex((e) => e.team_id === message.team_id);
-                existingIndex === -1 && newLB.leaderboard_entries.push(message);
+                const existingPubIndex = lb.public_leaderboard_entries.findIndex((e) => e.team_id === message.team_id);
+                existingPubIndex === -1 && newLB.public_leaderboard_entries.push(message);
+
+                // only update the host lb entries on host routes
+                if ($page.url.pathname.startsWith('/host')) {
+                    const existingHostIndex = lb.host_leaderboard_entries.findIndex(
+                        (e) => e.team_id === message.team_id
+                    );
+                    existingHostIndex === -1 && newLB.host_leaderboard_entries.push(message);
+                }
                 return newLB;
             });
+        },
+        // TODO: better typings
+        leaderboard_update: (msg: Record<string, unknown>) => {
+            const { round_states, ...leaderboard } = msg;
+            leaderboardStore.update((lb) => {
+                const newLb = { ...lb };
+                Object.assign(newLb, leaderboard);
+
+                return newLb;
+            });
+            // TODO: I think this is fine as we should get all round states here, but we could use .update if called for
+            roundStates.set(round_states as RoundState[]);
         },
         team_response_update: (message: Response) => {
             responseStore.update((responses) => {
@@ -59,14 +83,32 @@
                 return newResponses;
             });
         },
-        round_update: (message: RoundState) => {
+        round_update: (message: Record<string, RoundState | Response[] | ResponseSummary>) => {
+            const rs = <RoundState>message.round_state;
             roundStates.update((states) => {
                 const newStates = [...states];
-                const roundStateIndex = newStates.findIndex((rs) => rs.round_number === message.round_number);
-                roundStateIndex > -1 ? (newStates[roundStateIndex] = message) : newStates.push(message);
+                const roundStateIndex = newStates.findIndex((rs) => rs.round_number === rs.round_number);
+                roundStateIndex > -1 ? (newStates[roundStateIndex] = rs) : newStates.push(rs);
 
                 return newStates;
             });
+            // update player responses based on id
+            if (rs.locked) {
+                const responses = <Response[]>message.responses;
+                responseStore.update((resps) => {
+                    const newResps = [...resps];
+                    responses.forEach((updatedResp) => {
+                        const respIndex = newResps.findIndex((resp) => resp.id === updatedResp.id);
+                        if (respIndex > -1) newResps[respIndex] = updatedResp;
+                    });
+
+                    return newResps;
+                });
+                responseSummaryStore.set(message.response_summary as ResponseSummary);
+            }
+        },
+        round_state_update: (message: Record<string, RoundState[]>) => {
+            roundStates.set(message.round_states);
         },
         question_reveal_popup: (message: Record<string, string | boolean>) => {
             const revealed = message.reveal;
@@ -100,9 +142,52 @@
         current_data_update: (message: CurrentEventData) => {
             currentEventStore.set(message);
         },
-        score_update: (message: Record<string, string>) => {
-            // TODO: update host AND player responses, no need to filter by team since ids are unique
-            console.log(message);
+
+        // TODO: a better type for message here
+        /* eslint-disable @typescript-eslint/no-explicit-any*/
+        score_update: (message: Record<string, any>) => {
+            const { response_ids, points_awarded, funny, question_key, leaderboard_data, response_summary } = message;
+
+            // update the response summary TODO: this should be selective for more efficient db processing
+            if (response_summary) {
+                responseSummaryStore.set(response_summary);
+            }
+
+            // update team response if appropriate
+            if ($page.url.pathname.startsWith('/game')) {
+                responseStore.update((resps) => {
+                    const newResps = [...resps];
+                    const respToUpdate = resps.find((resp) => resp.key === question_key) as Response;
+
+                    if (respToUpdate) {
+                        respToUpdate.points_awarded = points_awarded;
+                        respToUpdate.funny = resolveBool(funny);
+                    }
+
+                    return newResps;
+                });
+            }
+
+            // update host reponses if appropriate
+            if ($page.url.pathname.startsWith('/host')) {
+                hostResponseStore.update((resps) => {
+                    const newResps = [...resps];
+                    // TODO: it seems likely that relying in the first index to match is not a good idea!
+                    const respsToUpdate =
+                        newResps.find((resp) => resp.response_ids[0] === response_ids[0]) || ({} as HostResponse);
+                    respsToUpdate.points_awarded = Number(points_awarded);
+                    respsToUpdate.funny = resolveBool(funny);
+                    return newResps;
+                });
+                if (leaderboard_data) {
+                    leaderboardStore.update((lb) => {
+                        const newLb = { ...lb };
+                        Object.assign(newLb, leaderboard_data);
+
+                        return newLb;
+                    });
+                }
+            }
         }
     };
 

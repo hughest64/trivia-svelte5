@@ -58,6 +58,24 @@ class QuestionResponse(models.Model):
             else:
                 self.points_awarded = 0
 
+    # TODO: add a key=None kwarg, use it to filter specific keys and selectively update on the frontend
+    @staticmethod
+    def summarize(event):
+        all_resps = QuestionResponse.objects.filter(event=event)
+        summarized = {}
+        for resp in all_resps:
+            key = resp.game_question.key
+            summarized.setdefault(key, {"correct": 0, "half": 0, "total": 0})
+            values = summarized[key]
+            if resp.points_awarded == 1:
+                values["correct"] += 1
+            elif resp.points_awarded == 0.5:
+                values["half"] += 1
+
+            values["total"] += 1
+
+        return summarized
+
     def save(self, *args, **kwargs):
         self.full_clean()
         super().save(*args, **kwargs)
@@ -72,9 +90,11 @@ class Leaderboard(models.Model):
     )
     public_through_round = models.IntegerField(blank=True, null=True)
     host_through_round = models.IntegerField(blank=True, null=True)
+    # do the two sets of entires match? note that this is not toally dependent upon through rounds matching
+    synced = models.BooleanField(default=True)
 
     def __str__(self):
-        return f"{self.event} - {LEADERBOARD_TYPE_DICT[self.leaderboard_type]}"
+        return f"{self.event} @ {self.event.location}"
 
 
 class LeaderboardEntry(models.Model):
@@ -107,7 +127,7 @@ class LeaderboardEntry(models.Model):
 
     class Meta:
         unique_together = ("team", "event", "leaderboard_type")
-        ordering = ["event", "rank", "tiebreaker_rank", "pk"]
+        ordering = ["event", "-leaderboard_type", "rank", "tiebreaker_rank", "pk"]
         verbose_name_plural = "Leaderboard Entries"
 
     def _get_through_rounds(self):
@@ -128,7 +148,7 @@ class LeaderboardEntry(models.Model):
         return through_rounds[type]
 
     def __str__(self):
-        return f"{self.team} - {self.event}"
+        return f"{LEADERBOARD_TYPE_DICT[self.leaderboard_type]} @ {self.event} - {self.team}"
 
     def to_json(self):
         return {

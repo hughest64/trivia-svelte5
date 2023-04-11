@@ -8,18 +8,23 @@ const testcmd = `
     node -r dotenv/config build_test dotenv_config_path=./.env.test
 `;
 
+const djangoservercmd = `
+    DJANGO_SETTINGS_MODULE=server.settings_tst\
+    pipenv run gunicorn -w 4 -k uvicorn.workers.UvicornWorker\
+    --bind 127.0.0.1:7000 server.asgi:application
+`;
+
 const config: PlaywrightTestConfig = {
     // retries: 1,
-    workers: 2,
+    workers: 3,
     timeout: 30000,
     webServer: [
         {
-            // command: 'npm run build:test && npm run preview:test -- --mode test',
             command: testcmd,
             port: 4173
         },
         {
-            command: 'pipenv run python manage.py runserver 7000 --settings=server.settings_tst',
+            command: djangoservercmd,
             cwd: 'server',
             port: 7000
         }

@@ -1,3 +1,4 @@
+import json
 from typing import List
 
 from django.db.models import QuerySet
@@ -24,11 +25,14 @@ from game.models import (
     EventQuestionState,
     TriviaEvent,
     QuestionResponse,
+    Leaderboard,
     LeaderboardEntry,
     LEADERBOARD_TYPE_PUBLIC,
+    LEADERBOARD_TYPE_HOST,
 )
 from game.models.utils import queryset_to_json
-from game.utils.socket_classes import SendEventMessage
+from game.processors import LeaderboardProcessor
+from game.utils.socket_classes import SendEventMessage, SendHostMessage
 
 # TODO: remove once creating event is implemented
 DEMO_EVENT_JOIN_CODE = 1234
@@ -43,16 +47,30 @@ class EventHostView(APIView):
         user_data = request.user.to_json()
         event = get_event_or_404(joincode=joincode)
         # TODO: host side as well and make this a helper
-        public_lb_entries = LeaderboardEntry.objects.filter(
-            event=event,
-            leaderboard_type=LEADERBOARD_TYPE_PUBLIC,
-        )
+        lb_entries = LeaderboardEntry.objects.filter(event=event)
+        public_lb_entries = lb_entries.filter(leaderboard_type=LEADERBOARD_TYPE_PUBLIC)
+        host_lb_entries = lb_entries.filter(leaderboard_type=LEADERBOARD_TYPE_HOST)
+        through_round = None
+        synced = True
+
+        try:
+            lb = Leaderboard.objects.get(event=event)
+            through_round = getattr(lb, "public_through_round")
+            synced = lb.synced
+
+        except Leaderboard.DoesNotExist:
+            pass
 
         return Response(
             {
                 **event.to_json(),
                 "user_data": user_data,
-                "leaderboard_data": queryset_to_json(public_lb_entries),
+                "leaderboard_data": {
+                    "public_leaderboard_entries": queryset_to_json(public_lb_entries),
+                    "host_leaderboard_entries": queryset_to_json(host_lb_entries),
+                    "through_round": through_round,
+                    "synced": synced,
+                },
             }
         )
 
@@ -191,16 +209,42 @@ class RoundLockView(APIView):
             round_number=round_number,
             defaults={"locked": locked},
         )
+        # TODO: bind these so we can send the updated values back in the socket
         # lock or unlock responses for the round
-        QuestionResponse.objects.filter(
+        resps = QuestionResponse.objects.filter(
             event=event, game_question__round_number=round_number
-        ).update(locked=locked)
+        )
+        resps.update(locked=locked)
+
+        resp_summary = None
+        if locked:
+            resp_summary = QuestionResponse.summarize(event=event)
+            # update the host leaderboard
+            lb_processor = LeaderboardProcessor(event)
+            leaderboard_data = lb_processor.update_host_leaderboard(
+                through_round=event.max_locked_round() or round_state.round_number
+            )
+
+            # TODO: perhaps we don't need to send this as a separate host message
+            # maybe we just ignore the piece of data if the broswer is on a /game route
+            # send host message
+            SendHostMessage(
+                joincode,
+                {
+                    "msg_type": "leaderboard_update",
+                    "message": leaderboard_data,
+                },
+            )
 
         SendEventMessage(
             joincode,
             {
                 "msg_type": "round_update",
-                "message": round_state.to_json(),
+                "message": {
+                    "round_state": round_state.to_json(),
+                    "responses": queryset_to_json(resps),
+                    "response_summary": resp_summary,
+                },
             },
         )
 
@@ -217,10 +261,18 @@ class ScoreRoundView(APIView):
 
     def get(self, request, joincode, round_number=None) -> Response:
         event = get_event_or_404(joincode)
-        public_lb_entries = LeaderboardEntry.objects.filter(
-            event=event,
-            leaderboard_type=LEADERBOARD_TYPE_PUBLIC,
-        )
+        lb_entries = LeaderboardEntry.objects.filter(event=event)
+        public_lb_entries = lb_entries.filter(leaderboard_type=LEADERBOARD_TYPE_PUBLIC)
+        host_lb_entries = lb_entries.filter(leaderboard_type=LEADERBOARD_TYPE_HOST)
+        through_round = None
+        synced = True
+        try:
+            first = public_lb_entries.first()
+            through_round = first.leaderboard.public_through_round
+            synced = first.leaderboard.synced
+        except AttributeError:
+            pass
+
         if (
             round_number is not None
             and not event.game.game_rounds.filter(round_number=round_number).exists()
@@ -270,52 +322,100 @@ class ScoreRoundView(APIView):
             {
                 "user_data": request.user.to_json(),
                 **event.to_json(),
-                "leaderboard_data": queryset_to_json(public_lb_entries),
+                "leaderboard_data": {
+                    "public_leaderboard_entries": queryset_to_json(public_lb_entries),
+                    "host_leaderboard_entries": queryset_to_json(host_lb_entries),
+                    "through_round": through_round,
+                    "synced": synced,
+                },
                 "host_response_data": response_data,
             }
         )
 
     @method_decorator(csrf_protect)
     def post(self, request, joincode):
-        try:
-            data = DataCleaner(request.data)
-            id_list = data.as_int_array("response_ids", deserialize=True)
-            funny = data.as_bool("funny")
-            points_awarded = data.as_float("points_awarded")
-        except DataValidationError as e:
-            return Response(e.response)
+        data = DataCleaner(request.data)
+        id_list = data.as_int_array("response_ids", deserialize=True)
+        funny = data.as_bool("funny")
+        points_awarded = data.as_float("points_awarded")
+        update_type = data.as_string("update_type")
 
-        QuestionResponse.objects.filter(id__in=id_list).update(
-            points_awarded=points_awarded, funny=funny
-        )
+        resps = QuestionResponse.objects.filter(id__in=id_list)
+        resps.update(points_awarded=points_awarded, funny=funny)
+
+        # update the host leaderboard on point changes
+        lb_entries = None
+        response_summary = None
+        if update_type == "points":
+            event = get_event_or_404(joincode=joincode)
+            lb_entries = LeaderboardProcessor(event=event).update_host_leaderboard(
+                event.max_locked_round()
+            )
+            # TODO: selective updating would be MUCH preferred here
+            # seems pretty easy to do if we add key=None as a kwarg to the method (or an array?)
+            response_summary = QuestionResponse.summarize(event=event)
+
+        msg_data = dict(request.data)
+        # ensure we are sending back a deserialized list
+        msg_data["response_ids"] = id_list
 
         SendEventMessage(
             joincode,
             {
                 "msg_type": "score_update",
-                "message": request.data,  # NOTE: the id array will be serialized!
+                "message": {
+                    **msg_data,
+                    "leaderboard_data": lb_entries,
+                    "response_summary": response_summary,
+                },
             },
         )
 
         return Response({"success": True})
 
 
-class HostLeaderboardView(APIView):
-    authentication_classes = [JwtAuthentication]
-    permission_classes = [IsAdminUser]
-
-    def get(self, request, joincode):
-        # look up both leaderboards and return them
-        return Response({"success": True})
-
-
-class UpdateLeaderbaord(APIView):
+class UpdatePublicLeaderboardView(APIView):
     authentication_classes = [JwtAuthentication]
     permission_classes = [IsAdminUser]
 
     @method_decorator(csrf_protect)
     def post(self, request, joincode):
-        # read in "leaderboard_type" from request.data
-        # look up the appropriate leaderboard
-        # use the leaderboard helper class to update the leaderboard and return it (socket)
+        event = get_event_or_404(joincode=joincode)
+
+        lb_processor = LeaderboardProcessor(event=event)
+        # public lb entries, public through round, and updated event round states
+        updated_lb_data = lb_processor.sync_leaderboards()
+
+        SendEventMessage(
+            joincode,
+            {"msg_type": "leaderboard_update", "message": updated_lb_data},
+        )
+
+        return Response({"success": True})
+
+
+# TODO
+class RevealAnswersView(APIView):
+    authentication_classes = [JwtAuthentication]
+    permission_classes = [IsAdminUser]
+
+    @method_decorator(csrf_protect)
+    def post(self, request, joincode):
+        # get round number from payload
+        event = get_event_or_404(joincode=joincode)
+
+        # reveal rounds that are locked
+        round_states = EventRoundState.objects.filter(event=event)
+        for rs in round_states:
+            rs.revealed = rs.locked
+        EventRoundState.objects.bulk_update(round_states, fields=["revealed"])
+
+        SendEventMessage(
+            joincode,
+            {
+                "msg_type": "round_state_update",
+                "message": {"round_states": queryset_to_json(round_states)},
+            },
+        )
+
         return Response({"success": True})
