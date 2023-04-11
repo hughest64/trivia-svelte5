@@ -12,8 +12,8 @@
     const activeEventData = getStore('activeEventData');
     const roundStates = getStore('roundStates') || [];
 
-    $: activeRound = $rounds.find((rd) => rd.round_number === $activeEventData.activeRoundNumber) as GameRound;
-    $: activeRoundState = $roundStates.find((rs) => rs.round_number === $activeEventData.activeRoundNumber);
+    $: activeRound = $rounds?.find((rd) => rd.round_number === $activeEventData.activeRoundNumber) as GameRound;
+    $: activeRoundState = $roundStates?.find((rs) => rs.round_number === $activeEventData.activeRoundNumber);
     $: locked = activeRoundState?.locked;
     $: scoreButtonText = activeRoundState?.scored ? 'Edit This Rounds Scores' : 'Score This Round';
 
