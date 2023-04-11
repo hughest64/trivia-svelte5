@@ -62,9 +62,13 @@ test('scoring updates properly update the leaderboards', async ({ p1Page, p3Page
     await expect(funnyBtn.nth(1)).not.toHaveText(/not/i);
 
     await hostPage.page.goto(`${hostUrl}/leaderboard`);
-    // host lb should reflect the 1/2 pt for both teams
-    const syncBtn = hostPage.page.locator('button#sync-button');
-    await expect(syncBtn).toBeVisible();
+
+    // answer reveal now happens separately from the leaderboard update
+    const revealBtn = hostPage.page.locator('button#reveal-button');
+    await expect(revealBtn).toBeVisible();
+
+    // const syncBtn = hostPage.page.locator('button#sync-button');
+    // await expect(syncBtn).toBeVisible();
 
     // host lb should update automatically
     const hostlb = hostPage.page.locator('ul#host-leaderboard-view').locator('li.leaderboard-entry-container');
@@ -78,7 +82,7 @@ test('scoring updates properly update the leaderboards', async ({ p1Page, p3Page
     await expect(hostEntry2.locator('h3.rank')).toHaveText('2');
     await expect(hostEntry2.locator('h3.points')).toHaveText('1');
 
-    await syncBtn.click();
+    await revealBtn.click();
     const answer = answerSummary.locator('p', { hasText: /correct answer/i });
     const points = answerSummary.locator('p', { hasText: /you received/i });
     const funny = answerSummary.locator('p', { hasText: /funny answer/i });
