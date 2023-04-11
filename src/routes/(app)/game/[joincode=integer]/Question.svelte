@@ -60,7 +60,7 @@
     <p>Image Missing</p>
 {/if}
 
-{#if activeRoundState?.scored}
+{#if activeRoundState?.revealed}
     <AnswerSummary {activeQuestion} {activeResponse} />
 {/if}
 

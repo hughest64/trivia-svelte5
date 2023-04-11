@@ -294,6 +294,7 @@ class EventRoundState(models.Model):
     )
     round_number = models.IntegerField()
     locked = models.BooleanField(default=False)
+    revealed = models.BooleanField(default=False)
     scored = models.BooleanField(default=False)
 
     class Meta:
@@ -307,6 +308,7 @@ class EventRoundState(models.Model):
             "round_number": self.round_number,
             "locked": self.locked,
             "scored": self.scored,
+            "revealed": self.revealed,
         }
 
     def save(self, *args, **kwargs):

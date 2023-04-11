@@ -395,15 +395,27 @@ class UpdatePublicLeaderboardView(APIView):
 
 
 # TODO
-class RevealAnswers(APIView):
+class RevealAnswersView(APIView):
     authentication_classes = [JwtAuthentication]
     permission_classes = [IsAdminUser]
 
     @method_decorator(csrf_protect)
     def post(self, request, joincode):
         # get round number from payload
-        # mark the event round state obj as "revealed" (new column)
-        # push updated round state(s) back through the socket
         event = get_event_or_404(joincode=joincode)
+
+        # reveal rounds that are locked
+        round_states = EventRoundState.objects.filter(event=event)
+        for rs in round_states:
+            rs.revealed = rs.locked
+        EventRoundState.objects.bulk_update(round_states, fields=["revealed"])
+
+        SendEventMessage(
+            joincode,
+            {
+                "msg_type": "round_state_update",
+                "message": {"round_states": queryset_to_json(round_states)},
+            },
+        )
 
         return Response({"success": True})

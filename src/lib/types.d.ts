@@ -94,6 +94,7 @@ export interface RoundState {
     round_number: number;
     locked: boolean;
     scored: boolean;
+    revealed: boolean;
 }
 
 export interface EventData {

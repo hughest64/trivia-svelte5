@@ -107,6 +107,9 @@
                 responseSummaryStore.set(message.response_summary as ResponseSummary);
             }
         },
+        round_state_update: (message: Record<string, RoundState[]>) => {
+            roundStates.set(message.round_states);
+        },
         question_reveal_popup: (message: Record<string, string | boolean>) => {
             const revealed = message.reveal;
             revealed &&
