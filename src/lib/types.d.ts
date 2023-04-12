@@ -119,6 +119,7 @@ export interface Response {
     id: number;
     recorded_answer: string;
     points_awarded: number;
+    mega_round_value?: number;
     funny: boolean;
     locked: boolean;
     round_number: string | number;
