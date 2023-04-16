@@ -2,12 +2,14 @@
     import { onMount } from 'svelte';
     import { applyAction, enhance } from '$app/forms';
     import { getStore } from '$lib/utils';
+    import { defaultMegaroundValues, megaRoundValueStore } from './megaroundValueStore';
 
     const questions = getStore('questions');
     const rounds = getStore('rounds');
     const responses = getStore('responseData');
 
-    // TODO: remove when ready to fetch from the db
+    // TODO: get value from the store
+    const selectedMegaRound = 5;
     let selectedRoundNumber = 5; // : number;
     $: roundQuestions = $questions.filter((q) => q.round_number === selectedRoundNumber);
 
@@ -15,17 +17,9 @@
     const defaultText = 'You Have not answered this question!';
     let focusedEl: number;
 
-    interface MegaroundValue {
-        num: string;
-        used: boolean;
-    }
-    let megaroundValues = [
-        { num: '1', used: false },
-        { num: '2', used: false },
-        { num: '3', used: false },
-        { num: '4', used: false },
-        { num: '5', used: false }
-    ] as MegaroundValue[];
+    // TODO: possibly move this and create it in Stores.svelte same as all others
+    // use leaderbaord entry and existing responses to populate an intial value
+    $: mrStore = megaRoundValueStore();
 
     const getMegaRoundInput = (qnum?: number): HTMLElement | undefined => {
         const els = document.getElementsByClassName('megaround-weight');
@@ -45,60 +39,48 @@
         return inputEl;
     };
 
+    const setFocusedEl = () => {
+        const firstEmptyInput = getMegaRoundInput();
+        focusedEl = Number(firstEmptyInput?.dataset.qnum);
+    };
+
     const handleRoundSelect = (event: MouseEvent) => {
-        // TODO: update focusedEl on change
         const roundNum = (event.target as HTMLElement).id;
         selectedRoundNumber = Number(roundNum);
-        focusedEl = Number(getMegaRoundInput()?.dataset.qnum);
+        clearValues();
+        setFocusedEl();
         // TODO: this need to respect pre-filled values, i.e. if a player navigates to their
         // selected megaround, used should be true as necessary
-        megaroundValues = [
-            { num: '1', used: false },
-            { num: '2', used: false },
-            { num: '3', used: false },
-            { num: '4', used: false },
-            { num: '5', used: false }
-        ];
+        mrStore.reset();
     };
 
     const handleSetInputValue = (event: MouseEvent) => {
         const target = event.target as HTMLAreaElement;
         const value = target.id.slice(-1);
-        const mrvalueindex = megaroundValues.findIndex((val) => val.num === value);
+        const existingMrValue = mrStore.getValue(value);
+        const targetEl = getMegaRoundInput(focusedEl) as HTMLInputElement;
 
-        if (megaroundValues[mrvalueindex].used) return;
-        megaroundValues[mrvalueindex].used = true;
+        if (existingMrValue?.used) return;
+        mrStore.markUsed(value, targetEl.value);
 
-        const el = getMegaRoundInput(focusedEl) as HTMLInputElement;
-        // mark the existing value as not used if applicable
-        const currentValue = el.value;
-        if (currentValue) {
-            const oldmrvalueindex = megaroundValues.findIndex((val) => val.num === currentValue);
-            megaroundValues[oldmrvalueindex].used = false;
+        if (targetEl) {
+            targetEl.value = value;
+            targetEl.dataset.mrvalue = value;
         }
-        if (el) el.value = value;
-        focusedEl += 1;
+        setFocusedEl();
     };
 
-    const handleClearValues = () => {
+    const clearValues = () => {
         const els = document.getElementsByClassName('megaround-weight');
         for (const el of els) {
             (el as HTMLInputElement).value = '';
+            (el as HTMLInputElement).dataset.mrvalue = '';
         }
-        megaroundValues = [
-            { num: '1', used: false },
-            { num: '2', used: false },
-            { num: '3', used: false },
-            { num: '4', used: false },
-            { num: '5', used: false }
-        ];
-        focusedEl = 1;
+        mrStore.reset();
+        setFocusedEl();
     };
 
-    onMount(() => {
-        const firstEmptyInput = getMegaRoundInput();
-        if (firstEmptyInput) focusedEl = Number(firstEmptyInput.dataset.qnum);
-    });
+    onMount(setFocusedEl);
 </script>
 
 <h1>Mega Round</h1>
@@ -111,7 +93,12 @@
 <div class="round-selector">
     {#each roundNumbers as roundNum}
         {#if roundNum > roundNumbers.length / 2}
-            <button class:active={selectedRoundNumber === roundNum} id={String(roundNum)} on:click={handleRoundSelect}>
+            <button
+                class:current={selectedMegaRound === roundNum}
+                class:active={selectedRoundNumber === roundNum}
+                id={String(roundNum)}
+                on:click={handleRoundSelect}
+            >
                 {roundNum}
             </button>
         {/if}
@@ -149,7 +136,7 @@
         {/each}
 
         <div class="megaround-weight-selector">
-            {#each megaroundValues as { num, used }}
+            {#each $mrStore || defaultMegaroundValues as { num, used }}
                 <button
                     id="megaround-value-{num}"
                     class="button-white"
@@ -161,7 +148,7 @@
 
         <!-- TODO submit button should be disabled until all fields are filled in -->
         <button type="submit" class="button button-primary">Submit</button>
-        <button class="button button-secondary" on:click|preventDefault={handleClearValues}>Clear & Edit</button>
+        <button class="button button-secondary" on:click|preventDefault={clearValues}>Clear & Edit</button>
     </form>
 {/if}
 
