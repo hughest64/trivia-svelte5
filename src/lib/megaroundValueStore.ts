@@ -1,4 +1,5 @@
 import { writable, type Writable } from 'svelte/store';
+import type { Response } from './types';
 
 export interface MegaRoundValue {
     num: string;
@@ -18,6 +19,13 @@ export const defaultMegaroundValues: MegaRoundValue[] = [
     { num: '4', used: false },
     { num: '5', used: false }
 ];
+
+export const getMegaroundValues = (responses: Response[]): MegaRoundValue[] => {
+    return [1, 2, 3, 4, 5].map((num) => {
+        const used = !!responses.find((resp) => resp.megaround_value === num);
+        return { num: String(num), used };
+    }) as MegaRoundValue[];
+};
 
 export const megaRoundValueStore = (initial?: MegaRoundValue[]): MegaRoundValueStore => {
     // TODO: validate that this is enough to not modify the global!

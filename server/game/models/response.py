@@ -20,6 +20,7 @@ class QuestionResponse(models.Model):
     recorded_answer = models.TextField(default="")
     fuzz_ratio = models.IntegerField(default=0)
     points_awarded = models.FloatField(default=0)
+    megaround_value = models.IntegerField(blank=True, null=True)
     funny = models.BooleanField(default=False)
     locked = models.BooleanField(default=False)
     game_question = models.ForeignKey("GameQuestion", on_delete=models.CASCADE)
@@ -35,6 +36,7 @@ class QuestionResponse(models.Model):
         return {
             "id": self.pk,
             "points_awarded": self.points_awarded,
+            "megaround_value": self.megaround_value,
             "funny": self.funny,
             "locked": self.locked,
             "round_number": self.game_question.round_number,
@@ -118,10 +120,10 @@ class LeaderboardEntry(models.Model):
     rank = models.IntegerField(blank=True, null=True)
     tiebreaker_rank = models.IntegerField(blank=True, null=True)
     total_points = models.FloatField(default=0)
+    selected_megaround = models.IntegerField(blank=True, null=True)
+    megaround_applied = models.BooleanField(default=False)
 
     # Other fields:
-    # selected_megaround
-    # megaround_applied ?
     # points_adjustment
     # points_adjustment_reason
 
@@ -156,6 +158,7 @@ class LeaderboardEntry(models.Model):
             "team_name": self.team.name,
             "rank": self.rank or "-",
             "total_points": self.total_points,
+            "megaround": self.selected_megaround,
         }
 
 

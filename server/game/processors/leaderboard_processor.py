@@ -44,6 +44,8 @@ class LeaderboardProcessor:
             game_question__round_number__lte=through_round,
         )
 
+        # TODO: factor in megaround (check for megaround_applied and selected_megaround )
+        # we also need to account for host manual points adjustments
         points = sum([resp.points_awarded for resp in resps])
         lbe.total_points = points
 

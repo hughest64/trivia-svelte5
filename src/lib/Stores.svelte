@@ -2,7 +2,8 @@
     import { page } from '$app/stores';
     import { readable, writable } from 'svelte/store';
     import { createStore } from '$lib/utils';
-    import type { UserData, EventData } from './types';
+    import { getMegaroundValues, megaRoundValueStore } from './megaroundValueStore';
+    import type { UserData, EventData, LeaderboardEntry } from './types';
 
     $: data = $page.data;
 
@@ -38,10 +39,22 @@
 
     $: createStore('roundStates', writable(data?.round_states || []));
     $: createStore('questionStates', writable(data?.question_states || []));
-    $: createStore('responseData', writable(data?.response_data || []));
-    $: createStore('responseSummary', writable(data?.response_summary || {}));
-    $: createStore('leaderboard', writable(data?.leaderboard_data || {}));
     $: createStore('hostResponseData', writable(data?.host_response_data || []));
+
+    $: responses = createStore('responseData', writable(data?.response_data || []));
+    $: createStore('responseSummary', writable(data?.response_summary || {}));
+
+    $: leaderboardData = data?.leaderboard_data || {};
+    $: createStore('leaderboard', writable(leaderboardData));
+
+    $: player_selected_megaround = leaderboardData.public_leaderboard_entries.find(
+        (e: LeaderboardEntry) => e.team_id === $userData.active_team_id
+    )?.megaround;
+    $: createStore('selectedMegaRound', writable(player_selected_megaround));
+
+    $: player_megaround_responses = $responses.filter((resp) => resp.round_number === player_selected_megaround);
+    $: player_used_mr_values = getMegaroundValues(player_megaround_responses);
+    $: createStore('megaroundValues', megaRoundValueStore(player_used_mr_values));
 </script>
 
 <slot />

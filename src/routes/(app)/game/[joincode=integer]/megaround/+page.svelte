@@ -2,24 +2,23 @@
     import { onMount } from 'svelte';
     import { applyAction, enhance } from '$app/forms';
     import { getStore } from '$lib/utils';
-    import { defaultMegaroundValues, megaRoundValueStore } from './megaroundValueStore';
+    import { getMegaroundValues } from '$lib/megaroundValueStore';
 
     const questions = getStore('questions');
     const rounds = getStore('rounds');
     const responses = getStore('responseData');
 
-    // TODO: get value from the store
-    const selectedMegaRound = 5;
-    let selectedRoundNumber = 5; // : number;
-    $: roundQuestions = $questions.filter((q) => q.round_number === selectedRoundNumber);
+    const selectedMegaRound = getStore('selectedMegaRound');
+    $: mrResps = $responses.filter((resp) => resp.round_number === $selectedMegaRound);
+
+    let activeRoundNumber = $selectedMegaRound;
+    $: roundQuestions = $questions.filter((q) => q.round_number === activeRoundNumber);
 
     const roundNumbers = $rounds?.map((rd) => rd.round_number) || [];
     const defaultText = 'You Have not answered this question!';
     let focusedEl: number;
 
-    // TODO: possibly move this and create it in Stores.svelte same as all others
-    // use leaderbaord entry and existing responses to populate an intial value
-    $: mrStore = megaRoundValueStore();
+    const mrStore = getStore('megaroundValues');
 
     const getMegaRoundInput = (qnum?: number): HTMLElement | undefined => {
         const els = document.getElementsByClassName('megaround-weight');
@@ -46,12 +45,14 @@
 
     const handleRoundSelect = (event: MouseEvent) => {
         const roundNum = (event.target as HTMLElement).id;
-        selectedRoundNumber = Number(roundNum);
+        activeRoundNumber = Number(roundNum);
         clearValues();
         setFocusedEl();
-        // TODO: this need to respect pre-filled values, i.e. if a player navigates to their
-        // selected megaround, used should be true as necessary
-        mrStore.reset();
+        if (String($selectedMegaRound) === roundNum) {
+            mrStore.set(getMegaroundValues(mrResps));
+        } else {
+            mrStore.reset();
+        }
     };
 
     const handleSetInputValue = (event: MouseEvent) => {
@@ -94,8 +95,8 @@
     {#each roundNumbers as roundNum}
         {#if roundNum > roundNumbers.length / 2}
             <button
-                class:current={selectedMegaRound === roundNum}
-                class:active={selectedRoundNumber === roundNum}
+                class:current={$selectedMegaRound === roundNum}
+                class:active={activeRoundNumber === roundNum}
                 id={String(roundNum)}
                 on:click={handleRoundSelect}
             >
@@ -105,8 +106,7 @@
     {/each}
 </div>
 
-<!-- keyboard is disabled, must use -->
-{#if selectedRoundNumber}
+{#if activeRoundNumber}
     <form
         action="?/setmegaround"
         method="post"
@@ -115,7 +115,7 @@
                 applyAction(result)}
     >
         {#each roundQuestions as question (question.id)}
-            {@const resp = $responses.find((r) => r.key === question.key)}
+            {@const resp = mrResps.find((r) => r.key === question.key)}
             <div class="input-container">
                 <input
                     type="tel"
@@ -127,8 +127,12 @@
                     id="megaround-weight-{question.question_number}"
                     name="megaround-weight-{question.question_number}"
                     data-qnum={question.question_number}
-                    data-mrvalue={resp?.mega_round_value || ''}
-                    value={resp?.mega_round_value || ''}
+                    data-mrvalue={resp?.round_number === $selectedMegaRound && resp?.megaround_value
+                        ? resp?.megaround_value
+                        : ''}
+                    value={resp?.round_number === $selectedMegaRound && resp?.megaround_value
+                        ? resp?.megaround_value
+                        : ''}
                     on:focus={() => (focusedEl = question.question_number)}
                 />
                 <p>{resp?.recorded_answer || defaultText}</p>
@@ -136,7 +140,7 @@
         {/each}
 
         <div class="megaround-weight-selector">
-            {#each $mrStore || defaultMegaroundValues as { num, used }}
+            {#each $mrStore as { num, used }}
                 <button
                     id="megaround-value-{num}"
                     class="button-white"
