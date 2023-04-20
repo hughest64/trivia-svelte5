@@ -9,9 +9,8 @@
     const responses = getStore('responseData');
 
     const selectedMegaRound = getStore('selectedMegaRound');
-    $: mrResps = $responses.filter((resp) => resp.round_number === $selectedMegaRound);
-
     let activeRoundNumber = $selectedMegaRound;
+    $: mrResps = $responses.filter((resp) => resp.round_number === activeRoundNumber);
     $: roundQuestions = $questions.filter((q) => q.round_number === activeRoundNumber);
 
     const roundNumbers = $rounds?.map((rd) => rd.round_number) || [];
@@ -152,6 +151,8 @@
         <button type="submit" class="button button-primary" disabled={allowSubmit}>Submit</button>
         <button class="button button-secondary" on:click|preventDefault={clearValues}>Clear & Edit</button>
     </form>
+{:else}
+    <h3>Select A Mega Round!</h3>
 {/if}
 
 <style lang="scss">
