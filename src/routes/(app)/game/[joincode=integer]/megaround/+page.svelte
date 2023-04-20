@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { onMount } from 'svelte';
+    import { afterUpdate } from 'svelte';
     import { applyAction, enhance } from '$app/forms';
     import { getStore } from '$lib/utils';
     import { getMegaroundValues } from '$lib/megaroundValueStore';
@@ -22,24 +22,26 @@
 
     const getMegaRoundInput = (qnum?: number): HTMLElement | undefined => {
         const els = document.getElementsByClassName('megaround-weight');
-        let inputEl: HTMLElement | undefined;
+        let inputEl: HTMLInputElement | undefined;
 
         for (const el of els) {
             if (qnum) {
                 if ((el as HTMLElement).dataset.qnum === String(qnum)) {
-                    inputEl = el as HTMLElement;
+                    inputEl = el as HTMLInputElement;
                     break;
                 }
-            } else if (!(el as HTMLElement).dataset.mrvalue) {
-                inputEl = el as HTMLElement;
+            } else if (!(el as HTMLInputElement).value) {
+                inputEl = el as HTMLInputElement;
                 break;
             }
         }
         return inputEl;
     };
 
-    const setFocusedEl = () => {
-        const firstEmptyInput = getMegaRoundInput();
+    let focused = false;
+    const setFocusedEl = (num?: number) => {
+        if (num) focused = true;
+        const firstEmptyInput = getMegaRoundInput(num);
         focusedEl = Number(firstEmptyInput?.dataset.qnum);
     };
 
@@ -47,9 +49,9 @@
         const roundNum = (event.target as HTMLElement).id;
         activeRoundNumber = Number(roundNum);
         clearValues();
-        setFocusedEl();
         if (String($selectedMegaRound) === roundNum) {
-            mrStore.set(getMegaroundValues(mrResps));
+            const mrValues = getMegaroundValues(mrResps);
+            mrStore.set(mrValues);
         } else {
             mrStore.reset();
         }
@@ -66,22 +68,21 @@
 
         if (targetEl) {
             targetEl.value = value;
-            targetEl.dataset.mrvalue = value;
         }
-        setFocusedEl();
     };
 
     const clearValues = () => {
         const els = document.getElementsByClassName('megaround-weight');
         for (const el of els) {
             (el as HTMLInputElement).value = '';
-            (el as HTMLInputElement).dataset.mrvalue = '';
         }
         mrStore.reset();
-        setFocusedEl();
     };
 
-    onMount(setFocusedEl);
+    afterUpdate(() => {
+        !focused && setFocusedEl();
+        focused = false;
+    });
 </script>
 
 <h1>Mega Round</h1>
@@ -127,13 +128,10 @@
                     id="megaround-weight-{question.question_number}"
                     name="megaround-weight-{question.question_number}"
                     data-qnum={question.question_number}
-                    data-mrvalue={resp?.round_number === $selectedMegaRound && resp?.megaround_value
-                        ? resp?.megaround_value
-                        : ''}
                     value={resp?.round_number === $selectedMegaRound && resp?.megaround_value
                         ? resp?.megaround_value
                         : ''}
-                    on:focus={() => (focusedEl = question.question_number)}
+                    on:focus={() => setFocusedEl(question.question_number)}
                 />
                 <p>{resp?.recorded_answer || defaultText}</p>
             </div>

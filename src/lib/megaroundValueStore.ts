@@ -20,15 +20,16 @@ export const defaultMegaroundValues: MegaRoundValue[] = [
     { num: '5', used: false }
 ];
 
-export const getMegaroundValues = (responses: Response[]): MegaRoundValue[] => {
+export const getMegaroundValues = (responses: Response[]) => {
+    const usedMrValues = responses.map((resp) => resp.megaround_value);
+
     return [1, 2, 3, 4, 5].map((num) => {
-        const used = !!responses.find((resp) => resp.megaround_value === num);
+        const used = usedMrValues.indexOf(num) > -1;
         return { num: String(num), used };
-    }) as MegaRoundValue[];
+    });
 };
 
 export const megaRoundValueStore = (initial?: MegaRoundValue[]): MegaRoundValueStore => {
-    // TODO: validate that this is enough to not modify the global!
     const internalValues = initial || [...defaultMegaroundValues];
     const { subscribe, set, update } = writable(internalValues);
 
