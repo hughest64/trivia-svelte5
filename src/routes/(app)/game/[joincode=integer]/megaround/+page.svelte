@@ -19,6 +19,7 @@
     let focusedEl: number;
 
     const mrStore = getStore('megaroundValues');
+    $: allowSubmit = !$mrStore.every((value) => value.used);
 
     const getMegaRoundInput = (qnum?: number): HTMLElement | undefined => {
         const els = document.getElementsByClassName('megaround-weight');
@@ -148,8 +149,7 @@
             {/each}
         </div>
 
-        <!-- TODO submit button should be disabled until all fields are filled in -->
-        <button type="submit" class="button button-primary">Submit</button>
+        <button type="submit" class="button button-primary" disabled={allowSubmit}>Submit</button>
         <button class="button button-secondary" on:click|preventDefault={clearValues}>Clear & Edit</button>
     </form>
 {/if}
@@ -185,7 +185,6 @@
             &.focused {
                 outline: none;
                 border-color: var(--color-current);
-                // caret-color: transparent;
             }
         }
     }
