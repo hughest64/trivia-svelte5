@@ -135,10 +135,10 @@ class LeaderboardEntry(models.Model):
         unique_together = ("team", "event", "leaderboard_type")
         ordering = [
             "event",
-            "team",
-            "-leaderboard_type",
             "rank",
             "tiebreaker_rank",
+            "team",
+            "-leaderboard_type",
             "pk",
         ]
         verbose_name_plural = "Leaderboard Entries"

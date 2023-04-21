@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("game", "0005_leaderboardentry_megaround_applied_and_more"),
     ]
@@ -16,10 +15,10 @@ class Migration(migrations.Migration):
             options={
                 "ordering": [
                     "event",
-                    "team",
-                    "-leaderboard_type",
                     "rank",
                     "tiebreaker_rank",
+                    "team",
+                    "-leaderboard_type",
                     "pk",
                 ],
                 "verbose_name_plural": "Leaderboard Entries",
