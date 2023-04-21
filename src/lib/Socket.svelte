@@ -41,6 +41,7 @@
     const currentEventStore = getStore('currentEventData');
     const hostResponseStore = getStore('hostResponseData');
     const responseSummaryStore = getStore('responseSummary');
+    const selectedMegaroundStore = getStore('selectedMegaRound');
 
     const handlers: MessageHandler = {
         connected: () => console.log('connected!'),
@@ -188,6 +189,22 @@
                     });
                 }
             }
+        },
+        team_megaround_update: (message: any) => {
+            const { responses, selected_megaround } = message;
+
+            responseStore.update((currentResponses) => {
+                const newResponses = [...currentResponses];
+                (responses as Response[]).forEach((resp) => {
+                    const updateIndex = newResponses.findIndex((response) => response.key === resp.key);
+                    updateIndex > -1
+                        ? (newResponses[updateIndex] = { ...newResponses[updateIndex], ...resp })
+                        : newResponses.push(message);
+                });
+
+                return newResponses;
+            });
+            selectedMegaroundStore.set(selected_megaround);
         }
     };
 

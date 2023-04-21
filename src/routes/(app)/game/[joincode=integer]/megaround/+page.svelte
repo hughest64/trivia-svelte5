@@ -109,7 +109,7 @@
 
 {#if activeRoundNumber}
     <form
-        action="?/setmegaround"
+        action="?/setmegaround&rd={activeRoundNumber}"
         method="post"
         use:enhance={() =>
             ({ result }) =>
@@ -118,6 +118,7 @@
         {#each roundQuestions as question (question.id)}
             {@const resp = mrResps.find((r) => r.key === question.key)}
             <div class="input-container">
+                <input type="hidden" name="question-{question.question_number}" value={question.id} />
                 <input
                     type="tel"
                     min="1"

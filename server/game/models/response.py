@@ -17,9 +17,10 @@ LEADERBOARD_TYPE_DICT = dict(LEADERBOARD_TYPE_OPTIONS)
 
 class QuestionResponse(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
-    recorded_answer = models.TextField(default="")
+    recorded_answer = models.TextField(default="", blank=True)
     fuzz_ratio = models.IntegerField(default=0)
     points_awarded = models.FloatField(default=0)
+    # TODO: we should use min/max validators here, i.e 1-5 AND they should be unique
     megaround_value = models.IntegerField(blank=True, null=True)
     funny = models.BooleanField(default=False)
     locked = models.BooleanField(default=False)
@@ -129,7 +130,14 @@ class LeaderboardEntry(models.Model):
 
     class Meta:
         unique_together = ("team", "event", "leaderboard_type")
-        ordering = ["event", "-leaderboard_type", "rank", "tiebreaker_rank", "pk"]
+        ordering = [
+            "event",
+            "team",
+            "-leaderboard_type",
+            "rank",
+            "tiebreaker_rank",
+            "pk",
+        ]
         verbose_name_plural = "Leaderboard Entries"
 
     def _get_through_rounds(self):

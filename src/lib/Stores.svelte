@@ -47,7 +47,7 @@
     $: leaderboardData = data?.leaderboard_data || {};
     $: createStore('leaderboard', writable(leaderboardData));
 
-    $: player_selected_megaround = leaderboardData.public_leaderboard_entries.find(
+    $: player_selected_megaround = leaderboardData.public_leaderboard_entries?.find(
         (e: LeaderboardEntry) => e.team_id === $userData.active_team_id
     )?.megaround;
     $: createStore('selectedMegaRound', writable(player_selected_megaround));
