@@ -199,11 +199,12 @@
                     const updateIndex = newResponses.findIndex((response) => response.key === resp.key);
                     updateIndex > -1
                         ? (newResponses[updateIndex] = { ...newResponses[updateIndex], ...resp })
-                        : newResponses.push(message);
+                        : newResponses.push(resp);
                 });
 
                 return newResponses;
             });
+
             selectedMegaroundStore.set(selected_megaround);
         }
     };

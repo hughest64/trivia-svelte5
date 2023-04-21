@@ -1,3 +1,4 @@
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 
 from fuzzywuzzy import fuzz
@@ -21,7 +22,9 @@ class QuestionResponse(models.Model):
     fuzz_ratio = models.IntegerField(default=0)
     points_awarded = models.FloatField(default=0)
     # TODO: we should use min/max validators here, i.e 1-5 AND they should be unique
-    megaround_value = models.IntegerField(blank=True, null=True)
+    megaround_value = models.IntegerField(
+        blank=True, null=True, validators=[MinValueValidator(1), MaxValueValidator(5)]
+    )
     funny = models.BooleanField(default=False)
     locked = models.BooleanField(default=False)
     game_question = models.ForeignKey("GameQuestion", on_delete=models.CASCADE)
