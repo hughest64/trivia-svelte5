@@ -5,9 +5,12 @@
     import RoundSelector from '../RoundSelector.svelte';
 
     const leaderboard = getStore('leaderboard');
+    const roundStates = getStore('roundStates');
+    // TODO: I'm not entirely sure this is what we want here
+    // used for determining when to show the "Reveal Answers" button
+    $: maxLockedRound = $roundStates.filter((rs) => rs.locked).sort((a, b) => b.round_number - a.round_number)[0];
 
-    type LbView = 'public' | 'host';
-    let lbView: LbView = 'host';
+    let lbView: 'public' | 'host' = 'host';
 </script>
 
 <div class="host-container flex-column">
@@ -42,17 +45,14 @@
             {/each}
         </ul>
     {:else}
-        {#if !$leaderboard.synced}
-            <!-- TODO: perhaps one button that changes jobs is better than two buttons? i.e. reveal first the update
-        maybe use a query param on the action to indicate what is what -->
-            <div class="btn-group">
-                <form action="?/revealanswers" method="post" use:enhance>
-                    <button id="reveal-button" class="button button-secondary">Reveal Answers</button>
-                </form>
-                <form action="?/updateleaderboard" method="post" use:enhance>
-                    <button id="sync-button" type="submit" class="button button-primary">Update Public View</button>
-                </form>
-            </div>
+        {#if maxLockedRound && !maxLockedRound?.revealed}
+            <form action="?/revealanswers" method="post" use:enhance>
+                <button id="reveal-button" class="button button-secondary">Reveal Answers</button>
+            </form>
+        {:else if !$leaderboard.synced}
+            <form action="?/updateleaderboard" method="post" use:enhance>
+                <button id="sync-button" type="submit" class="button button-primary">Update Public View</button>
+            </form>
         {/if}
 
         <h4>Host Leaderboard</h4>
