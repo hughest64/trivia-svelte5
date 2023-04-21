@@ -7,8 +7,8 @@
     const rounds = getStore('rounds');
     const allQuestions = getStore('questions');
     const roundNumbers = $rounds.map((rd) => rd.round_number) || [];
-    // const allQuestions = $questions || [];
     const joincode = $page.params.joincode;
+    const questionKeys = $allQuestions.map((q) => Number(q.key));
 
     const activeEventData = getStore('activeEventData');
     const responses = getStore('hostResponseData');
@@ -21,9 +21,13 @@
     $: scoringQuestion = roundQuestions.find((q) => q.question_number === scoringQuestionNumber);
     $: scoringResponses = ($responses && $responses.filter((r) => r.key === $activeEventData.activeQuestionKey)) || [];
 
+    $: isFirstQuestion = Number($activeEventData.activeQuestionKey) === Math.min(...questionKeys);
+    $: isLastQuestion = Number($activeEventData.activeQuestionKey) === Math.max(...questionKeys);
+
     const advance = async () => {
         const next = scoringQuestionNumber + 1;
         const maxQuestion = Math.max(...roundQuestionNumbers);
+        const maxRound = Math.max(...roundNumbers);
         if (next <= maxQuestion) {
             activeEventData.update((data) => ({
                 ...data,
@@ -35,7 +39,6 @@
                 body: JSON.stringify({ activeEventData: $activeEventData, joincode: joincode })
             });
         } else if (next > maxQuestion) {
-            const maxRound = Math.max(...roundNumbers);
             const nextRound = roundNumber + 1;
             if (roundNumber < maxRound) {
                 const postData = {
@@ -102,33 +105,44 @@
     <RoundSelector />
 </div>
 
-{#if scoringResponses.length > 0}
-    <div class="host-question-panel">
-        <h2>Round {scoringQuestion?.round_number} Question {scoringQuestion?.question_number}</h2>
-        <p>{scoringQuestion?.question_text}</p>
-    </div>
+<!-- TODO: better handling of this, it gets weird if a question doesn't have any responses, but the next question does -->
+<!-- {#if scoringResponses.length > 0} -->
+<div class="host-question-panel">
+    <h2>Round {scoringQuestion?.round_number} Question {scoringQuestion?.question_number}</h2>
+    <p>{scoringQuestion?.question_text}</p>
+</div>
 
-    <h4 class="answer">Answer: {scoringQuestion?.display_answer}</h4>
+<h4 class="answer">Answer: {scoringQuestion?.display_answer}</h4>
 
-    <div class="button-container">
-        <button class="button button-secondary" on:click={goBack}>Previous</button>
+<div class="button-container">
+    <button class="button button-secondary" disabled={isFirstQuestion} on:click={goBack}>Previous</button>
+    {#if !isLastQuestion}
         <button class="button button-secondary" on:click={advance}>Next</button>
-    </div>
+    {:else}
+        <!-- TODO: query param that will set active event data to the min of unscored rounds -->
+        <!-- (see notes in Footer.svelte, I think an after navigate will handle it) -->
+        <a href="/host/{joincode}" class="button button-primary">Go Read Answers Aloud</a>
+    {/if}
+</div>
 
-    <ul id="response-groups">
-        {#each scoringResponses as response}
-            <ResponseGroup {response} />
-        {/each}
-    </ul>
+<ul id="response-groups">
+    {#each scoringResponses as response}
+        <ResponseGroup {response} />
+    {/each}
+</ul>
 
-    <div class="button-container">
-        <button class="button button-secondary" on:click={goBack}>Previous</button>
+<div class="button-container">
+    <button class="button button-secondary" disabled={isFirstQuestion} on:click={goBack}>Previous</button>
+    {#if !isLastQuestion}
         <button class="button button-secondary" on:click={advance}>Next</button>
-    </div>
-{:else}
+    {:else}
+        <a href="/host/{joincode}" class="button button-primary">Go Read Answers Aloud</a>
+    {/if}
+</div>
+
+<!-- {:else}
     <h2>All Caught Up!</h2>
-{/if}
-
+{/if} -->
 <style lang="scss">
     .button-container {
         width: 40em;
