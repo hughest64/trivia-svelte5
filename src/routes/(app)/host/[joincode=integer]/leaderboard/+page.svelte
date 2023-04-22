@@ -6,9 +6,10 @@
 
     const leaderboard = getStore('leaderboard');
     const roundStates = getStore('roundStates');
-    // TODO: I'm not entirely sure this is what we want here
-    // used for determining when to show the "Reveal Answers" button
-    $: maxLockedRound = $roundStates.filter((rs) => rs.locked).sort((a, b) => b.round_number - a.round_number)[0];
+
+    // show the reveal button if any locked rounds are not revealed
+    $: lockedRounds = $roundStates.filter((rs) => rs.locked);
+    $: revealed = lockedRounds.every((rd) => rd.revealed);
 
     let lbView: 'public' | 'host' = 'host';
 </script>
@@ -45,7 +46,8 @@
             {/each}
         </ul>
     {:else}
-        {#if maxLockedRound && !maxLockedRound?.revealed}
+        <!-- TODO: we might need to display both buttons rather than having a preference for revealed first -->
+        {#if !revealed}
             <form action="?/revealanswers" method="post" use:enhance>
                 <button id="reveal-button" class="button button-secondary">Reveal Answers</button>
             </form>
@@ -58,7 +60,7 @@
         <h4>Host Leaderboard</h4>
 
         <ul id="host-leaderboard-view" class="leaderboard-rankings">
-            {#each $leaderboard.host_leaderboard_entries as entry}
+            {#each $leaderboard.host_leaderboard_entries || [] as entry}
                 <Entry {entry} />
             {/each}
         </ul>

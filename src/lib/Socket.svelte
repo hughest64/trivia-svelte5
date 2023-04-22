@@ -13,7 +13,8 @@
         ResponseSummary,
         RoundState,
         SocketMessage,
-        HostResponse
+        HostResponse,
+        HostMegaRoundInstance
     } from './types';
 
     const path = $page.url.pathname;
@@ -53,10 +54,10 @@
 
                 // only update the host lb entries on host routes
                 if ($page.url.pathname.startsWith('/host')) {
-                    const existingHostIndex = lb.host_leaderboard_entries.findIndex(
+                    const existingHostIndex = lb.host_leaderboard_entries?.findIndex(
                         (e) => e.team_id === message.team_id
                     );
-                    existingHostIndex === -1 && newLB.host_leaderboard_entries.push(message);
+                    existingHostIndex === -1 && newLB.host_leaderboard_entries?.push(message);
                 }
                 return newLB;
             });
@@ -206,6 +207,19 @@
             });
 
             selectedMegaroundStore.set(selected_megaround);
+        },
+        host_megaround_update: (msg: HostMegaRoundInstance) => {
+            // only update host routes
+            if (!$page.url.pathname.startsWith('/host')) return;
+
+            leaderboardStore.update((lb) => {
+                const newLb = { ...lb };
+                const megaroundList = newLb.host_megaround_list || [];
+                const indexToUpdate = megaroundList.findIndex((e) => e.team_id === msg.team_id);
+                indexToUpdate > -1 ? (megaroundList[indexToUpdate] = msg) : megaroundList?.push(msg);
+                newLb.host_megaround_list = megaroundList;
+                return newLb;
+            });
         }
     };
 
