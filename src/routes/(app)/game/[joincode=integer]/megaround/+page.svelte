@@ -10,7 +10,7 @@
 
     const selectedMegaRound = getStore('selectedMegaRound');
     let activeRoundNumber = $selectedMegaRound;
-    $: mrResps = $responses.filter((resp) => resp.round_number === activeRoundNumber);
+    let mrResps = $responses.filter((resp) => resp.round_number === activeRoundNumber);
     $: roundQuestions = $questions.filter((q) => q.round_number === activeRoundNumber);
 
     const roundNumbers = $rounds?.map((rd) => rd.round_number) || [];
@@ -18,7 +18,11 @@
     let focusedEl: number;
 
     const mrStore = getStore('megaroundValues');
-    $: allowSubmit = !$mrStore.every((value) => value.used);
+    $: allSelected = $mrStore.every((value) => value.used);
+    // $: console.log('allselected', allSelected);
+    $: submitted = allSelected && activeRoundNumber === $selectedMegaRound;
+    $: allowSubmit = !allSelected || submitted;
+    $: submitText = submitted ? 'Submitted' : 'Submit';
 
     const getMegaRoundInput = (qnum?: number): HTMLElement | undefined => {
         const els = document.getElementsByClassName('megaround-weight');
@@ -47,8 +51,11 @@
 
     const handleRoundSelect = (event: MouseEvent) => {
         const roundNum = (event.target as HTMLElement).id;
+
         activeRoundNumber = Number(roundNum);
+        mrResps = $responses.filter((resp) => resp.round_number === activeRoundNumber);
         clearValues();
+
         if (String($selectedMegaRound) === roundNum) {
             const mrValues = getMegaroundValues(mrResps);
             mrStore.set(mrValues);
@@ -149,7 +156,7 @@
             {/each}
         </div>
 
-        <button type="submit" class="button button-primary" disabled={allowSubmit}>Submit</button>
+        <button type="submit" class="button button-primary" disabled={allowSubmit}>{submitText}</button>
         <button class="button button-secondary" on:click|preventDefault={clearValues}>Clear & Edit</button>
     </form>
 {:else}
