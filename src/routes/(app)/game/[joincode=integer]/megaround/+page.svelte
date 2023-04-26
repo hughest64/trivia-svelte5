@@ -18,9 +18,9 @@
     let focusedEl: number;
 
     const mrStore = getStore('megaroundValues');
+    let currentMrCleared = false;
     $: allSelected = $mrStore.every((value) => value.used);
-    // $: console.log('allselected', allSelected);
-    $: submitted = allSelected && activeRoundNumber === $selectedMegaRound;
+    $: submitted = allSelected && activeRoundNumber === $selectedMegaRound && !currentMrCleared;
     $: allowSubmit = !allSelected || submitted;
     $: submitText = submitted ? 'Submitted' : 'Submit';
 
@@ -54,7 +54,7 @@
 
         activeRoundNumber = Number(roundNum);
         mrResps = $responses.filter((resp) => resp.round_number === activeRoundNumber);
-        clearValues();
+        currentMrCleared = false;
 
         if (String($selectedMegaRound) === roundNum) {
             const mrValues = getMegaroundValues(mrResps);
@@ -83,6 +83,7 @@
         for (const el of els) {
             (el as HTMLInputElement).value = '';
         }
+        activeRoundNumber === $selectedMegaRound ? (currentMrCleared = true) : (currentMrCleared = false);
         mrStore.reset();
     };
 
