@@ -18,6 +18,7 @@
     let focusedEl: number;
 
     const mrStore = getStore('megaroundValues');
+    // allow resubmission if the active round is already the selected megaround
     let currentMrCleared = false;
     $: allSelected = $mrStore.every((value) => value.used);
     $: submitted = allSelected && activeRoundNumber === $selectedMegaRound && !currentMrCleared;
@@ -115,6 +116,10 @@
     {/each}
 </div>
 
+{#if $selectedMegaRound && $selectedMegaRound !== activeRoundNumber}
+    <h3 class="round-message">Your Currently Selected Mega Round is Round {$selectedMegaRound}</h3>
+{/if}
+
 {#if activeRoundNumber}
     <form
         action="?/setmegaround&rd={activeRoundNumber}"
@@ -170,6 +175,9 @@
     }
     .round-selector {
         margin: 1rem 0;
+    }
+    .round-message {
+        padding: 0.5rem;
     }
     form {
         .input-container {
