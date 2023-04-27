@@ -31,4 +31,19 @@ const revealanswers: Action = async ({ fetch, params }) => {
     return { success: true };
 };
 
-export const actions = { updateleaderboard, revealanswers };
+const finishgame: Action = async ({ fetch, params }) => {
+    const publicApiHost = env.PUBLIC_API_HOST;
+    const response = await fetch(`${publicApiHost}/host/${params.joincode}/finishgame`, {
+        method: 'post'
+    });
+
+    if (!response.ok) {
+        const respJson = await response.json();
+        console.log(respJson);
+        return fail(response.status, { error: respJson.detail });
+    }
+
+    return { success: true };
+};
+
+export const actions = { updateleaderboard, revealanswers, finishgame };

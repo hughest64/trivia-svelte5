@@ -424,3 +424,16 @@ class RevealAnswersView(APIView):
         )
 
         return Response({"success": True})
+
+
+class FinishGameview(APIView):
+    authentication_classes = [JwtAuthentication]
+    permission_classes = [IsAdminUser]
+
+    def post(self, request, joincode):
+        # event = get_event_or_404(joincode=joincode)
+        # event.update(complete=True)
+
+        SendEventMessage(joincode, {"msg_type": "finish_game_popup", "message": ""})
+
+        return Response({"success": True})

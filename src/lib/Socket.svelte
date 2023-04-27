@@ -122,6 +122,20 @@
                     data: message
                 });
         },
+        finish_game_popup: () => {
+            const highScore =
+                $leaderboardStore.public_leaderboard_entries.sort((a, b) => b.total_points - a.total_points)[0]
+                    ?.total_points || 0;
+            const winners = $leaderboardStore.public_leaderboard_entries.filter(
+                (entry) => entry.total_points === highScore
+            );
+            const names = winners.map((team) => team.team_name);
+            popupStore.set({
+                is_displayed: true,
+                popup_type: 'finish_game',
+                data: { winners: names }
+            });
+        },
         question_state_update: (message: QuestionStateUpdate) => {
             questionStateStore.update((states) => {
                 const newStates = [...states];
