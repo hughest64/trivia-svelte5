@@ -205,10 +205,22 @@ class TriviaEvent(models.Model):
     players = models.ManyToManyField("user.User", related_name="players", blank=True)
     event_teams = models.ManyToManyField("team", related_name="event_teams", blank=True)
 
+    # TODO: might be useful for determining when to clean up teams and/or backfill blank responses
+    # event_complete = models.BooleanField(default=False)
+
     @property
     def current_question_key(self):
         return f"{self.current_round_number}.{self.current_question_number}"
 
+    def all_rounds_are_locked(self):
+        """Compare the number on non-tiebreaker rounds against the number of locked round states"""
+        num_rounds = self.game.game_rounds.exclude(round_number=0).count()
+        num_locked_rounds = len([rd for rd in self.round_states.all() if rd.locked])
+
+        return num_rounds > 0 and num_rounds == num_locked_rounds
+
+    # TODO: it's probably better to check the len of round states here as we need to evaluate
+    # a property on the object
     def max_scored_round(self):
         round_states = self.round_states.filter(scored=True).order_by("round_number")
         if not round_states.exists():
