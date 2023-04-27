@@ -6,14 +6,24 @@
 
     const questions = getStore('questions');
     const rounds = getStore('rounds');
+    const roundStates = getStore('roundStates');
     const responses = getStore('responseData');
 
     const selectedMegaRound = getStore('selectedMegaRound');
-    let activeRoundNumber = $selectedMegaRound;
-    let mrResps = $responses.filter((resp) => resp.round_number === activeRoundNumber);
-    $: roundQuestions = $questions.filter((q) => q.round_number === activeRoundNumber);
+    $: activeRoundNumber = $selectedMegaRound;
+    $: mrResps = $responses.filter((resp) => resp.round_number === activeRoundNumber);
 
-    const roundNumbers = $rounds?.map((rd) => rd.round_number) || [];
+    $roundStates.find((rs) => !rs.locked);
+
+    // only display locked rounds // TODOD: maybe we should display but disable locked rounds?
+    $: roundNumbers = $rounds
+        // this is a bit gross, but we can't trus that all round states exist, so we need to filter based on rounds
+        .filter((rd) => $roundStates.find((rs) => rs.round_number === rd.round_number && !rs.locked))
+        .map((rd) => rd.round_number);
+
+    $: roundQuestions = $questions.filter(
+        (q) => q.round_number === activeRoundNumber && roundNumbers.includes(q.round_number)
+    );
     const defaultText = 'You Have not answered this question!';
     let focusedEl: number;
 
@@ -118,9 +128,11 @@
 
 {#if $selectedMegaRound && $selectedMegaRound !== activeRoundNumber}
     <h3 class="round-message">Your Currently Selected Mega Round is Round {$selectedMegaRound}</h3>
+{:else if !activeRoundNumber}
+    <h3>Select A Mega Round!</h3>
 {/if}
 
-{#if activeRoundNumber}
+{#if activeRoundNumber && roundQuestions.length > 0}
     <form
         action="?/setmegaround&rd={activeRoundNumber}"
         method="post"
@@ -165,8 +177,8 @@
         <button type="submit" class="button button-primary" disabled={allowSubmit}>{submitText}</button>
         <button class="button button-secondary" on:click|preventDefault={clearValues}>Clear & Edit</button>
     </form>
-{:else}
-    <h3>Select A Mega Round!</h3>
+    <!-- {:else if roundQuestions.length > 0}
+    <h3>Select A Mega Round!</h3> -->
 {/if}
 
 <style lang="scss">
