@@ -16,7 +16,9 @@
 </script>
 
 {#if $popupData.is_displayed}
-    <div class="pop" transition:fly={{ y: -200, duration: 800 }}>
-        <svelte:component this={components[$popupData.popup_type]} />
+    <div class="pop-parent" transition:fly={{ y: -200, duration: 800 }}>
+        <div class="pop">
+            <svelte:component this={components[$popupData.popup_type]} />
+        </div>
     </div>
 {/if}
