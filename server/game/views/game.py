@@ -197,6 +197,7 @@ class MegaRoundView(APIView):
 
         return data.values()
 
+    @method_decorator(csrf_protect)
     def post(self, request, joincode):
         round_number = DataCleaner(request.data).as_int("round_number")
         submission_data = self.process_megaround_submission(

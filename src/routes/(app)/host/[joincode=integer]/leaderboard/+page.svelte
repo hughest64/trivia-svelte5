@@ -5,11 +5,14 @@
     import RoundSelector from '../RoundSelector.svelte';
 
     const leaderboard = getStore('leaderboard');
+    const rounds = getStore('rounds');
     const roundStates = getStore('roundStates');
 
     // show the reveal button if any locked rounds are not revealed
     $: lockedRounds = $roundStates.filter((rs) => rs.locked);
     $: revealed = lockedRounds.every((rd) => rd.revealed);
+    $: completedRounds = $roundStates.filter((rs) => rs.locked && rs.revealed && rs.scored);
+    $: gameComplete = completedRounds.length > 0 && $rounds.length === completedRounds.length;
 
     let lbView: 'public' | 'host' = 'host';
 </script>
@@ -54,6 +57,10 @@
         {:else if !$leaderboard.synced}
             <form action="?/updateleaderboard" method="post" use:enhance>
                 <button id="sync-button" type="submit" class="button button-primary">Update Public View</button>
+            </form>
+        {:else if gameComplete}
+            <form action="?/finishgame" method="post" use:enhance>
+                <button class="button button-primary" type="submit">Finish Game</button>
             </form>
         {/if}
 

@@ -6,19 +6,37 @@
 
     const questions = getStore('questions');
     const rounds = getStore('rounds');
+    const roundStates = getStore('roundStates');
     const responses = getStore('responseData');
 
     const selectedMegaRound = getStore('selectedMegaRound');
-    let activeRoundNumber = $selectedMegaRound;
+    $: activeRoundNumber = $selectedMegaRound;
     $: mrResps = $responses.filter((resp) => resp.round_number === activeRoundNumber);
-    $: roundQuestions = $questions.filter((q) => q.round_number === activeRoundNumber);
 
-    const roundNumbers = $rounds?.map((rd) => rd.round_number) || [];
+    // only display locked rounds
+    $: roundNumbers = (() => {
+        const megaRounds = $rounds.map((rd) => rd.round_number);
+        const availableMegaRounds = megaRounds.filter((rdNum) => {
+            const rs = $roundStates.find((rs) => rs.round_number === rdNum);
+            // either the round state doesn't exist or it isn't locked;
+            return rdNum > $rounds.length / 2 && (rs === undefined || rs.round_number === rdNum);
+        });
+        return availableMegaRounds;
+    })();
+
+    $: roundQuestions = $questions.filter(
+        (q) => q.round_number === activeRoundNumber && roundNumbers.includes(q.round_number)
+    );
     const defaultText = 'You Have not answered this question!';
     let focusedEl: number;
 
     const mrStore = getStore('megaroundValues');
-    $: allowSubmit = !$mrStore.every((value) => value.used);
+    // allow resubmission if the active round is already the selected megaround
+    let currentMrCleared = false;
+    $: allSelected = $mrStore.every((value) => value.used);
+    $: submitted = allSelected && activeRoundNumber === $selectedMegaRound && !currentMrCleared;
+    $: allowSubmit = !allSelected || submitted;
+    $: submitText = submitted ? 'Submitted' : 'Submit';
 
     const getMegaRoundInput = (qnum?: number): HTMLElement | undefined => {
         const els = document.getElementsByClassName('megaround-weight');
@@ -47,8 +65,11 @@
 
     const handleRoundSelect = (event: MouseEvent) => {
         const roundNum = (event.target as HTMLElement).id;
+
         activeRoundNumber = Number(roundNum);
-        clearValues();
+        mrResps = $responses.filter((resp) => resp.round_number === activeRoundNumber);
+        currentMrCleared = false;
+
         if (String($selectedMegaRound) === roundNum) {
             const mrValues = getMegaroundValues(mrResps);
             mrStore.set(mrValues);
@@ -76,6 +97,7 @@
         for (const el of els) {
             (el as HTMLInputElement).value = '';
         }
+        activeRoundNumber === $selectedMegaRound ? (currentMrCleared = true) : (currentMrCleared = false);
         mrStore.reset();
     };
 
@@ -107,7 +129,13 @@
     {/each}
 </div>
 
-{#if activeRoundNumber}
+{#if $selectedMegaRound && ($selectedMegaRound !== activeRoundNumber || roundNumbers.length < 1)}
+    <h3 class="round-message">Your Currently Selected Mega Round is Round {$selectedMegaRound}</h3>
+{:else if !activeRoundNumber && roundNumbers.length > 0}
+    <h3>Select A Mega Round!</h3>
+{/if}
+
+{#if activeRoundNumber && roundQuestions.length > 0}
     <form
         action="?/setmegaround&rd={activeRoundNumber}"
         method="post"
@@ -149,11 +177,9 @@
             {/each}
         </div>
 
-        <button type="submit" class="button button-primary" disabled={allowSubmit}>Submit</button>
+        <button type="submit" class="button button-primary" disabled={allowSubmit}>{submitText}</button>
         <button class="button button-secondary" on:click|preventDefault={clearValues}>Clear & Edit</button>
     </form>
-{:else}
-    <h3>Select A Mega Round!</h3>
 {/if}
 
 <style lang="scss">
@@ -162,6 +188,9 @@
     }
     .round-selector {
         margin: 1rem 0;
+    }
+    .round-message {
+        padding: 0.5rem;
     }
     form {
         .input-container {

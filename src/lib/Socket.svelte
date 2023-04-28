@@ -64,15 +64,13 @@
         },
         // TODO: better typings
         leaderboard_update: (msg: Record<string, unknown>) => {
-            const { round_states, ...leaderboard } = msg;
+            const { ...leaderboard } = msg;
             leaderboardStore.update((lb) => {
                 const newLb = { ...lb };
                 Object.assign(newLb, leaderboard);
 
                 return newLb;
             });
-            // TODO: I think this is fine as we should get all round states here, but we could use .update if called for
-            roundStates.set(round_states as RoundState[]);
         },
         team_response_update: (message: Response) => {
             responseStore.update((responses) => {
@@ -86,16 +84,18 @@
             });
         },
         round_update: (message: Record<string, RoundState | Response[] | ResponseSummary>) => {
-            const rs = <RoundState>message.round_state;
+            const updatedRoundState = <RoundState>message.round_state;
             roundStates.update((states) => {
                 const newStates = states ? [...states] : [];
-                const roundStateIndex = newStates.findIndex((rs) => rs.round_number === rs.round_number);
-                roundStateIndex > -1 ? (newStates[roundStateIndex] = rs) : newStates.push(rs);
+                const roundStateIndex = newStates.findIndex((rs) => rs.round_number === updatedRoundState.round_number);
+                roundStateIndex > -1
+                    ? (newStates[roundStateIndex] = updatedRoundState)
+                    : newStates.push(updatedRoundState);
 
                 return newStates;
             });
             // update player responses based on id
-            if (rs.locked) {
+            if (updatedRoundState.locked) {
                 const responses = <Response[]>message.responses;
                 responseStore.update((resps) => {
                     const newResps = [...resps];
@@ -121,6 +121,20 @@
                     timer_value: Math.round($page.data.updateDelay / 1000),
                     data: message
                 });
+        },
+        finish_game_popup: () => {
+            const highScore =
+                $leaderboardStore.public_leaderboard_entries.sort((a, b) => b.total_points - a.total_points)[0]
+                    ?.total_points || 0;
+            const winners = $leaderboardStore.public_leaderboard_entries.filter(
+                (entry) => entry.total_points === highScore
+            );
+            const names = winners.map((team) => team.team_name);
+            popupStore.set({
+                is_displayed: true,
+                popup_type: 'finish_game',
+                data: { winners: names }
+            });
         },
         question_state_update: (message: QuestionStateUpdate) => {
             questionStateStore.update((states) => {

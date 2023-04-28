@@ -15,6 +15,7 @@ urlpatterns = [
     path("", redirect_to_admin, name="redirect_to_admin"),
     # host endpoints
     re_path(r"^host/(?P<joincode>\d+)/lock/?$", host.RoundLockView.as_view()),
+    re_path(r"^host/(?P<joincode>\d+)/finishgame/?$", host.FinishGameview.as_view()),
     re_path(
         r"^host/(?P<joincode>\d+)/score(/(?P<round_number>\d+))?/?$",
         host.ScoreRoundView.as_view(),

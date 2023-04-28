@@ -424,3 +424,20 @@ class RevealAnswersView(APIView):
         )
 
         return Response({"success": True})
+
+
+class FinishGameview(APIView):
+    authentication_classes = [JwtAuthentication]
+    permission_classes = [IsAdminUser]
+
+    @method_decorator(csrf_protect)
+    def post(self, request, joincode):
+        # TODO: one option for backfilling responses is to do it here when the host finishes the game
+        # another option is to use the completed field in an automated celery task that runs daily
+        event = get_event_or_404(joincode=joincode)
+        event.event_complete = True
+        event.save()
+
+        SendEventMessage(joincode, {"msg_type": "finish_game_popup", "message": ""})
+
+        return Response({"success": True})

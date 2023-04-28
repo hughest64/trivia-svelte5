@@ -44,9 +44,17 @@ class LeaderboardProcessor:
             game_question__round_number__lte=through_round,
         )
 
-        # TODO: factor in megaround (check for megaround_applied and selected_megaround )
-        # we also need to account for host manual points adjustments
-        points = sum([resp.points_awarded for resp in resps])
+        # TODO: factor in host manual points adjustments
+        if lbe.megaround_applied and lbe.selected_megaround is not None:
+            points = 0
+            for resp in resps:
+                if resp.game_question.round_number == lbe.selected_megaround:
+                    points += resp.points_awarded * resp.megaround_value or 1
+                else:
+                    points += resp.points_awarded
+        else:
+            points = sum([resp.points_awarded for resp in resps])
+
         lbe.total_points = points
 
     # TODO: the tiebreaker bit needs work (do we reset it for example?)
@@ -74,25 +82,32 @@ class LeaderboardProcessor:
     def handle_tiebreaker(self):
         return
 
+    # TODO: add apply_megaround arg - or should we implicitly check that via the event and through round?
     def update_host_leaderboard(self, through_round):
         self._validate_round_number(through_round)
         self.processing = True
         try:
             with transaction.atomic():
+                apply_megaround = self.event.all_rounds_are_locked()
                 lb, _ = Leaderboard.objects.update_or_create(
                     event=self.event,
-                    defaults={"host_through_round": through_round, "synced": False},
+                    defaults={
+                        "host_through_round": through_round,
+                        "synced": False,
+                    },
                 )
                 entries = LeaderboardEntry.objects.filter(
                     event=self.event, leaderboard_type=LEADERBOARD_TYPE_HOST
                 )
                 for entry in entries:
-                    self._set_team_score(entry, through_round)
                     entry.leaderboard = lb
+                    entry.megaround_applied = apply_megaround
+                    self._set_team_score(entry, through_round)
 
                 self._set_leaderboard_rank(entries)
                 LeaderboardEntry.objects.bulk_update(
-                    entries, ["total_points", "rank", "leaderboard"]
+                    entries,
+                    ["total_points", "rank", "leaderboard", "megaround_applied"],
                 )
 
             # TODO: log?
@@ -140,6 +155,7 @@ class LeaderboardProcessor:
                         "rank": e.rank,
                         "tiebreaker_rank": e.tiebreaker_rank,
                         "total_points": e.total_points,
+                        "megaround_applied": e.megaround_applied,
                     },
                 )
                 public_entries.append(lbe)
