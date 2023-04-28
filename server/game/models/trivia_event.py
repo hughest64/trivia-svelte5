@@ -1,3 +1,6 @@
+import random
+
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.forms.models import model_to_dict
 from django.utils import timezone
@@ -23,6 +26,10 @@ QUESTION_TYPES = [
 ]
 
 QUESTION_TYPE_DICT = dict(QUESTION_TYPES)
+
+# higher numbers are currently reserved for testing, but this may change in the future
+MAX_JOINCODE_VALUE = 8999
+MAX_CREATE_JOINCODE_ATTEMPTS = 30
 
 
 class Question(models.Model):
@@ -258,6 +265,37 @@ class TriviaEvent(models.Model):
             "round_states": queryset_to_json(self.round_states.all()),
             "question_states": queryset_to_json(self.question_states.all()),
         }
+
+    @classmethod
+    def update_event_with_joincode(cls, instance, attempts=0):
+        """Add a random joincode to an event and save, raise attribute error if too many attempts are made."""
+        if attempts > MAX_CREATE_JOINCODE_ATTEMPTS:
+            raise AttributeError(
+                "cannot create a joincode for this event, too many attempts"
+            )
+        if instance.pk is not None:
+            raise ValueError(
+                "this method can only be used on new TriviaEvent instances"
+            )
+
+        try:
+            instance.joincode = random.randint(1000, MAX_JOINCODE_VALUE)
+            instance.save()
+        except ValidationError:
+            return cls.update_event_with_joincode(instance, attempts + 1)
+
+        return instance
+
+    @classmethod
+    def create_trivia_event(cls, **kwargs):
+        """create an event with a random joincode. Do not use this function if you are providing a joincode"""
+        if kwargs.get("joincode") is not None:
+            raise ValueError(
+                "do not pass a joincode to this method, use TriviaEvent.objects.create() instead"
+            )
+
+        te = TriviaEvent(**kwargs)
+        return cls.update_event_with_joincode(te)
 
     def save(self, *args, **kwargs):
         self.full_clean()
