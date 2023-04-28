@@ -206,7 +206,7 @@ class TriviaEvent(models.Model):
     event_teams = models.ManyToManyField("team", related_name="event_teams", blank=True)
 
     # TODO: might be useful for determining when to clean up teams and/or backfill blank responses
-    # event_complete = models.BooleanField(default=False)
+    event_complete = models.BooleanField(default=False)
 
     @property
     def current_question_key(self):
