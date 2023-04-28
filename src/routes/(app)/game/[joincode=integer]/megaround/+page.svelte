@@ -13,13 +13,16 @@
     $: activeRoundNumber = $selectedMegaRound;
     $: mrResps = $responses.filter((resp) => resp.round_number === activeRoundNumber);
 
-    $roundStates.find((rs) => !rs.locked);
-
-    // only display locked rounds // TODOD: maybe we should display but disable locked rounds?
-    $: roundNumbers = $rounds
-        // this is a bit gross, but we can't trus that all round states exist, so we need to filter based on rounds
-        .filter((rd) => $roundStates.find((rs) => rs.round_number === rd.round_number && !rs.locked))
-        .map((rd) => rd.round_number);
+    // only display locked rounds
+    $: roundNumbers = (() => {
+        const megaRounds = $rounds.map((rd) => rd.round_number);
+        const availableMegaRounds = megaRounds.filter((rdNum) => {
+            const rs = $roundStates.find((rs) => rs.round_number === rdNum);
+            // either the round state doesn't exist or it isn't locked;
+            return rdNum > $rounds.length / 2 && (rs === undefined || rs.round_number === rdNum);
+        });
+        return availableMegaRounds;
+    })();
 
     $: roundQuestions = $questions.filter(
         (q) => q.round_number === activeRoundNumber && roundNumbers.includes(q.round_number)
