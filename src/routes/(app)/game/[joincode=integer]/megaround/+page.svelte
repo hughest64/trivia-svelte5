@@ -126,9 +126,9 @@
     {/each}
 </div>
 
-{#if $selectedMegaRound && $selectedMegaRound !== activeRoundNumber}
+{#if $selectedMegaRound && ($selectedMegaRound !== activeRoundNumber || roundNumbers.length < 1)}
     <h3 class="round-message">Your Currently Selected Mega Round is Round {$selectedMegaRound}</h3>
-{:else if !activeRoundNumber}
+{:else if !activeRoundNumber && roundNumbers.length > 0}
     <h3>Select A Mega Round!</h3>
 {/if}
 
@@ -177,8 +177,6 @@
         <button type="submit" class="button button-primary" disabled={allowSubmit}>{submitText}</button>
         <button class="button button-secondary" on:click|preventDefault={clearValues}>Clear & Edit</button>
     </form>
-    <!-- {:else if roundQuestions.length > 0}
-    <h3>Select A Mega Round!</h3> -->
 {/if}
 
 <style lang="scss">

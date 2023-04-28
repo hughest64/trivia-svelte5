@@ -155,6 +155,7 @@ class LeaderboardProcessor:
                         "rank": e.rank,
                         "tiebreaker_rank": e.tiebreaker_rank,
                         "total_points": e.total_points,
+                        "megaround_applied": e.megaround_applied,
                     },
                 )
                 public_entries.append(lbe)
