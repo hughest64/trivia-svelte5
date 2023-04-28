@@ -35,21 +35,32 @@ TODO: we need options for all of these things
 
 
 class GameActions:
-    def __init__(self, game_id: int, joincode: int = None) -> None:
+    def __init__(self, game_id: int, joincode: int = None, **kwargs) -> None:
         self.game_id = game_id
-        self.joincode = joincode  # or join code generator function
-        self.event = None
+        self.joincode = joincode  # or create_joincode()
+        self.event = self.create_event(**kwargs)
 
     # TODO: this is likley very useable for actual host event creation
-    def createEvent(self, **kwargs):
+    def create_event(self, **kwargs):
         try:
-            self.event = TriviaEvent.objects.create(
+            return TriviaEvent.objects.create(
                 game_id=self.game_id, joincode=self.joincode, **kwargs
             )
 
         # TODO: what exceptions can arise here and how do we handle them?
         except:
-            pass
+            return None
+
+    def create_users(self):
+        """Create the necessary users based on number of teams and players per team"""
+        # create the user and set an active team? then we base all team things off
+        # of user_active_team, just like in api endpoints
+
+    def add_teams(self, users):
+        """Add teams to the event"""
+        # create leaderboard entries for each team (based off of user active team)
+        # add teams to the event
+        # add players to the event
 
 
 # provide various getters/setters to update the db to simulate game play
@@ -96,3 +107,13 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         pass
+
+    def delete_data(game_id):
+        """Delete all downstream data associated with game_id"""
+        # look up events associated w/ game id
+        # delete all of the following:
+        # users
+        # teams
+        # leaderboard(entries)
+        # resps
+        # question/round states

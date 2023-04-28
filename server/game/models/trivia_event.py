@@ -268,7 +268,7 @@ class TriviaEvent(models.Model):
 
     @classmethod
     def update_event_with_joincode(cls, instance, attempts=0):
-        """Add a random joincode to an event and save, raise attribute error if too many attempts are made."""
+        """Add a random joincode to a new trivia event and save. Raises attribute error if too many attempts are made."""
         if attempts > MAX_CREATE_JOINCODE_ATTEMPTS:
             raise AttributeError(
                 "cannot create a joincode for this event, too many attempts"
