@@ -1,3 +1,4 @@
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 
 from fuzzywuzzy import fuzz
@@ -17,9 +18,13 @@ LEADERBOARD_TYPE_DICT = dict(LEADERBOARD_TYPE_OPTIONS)
 
 class QuestionResponse(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
-    recorded_answer = models.TextField(default="")
+    recorded_answer = models.TextField(default="", blank=True)
     fuzz_ratio = models.IntegerField(default=0)
     points_awarded = models.FloatField(default=0)
+    # TODO: we should use min/max validators here, i.e 1-5 AND they should be unique
+    megaround_value = models.IntegerField(
+        blank=True, null=True, validators=[MinValueValidator(1), MaxValueValidator(5)]
+    )
     funny = models.BooleanField(default=False)
     locked = models.BooleanField(default=False)
     game_question = models.ForeignKey("GameQuestion", on_delete=models.CASCADE)
@@ -35,6 +40,7 @@ class QuestionResponse(models.Model):
         return {
             "id": self.pk,
             "points_awarded": self.points_awarded,
+            "megaround_value": self.megaround_value,
             "funny": self.funny,
             "locked": self.locked,
             "round_number": self.game_question.round_number,
@@ -118,16 +124,23 @@ class LeaderboardEntry(models.Model):
     rank = models.IntegerField(blank=True, null=True)
     tiebreaker_rank = models.IntegerField(blank=True, null=True)
     total_points = models.FloatField(default=0)
+    selected_megaround = models.IntegerField(blank=True, null=True)
+    megaround_applied = models.BooleanField(default=False)
 
     # Other fields:
-    # selected_megaround
-    # megaround_applied ?
     # points_adjustment
     # points_adjustment_reason
 
     class Meta:
         unique_together = ("team", "event", "leaderboard_type")
-        ordering = ["event", "-leaderboard_type", "rank", "tiebreaker_rank", "pk"]
+        ordering = [
+            "event",
+            "rank",
+            "tiebreaker_rank",
+            "team",
+            "-leaderboard_type",
+            "pk",
+        ]
         verbose_name_plural = "Leaderboard Entries"
 
     def _get_through_rounds(self):
@@ -156,6 +169,7 @@ class LeaderboardEntry(models.Model):
             "team_name": self.team.name,
             "rank": self.rank or "-",
             "total_points": self.total_points,
+            "megaround": self.selected_megaround,
         }
 
 

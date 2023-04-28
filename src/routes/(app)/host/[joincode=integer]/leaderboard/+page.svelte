@@ -5,9 +5,16 @@
     import RoundSelector from '../RoundSelector.svelte';
 
     const leaderboard = getStore('leaderboard');
+    const rounds = getStore('rounds');
+    const roundStates = getStore('roundStates');
 
-    type LbView = 'public' | 'host';
-    let lbView: LbView = 'host';
+    // show the reveal button if any locked rounds are not revealed
+    $: lockedRounds = $roundStates.filter((rs) => rs.locked);
+    $: revealed = lockedRounds.every((rd) => rd.revealed);
+    $: completedRounds = $roundStates.filter((rs) => rs.locked && rs.revealed && rs.scored);
+    $: gameComplete = completedRounds.length > 0 && $rounds.length === completedRounds.length;
+
+    let lbView: 'public' | 'host' = 'host';
 </script>
 
 <div class="host-container flex-column">
@@ -42,23 +49,25 @@
             {/each}
         </ul>
     {:else}
-        {#if !$leaderboard.synced}
-            <!-- TODO: perhaps one button that changes jobs is better than two buttons? i.e. reveal first the update
-        maybe use a query param on the action to indicate what is what -->
-            <div class="btn-group">
-                <form action="?/revealanswers" method="post" use:enhance>
-                    <button id="reveal-button" class="button button-secondary">Reveal Answers</button>
-                </form>
-                <form action="?/updateleaderboard" method="post" use:enhance>
-                    <button id="sync-button" type="submit" class="button button-primary">Update Public View</button>
-                </form>
-            </div>
+        <!-- TODO: we might need to display both buttons rather than having a preference for revealed first -->
+        {#if !revealed}
+            <form action="?/revealanswers" method="post" use:enhance>
+                <button id="reveal-button" class="button button-secondary">Reveal Answers</button>
+            </form>
+        {:else if !$leaderboard.synced}
+            <form action="?/updateleaderboard" method="post" use:enhance>
+                <button id="sync-button" type="submit" class="button button-primary">Update Public View</button>
+            </form>
+        {:else if gameComplete}
+            <form action="?/finishgame" method="post" use:enhance>
+                <button class="button button-primary" type="submit">Finish Game</button>
+            </form>
         {/if}
 
         <h4>Host Leaderboard</h4>
 
         <ul id="host-leaderboard-view" class="leaderboard-rankings">
-            {#each $leaderboard.host_leaderboard_entries as entry}
+            {#each $leaderboard.host_leaderboard_entries || [] as entry}
                 <Entry {entry} />
             {/each}
         </ul>

@@ -1,13 +1,19 @@
-.pop {
+.pop-parent {
+    display: flex;
+    justify-content: center;
     width: 100%;
+    z-index: 98;
     background-color: #413f43;
-    color: #fcfcfc;
     position: fixed;
     top: 0;
+}
+.pop {
+    width: 100%;
+    max-width: var(--max-container-width);
+    color: #fcfcfc;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    z-index: 98;
 
     .dismiss {
         border: none;

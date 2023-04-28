@@ -10,6 +10,7 @@ from rest_framework.views import APIView
 from user.authentication import JwtAuthentication
 
 from game.models import (
+    GameQuestion,
     LeaderboardEntry,
     TriviaEvent,
     QuestionResponse,
@@ -173,6 +174,79 @@ class ResponseView(APIView):
             {
                 "msg_type": "team_response_update",
                 "message": question_response.to_json(),
+            },
+        )
+
+        return Response({"success": True})
+
+
+class MegaRoundView(APIView):
+    authentication_classes = [JwtAuthentication]
+
+    @staticmethod
+    def process_megaround_submission(submission):
+        data = {}
+
+        for key, value in submission.items():
+            submission_key = key[-1]
+            data.setdefault(submission_key, {})
+            if key.startswith("question"):
+                data[submission_key]["question_id"] = value
+            else:
+                data[submission_key]["weight"] = value
+
+        return data.values()
+
+    @method_decorator(csrf_protect)
+    def post(self, request, joincode):
+        round_number = DataCleaner(request.data).as_int("round_number")
+        submission_data = self.process_megaround_submission(
+            request.data.get("mr_values", {})
+        )
+
+        if not request.user.active_team:
+            raise TeamRequired
+
+        event = get_event_or_404(joincode=joincode)
+
+        resps = []
+        for submission in submission_data:
+            resp, _ = QuestionResponse.objects.update_or_create(
+                event=event,
+                team=request.user.active_team,
+                game_question_id=submission["question_id"],
+                defaults={"megaround_value": submission["weight"]},
+            )
+            resps.append(resp)
+
+        leaderboard_entries = LeaderboardEntry.objects.filter(
+            event=event, team=request.user.active_team
+        )
+        for entry in leaderboard_entries:
+            entry.selected_megaround = round_number
+        LeaderboardEntry.objects.bulk_update(
+            leaderboard_entries, fields=["selected_megaround"]
+        )
+
+        SendTeamMessage(
+            joincode,
+            request.user.active_team.id,
+            {
+                "msg_type": "team_megaround_update",
+                "message": {
+                    "responses": queryset_to_json(resps),
+                    "selected_megaround": round_number,
+                },
+            },
+        )
+        SendEventMessage(
+            joincode,
+            {
+                "msg_type": "host_megaround_update",
+                "message": {
+                    "team_id": request.user.active_team.id,
+                    "has_megaround": True,
+                },
             },
         )
 

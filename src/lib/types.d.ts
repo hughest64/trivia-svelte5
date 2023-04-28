@@ -2,6 +2,7 @@
 
 import type { ServerLoadEvent } from '@sveltejs/kit';
 import type { Readable, Writable } from 'svelte/store';
+import type { MegaRoundValueStore } from './megaroundValueStore';
 
 export interface JwtPayload {
     // user.id
@@ -39,14 +40,23 @@ export interface LeaderboardEntry {
     team_id: number;
     team_name: string;
     rank?: number;
+    megaround?: number;
     total_points: number;
+}
+
+export interface HostMegaRoundInstance {
+    team_id: number;
+    has_megaround: boolean;
 }
 
 export interface Leaderboard {
     through_round?: number;
     synced?: boolean;
     public_leaderboard_entries: LeaderboardEntry[];
-    host_leaderboard_entries: LeaderboardEntry[];
+    host_leaderboard_entries?: LeaderboardEntry[];
+    // array of objects with team id as a key and a boolean value
+    // indicating whether or not they have selected a mega round
+    host_megaround_list?: HostMegaRoundInstance[];
 }
 export interface LocationSelectData {
     location_id: string | number;
@@ -119,6 +129,7 @@ export interface Response {
     id: number;
     recorded_answer: string;
     points_awarded: number;
+    megaround_value?: number;
     funny: boolean;
     locked: boolean;
     round_number: string | number;
@@ -176,6 +187,8 @@ export interface StoreTypes {
     popupData: Writable<PopupData>;
     leaderboard: Writable<Leaderboard>;
     playerJoined: Writable<PlayerJoined>;
+    megaroundValues: MegaRoundValueStore;
+    selectedMegaRound: Writable<number | undefined>;
 }
 
 export type MessageHandler = Record<string, (message: any) => unknown>;

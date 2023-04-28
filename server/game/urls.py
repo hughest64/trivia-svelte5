@@ -15,6 +15,7 @@ urlpatterns = [
     path("", redirect_to_admin, name="redirect_to_admin"),
     # host endpoints
     re_path(r"^host/(?P<joincode>\d+)/lock/?$", host.RoundLockView.as_view()),
+    re_path(r"^host/(?P<joincode>\d+)/finishgame/?$", host.FinishGameview.as_view()),
     re_path(
         r"^host/(?P<joincode>\d+)/score(/(?P<round_number>\d+))?/?$",
         host.ScoreRoundView.as_view(),
@@ -34,6 +35,7 @@ urlpatterns = [
     # player endpoints
     re_path(r"^game/join/?$", game.EventJoinView.as_view()),
     re_path(r"^game/(?P<joincode>\d+)/response/?$", game.ResponseView.as_view()),
+    re_path(r"^game/(?P<joincode>\d+)/megaround/?$", game.MegaRoundView.as_view()),
     re_path(r"^game/(?P<joincode>\d+)[/\w]*/?$", game.EventView.as_view()),
     re_path(r"^team/join/?$", team.TeamJoinView.as_view()),
     re_path(r"^team/select/?$", team.TeamSelectView.as_view()),

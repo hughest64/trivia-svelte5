@@ -50,6 +50,10 @@ class EventHostView(APIView):
         lb_entries = LeaderboardEntry.objects.filter(event=event)
         public_lb_entries = lb_entries.filter(leaderboard_type=LEADERBOARD_TYPE_PUBLIC)
         host_lb_entries = lb_entries.filter(leaderboard_type=LEADERBOARD_TYPE_HOST)
+        host_megaround_list = [
+            {"team_id": lbe.team.id, "has_megaround": bool(lbe.selected_megaround)}
+            for lbe in public_lb_entries
+        ]
         through_round = None
         synced = True
 
@@ -68,6 +72,7 @@ class EventHostView(APIView):
                 "leaderboard_data": {
                     "public_leaderboard_entries": queryset_to_json(public_lb_entries),
                     "host_leaderboard_entries": queryset_to_json(host_lb_entries),
+                    "host_megaround_list": host_megaround_list,
                     "through_round": through_round,
                     "synced": synced,
                 },
@@ -417,5 +422,22 @@ class RevealAnswersView(APIView):
                 "message": {"round_states": queryset_to_json(round_states)},
             },
         )
+
+        return Response({"success": True})
+
+
+class FinishGameview(APIView):
+    authentication_classes = [JwtAuthentication]
+    permission_classes = [IsAdminUser]
+
+    @method_decorator(csrf_protect)
+    def post(self, request, joincode):
+        # TODO: one option for backfilling responses is to do it here when the host finishes the game
+        # another option is to use the completed field in an automated celery task that runs daily
+        event = get_event_or_404(joincode=joincode)
+        event.event_complete = True
+        event.save()
+
+        SendEventMessage(joincode, {"msg_type": "finish_game_popup", "message": ""})
 
         return Response({"success": True})

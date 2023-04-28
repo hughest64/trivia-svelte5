@@ -13,7 +13,8 @@
         ResponseSummary,
         RoundState,
         SocketMessage,
-        HostResponse
+        HostResponse,
+        HostMegaRoundInstance
     } from './types';
 
     const path = $page.url.pathname;
@@ -41,6 +42,7 @@
     const currentEventStore = getStore('currentEventData');
     const hostResponseStore = getStore('hostResponseData');
     const responseSummaryStore = getStore('responseSummary');
+    const selectedMegaroundStore = getStore('selectedMegaRound');
 
     const handlers: MessageHandler = {
         connected: () => console.log('connected!'),
@@ -52,25 +54,23 @@
 
                 // only update the host lb entries on host routes
                 if ($page.url.pathname.startsWith('/host')) {
-                    const existingHostIndex = lb.host_leaderboard_entries.findIndex(
+                    const existingHostIndex = lb.host_leaderboard_entries?.findIndex(
                         (e) => e.team_id === message.team_id
                     );
-                    existingHostIndex === -1 && newLB.host_leaderboard_entries.push(message);
+                    existingHostIndex === -1 && newLB.host_leaderboard_entries?.push(message);
                 }
                 return newLB;
             });
         },
         // TODO: better typings
         leaderboard_update: (msg: Record<string, unknown>) => {
-            const { round_states, ...leaderboard } = msg;
+            const { ...leaderboard } = msg;
             leaderboardStore.update((lb) => {
                 const newLb = { ...lb };
                 Object.assign(newLb, leaderboard);
 
                 return newLb;
             });
-            // TODO: I think this is fine as we should get all round states here, but we could use .update if called for
-            roundStates.set(round_states as RoundState[]);
         },
         team_response_update: (message: Response) => {
             responseStore.update((responses) => {
@@ -84,16 +84,18 @@
             });
         },
         round_update: (message: Record<string, RoundState | Response[] | ResponseSummary>) => {
-            const rs = <RoundState>message.round_state;
+            const updatedRoundState = <RoundState>message.round_state;
             roundStates.update((states) => {
                 const newStates = states ? [...states] : [];
-                const roundStateIndex = newStates.findIndex((rs) => rs.round_number === rs.round_number);
-                roundStateIndex > -1 ? (newStates[roundStateIndex] = rs) : newStates.push(rs);
+                const roundStateIndex = newStates.findIndex((rs) => rs.round_number === updatedRoundState.round_number);
+                roundStateIndex > -1
+                    ? (newStates[roundStateIndex] = updatedRoundState)
+                    : newStates.push(updatedRoundState);
 
                 return newStates;
             });
             // update player responses based on id
-            if (rs.locked) {
+            if (updatedRoundState.locked) {
                 const responses = <Response[]>message.responses;
                 responseStore.update((resps) => {
                     const newResps = [...resps];
@@ -119,6 +121,20 @@
                     timer_value: Math.round($page.data.updateDelay / 1000),
                     data: message
                 });
+        },
+        finish_game_popup: () => {
+            const highScore =
+                $leaderboardStore.public_leaderboard_entries.sort((a, b) => b.total_points - a.total_points)[0]
+                    ?.total_points || 0;
+            const winners = $leaderboardStore.public_leaderboard_entries.filter(
+                (entry) => entry.total_points === highScore
+            );
+            const names = winners.map((team) => team.team_name);
+            popupStore.set({
+                is_displayed: true,
+                popup_type: 'finish_game',
+                data: { winners: names }
+            });
         },
         question_state_update: (message: QuestionStateUpdate) => {
             questionStateStore.update((states) => {
@@ -188,6 +204,36 @@
                     });
                 }
             }
+        },
+        team_megaround_update: (message: any) => {
+            const { responses, selected_megaround } = message;
+
+            responseStore.update((currentResponses) => {
+                const newResponses = [...currentResponses];
+                (responses as Response[]).forEach((resp) => {
+                    const updateIndex = newResponses.findIndex((response) => response.key === resp.key);
+                    updateIndex > -1
+                        ? (newResponses[updateIndex] = { ...newResponses[updateIndex], ...resp })
+                        : newResponses.push(resp);
+                });
+
+                return newResponses;
+            });
+
+            selectedMegaroundStore.set(selected_megaround);
+        },
+        host_megaround_update: (msg: HostMegaRoundInstance) => {
+            // only update host routes
+            if (!$page.url.pathname.startsWith('/host')) return;
+
+            leaderboardStore.update((lb) => {
+                const newLb = { ...lb };
+                const megaroundList = newLb.host_megaround_list || [];
+                const indexToUpdate = megaroundList.findIndex((e) => e.team_id === msg.team_id);
+                indexToUpdate > -1 ? (megaroundList[indexToUpdate] = msg) : megaroundList?.push(msg);
+                newLb.host_megaround_list = megaroundList;
+                return newLb;
+            });
         }
     };
 
