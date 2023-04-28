@@ -430,6 +430,7 @@ class FinishGameview(APIView):
     authentication_classes = [JwtAuthentication]
     permission_classes = [IsAdminUser]
 
+    @method_decorator(csrf_protect)
     def post(self, request, joincode):
         # event = get_event_or_404(joincode=joincode)
         # event.update(complete=True)
