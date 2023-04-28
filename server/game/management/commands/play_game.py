@@ -1,24 +1,66 @@
 from django.core.management.base import BaseCommand
 
+from game.models import *
+
+"""
+TODO: it would be nice to use an existing event and start/stop and an rd. that way we could
+progress the game and check status at any point, i.e. --start=1 --stop=4 then --start=5 --end=8
+an option to run tests at any point would be awsome-sauce as well
+
+run the cmd:
+python manage.py play_game -g --game 4567 # looks up a game and creates an event from it
+-D --delete (capital) would delete all data from the event down, BUT NOT THE GAME DATA!
+-r --rounds the number of rounds to play
+
+so the fist step is to create and event from a game id, this can likely be used for actual
+host event creation as well
+
+-t --teams number of teams to have on the event
+is there a config option to specify teams, or are they "random" - random to start
+can we specify a number of players?
+- create a number of users for the teams?
+- create the number of requested teams
+- the teams join the event
+- host reveals rd 1
+- teams answer (need an answer generator here that randomizes resps - can control %corect per team?)
+- continue for all rds
+TODO: we need options for all of these things
+- host locks
+- host socres? (future add on)
+- host reveals
+- host updates leaderboards
+- tiebreakers
+- host finishes event
+"""
+
 
 class GameActions:
-    def __init__(self, game_id: int, joincode: int) -> None:
+    def __init__(self, game_id: int, joincode: int = None) -> None:
         self.game_id = game_id
-        self.joincode = joincode
+        self.joincode = joincode  # or join code generator function
+        self.event = None
 
-    def setGame(self):
-        # handle game lookup and/or event lookup/creation
-        # store the peritnent data as an attr
-        pass
+    # TODO: this is likley very useable for actual host event creation
+    def createEvent(self, **kwargs):
+        try:
+            self.event = TriviaEvent.objects.create(
+                game_id=self.game_id, joincode=self.joincode, **kwargs
+            )
+
+        # TODO: what exceptions can arise here and how do we handle them?
+        except:
+            pass
 
 
 # provide various getters/setters to update the db to simulate game play
 class TeamActions:
     def __init__(self, game: GameActions) -> None:
         self.game = game
+        self.event = game.event
 
     def join_game(self):
-        pass
+        if self.event is None:
+            raise AttributeError("There is no event to join")
 
 
 class HostActions:
@@ -30,28 +72,27 @@ class HostActions:
 
 
 class Command(BaseCommand):
+    help = "A utiltiy tool for simulating trivia events."
+
     def add_arguments(self, parser):
         # possible args:
-        # - config (a file to read)
-        # - reset (remove reponses & lb data, but don't delete the event?)
-        # - delete (delete event and all the things (except the actual game data))
         # - start stage
         # - stop stage
-        return
+        parser.add_argument(
+            "-c",
+            "--conifg",
+            required=False,
+            help="The path of a config file used for game play. This option takes precedence over all others.",
+        )
+        parser.add_argument("-g", "--game", help="the id of the game data to use")
+        parser.add_argument(
+            "-D",
+            "--delete",
+            help="Delete all data associated with a game but not the actual game data.",
+        )
+        parser.add_argument(
+            "-t", "--teams", default=1, help="the number of teams added to the event"
+        )
 
     def handle(self, *args, **options):
         pass
-
-    # what is the process? (process can be stopped at any stage, then perhaps resumed)
-    # - decide a game to use
-    # - create an event
-    # - decide how many teams will play
-    # - host creates the event
-    # - teams join the event
-    # - teams answer questions - some alg for %correct vs incorrect, etc?
-    # - host locks rounds
-    # - host scores rounds (perhaps if we want to ensure ties, etc)
-    # - host reveals answers
-    # - host updates the leaderboard
-    # - handle tiebreakers
-    # - complete a game
