@@ -197,6 +197,11 @@ class Game(models.Model):
 
 
 class TriviaEvent(models.Model):
+    def __init__(self, *args, create_joincode=False, **kwargs):
+        # shall we auto-generate a joincode?
+        self.create_joincode = create_joincode
+        super().__init__(*args, **kwargs)
+
     created_at = models.DateTimeField(auto_now_add=True)
     date = models.DateField(default=timezone.now)
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
@@ -211,8 +216,6 @@ class TriviaEvent(models.Model):
     player_limit = models.IntegerField(blank=True, null=True)
     players = models.ManyToManyField("user.User", related_name="players", blank=True)
     event_teams = models.ManyToManyField("team", related_name="event_teams", blank=True)
-
-    # TODO: might be useful for determining when to clean up teams and/or backfill blank responses
     event_complete = models.BooleanField(default=False)
 
     @property
@@ -266,39 +269,28 @@ class TriviaEvent(models.Model):
             "question_states": queryset_to_json(self.question_states.all()),
         }
 
-    @classmethod
-    def update_event_with_joincode(cls, instance, attempts=0):
-        """Add a random joincode to a new trivia event and save. Raises attribute error if too many attempts are made."""
+    def generate_joincode(self, attempts, *args, **kwargs):
+        # TODO: make this a custom exception that drf implicitly handles (i.e. return a 400 resp)
         if attempts > MAX_CREATE_JOINCODE_ATTEMPTS:
             raise AttributeError(
                 "cannot create a joincode for this event, too many attempts"
             )
-        if instance.pk is not None:
-            raise ValueError(
-                "this method can only be used on new TriviaEvent instances"
-            )
-
         try:
-            instance.joincode = random.randint(1000, MAX_JOINCODE_VALUE)
-            instance.save()
+            self.joincode = random.randint(1000, MAX_JOINCODE_VALUE)
+            self.full_clean()
+
         except ValidationError:
-            return cls.update_event_with_joincode(instance, attempts + 1)
-
-        return instance
-
-    @classmethod
-    def create_trivia_event(cls, **kwargs):
-        """create an event with a random joincode. Do not use this function if you are providing a joincode"""
-        if kwargs.get("joincode") is not None:
-            raise ValueError(
-                "do not pass a joincode to this method, use TriviaEvent.objects.create() instead"
-            )
-
-        te = TriviaEvent(**kwargs)
-        return cls.update_event_with_joincode(te)
+            self.create_joincode(attempts + 1, *args, **kwargs)
 
     def save(self, *args, **kwargs):
-        self.full_clean()
+        if self.pk is not None and self.create_joincode:
+            raise ValueError("cannot create a joincode for an existing Trivia Event")
+
+        if self.create_joincode:
+            self.generate_joincode(0, *args, **kwargs)
+        else:
+            self.full_clean()
+
         super().save(*args, **kwargs)
 
 
