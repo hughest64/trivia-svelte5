@@ -279,12 +279,16 @@ class TriviaEvent(models.Model):
             self.joincode = random.randint(1000, MAX_JOINCODE_VALUE)
             self.full_clean()
 
+        # TODO: we should probably check the actual error msg (it's a dict) to ensure it is joincode related
+        # if it's not, reraise the ValidationError
         except ValidationError:
             self.create_joincode(attempts + 1, *args, **kwargs)
 
     def save(self, *args, **kwargs):
         if self.pk is not None and self.create_joincode:
-            raise ValueError("cannot create a joincode for an existing Trivia Event")
+            raise AttributeError(
+                "cannot auto generate a joincode for an existing Trivia Event"
+            )
 
         if self.create_joincode:
             self.generate_joincode(0, *args, **kwargs)
