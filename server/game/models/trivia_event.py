@@ -7,6 +7,8 @@ from django.utils import timezone
 
 from .utils import queryset_to_json
 
+from game.views.validation.exceptions import JoincodeError
+
 QUESTION_TYPE_GENERAL_KNOWLEDGE = 0
 QUESTION_TYPE_THEMED_ROUND = 1
 QUESTION_TYPE_WORD_PLAY = 2
@@ -270,24 +272,24 @@ class TriviaEvent(models.Model):
         }
 
     def generate_joincode(self, attempts, *args, **kwargs):
-        # TODO: make this a custom exception that drf implicitly handles (i.e. return a 400 resp)
         if attempts > MAX_CREATE_JOINCODE_ATTEMPTS:
-            raise AttributeError(
-                "cannot create a joincode for this event, too many attempts"
+            raise JoincodeError(
+                detail="cannot create a joincode for this event, too many attempts"
             )
         try:
             self.joincode = random.randint(1000, MAX_JOINCODE_VALUE)
             self.full_clean()
 
-        # TODO: we should probably check the actual error msg (it's a dict) to ensure it is joincode related
-        # if it's not, reraise the ValidationError
-        except ValidationError:
-            self.create_joincode(attempts + 1, *args, **kwargs)
+        # if the error is joincode related, try to create a new one else reraise
+        except ValidationError as e:
+            if "joincode" in e.error_dict:
+                self.generate_joincode(attempts + 1, *args, **kwargs)
+            raise ValidationError(e)
 
     def save(self, *args, **kwargs):
         if self.pk is not None and self.create_joincode:
-            raise AttributeError(
-                "cannot auto generate a joincode for an existing Trivia Event"
+            raise JoincodeError(
+                detail="cannot auto generate a joincode for an existing Trivia Event"
             )
 
         if self.create_joincode:
