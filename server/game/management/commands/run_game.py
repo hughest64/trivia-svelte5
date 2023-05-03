@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand
 
 from game.models import *
+from game.utils.game_play import GameActions
 
 """
 TODO: it would be nice to use an existing event and start/stop and an rd. that way we could
@@ -34,54 +35,6 @@ TODO: we need options for all of these things
 """
 
 
-class GameActions:
-    def __init__(self, game_id: int, joincode: int = None, **kwargs) -> None:
-        self.game_id = game_id
-        self.joincode = joincode  # or create_joincode()
-        self.event = self.create_event(**kwargs)
-
-    # TODO: this is likley very useable for actual host event creation
-    def create_event(self, **kwargs):
-        try:
-            return TriviaEvent.objects.create(
-                game_id=self.game_id, joincode=self.joincode, **kwargs
-            )
-
-        # TODO: what exceptions can arise here and how do we handle them?
-        except:
-            return None
-
-    def create_users(self):
-        """Create the necessary users based on number of teams and players per team"""
-        # create the user and set an active team? then we base all team things off
-        # of user_active_team, just like in api endpoints
-
-    def add_teams(self, users):
-        """Add teams to the event"""
-        # create leaderboard entries for each team (based off of user active team)
-        # add teams to the event
-        # add players to the event
-
-
-# provide various getters/setters to update the db to simulate game play
-class TeamActions:
-    def __init__(self, game: GameActions) -> None:
-        self.game = game
-        self.event = game.event
-
-    def join_game(self):
-        if self.event is None:
-            raise AttributeError("There is no event to join")
-
-
-class HostActions:
-    def __init__(self, game: GameActions) -> None:
-        self.game = game
-
-    def create_event(self):
-        pass
-
-
 class Command(BaseCommand):
     help = "A utiltiy tool for simulating trivia events."
 
@@ -97,8 +50,19 @@ class Command(BaseCommand):
         )
         parser.add_argument("-g", "--game", help="the id of the game data to use")
         parser.add_argument(
+            "-e",
+            "--event",
+            help="the id of a trivia event, useful for deleting a single event and it's data",
+        )
+        parser.add_argument(
+            "-j",
+            "--joincode",
+            help="the joincode of a trivia event, useful for deleting a single event and it's data",
+        )
+        parser.add_argument(
             "-D",
             "--delete",
+            action="store_true",
             help="Delete all data associated with a game but not the actual game data.",
         )
         parser.add_argument(
@@ -106,10 +70,26 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        pass
+        game_id = options.get("game")
+        joincode = options.get("joincode")
 
-    def delete_data(game_id):
+        if game_id is not None:
+            game = Game.objects.get(id=game_id)
+            g = GameActions(game=game)
+            print(g.event)
+
+        elif joincode is not None and options.get("delete"):
+            self.delete_data(joincode=joincode)
+            print("deleted")
+
+        else:
+            print("unrecognized command")
+
+    def delete_data(game_id=None, event_id=None, joincode=None):
         """Delete all downstream data associated with game_id"""
+        if joincode is not None:
+            TriviaEvent.objects.filter(joincode=joincode).delete()
+
         # look up events associated w/ game id
         # delete all of the following:
         # users
