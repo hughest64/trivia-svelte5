@@ -1,4 +1,5 @@
 from django.core.management.base import BaseCommand
+from django.db import transaction
 
 from game.models import *
 from game.utils.game_play import GameActions
@@ -66,28 +67,32 @@ class Command(BaseCommand):
             help="Delete all data associated with a game but not the actual game data.",
         )
         parser.add_argument(
-            "-t", "--teams", default=1, help="the number of teams added to the event"
+            "-t", "--teams", default=0, help="the number of teams added to the event"
         )
 
     def handle(self, *args, **options):
         game_id = options.get("game")
         joincode = options.get("joincode")
 
-        if game_id is not None:
-            game = Game.objects.get(id=game_id)
-            g = GameActions(game=game)
-            print(g.event)
+        with transaction.atomic():
+            if game_id is not None:
+                game = Game.objects.get(id=game_id)
+                g = GameActions(game=game, team_count=int(options.get("teams", 0)))
+                print(g.event.event_teams.all())
+                print(g.event.players.all())
 
-        elif joincode is not None and options.get("delete"):
-            self.delete_data(joincode=joincode)
-            print("deleted")
+            elif joincode is not None and options.get("delete"):
+                self.delete_data(joincode=joincode)
+                print("deleted")
 
-        else:
-            print("unrecognized command")
+            else:
+                print("unrecognized command")
 
     def delete_data(game_id=None, event_id=None, joincode=None):
         """Delete all downstream data associated with game_id"""
         if joincode is not None:
+            # due models.CASCADE, this will delete associated leaderboard entries and round states
+            # but NOT teams or users
             TriviaEvent.objects.filter(joincode=joincode).delete()
 
         # look up events associated w/ game id
