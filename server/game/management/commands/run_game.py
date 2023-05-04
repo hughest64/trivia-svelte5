@@ -17,18 +17,6 @@ python manage.py play_game -g --game 4567 # looks up a game and creates an event
 -D --delete (capital) would delete all data from the event down, BUT NOT THE GAME DATA!
 -r --rounds the number of rounds to play
 
-so the fist step is to create and event from a game id, this can likely be used for actual
-host event creation as well
-
--t --teams number of teams to have on the event
-is there a config option to specify teams, or are they "random" - random to start
-can we specify a number of players?
-- create a number of users for the teams?
-- create the number of requested teams
-- the teams join the event
-- host reveals rd 1
-- teams answer (need an answer generator here that randomizes resps - can control %corect per team?)
-- continue for all rds
 TODO: we need options for all of these things
 - host locks
 - host socres? (future add on)
@@ -89,6 +77,8 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         config = options.get("config")
+        team_configs = None
+        host_config = None
         if config:
             config_path = (
                 settings.BASE_DIR / f"game/management/run_game_configs/{config}"
@@ -104,6 +94,8 @@ class Command(BaseCommand):
                 teams = data.get("teams")
                 rounds_to_play = data.get("rounds_to_play")
                 reuse = data.get("reuse")
+                team_configs = data.get("team_configs")
+                host_config = data.get("host_config")
         else:
             game_id = options.get("game")
             joincode = options.get("joincode")
@@ -115,7 +107,15 @@ class Command(BaseCommand):
             raise ValueError("-r cannot be used without -j")
 
         if game_id is not None or reuse:
-            self.play_game(game_id, reuse, joincode, teams, rounds_to_play)
+            self.play_game(
+                game_id,
+                reuse,
+                joincode,
+                teams,
+                rounds_to_play,
+                team_configs,
+                host_config,
+            )
 
         elif joincode is not None and options.get("delete"):
             self.delete_data(joincode=joincode)
@@ -131,7 +131,14 @@ class Command(BaseCommand):
         joincode: int = None,
         teams=0,
         rounds_to_play=0,
+        team_configs=None,
+        host_config=None,
     ):
+        if team_configs is None:
+            team_configs = {}
+        if host_config is None:
+            host_config = {}
+
         with transaction.atomic():
             game = None
             if game_id is not None:
@@ -139,14 +146,22 @@ class Command(BaseCommand):
             g = GameActions(
                 game=game, joincode=joincode, team_count=teams, auto_create=not reuse
             )
-            print("playing:", g.event)
+            self.stdout.write(f"playing: {g.event}")
 
             teams_dict = {team.name: TeamActions(g.event, team) for team in g.teams}
             host = HostActions(g.event)
+
             for r in range(1, rounds_to_play + 1):
-                for team in teams_dict.values():
-                    team.answer_questions(rd_num=r, points_awarded=2.5)
-                host.lock(r)
+                for i, team in enumerate(teams_dict.values(), start=1):
+                    team_rd = (
+                        team_configs.get(str(i), {}).get("rounds", {}).get(str(r), [])
+                    )
+                    if len(team_rd) > 0:
+                        team.answer_questions_from_config(r, team_rd)
+                    else:
+                        team.answer_questions(rd_num=r, points_awarded=2.5)
+
+                # host.lock(r)
                 # host.score(r)
                 # host.reveal_answers(r)
                 # host.update_leaderboard()

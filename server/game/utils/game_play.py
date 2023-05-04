@@ -94,6 +94,26 @@ class TeamActions:
 
             resp.save()
 
+    def answer_questions_from_config(self, rd_num, team_rd):
+        rd_questions = self.game.game_questions.filter(round_number=rd_num)
+        # loop the config so we only answer desired questions
+        for q in team_rd:
+            game_question = rd_questions.get(question_number=q["question"])
+            answer = (
+                game_question.question.display_answer if not q.use_actual else q.answer
+            )
+            resp = QuestionResponse(
+                event=self.event,
+                game_question=game_question,
+                team=self.team,
+                recorded_answer=answer,
+            )
+            if q.auto_grade:
+                resp.grade()
+            else:
+                resp.points_awarded = q.points
+            resp.save()
+
 
 class HostActions:
     def __init__(self, event: TriviaEvent) -> None:
