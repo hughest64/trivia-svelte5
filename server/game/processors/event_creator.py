@@ -30,9 +30,7 @@ class TriviaEventCreator:
     def create_event_states(self):
         """Create round states for the event"""
         # TODO: error handling?
-        for round in self.game.game_rounds.all():
-            if round.round_number == 0:
-                continue
+        for round in self.game.game_rounds.exclude(round_number=0):
             EventRoundState.objects.get_or_create(
                 event=self.event, round_number=round.round_number
             )

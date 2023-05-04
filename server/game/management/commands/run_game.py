@@ -2,7 +2,7 @@ from django.core.management.base import BaseCommand
 from django.db import transaction
 
 from game.models import *
-from game.utils.game_play import GameActions
+from game.utils.game_play import GameActions, TeamActions, HostActions
 
 """
 TODO: it would be nice to use an existing event and start/stop and an rd. that way we could
@@ -40,9 +40,6 @@ class Command(BaseCommand):
     help = "A utiltiy tool for simulating trivia events."
 
     def add_arguments(self, parser):
-        # possible args:
-        # - start stage
-        # - stop stage
         parser.add_argument(
             "-c",
             "--conifg",
@@ -67,26 +64,57 @@ class Command(BaseCommand):
             help="Delete all data associated with a game but not the actual game data.",
         )
         parser.add_argument(
-            "-t", "--teams", default=0, help="the number of teams added to the event"
+            "-t",
+            "--teams",
+            default=0,
+            type=int,
+            help="the number of teams added to the event",
+        )
+        # TODO: possibly add start and stop r0und args and/or remove this one
+        parser.add_argument(
+            "-r",
+            "--rounds",
+            default=0,
+            type=int,
+            help="The number of trivia event rounds to play",
         )
 
     def handle(self, *args, **options):
         game_id = options.get("game")
         joincode = options.get("joincode")
+        teams = options.get("teams")
+        rounds_to_play = options.get("rounds")
 
+        if game_id is not None:
+            self.play_game(game_id, joincode, teams, rounds_to_play)
+
+        elif joincode is not None and options.get("delete"):
+            self.delete_data(joincode=joincode)
+            print("deleted")
+
+        else:
+            print("unrecognized command")
+
+    def play_game(self, game_id: int, joincode: int = None, teams=0, rounds_to_play=0):
         with transaction.atomic():
-            if game_id is not None:
-                game = Game.objects.get(id=game_id)
-                g = GameActions(game=game, team_count=int(options.get("teams", 0)))
-                print(g.event.event_teams.all())
-                print(g.event.players.all())
+            game = Game.objects.get(id=game_id)
+            g = GameActions(
+                game=game,
+                joincode=joincode,
+                team_count=teams,
+            )
+            print("running event:", g.event)
+            rounds_to_play = g.rounds_to_play
 
-            elif joincode is not None and options.get("delete"):
-                self.delete_data(joincode=joincode)
-                print("deleted")
-
-            else:
-                print("unrecognized command")
+            teams_dict = {team.name: TeamActions(g.event, team) for team in g.teams}
+            host = HostActions(g.event)
+            for r in range(1, rounds_to_play + 1):
+                for team in teams_dict.values():
+                    team.answer_questions(rd_num=r, points_awarded=2.5)
+                host.lock(r)
+                # host.score(r)
+                # host.reveal_answers(r)
+                # host.update_leaderboard()
 
     def delete_data(game_id=None, event_id=None, joincode=None):
         """Delete all downstream data associated with game_id"""
