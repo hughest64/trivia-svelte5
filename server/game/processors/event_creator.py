@@ -2,12 +2,15 @@ from game.models import *
 
 
 class TriviaEventCreator:
-    def __init__(self, game: Game, joincode: int = None, **kwargs) -> None:
+    def __init__(
+        self, game: Game, joincode: int = None, auto_create=True, **kwargs
+    ) -> None:
         self.game = game
         self.joincode = joincode
         self.create_joincode = joincode is None
         self.event = None
-        self.create_event(**kwargs)
+        if auto_create:
+            self.create_event(**kwargs)
 
     def create_event(self, **kwargs):
         """Create an event"""

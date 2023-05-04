@@ -58,6 +58,12 @@ class Command(BaseCommand):
             help="the joincode of a trivia event, useful for deleting a single event and it's data",
         )
         parser.add_argument(
+            "-u",
+            "--reuse",
+            action="store_true",
+            help="use in conjuction with -j to reuse an existing event instead of creating a new event",
+        )
+        parser.add_argument(
             "-D",
             "--delete",
             action="store_true",
@@ -84,9 +90,13 @@ class Command(BaseCommand):
         joincode = options.get("joincode")
         teams = options.get("teams")
         rounds_to_play = options.get("rounds")
+        reuse = options.get("reuse")
 
-        if game_id is not None:
-            self.play_game(game_id, joincode, teams, rounds_to_play)
+        if reuse and joincode is None:
+            raise ValueError("-r cannot be used without -j")
+
+        if game_id is not None or reuse:
+            self.play_game(game_id, reuse, joincode, teams, rounds_to_play)
 
         elif joincode is not None and options.get("delete"):
             self.delete_data(joincode=joincode)
@@ -95,16 +105,22 @@ class Command(BaseCommand):
         else:
             print("unrecognized command")
 
-    def play_game(self, game_id: int, joincode: int = None, teams=0, rounds_to_play=0):
+    def play_game(
+        self,
+        game_id: int | None,
+        reuse: bool,
+        joincode: int = None,
+        teams=0,
+        rounds_to_play=0,
+    ):
         with transaction.atomic():
-            game = Game.objects.get(id=game_id)
+            game = None
+            if game_id is not None:
+                game = Game.objects.get(id=game_id)
             g = GameActions(
-                game=game,
-                joincode=joincode,
-                team_count=teams,
+                game=game, joincode=joincode, team_count=teams, auto_create=not reuse
             )
-            print("running event:", g.event)
-            rounds_to_play = g.rounds_to_play
+            print("playing:", g.event)
 
             teams_dict = {team.name: TeamActions(g.event, team) for team in g.teams}
             host = HostActions(g.event)

@@ -10,9 +10,13 @@ class GameActions(TriviaEventCreator):
         game: Game,
         joincode: int = None,
         team_count: int = None,
+        auto_create=False,
         **kwargs,
     ) -> None:
-        super().__init__(game, joincode, **kwargs)
+        super().__init__(game, joincode, auto_create, **kwargs)
+
+        if not auto_create:
+            self.set_existing_event()
 
         # number of teams to create and add to the event
         self.team_count = team_count
@@ -22,6 +26,14 @@ class GameActions(TriviaEventCreator):
         if self.team_count > 0:
             self.create_teams()
             self.add_teams_to_event()
+
+    def set_existing_event(self, reset=True):
+        self.event = TriviaEvent.objects.get(joincode=self.joincode)
+        self.game = self.event.game
+        if reset:
+            self.event.round_states.update(locked=False, scored=False, revealed=False)
+            QuestionResponse.objects.filter(event=self.event).delete()
+            LeaderboardEntry.objects.filter(event=self.event).delete()
 
     def create_teams(self):
         """Create the desired number of teams and player user per teams"""
