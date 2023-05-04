@@ -1,3 +1,6 @@
+import json
+
+from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.db import transaction
 
@@ -42,9 +45,8 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument(
             "-c",
-            "--conifg",
-            required=False,
-            help="The path of a config file used for game play. This option takes precedence over all others.",
+            "--config",
+            help="The name of a json file used for game play. This option takes precedence over all others. Config files must be located run_game_configs dir",
         )
         parser.add_argument("-g", "--game", help="the id of the game data to use")
         parser.add_argument(
@@ -61,7 +63,7 @@ class Command(BaseCommand):
             "-u",
             "--reuse",
             action="store_true",
-            help="use in conjuction with -j to reuse an existing event instead of creating a new event",
+            help="use in conjuction with -j to reuse an existing event instead of creating a new one",
         )
         parser.add_argument(
             "-D",
@@ -86,11 +88,28 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        game_id = options.get("game")
-        joincode = options.get("joincode")
-        teams = options.get("teams")
-        rounds_to_play = options.get("rounds")
-        reuse = options.get("reuse")
+        config = options.get("config")
+        if config:
+            config_path = (
+                settings.BASE_DIR / f"game/management/run_game_configs/{config}"
+            )
+            if not config_path.exists():
+                self.stderr.write(f"no config file exists at {config_path}")
+                return
+            else:
+                with open(config_path, "r") as f:
+                    data = json.load(f)
+                game_id = data.get("game_id")
+                joincode = data.get("joincode")
+                teams = data.get("teams")
+                rounds_to_play = data.get("rounds_to_play")
+                reuse = data.get("reuse")
+        else:
+            game_id = options.get("game")
+            joincode = options.get("joincode")
+            teams = options.get("teams")
+            rounds_to_play = options.get("rounds")
+            reuse = options.get("reuse")
 
         if reuse and joincode is None:
             raise ValueError("-r cannot be used without -j")

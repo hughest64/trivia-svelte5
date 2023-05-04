@@ -1,0 +1,26 @@
+{
+    "game_id": null,
+    "joincode": 3572,
+    "teams": 1,
+    "rounds_to_play": 1,
+    "reuse": true,
+    "team_configs": {
+        "1": {
+            "rounds": {
+                "1": [
+                    {"question": 1, "answer": "", "use_actual": false, "points": 0},
+                    {"question": 2, "answer": "", "use_actual": false, "points": 0},
+                    {"question": 3, "answer": "", "use_actual": false, "points": 0},
+                    {"question": 4, "answer": "", "use_actual": false, "points": 0},
+                    {"question": 5, "answer": "", "use_actual": false, "points": 0}
+                ]
+            }
+        }
+    },
+    "host_config": {
+        "rounds": {
+            "1": { "locked": false, "scored": false, "revealed": false, "synced": false }
+        },
+        "complete_game": false
+    }
+}
