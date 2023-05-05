@@ -161,7 +161,7 @@ class Command(BaseCommand):
                     else:
                         team.answer_questions(rd_num=r, points_awarded=2.5)
 
-                # host.lock(r)
+                host.lock(r)
                 # host.score(r)
                 # host.reveal_answers(r)
                 # host.update_leaderboard()

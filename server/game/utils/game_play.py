@@ -38,11 +38,18 @@ class GameActions(TriviaEventCreator):
     def create_teams(self):
         """Create the desired number of teams and player user per teams"""
         for i in range(1, self.team_count + 1):
-            team, _ = Team.objects.get_or_create(name=f"run_game_team_{i}")
-            user, _ = User.objects.get_or_create(
+            team, _ = Team.objects.get_or_create(
+                name=f"run_game_team_{i}", password=f"run_game_team_{i}"
+            )
+            user, created = User.objects.get_or_create(
                 username=f"run_game_user_{i}",
                 defaults={"active_team": team, "password": 12345},
             )
+            if created:
+                user.set_password("12345")
+                user.save()
+
+            team.members.add(user)
             self.players.append(user)
             self.teams.append(team)
 
@@ -84,7 +91,7 @@ class TeamActions:
                 # how do we handle this? use some condition to lookup the correct answer
                 recorded_answer="maybe look me up, or get it wrong or purpose",
             )
-            # this works, but doesn't allow random point assiging, I think that's ok at least for now
+            # this works, but doesn't allow random point assigning, I think that's ok at least for now
             if points_available >= 1:
                 resp.points_awarded = 1
                 points_available -= 1
@@ -97,10 +104,13 @@ class TeamActions:
     def answer_questions_from_config(self, rd_num, team_rd):
         rd_questions = self.game.game_questions.filter(round_number=rd_num)
         # loop the config so we only answer desired questions
+        # TODO: probably better to pop these into a list and bulk_create
         for q in team_rd:
             game_question = rd_questions.get(question_number=q["question"])
             answer = (
-                game_question.question.display_answer if not q.use_actual else q.answer
+                game_question.question.display_answer
+                if q["use_actual"]
+                else q["answer"]
             )
             resp = QuestionResponse(
                 event=self.event,
@@ -108,10 +118,10 @@ class TeamActions:
                 team=self.team,
                 recorded_answer=answer,
             )
-            if q.auto_grade:
+            if q["auto_grade"]:
                 resp.grade()
             else:
-                resp.points_awarded = q.points
+                resp.points_awarded = q["points"]
             resp.save()
 
 
