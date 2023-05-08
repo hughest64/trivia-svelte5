@@ -124,6 +124,34 @@ class TeamActions:
                 resp.points_awarded = q["points"]
             resp.save()
 
+    def answer_questions_from_percentage(self, percent_correct: int):
+        """
+        Answer all questions in game for a single team using
+        percent_correct to determine how to respond and grade
+        """
+        # get all game questions
+        game_questions = self.game.game_questions.all()
+        question_count = len(game_questions)
+        correct = round(question_count * percent_correct / 100)
+        incorrect = question_count - correct
+        correct_values = random.sample(
+            [True, False], counts=[correct, incorrect], k=question_count
+        )
+        resps = []
+        for i, q in enumerate(game_questions):
+            answer_correct = correct_values[i]
+            answer = q.question.display_answer if answer_correct else ""
+            resp = QuestionResponse(
+                event=self.event,
+                game_question=q,
+                team=self.team,
+                recorded_answer=answer,
+                points_awarded=1 if answer_correct else 0,
+            )
+            resps.append(resp)
+
+        QuestionResponse.objects.bulk_create(resps)
+
 
 class HostActions:
     def __init__(self, event: TriviaEvent) -> None:

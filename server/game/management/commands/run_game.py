@@ -151,20 +151,28 @@ class Command(BaseCommand):
             teams_dict = {team.name: TeamActions(g.event, team) for team in g.teams}
             host = HostActions(g.event)
 
-            for r in range(1, rounds_to_play + 1):
-                for i, team in enumerate(teams_dict.values(), start=1):
-                    team_rd = (
-                        team_configs.get(str(i), {}).get("rounds", {}).get(str(r), [])
-                    )
-                    if len(team_rd) > 0:
-                        team.answer_questions_from_config(r, team_rd)
-                    else:
-                        team.answer_questions(rd_num=r, points_awarded=2.5)
+            p = team_configs["1"]["score_percentage"]
+            a = list(teams_dict.values())[0].answer_questions_from_percentage(p)
+            # print(p)
+            if True:
+                pass
+            else:
+                for r in range(1, rounds_to_play + 1):
+                    for i, team in enumerate(teams_dict.values(), start=1):
+                        team_rd = (
+                            team_configs.get(str(i), {})
+                            .get("rounds", {})
+                            .get(str(r), [])
+                        )
+                        if len(team_rd) > 0:
+                            team.answer_questions_from_config(r, team_rd)
+                        else:
+                            team.answer_questions(rd_num=r, points_awarded=2.5)
 
-                host.lock(r)
-                # host.score(r)
-                # host.reveal_answers(r)
-                # host.update_leaderboard()
+                    host.lock(r)
+                    # host.score(r)
+                    # host.reveal_answers(r)
+                    # host.update_leaderboard()
 
     def delete_data(game_id=None, event_id=None, joincode=None):
         """Delete all downstream data associated with game_id"""
