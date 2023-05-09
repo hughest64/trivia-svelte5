@@ -145,8 +145,6 @@ class Command(BaseCommand):
                         through_rd=rounds_to_play,
                         megaround_data=team_config.get("megaround"),
                     )
-                if rounds_to_play is not None:
-                    [host.lock(r) for r in range(1, rounds_to_play + 1)]
 
             # or play each round and answer questions based on the config
             else:
@@ -163,7 +161,8 @@ class Command(BaseCommand):
                             # TODO: perhaps poinst should be random here?
                             team.answer_questions(rd_num=r, points_awarded=2.5)
 
-                    host.lock(r)
+            if rounds_to_play is not None and host_config.get("lock_rounds"):
+                [host.lock(r) for r in range(1, rounds_to_play + 1)]
             # host.score(r)
             # host.reveal_answers(r)
             # host.update_leaderboard()

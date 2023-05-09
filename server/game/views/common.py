@@ -63,3 +63,27 @@ class ClearEventDataView(APIView):
             return Response({"detail": ""}, status=HTTP_400_BAD_REQUEST)
 
         return Response({"success": True})
+
+
+class RunGameView(APIView):
+    """A view class for using the run_game management command"""
+
+    def post(self, request):
+        secret = request.data.get("secret")
+        if secret != "todd is great" or not settings.DEBUG:
+            return Response(
+                {"detail": "ah ah ah, you didn't say the magic word"},
+                status=HTTP_400_BAD_REQUEST,
+            )
+
+        # for now we only care about the config, but other features should be added;
+        config_file = request.data.get("config_name")
+        if not config_file:
+            return Response(
+                {"detail": "config is required"}, status=HTTP_400_BAD_REQUEST
+            )
+
+        msg = management.call_command("run_game", config=config_file)
+        print(msg)
+        # look up data as needed to return - or should the mgmt cmd do this?
+        return Response({"sucesss": True})

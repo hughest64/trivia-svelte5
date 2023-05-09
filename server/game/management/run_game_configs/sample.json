@@ -8,7 +8,7 @@
     "team_configs": {
         "1": {
             "score_percentage": 80,
-            "megaround": {"round": 6, "values": {
+            "megaround": {"round": null, "values": {
                 "1": 1,
                 "2": 2,
                 "3": 3,
@@ -106,14 +106,9 @@
         }
     },
     "host_config": {
-        "rounds": {
-            "1": {
-                "locked": true,
-                "scored": false,
-                "revealed": false,
-                "synced": false
-            }
-        },
+        "lock_rounds": false,
+        "score_rounds": false,
+        "reveal_answers": false,
         "complete_game": false
     }
 }

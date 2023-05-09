@@ -44,4 +44,4 @@ export const test = base.extend<AuthFixtures>({
     }
 });
 
-export { expect } from '@playwright/test';
+export { expect, request } from '@playwright/test';

@@ -43,4 +43,5 @@ urlpatterns = [
     re_path(r"^team/?$", team.TeamView.as_view()),
     # for testing only!
     re_path(r"^reset-event-data/?$", common.ClearEventDataView.as_view()),
+    re_path(r"^run-game/?$", common.RunGameView.as_view()),
 ]

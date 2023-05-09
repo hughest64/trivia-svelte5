@@ -19,7 +19,7 @@
         const availableMegaRounds = megaRounds.filter((rdNum) => {
             const rs = $roundStates.find((rs) => rs.round_number === rdNum);
             // either the round state doesn't exist or it isn't locked;
-            return rdNum > $rounds.length / 2 && (rs === undefined || rs.round_number === rdNum);
+            return rdNum > $rounds.length / 2 && (rs === undefined || (rs.round_number === rdNum && !rs.locked));
         });
         return availableMegaRounds;
     })();
