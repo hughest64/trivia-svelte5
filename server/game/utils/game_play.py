@@ -74,6 +74,7 @@ class TeamActions:
         self.game = event.game
         self.team = team
 
+    # TODO: megaround!
     def answer_questions(
         self, rd_num: int, question_count: int = None, points_awarded: int = None
     ):
@@ -101,6 +102,7 @@ class TeamActions:
 
             resp.save()
 
+    # TODO: megaround!
     def answer_questions_from_config(self, rd_num, team_rd):
         rd_questions = self.game.game_questions.filter(round_number=rd_num)
         # loop the config so we only answer desired questions
@@ -125,18 +127,26 @@ class TeamActions:
             resp.save()
 
     def answer_questions_from_percentage(
-        self, percent_correct: int, through_rd: int = None
+        self, percent_correct: int, through_rd: int = None, megaround_data=None
     ):
         """
         Answer all questions in game for a single team using
         percent_correct to determine how to respond and grade
         """
+        if megaround_data is None:
+            megaround_data = {}
+
+        print(megaround_data)
+
+        selected_megaround = megaround_data.get("round", 0)
+        megaround_values = megaround_data.get("values", {})
+
         # get all game questions
         if through_rd is None:
-            game_questions = self.game.game_questions.all()
+            game_questions = self.game.game_questions.filter(round_number__gt=0)
         else:
             game_questions = self.game.game_questions.filter(
-                round_number__lte=through_rd
+                round_number__gt=0, round_number__lte=through_rd
             )
 
         question_count = len(game_questions)
@@ -154,11 +164,20 @@ class TeamActions:
                 game_question=q,
                 team=self.team,
                 recorded_answer=answer,
+                megaround_value=megaround_values.get(str(q.question_number))
+                if q.round_number == selected_megaround
+                else None,
                 points_awarded=1 if answer_correct else 0,
             )
             resps.append(resp)
 
         QuestionResponse.objects.bulk_create(resps)
+
+        # set the megaround on the leaderboard entry
+        if selected_megaround is not None:
+            LeaderboardEntry.objects.filter(event=self.event, team=self.team).update(
+                selected_megaround=selected_megaround
+            )
 
 
 class HostActions:

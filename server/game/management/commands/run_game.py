@@ -139,9 +139,11 @@ class Command(BaseCommand):
             # answer questions based on desired %correct
             if use_score_percentage:
                 for i, team in enumerate(teams_dict.values(), start=1):
+                    team_config = team_configs[str(i)]
                     team.answer_questions_from_percentage(
-                        team_configs[str(i)].get("score_percentage", 0),
+                        team_config.get("score_percentage", 0),
                         through_rd=rounds_to_play,
+                        megaround_data=team_config.get("megaround"),
                     )
                 if rounds_to_play is not None:
                     [host.lock(r) for r in range(1, rounds_to_play + 1)]
