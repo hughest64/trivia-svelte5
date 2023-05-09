@@ -77,9 +77,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         config = options.get("config")
-        team_configs = None
-        host_config = None
-        use_score_percentage = None
+
         if config:
             config_path = (
                 settings.BASE_DIR / f"game/management/run_game_configs/{config}"
@@ -89,37 +87,18 @@ class Command(BaseCommand):
                 return
             else:
                 with open(config_path, "r") as f:
-                    data = json.load(f)
-                game_id = data.get("game_id")
-                joincode = data.get("joincode")
-                teams = data.get("teams")
-                rounds_to_play = data.get("rounds_to_play")
-                reuse = data.get("reuse")
-                team_configs = data.get("team_configs")
-                host_config = data.get("host_config")
-                use_score_percentage = data.get("use_score_percentage")
-
+                    game_data = json.load(f)
         else:
-            game_id = options.get("game")
-            joincode = options.get("joincode")
-            teams = options.get("teams")
-            rounds_to_play = options.get("rounds")
-            reuse = options.get("reuse")
+            game_data = options
 
+        reuse = game_data.get("reuse")
+        joincode = game_data.get("joincode")
+        game_id = game_data.get("game_id")
         if reuse and joincode is None:
             raise ValueError("-r cannot be used without -j")
 
         if game_id is not None or reuse:
-            self.play_game(
-                game_id,
-                reuse,
-                joincode,
-                teams,
-                rounds_to_play,
-                team_configs,
-                host_config,
-                use_score_percentage,
-            )
+            self.play_game(**game_data)
 
         elif joincode is not None and options.get("delete"):
             self.delete_data(joincode=joincode)
@@ -130,14 +109,15 @@ class Command(BaseCommand):
 
     def play_game(
         self,
-        game_id: int | None,
         reuse: bool,
+        game_id: int = None,
         joincode: int = None,
         teams=0,
         rounds_to_play: int = None,
         team_configs=None,
         host_config=None,
         use_score_percentage=None,
+        **_,
     ):
         if team_configs is None:
             team_configs = {}
