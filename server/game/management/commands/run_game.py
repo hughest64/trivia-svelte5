@@ -102,14 +102,14 @@ class Command(BaseCommand):
 
         elif joincode is not None and options.get("delete"):
             self.delete_data(joincode=joincode)
-            print("deleted")
+            self.stdout.write("deleted")
 
         else:
-            print("unrecognized command")
+            self.stdout.write("unrecognized command")
 
     def play_game(
         self,
-        reuse: bool,
+        reuse=False,
         game_id: int = None,
         joincode: int = None,
         teams=0,
