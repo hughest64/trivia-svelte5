@@ -3,7 +3,7 @@
     "joincode": 7812,
     "teams": 2,
     "use_score_percentage": true,
-    "rounds_to_play": 1,
+    "rounds_to_play": 4,
     "reuse": true,
     "team_configs": {
         "1": {

@@ -124,13 +124,21 @@ class TeamActions:
                 resp.points_awarded = q["points"]
             resp.save()
 
-    def answer_questions_from_percentage(self, percent_correct: int):
+    def answer_questions_from_percentage(
+        self, percent_correct: int, through_rd: int = None
+    ):
         """
         Answer all questions in game for a single team using
         percent_correct to determine how to respond and grade
         """
         # get all game questions
-        game_questions = self.game.game_questions.all()
+        if through_rd is None:
+            game_questions = self.game.game_questions.all()
+        else:
+            game_questions = self.game.game_questions.filter(
+                round_number__lte=through_rd
+            )
+
         question_count = len(game_questions)
         correct = round(question_count * percent_correct / 100)
         incorrect = question_count - correct

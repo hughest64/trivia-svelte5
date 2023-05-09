@@ -79,6 +79,7 @@ class Command(BaseCommand):
         config = options.get("config")
         team_configs = None
         host_config = None
+        use_score_percentage = None
         if config:
             config_path = (
                 settings.BASE_DIR / f"game/management/run_game_configs/{config}"
@@ -96,6 +97,8 @@ class Command(BaseCommand):
                 reuse = data.get("reuse")
                 team_configs = data.get("team_configs")
                 host_config = data.get("host_config")
+                use_score_percentage = data.get("use_score_percentage")
+
         else:
             game_id = options.get("game")
             joincode = options.get("joincode")
@@ -115,6 +118,7 @@ class Command(BaseCommand):
                 rounds_to_play,
                 team_configs,
                 host_config,
+                use_score_percentage,
             )
 
         elif joincode is not None and options.get("delete"):
@@ -130,9 +134,10 @@ class Command(BaseCommand):
         reuse: bool,
         joincode: int = None,
         teams=0,
-        rounds_to_play=0,
+        rounds_to_play: int = None,
         team_configs=None,
         host_config=None,
+        use_score_percentage=None,
     ):
         if team_configs is None:
             team_configs = {}
@@ -151,11 +156,17 @@ class Command(BaseCommand):
             teams_dict = {team.name: TeamActions(g.event, team) for team in g.teams}
             host = HostActions(g.event)
 
-            p = team_configs["1"]["score_percentage"]
-            a = list(teams_dict.values())[0].answer_questions_from_percentage(p)
-            # print(p)
-            if True:
-                pass
+            # answer questions based on desired %correct
+            if use_score_percentage:
+                for i, team in enumerate(teams_dict.values(), start=1):
+                    team.answer_questions_from_percentage(
+                        team_configs[str(i)].get("score_percentage", 0),
+                        through_rd=rounds_to_play,
+                    )
+                if rounds_to_play is not None:
+                    [host.lock(r) for r in range(1, rounds_to_play + 1)]
+
+            # or play each round and answer questions based on the config
             else:
                 for r in range(1, rounds_to_play + 1):
                     for i, team in enumerate(teams_dict.values(), start=1):
@@ -167,12 +178,13 @@ class Command(BaseCommand):
                         if len(team_rd) > 0:
                             team.answer_questions_from_config(r, team_rd)
                         else:
+                            # TODO: perhaps poinst should be random here?
                             team.answer_questions(rd_num=r, points_awarded=2.5)
 
                     host.lock(r)
-                    # host.score(r)
-                    # host.reveal_answers(r)
-                    # host.update_leaderboard()
+            # host.score(r)
+            # host.reveal_answers(r)
+            # host.update_leaderboard()
 
     def delete_data(game_id=None, event_id=None, joincode=None):
         """Delete all downstream data associated with game_id"""
@@ -180,11 +192,3 @@ class Command(BaseCommand):
             # due models.CASCADE, this will delete associated leaderboard entries and round states
             # but NOT teams or users
             TriviaEvent.objects.filter(joincode=joincode).delete()
-
-        # look up events associated w/ game id
-        # delete all of the following:
-        # users
-        # teams
-        # leaderboard(entries)
-        # resps
-        # question/round states
