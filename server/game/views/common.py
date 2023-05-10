@@ -70,7 +70,6 @@ class RunGameView(APIView):
     """A view class for using the run_game management command"""
 
     def post(self, request):
-        print("hi")
         secret = request.data.get("secret")
         if secret != "todd is great" or not settings.DEBUG:
             return Response(
@@ -94,11 +93,18 @@ class RunGameView(APIView):
 class ValidateDataView(APIView):
     def post(self, request):
         # TODO: data cleaner
+        secret = request.data.get("secret")
+        if secret != "todd is great" or not settings.DEBUG:
+            return Response(
+                {"detail": "ah ah ah, you didn't say the magic word"},
+                status=HTTP_400_BAD_REQUEST,
+            )
         joincode = request.data.get("joincode")
         event = get_event_or_404(joincode)
         validation_type = request.data.get("type")
+
         if validation_type == "megaround":
-            self.validate_megaround(request, event)
+            return self.validate_megaround(request, event)
 
         return Response({"success": True})
 
@@ -125,3 +131,5 @@ class ValidateDataView(APIView):
                     },
                     status=HTTP_400_BAD_REQUEST,
                 )
+
+        return Response({"success": True})

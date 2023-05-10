@@ -2,6 +2,9 @@ import { test, request, expect } from '@playwright/test';
 import type { APIRequestContext } from '@playwright/test';
 import { PlayerGamePage } from './gamePages.js';
 
+// TODO: I think it would be better to be aple to post some json instead of a filename for event setup
+// this would require mods to the game runner, but keeps the data more clear and tied to this test
+
 const api_port = process.env.API_PORT || '7000';
 
 test.describe('proper megaround handling', async () => {
