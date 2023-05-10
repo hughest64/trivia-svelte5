@@ -19,11 +19,14 @@ class BasePage {
     }
 
     // NOTE: not needed to use this with the custom fixtures as they auto-login
-    async login() {
+    async login(username?: string, password?: string) {
+        const uname = username || this.testConfig?.username || '';
+        const pword = password || this.testConfig?.password || '';
         await this.page.goto('/user/login');
-        await this.page.locator('input[name="username"]').fill(this.testConfig?.username as string);
-        await this.page.locator('input[name="password"]').fill(this.testConfig?.password as string);
+        await this.page.locator('input[name="username"]').fill(uname);
+        await this.page.locator('input[name="password"]').fill(pword);
         await this.page.locator('button', { hasText: 'Submit' }).click();
+        // TODO: add an expect so that we know when we fail on log in immediately
     }
 
     async logout() {

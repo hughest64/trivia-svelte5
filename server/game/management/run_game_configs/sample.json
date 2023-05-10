@@ -8,7 +8,7 @@
     "team_configs": {
         "1": {
             "score_percentage": 80,
-            "megaround": {"round": null, "values": {
+            "megaround": {"round": 6, "values": {
                 "1": 1,
                 "2": 2,
                 "3": 3,
