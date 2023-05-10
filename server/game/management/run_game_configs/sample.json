@@ -57,7 +57,7 @@
         },
         "2": {
             "score_percentage": 100,
-            "megaround": {"round": 8, "values": {
+            "megaround": {"round": null, "values": {
                 "1": 1,
                 "2": 2,
                 "3": 3,
