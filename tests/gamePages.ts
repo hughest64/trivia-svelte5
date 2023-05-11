@@ -2,14 +2,22 @@
 
 import { expect } from '@playwright/test';
 import { defaultTestConfig } from './utils.js';
-import type { Locator, Page } from '@playwright/test';
+import type { Browser, Locator, Page } from '@playwright/test';
 import type { TestConfig } from './utils.js';
 // this could be loaded in the test file and passed into the config
 
 export const defaultQuestionText = 'Please Wait for the Host to Reveal This Question';
 
+export const getPageFromContext = async (browser: Browser, storagePath: string) => {
+    const context = await browser.newContext({ storageState: storagePath });
+    const userCookies = await context.cookies();
+    const page = await context.newPage();
+
+    return { userCookies, page };
+};
+
 class BasePage {
-    readonly page: Page;
+    page: Page;
     readonly testConfig?: TestConfig;
     readonly dismissButton: Locator;
 
@@ -20,6 +28,9 @@ class BasePage {
     }
 
     async useAuthConfig() {
+        if (!this.testConfig?.authStoragePath) {
+            throw new Error('a file path for authStoragePath is required for method useAuthConfig');
+        }
         const cookies = this.testConfig?.cookies || [];
         // TODO: use this once we actually properly set an expiration on the cookie
         // const expiration = (cookies && cookies.find((cookie) => cookie.name === 'jwt')?.expires) || 0;

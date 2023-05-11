@@ -1,6 +1,6 @@
 import { test, request, expect } from '@playwright/test';
 import type { APIRequestContext } from '@playwright/test';
-import { PlayerGamePage } from './gamePages.js';
+import { PlayerGamePage, getPageFromContext } from './gamePages.js';
 
 // TODO: I think it would be better to be aple to post some json instead of a filename for event setup
 // this would require mods to the game runner, but keeps the data more clear and tied to this test
@@ -40,9 +40,7 @@ test.afterAll(() => apicontext.dispose());
 
 test('the megaround updates properly', async ({ browser }) => {
     const storagePath = 'playwright/.auth/some_user.json';
-    const context = await browser.newContext({ storageState: storagePath });
-    const userCookies = await context.cookies();
-    const page = await context.newPage();
+    const { page, userCookies } = await getPageFromContext(browser, storagePath);
 
     player = new PlayerGamePage(page, {
         username: 'run_game_user_1',
