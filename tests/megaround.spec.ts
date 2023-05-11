@@ -90,7 +90,7 @@ test('the megaround updates properly', async () => {
     expect(response.status()).toBe(200);
 });
 
-test('a player cannot see locked megarounds', async ({ page }) => {
+test('a player cannot see locked megarounds', async () => {
     const response = await apicontext.post('/validate', {
         headers: { 'content-type': 'application/json', accept: 'application/json' },
         // rd 8 should be the megaround for team 1
