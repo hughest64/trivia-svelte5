@@ -9,16 +9,6 @@ export interface PageContextData {
 
 export type UserAuthConfigs = Record<string, Pick<TestConfig, 'username' | 'password' | 'authStoragePath' | 'cookies'>>;
 
-export type GetFromContextTypes = (browser: Browser, storagePath: string) => Promise<PageContextData>;
-
-export const getPageFromContext: GetFromContextTypes = async (browser, storagePath) => {
-    const context = await browser.newContext({ storageState: storagePath });
-    const userCookies = await context.cookies();
-    const page = await context.newPage();
-
-    return { userCookies, page };
-};
-
 export const userAuthConfigs: UserAuthConfigs = {
     playerOne: {
         username: 'player',
@@ -52,20 +42,17 @@ export const userAuthConfigs: UserAuthConfigs = {
     }
 };
 
-// TODO: key of UserAuthConfig?
 export const getUserPage = async (browser: Browser, userId: string) => {
     const config = userAuthConfigs[userId];
     if (config === undefined) {
         throw new Error(`no configuration was found for userId ${userId}`);
     }
-    const { page, userCookies } = await getPageFromContext(browser, config.authStoragePath as string);
-    config.cookies = userCookies;
-    let userPage: PlayerGamePage | HostGamePage;
-    if (userId === 'host') {
-        userPage = new HostGamePage(page, config);
-    } else {
-        userPage = new PlayerGamePage(page, config);
-    }
+
+    const context = await browser.newContext({ storageState: config.authStoragePath });
+    const page = await context.newPage();
+    config.cookies = await context.cookies();
+
+    const userPage = userId === 'host' ? new HostGamePage(page, config) : new PlayerGamePage(page, config);
     await userPage.useAuthConfig();
 
     return userPage;
