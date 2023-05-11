@@ -1,6 +1,7 @@
 import type { Cookie, Browser, Page } from '@playwright/test';
 import { PlayerGamePage, HostGamePage } from './gamePages.js';
 import type { TestConfig } from './utils.js';
+import * as fs from 'fs';
 
 export interface PageContextData {
     userCookies: Cookie[];
@@ -46,6 +47,10 @@ export const getUserPage = async (browser: Browser, userId: string) => {
     const config = userAuthConfigs[userId];
     if (config === undefined) {
         throw new Error(`no configuration was found for userId ${userId}`);
+    }
+    const storagePath = config.authStoragePath || '';
+    if (storagePath && !fs.existsSync(storagePath)) {
+        fs.writeFileSync(storagePath as string, JSON.stringify({}));
     }
 
     const context = await browser.newContext({ storageState: config.authStoragePath });
