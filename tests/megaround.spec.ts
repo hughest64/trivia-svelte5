@@ -2,9 +2,6 @@ import { test, request, expect } from '@playwright/test';
 import type { APIRequestContext } from '@playwright/test';
 import { PlayerGamePage, getPageFromContext } from './gamePages.js';
 
-// TODO: I think it would be better to be aple to post some json instead of a filename for event setup
-// this would require mods to the game runner, but keeps the data more clear and tied to this test
-
 const api_port = process.env.API_PORT || '7000';
 
 let apicontext: APIRequestContext;
@@ -25,20 +22,8 @@ const game_data = {
     }
 };
 
-test.beforeAll(async () => {
-    apicontext = await request.newContext({
-        baseURL: `http://localhost:${api_port}`
-    });
-    const response = await apicontext.post('/run-game', {
-        headers: { 'content-type': 'application/json', accept: 'application/json' },
-        data: { secret: 'todd is great', game_data: JSON.stringify(game_data) }
-    });
-    expect(response.status()).toBe(200);
-});
-// test.afterEach(async () => await player.logout());
-test.afterAll(() => apicontext.dispose());
-
-test('the megaround updates properly', async ({ browser }) => {
+test.beforeAll(async ({ browser }) => {
+    // set up our user and authenticate if necessary
     const storagePath = 'playwright/.auth/some_user.json';
     const { page, userCookies } = await getPageFromContext(browser, storagePath);
 
@@ -50,6 +35,23 @@ test('the megaround updates properly', async ({ browser }) => {
     });
     await player.useAuthConfig();
 
+    // set up the evnet data
+    apicontext = await request.newContext({ baseURL: `http://localhost:${api_port}` });
+
+    const response = await apicontext.post('/run-game', {
+        headers: { 'content-type': 'application/json', accept: 'application/json' },
+        data: { secret: 'todd is great', game_data: JSON.stringify(game_data) }
+    });
+
+    expect(response.status()).toBe(200);
+});
+
+test.afterAll(async () => {
+    apicontext.dispose();
+    await player.page.context().close();
+});
+
+test('the megaround updates properly', async () => {
     await player.page.goto('/game/7812/megaround');
     await expect(player.page).toHaveURL('/game/7812/megaround');
 
@@ -88,7 +90,7 @@ test('the megaround updates properly', async ({ browser }) => {
     expect(response.status()).toBe(200);
 });
 
-test.skip('a player cannot see locked megarounds', async ({ page }) => {
+test('a player cannot see locked megarounds', async ({ page }) => {
     const response = await apicontext.post('/validate', {
         headers: { 'content-type': 'application/json', accept: 'application/json' },
         // rd 8 should be the megaround for team 1
@@ -96,9 +98,6 @@ test.skip('a player cannot see locked megarounds', async ({ page }) => {
     });
     expect(response.status()).toBe(200);
 
-    if (!player) player = new PlayerGamePage(page);
-    player = new PlayerGamePage(page);
-    await player.login('run_game_user_1', '12345');
     await player.page.goto('/game/7812/megaround');
     await expect(player.page).toHaveURL('/game/7812/megaround');
 
