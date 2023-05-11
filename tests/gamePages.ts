@@ -2,38 +2,11 @@
 
 import { expect } from '@playwright/test';
 import { defaultTestConfig } from './utils.js';
-import type { Browser, Cookie, Locator, Page } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
 import type { TestConfig } from './utils.js';
 // this could be loaded in the test file and passed into the config
 
 export const defaultQuestionText = 'Please Wait for the Host to Reveal This Question';
-
-// this works, but a whole player config would be nice
-type StorageKey = 'playerFile' | 'playerTwoFile' | 'playerThreeFile' | 'playerFourFile' | 'hostFile';
-export const authStorage: Record<StorageKey, string> = {
-    playerFile: 'playwright/.auth/player.json',
-    playerTwoFile: 'playwright/.auth/playertwo.json',
-    playerThreeFile: 'playwright/.auth/playerthree.json',
-    playerFourFile: 'playwright/.auth/playerfour.json',
-    hostFile: 'playwright/.auth/host.json'
-};
-
-export interface GetFromContextTypes {
-    userCookies: Cookie[];
-    page: Page;
-}
-export const getPageFromContext = async (
-    browser: Browser,
-    storagePath: string | StorageKey
-): Promise<GetFromContextTypes> => {
-    const filePath = authStorage[storagePath as StorageKey] || storagePath;
-    const context = await browser.newContext({ storageState: filePath });
-    const userCookies = await context.cookies();
-    const page = await context.newPage();
-
-    return { userCookies, page };
-};
-
 class BasePage {
     readonly page: Page;
     readonly testConfig?: TestConfig;

@@ -1,6 +1,7 @@
 import { test, request, expect } from '@playwright/test';
 import type { APIRequestContext } from '@playwright/test';
-import { PlayerGamePage, getPageFromContext } from './gamePages.js';
+import type { PlayerGamePage } from './gamePages.js';
+import { getUserPage } from './authConfigs.js';
 
 const api_port = process.env.API_PORT || '7000';
 
@@ -23,17 +24,7 @@ const game_data = {
 };
 
 test.beforeAll(async ({ browser }) => {
-    // set up our user and authenticate if necessary
-    const storagePath = 'playwright/.auth/some_user.json';
-    const { page, userCookies } = await getPageFromContext(browser, storagePath);
-
-    player = new PlayerGamePage(page, {
-        username: 'run_game_user_1',
-        password: '12345',
-        authStoragePath: storagePath,
-        cookies: userCookies
-    });
-    await player.useAuthConfig();
+    player = (await getUserPage(browser, 'run_game_user_1')) as PlayerGamePage;
 
     // set up the evnet data
     apicontext = await request.newContext({ baseURL: `http://localhost:${api_port}` });
