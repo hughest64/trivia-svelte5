@@ -50,7 +50,7 @@ export const getUserPage = async (browser: Browser, userId: string) => {
     }
     const storagePath = config.authStoragePath || '';
     if (storagePath && !fs.existsSync(storagePath)) {
-        fs.writeFileSync(storagePath as string, JSON.stringify({}));
+        fs.writeFileSync(storagePath, JSON.stringify({}));
     }
 
     const context = await browser.newContext({ storageState: config.authStoragePath });
