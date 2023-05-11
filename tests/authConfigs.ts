@@ -1,12 +1,7 @@
-import type { Cookie, Browser, Page } from '@playwright/test';
-import { PlayerGamePage, HostGamePage } from './gamePages.js';
-import type { TestConfig } from './utils.js';
 import * as fs from 'fs';
-
-export interface PageContextData {
-    userCookies: Cookie[];
-    page: Page;
-}
+import { PlayerGamePage, HostGamePage } from './gamePages.js';
+import type { Browser } from '@playwright/test';
+import type { TestConfig } from './utils.js';
 
 export type UserAuthConfigs = Record<string, Pick<TestConfig, 'username' | 'password' | 'authStoragePath' | 'cookies'>>;
 
