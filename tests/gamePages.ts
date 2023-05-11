@@ -4,6 +4,7 @@ import { expect } from '@playwright/test';
 import { defaultTestConfig } from './utils.js';
 import type { Locator, Page } from '@playwright/test';
 import type { TestConfig } from './utils.js';
+// this could be loaded in the test file and passed into the config
 
 export const defaultQuestionText = 'Please Wait for the Host to Reveal This Question';
 
@@ -16,6 +17,17 @@ class BasePage {
         this.page = page;
         this.testConfig = { ...defaultTestConfig, ...testConfig };
         this.dismissButton = page.locator('.pop').locator('button', { hasText: 'X' });
+    }
+
+    async useAuthConfig() {
+        const cookies = this.testConfig?.cookies || [];
+        // TODO: use this once we actually properly set an expiration on the cookie
+        // const expiration = (cookies && cookies.find((cookie) => cookie.name === 'jwt')?.expires) || 0;
+        // if (!cookies || (expiration as number) < 1234) {
+        if (cookies.length === 0) {
+            await this.login();
+            await this.page.context().storageState({ path: this.testConfig?.authStoragePath });
+        }
     }
 
     // NOTE: not needed to use this with the custom fixtures as they auto-login

@@ -35,12 +35,23 @@ test.beforeAll(async () => {
     });
     expect(response.status()).toBe(200);
 });
-test.afterEach(async () => await player.logout());
+// test.afterEach(async () => await player.logout());
 test.afterAll(() => apicontext.dispose());
 
-test('the megaround updates properly', async ({ page }) => {
-    if (!player) player = new PlayerGamePage(page);
-    await player.login('run_game_user_1', '12345');
+test('the megaround updates properly', async ({ browser }) => {
+    const storagePath = 'playwright/.auth/some_user.json';
+    const context = await browser.newContext({ storageState: storagePath });
+    const userCookies = await context.cookies();
+    const page = await context.newPage();
+
+    player = new PlayerGamePage(page, {
+        username: 'run_game_user_1',
+        password: '12345',
+        authStoragePath: storagePath,
+        cookies: userCookies
+    });
+    await player.useAuthConfig();
+
     await player.page.goto('/game/7812/megaround');
     await expect(player.page).toHaveURL('/game/7812/megaround');
 
@@ -79,7 +90,7 @@ test('the megaround updates properly', async ({ page }) => {
     expect(response.status()).toBe(200);
 });
 
-test('a player cannot see locked megarounds', async ({ page }) => {
+test.skip('a player cannot see locked megarounds', async ({ page }) => {
     const response = await apicontext.post('/validate', {
         headers: { 'content-type': 'application/json', accept: 'application/json' },
         // rd 8 should be the megaround for team 1

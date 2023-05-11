@@ -1,5 +1,5 @@
 import { expect, request } from '@playwright/test';
-import type { Browser, Page } from '@playwright/test';
+import type { Browser, Cookie, Page } from '@playwright/test';
 
 const api_port = process.env.API_PORT || '7000';
 
@@ -22,6 +22,8 @@ export interface TestConfig {
     pageUrl?: string;
     destinationUrl?: string;
     joincode?: string;
+    cookies?: Cookie[];
+    authStoragePath?: string;
 }
 
 export const defaultTestConfig: TestConfig = {
