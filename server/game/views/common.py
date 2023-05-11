@@ -81,12 +81,16 @@ class RunGameView(APIView):
 
         # for now we only care about the config, but other features should be added;
         config_file = request.data.get("config_name")
-        if not config_file:
+        game_data = request.data.get("game_data")
+        if config_file is not None:
+            msg = management.call_command("run_game", config=config_file)
+        elif game_data is not None:
+            msg = management.call_command("run_game", data=game_data)
+        else:
             return Response(
-                {"detail": "config is required"}, status=HTTP_400_BAD_REQUEST
+                {"detail": "config_name or game_data is required"},
+                status=HTTP_400_BAD_REQUEST,
             )
-
-        msg = management.call_command("run_game", config=config_file)
         print(msg)
         # look up data as needed to return - or should the mgmt cmd do this?
         return Response({"sucesss": True})

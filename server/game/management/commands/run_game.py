@@ -36,6 +36,11 @@ class Command(BaseCommand):
             "--config",
             help="The name of a json file used for game play. This option takes precedence over all others. Config files must be located run_game_configs dir",
         )
+        parser.add_argument(
+            "-d",
+            "--data",
+            help="use a dictionary of data for game play instead of loading a file",
+        )
         parser.add_argument("-g", "--game", help="the id of the game data to use")
         parser.add_argument(
             "-e",
@@ -66,7 +71,7 @@ class Command(BaseCommand):
             type=int,
             help="the number of teams added to the event",
         )
-        # TODO: possibly add start and stop r0und args and/or remove this one
+        # TODO: possibly add start and stop round args and/or remove this one
         parser.add_argument(
             "-r",
             "--rounds",
@@ -77,6 +82,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         config = options.get("config")
+        data = options.get("data")
 
         if config:
             config_path = (
@@ -88,6 +94,8 @@ class Command(BaseCommand):
             else:
                 with open(config_path, "r") as f:
                     game_data = json.load(f)
+        elif data:
+            game_data = json.loads(data) if isinstance(data, str) else data
         else:
             game_data = options
 

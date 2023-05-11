@@ -22,12 +22,12 @@ const config: PlaywrightTestConfig = {
         {
             command: testcmd,
             port: 4173
-        },
-        {
-            command: djangoservercmd,
-            cwd: 'server',
-            port: 7000
         }
+        // {
+        //     command: djangoservercmd,
+        //     cwd: 'server',
+        //     port: 7000
+        // }
     ],
     use: { baseURL: 'http://127.0.0.1:4173' }
 };

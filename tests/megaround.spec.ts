@@ -10,13 +10,28 @@ const api_port = process.env.API_PORT || '7000';
 let apicontext: APIRequestContext;
 let player: PlayerGamePage;
 
+const game_data = {
+    game_id: null,
+    joincode: 7812,
+    teams: 1,
+    use_score_percentage: true,
+    rounds_to_play: 8,
+    reuse: true,
+    team_configs: {
+        '1': {
+            score_percentage: 80,
+            megaround: { round: 6, values: { '1': 1, '2': 2, '3': 3, '4': 4, '5': 5 } }
+        }
+    }
+};
+
 test.beforeAll(async () => {
     apicontext = await request.newContext({
         baseURL: `http://localhost:${api_port}`
     });
     const response = await apicontext.post('/run-game', {
         headers: { 'content-type': 'application/json', accept: 'application/json' },
-        data: { secret: 'todd is great', config_name: 'sample.json' }
+        data: { secret: 'todd is great', game_data: JSON.stringify(game_data) }
     });
     expect(response.status()).toBe(200);
 });
