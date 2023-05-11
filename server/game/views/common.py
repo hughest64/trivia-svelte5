@@ -9,7 +9,9 @@ from game.views.validation.data_cleaner import get_event_or_404
 from user.authentication import JwtAuthentication
 
 from game.models import (
+    EventRoundState,
     LeaderboardEntry,
+    TriviaEvent,
     LEADERBOARD_TYPE_PUBLIC,
     LEADERBOARD_TYPE_HOST,
     queryset_to_json,
@@ -106,7 +108,13 @@ class ValidateDataView(APIView):
         if validation_type == "megaround":
             return self.validate_megaround(request, event)
 
-        return Response({"success": True})
+        if validation_type == "megaround_lock":
+            return self.megaround_lock(event)
+
+        return Response(
+            {"detail": f"unrecognized validation type - {validation_type}"},
+            status=HTTP_400_BAD_REQUEST,
+        )
 
     def validate_megaround(self, request, event):
         round = int(request.data.get("round", 0))
@@ -133,3 +141,11 @@ class ValidateDataView(APIView):
                 )
 
         return Response({"success": True})
+
+    def megaround_lock(request, event: TriviaEvent):
+        rd_count = event.game.game_rounds.exclude(round_number=0).count()
+        for i in range(1, rd_count + 1):
+            EventRoundState.objects.update_or_create(
+                event=event, round_number=i, defaults={"locked": True}
+            )
+        return Response({"sucess": True})
