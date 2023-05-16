@@ -1,4 +1,3 @@
-import json
 from typing import List
 
 from django.db.models import QuerySet
@@ -7,7 +6,6 @@ from django.views.decorators.csrf import csrf_protect
 
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
-from rest_framework.status import HTTP_404_NOT_FOUND
 from rest_framework.views import APIView
 
 from game.views.validation.data_cleaner import (
