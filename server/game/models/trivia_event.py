@@ -1,8 +1,13 @@
+import random
+
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.forms.models import model_to_dict
 from django.utils import timezone
 
 from .utils import queryset_to_json
+
+from game.views.validation.exceptions import JoincodeError
 
 QUESTION_TYPE_GENERAL_KNOWLEDGE = 0
 QUESTION_TYPE_THEMED_ROUND = 1
@@ -23,6 +28,10 @@ QUESTION_TYPES = [
 ]
 
 QUESTION_TYPE_DICT = dict(QUESTION_TYPES)
+
+# higher numbers are currently reserved for testing, but this may change in the future
+MAX_JOINCODE_VALUE = 8999
+MAX_CREATE_JOINCODE_ATTEMPTS = 30
 
 
 class Question(models.Model):
@@ -190,6 +199,11 @@ class Game(models.Model):
 
 
 class TriviaEvent(models.Model):
+    def __init__(self, *args, create_joincode=False, **kwargs):
+        # shall we auto-generate a joincode?
+        self.create_joincode = create_joincode
+        super().__init__(*args, **kwargs)
+
     created_at = models.DateTimeField(auto_now_add=True)
     date = models.DateField(default=timezone.now)
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
@@ -204,8 +218,6 @@ class TriviaEvent(models.Model):
     player_limit = models.IntegerField(blank=True, null=True)
     players = models.ManyToManyField("user.User", related_name="players", blank=True)
     event_teams = models.ManyToManyField("team", related_name="event_teams", blank=True)
-
-    # TODO: might be useful for determining when to clean up teams and/or backfill blank responses
     event_complete = models.BooleanField(default=False)
 
     @property
@@ -259,8 +271,32 @@ class TriviaEvent(models.Model):
             "question_states": queryset_to_json(self.question_states.all()),
         }
 
+    def generate_joincode(self, attempts, *args, **kwargs):
+        if attempts > MAX_CREATE_JOINCODE_ATTEMPTS:
+            raise JoincodeError(
+                detail="cannot create a joincode for this event, too many attempts"
+            )
+        try:
+            self.joincode = random.randint(1000, MAX_JOINCODE_VALUE)
+            self.full_clean()
+
+        # if the error is joincode related, try to create a new one else reraise
+        except ValidationError as e:
+            if "joincode" in e.error_dict:
+                self.generate_joincode(attempts + 1, *args, **kwargs)
+            raise ValidationError(e)
+
     def save(self, *args, **kwargs):
-        self.full_clean()
+        if self.pk is not None and self.create_joincode:
+            raise JoincodeError(
+                detail="cannot auto generate a joincode for an existing Trivia Event"
+            )
+
+        if self.create_joincode:
+            self.generate_joincode(0, *args, **kwargs)
+        else:
+            self.full_clean()
+
         super().save(*args, **kwargs)
 
 

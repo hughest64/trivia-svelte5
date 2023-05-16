@@ -1,6 +1,8 @@
 import { test, expect } from './fixtures.js';
 import { asyncTimeout, resetEventData } from './utils.js';
 
+// TODO: refactor to use the new api game_runner, also factor in megaround scores at the end of the game
+
 const joincode = '9900';
 const eventUrl = `/game/${joincode}`;
 const hostUrl = `/host/${joincode}`;

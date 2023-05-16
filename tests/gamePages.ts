@@ -1,12 +1,13 @@
 // see https://playwright.dev/docs/pom for information on this
 
+import * as fs from 'fs';
 import { expect } from '@playwright/test';
 import { defaultTestConfig } from './utils.js';
 import type { Locator, Page } from '@playwright/test';
 import type { TestConfig } from './utils.js';
+// this could be loaded in the test file and passed into the config
 
 export const defaultQuestionText = 'Please Wait for the Host to Reveal This Question';
-
 class BasePage {
     readonly page: Page;
     readonly testConfig?: TestConfig;
@@ -18,12 +19,28 @@ class BasePage {
         this.dismissButton = page.locator('.pop').locator('button', { hasText: 'X' });
     }
 
+    async useAuthConfig() {
+        if (!this.testConfig?.authStoragePath) {
+            throw new Error('a file path for authStoragePath is required for method useAuthConfig');
+        }
+        const cookies = this.testConfig?.cookies || [];
+
+        if (cookies.length === 0) {
+            await fs.promises.writeFile(this.testConfig?.authStoragePath, JSON.stringify({}));
+            await this.login();
+            await this.page.context().storageState({ path: this.testConfig?.authStoragePath });
+        }
+    }
+
     // NOTE: not needed to use this with the custom fixtures as they auto-login
-    async login() {
+    async login(username?: string, password?: string) {
+        const uname = username || this.testConfig?.username || '';
+        const pword = password || this.testConfig?.password || '';
         await this.page.goto('/user/login');
-        await this.page.locator('input[name="username"]').fill(this.testConfig?.username as string);
-        await this.page.locator('input[name="password"]').fill(this.testConfig?.password as string);
+        await this.page.locator('input[name="username"]').fill(uname);
+        await this.page.locator('input[name="password"]').fill(pword);
         await this.page.locator('button', { hasText: 'Submit' }).click();
+        // TODO: add an expect so that we know when we fail on log in immediately
     }
 
     async logout() {

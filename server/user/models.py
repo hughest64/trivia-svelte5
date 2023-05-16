@@ -2,9 +2,11 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from game.models import Team
 
+
 class User(AbstractUser):
-    active_team = models.ForeignKey("game.Team", blank=True, null=True, on_delete=models.SET_NULL)
-    # active_team_id = models.IntegerField(blank=True, null=True)
+    active_team = models.ForeignKey(
+        "game.Team", blank=True, null=True, on_delete=models.SET_NULL
+    )
     auto_reveal_questions = models.BooleanField(default=False)
 
     def teams_json(self):
@@ -19,7 +21,7 @@ class User(AbstractUser):
             "is_staff": self.is_staff,
             "active_team_id": active_team_id,
             "auto_reveal_questions": self.auto_reveal_questions,
-            "teams": self.teams_json()
+            "teams": self.teams_json(),
         }
 
     def save(self, *args, **kwargs):

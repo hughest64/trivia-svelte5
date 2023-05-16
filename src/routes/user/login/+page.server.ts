@@ -1,6 +1,7 @@
 import * as cookie from 'cookie';
 import { fail, redirect } from '@sveltejs/kit';
 import { env } from '$env/dynamic/public';
+import { getJwtPayload } from '$lib/utils';
 import type { Action, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ cookies, fetch, locals }) => {
@@ -61,7 +62,11 @@ const login: Action = async ({ cookies, fetch, request, url }) => {
     const secureCookie = url.protocol === 'https:';
     const responseCookies = response.headers.get('set-cookie') || '';
     const jwt = cookie.parse(responseCookies)?.jwt;
-    jwt && cookies.set('jwt', jwt, { path: '/', httpOnly: true, secure: secureCookie });
+    if (jwt) {
+        const jwtData = getJwtPayload(jwt);
+        const expires = new Date((jwtData.exp as number) * 1000);
+        cookies.set('jwt', jwt, { path: '/', expires, httpOnly: true, secure: secureCookie });
+    }
 
     const next = url.searchParams.get('next') || (responseData?.user_data?.is_staff ? '/host/choice' : '/team');
 

@@ -1,13 +1,18 @@
 <script lang="ts">
     import { afterUpdate } from 'svelte';
+    import { slide } from 'svelte/transition';
+    import { page } from '$app/stores';
     import { applyAction, enhance } from '$app/forms';
     import { getStore } from '$lib/utils';
     import { getMegaroundValues } from '$lib/megaroundValueStore';
+
+    const joincode = $page.params.joincode;
 
     const questions = getStore('questions');
     const rounds = getStore('rounds');
     const roundStates = getStore('roundStates');
     const responses = getStore('responseData');
+    const playerJoined = getStore('playerJoined');
 
     const selectedMegaRound = getStore('selectedMegaRound');
     $: activeRoundNumber = $selectedMegaRound;
@@ -19,7 +24,7 @@
         const availableMegaRounds = megaRounds.filter((rdNum) => {
             const rs = $roundStates.find((rs) => rs.round_number === rdNum);
             // either the round state doesn't exist or it isn't locked;
-            return rdNum > $rounds.length / 2 && (rs === undefined || rs.round_number === rdNum);
+            return rdNum > $rounds.length / 2 && (rs === undefined || (rs.round_number === rdNum && !rs.locked));
         });
         return availableMegaRounds;
     })();
@@ -35,7 +40,7 @@
     let currentMrCleared = false;
     $: allSelected = $mrStore.every((value) => value.used);
     $: submitted = allSelected && activeRoundNumber === $selectedMegaRound && !currentMrCleared;
-    $: allowSubmit = !allSelected || submitted;
+    $: disableSubmit = !allSelected || submitted || !$playerJoined;
     $: submitText = submitted ? 'Submitted' : 'Submit';
 
     const getMegaRoundInput = (qnum?: number): HTMLElement | undefined => {
@@ -129,6 +134,15 @@
     {/each}
 </div>
 
+{#if !$playerJoined}
+    <h3 out:slide|local class="not-joined-warning">
+        You are currently in view mode.
+        <form action="/game/{joincode}?/joinevent" method="post" use:enhance>
+            <button class="submit" type="submit"><h3>Click here</h3></button>to join the game!
+        </form>
+    </h3>
+{/if}
+
 {#if $selectedMegaRound && ($selectedMegaRound !== activeRoundNumber || roundNumbers.length < 1)}
     <h3 class="round-message">Your Currently Selected Mega Round is Round {$selectedMegaRound}</h3>
 {:else if !activeRoundNumber && roundNumbers.length > 0}
@@ -177,14 +191,32 @@
             {/each}
         </div>
 
-        <button type="submit" class="button button-primary" disabled={allowSubmit}>{submitText}</button>
-        <button class="button button-secondary" on:click|preventDefault={clearValues}>Clear & Edit</button>
+        <button type="submit" class="button button-primary" disabled={disableSubmit}>{submitText}</button>
+        <button
+            class="button button-secondary"
+            class:disabled={!$playerJoined}
+            on:click|preventDefault={clearValues}
+            disabled={!$playerJoined}>Clear & Edit</button
+        >
     </form>
 {/if}
 
 <style lang="scss">
     small {
         font-size: 16px;
+    }
+    .not-joined-warning {
+        width: 100%;
+        max-width: var(--max-container-width);
+        text-align: center;
+        margin-bottom: 0.75rem;
+        form {
+            display: inline;
+        }
+        button {
+            color: var(--color-primary);
+            text-decoration: underline;
+        }
     }
     .round-selector {
         margin: 1rem 0;

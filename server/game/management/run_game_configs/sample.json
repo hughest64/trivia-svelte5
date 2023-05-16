@@ -1,0 +1,114 @@
+{
+    "game_id": null,
+    "joincode": 7812,
+    "teams": 2,
+    "use_score_percentage": true,
+    "rounds_to_play": 8,
+    "reuse": true,
+    "team_configs": {
+        "1": {
+            "score_percentage": 80,
+            "megaround": {"round": 6, "values": {
+                "1": 1,
+                "2": 2,
+                "3": 3,
+                "4": 4,
+                "5": 5
+            }},
+            "rounds": {
+                "1": [
+                    {
+                        "question": 1,
+                        "answer": "",
+                        "use_actual": false,
+                        "auto_grade": false,
+                        "points": 0
+                    },
+                    {
+                        "question": 2,
+                        "answer": "",
+                        "use_actual": false,
+                        "auto_grade": false,
+                        "points": 1
+                    },
+                    {
+                        "question": 3,
+                        "answer": "",
+                        "use_actual": false,
+                        "auto_grade": false,
+                        "points": 1
+                    },
+                    {
+                        "question": 4,
+                        "answer": "",
+                        "use_actual": false,
+                        "auto_grade": false,
+                        "points": 0
+                    },
+                    {
+                        "question": 5,
+                        "answer": "",
+                        "use_actual": false,
+                        "auto_grade": false,
+                        "points": 0.5
+                    }
+                ]
+            }
+        },
+        "2": {
+            "score_percentage": 100,
+            "megaround": {"round": null, "values": {
+                "1": 1,
+                "2": 2,
+                "3": 3,
+                "4": 4,
+                "5": 5
+            }},
+            "rounds": {
+                "1": [
+                    {
+                        "question": 1,
+                        "answer": "",
+                        "use_actual": true,
+                        "auto_grade": true,
+                        "points": 0
+                    },
+                    {
+                        "question": 2,
+                        "answer": "",
+                        "use_actual": true,
+                        "auto_grade": true,
+                        "points": 1
+                    },
+                    {
+                        "question": 3,
+                        "answer": "",
+                        "use_actual": true,
+                        "auto_grade": true,
+                        "points": 1
+                    },
+                    {
+                        "question": 4,
+                        "answer": "",
+                        "use_actual": true,
+                        "auto_grade": true,
+                        "points": 0
+                    },
+                    {
+                        "question": 5,
+                        "answer": "",
+                        "use_actual": true,
+                        "auto_grade": true,
+                        "points": 0.5
+                    }
+                ]
+            }
+        }
+    },
+    "host_config": {
+        "lock_rounds": false,
+        "score_rounds": false,
+        "reveal_answers": false,
+        "complete_game": false
+    }
+}
