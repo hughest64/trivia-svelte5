@@ -3,7 +3,6 @@ from dateutil.parser import ParserError
 import logging
 import os
 import time
-from typing import List
 
 import pandas as pd
 import requests

@@ -12,8 +12,7 @@ game's meta data with the following criteria:
 - Existing questions are determined by the combination of the related round and question number. if the
   related round has a question with the particular question number, the existing question is updated.
 - Question ids are not written back to Airtable as they are not used as a lookup value.
-- Tiebreakers rounds (rd 0) are now tied to the game. They are excluded from the the game models serialize
-  method via an exclude filter.
+- Tiebreakers rounds (rd 0) are tied to the game but excluded when using the to_json method on the game model
 """
 from textwrap import dedent
 
