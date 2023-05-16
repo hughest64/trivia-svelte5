@@ -7,6 +7,7 @@ const api_port = process.env.API_PORT || '7000';
 
 let apicontext: APIRequestContext;
 let player: PlayerGamePage;
+let p3: PlayerGamePage;
 
 const game_data = {
     game_id: null,
@@ -25,6 +26,7 @@ const game_data = {
 
 test.beforeAll(async ({ browser }) => {
     player = (await getUserPage(browser, 'run_game_user_1')) as PlayerGamePage;
+    p3 = (await getUserPage(browser, 'playerThree')) as PlayerGamePage;
 
     // set up the evnet data
     apicontext = await request.newContext({ baseURL: `http://localhost:${api_port}` });
@@ -40,6 +42,7 @@ test.beforeAll(async ({ browser }) => {
 test.afterAll(async () => {
     apicontext.dispose();
     await player.page.context().close();
+    await p3.page.context().close();
 });
 
 test('the megaround updates properly', async () => {
@@ -79,6 +82,15 @@ test('the megaround updates properly', async () => {
     });
     // for simplicity the api should return a 400 if something doesn't line up, 200 otherwise
     expect(response.status()).toBe(200);
+});
+
+test('a player that has not joined the game cannot submit a megaround', async () => {
+    await p3.page.goto('/game/7812/megaround');
+    await expect(player.page).toHaveURL('/game/7812/megaround');
+
+    await expect(p3.page.locator('h3.not-joined-warning')).toBeVisible();
+    await p3.page.locator('div.round-selector').locator('button', { hasText: /8/ }).click();
+    await expect(p3.page.locator('button', { hasText: /submit/i })).toBeDisabled();
 });
 
 test('a player cannot see locked megarounds', async () => {

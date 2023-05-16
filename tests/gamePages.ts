@@ -1,5 +1,6 @@
 // see https://playwright.dev/docs/pom for information on this
 
+import * as fs from 'fs';
 import { expect } from '@playwright/test';
 import { defaultTestConfig } from './utils.js';
 import type { Locator, Page } from '@playwright/test';
@@ -23,10 +24,9 @@ class BasePage {
             throw new Error('a file path for authStoragePath is required for method useAuthConfig');
         }
         const cookies = this.testConfig?.cookies || [];
-        // TODO: use this once we actually properly set an expiration on the cookie
-        // const expiration = (cookies && cookies.find((cookie) => cookie.name === 'jwt')?.expires) || 0;
-        // if (!cookies || (expiration as number) < 1234) {
+
         if (cookies.length === 0) {
+            await fs.promises.writeFile(this.testConfig?.authStoragePath, JSON.stringify({}));
             await this.login();
             await this.page.context().storageState({ path: this.testConfig?.authStoragePath });
         }

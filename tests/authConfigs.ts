@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import { PlayerGamePage, HostGamePage } from './gamePages.js';
-import type { Browser } from '@playwright/test';
+import type { Browser, Cookie } from '@playwright/test';
 import type { TestConfig } from './utils.js';
 
 export type UserAuthConfigs = Record<string, Pick<TestConfig, 'username' | 'password' | 'authStoragePath' | 'cookies'>>;
@@ -46,6 +46,15 @@ export const getUserPage = async (browser: Browser, userId: string) => {
     const storagePath = config.authStoragePath || '';
     if (storagePath && !fs.existsSync(storagePath)) {
         fs.writeFileSync(storagePath, JSON.stringify({}));
+    } else {
+        const cookieData: Cookie[] = JSON.parse(fs.readFileSync(storagePath).toString()).cookies || [];
+        const jwtExp = Math.round(cookieData.find((cookie) => cookie.name === 'jwt')?.expires || 0) * 1000;
+
+        // reset the file if the token is expired
+        if (Date.now() > jwtExp) {
+            console.log(`resetting auth for ${userId}`);
+            fs.writeFileSync(storagePath, JSON.stringify({}));
+        }
     }
 
     const context = await browser.newContext({ storageState: config.authStoragePath });
