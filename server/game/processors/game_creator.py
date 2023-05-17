@@ -148,7 +148,7 @@ class TriviaGameCreator:
 
         return game
 
-    # TODO: privaate events are not yet implemented
+    # TODO: private events are not yet implemented
     def _update_or_create_private_event(self, rd_frame: pd.DataFrame) -> None:
         if self.game is None:
             raise ProcedureError
@@ -276,7 +276,7 @@ class TriviaGameCreator:
                 _, created = GameQuestion.objects.update_or_create(
                     game=self.no_sound_game,
                     question_number=row.question_number,
-                    round_number=row.round_number,
+                    round_number=row.round_number if row.round_number != 9 else 8,
                     defaults={"question": question},
                 )
                 self.total_new_questions += int(created)
