@@ -41,11 +41,11 @@ COLUMN_LABEL_MAP = {
 PRIVATE_EVENT = bool(settings.PRIVATE_EVENT)
 AIRTABLE_API_TOKEN = os.environ.get("AIRTABLE_API_TOKEN")
 # TODO: these should all be env variables so the app doesn't need to be updated if something changes
-BASE_URL = "https://api.airtable.com/v0"
-BASE_ID = "appn2NrdqfRDv6eHC"
-TABLE_NAME = "The Everything Box (Question Database)"
-PE_TABLE_NAME = "tblD2FocmowArRhOA"
-PE_BASE_ID = "appnqaagDcrCoFGdG"
+BASE_URL = os.environ.get("AIRTABLE_BASE_URL")
+BASE_ID = os.environ.get("AIRTABLE_BASE_ID")
+TABLE_NAME = os.environ.get("AIRTABLE_TABLE_NAME")
+PE_TABLE_NAME = os.environ.get("PE_TABLE_NAME")
+PE_BASE_ID = os.environ.get("PE_BASE_ID")
 # columns only required by private events
 PE_COLUMNS = ["pe_name", "join_code"]
 
