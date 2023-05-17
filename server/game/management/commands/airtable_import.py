@@ -74,7 +74,11 @@ class Command(BaseCommand):
 
         start = options.get("start")
         end = options.get("end")
-        commit = options.get("nocommit")
+        commit = not options.get("nocommit")
+        if not commit:
+            self.stdout.write(
+                "Running the import prcess but not commting to the database"
+            )
 
         if options.get("raw"):
             fp = options.get("filepath")

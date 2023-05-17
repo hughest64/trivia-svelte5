@@ -12,8 +12,7 @@ game's meta data with the following criteria:
 - Existing questions are determined by the combination of the related round and question number. if the
   related round has a question with the particular question number, the existing question is updated.
 - Question ids are not written back to Airtable as they are not used as a lookup value.
-- Tiebreakers rounds (rd 0) are now tied to the game. They are excluded from the the game models serialize
-  method via an exclude filter.
+- Tiebreakers rounds (rd 0) are tied to the game but excluded when using the to_json method on the game model
 """
 from textwrap import dedent
 
@@ -149,7 +148,7 @@ class TriviaGameCreator:
 
         return game
 
-    # TODO: privaate events are not yet implemented
+    # TODO: private events are not yet implemented
     def _update_or_create_private_event(self, rd_frame: pd.DataFrame) -> None:
         if self.game is None:
             raise ProcedureError
@@ -226,7 +225,7 @@ class TriviaGameCreator:
                 game=self.no_sound_game,
                 round_number=round_number,
                 defaults={
-                    "title": round_data.game_title,
+                    "title": round_data.round_title,
                     "round_description": round_data.round_description,
                 },
             )
@@ -277,7 +276,7 @@ class TriviaGameCreator:
                 _, created = GameQuestion.objects.update_or_create(
                     game=self.no_sound_game,
                     question_number=row.question_number,
-                    round_number=row.round_number,
+                    round_number=row.round_number if row.round_number != 9 else 8,
                     defaults={"question": question},
                 )
                 self.total_new_questions += int(created)

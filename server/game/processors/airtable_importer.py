@@ -3,7 +3,6 @@ from dateutil.parser import ParserError
 import logging
 import os
 import time
-from typing import List
 
 import pandas as pd
 import requests
@@ -310,20 +309,32 @@ class AirtableData:
         df["game_title"] = list(map(cls._game_title, df["date_used"], df["block_code"]))
 
         # used to ensure a frame (game) does not contain duplicate round/question combinations
-        df["rd_quest"] = list(
-            map(cls._round_question, df["round_number"], df["question_number"])
-        )
+        # df["rd_quest"] = list(
+        #     map(cls._round_question, df["round_number"], df["question_number"])
+        # )
 
         date_frames = []
         for title in set(df.game_title):
             frame = df[df.game_title == title].sort_values(
                 by=["round_number", "question_number"]
             )
+            tb = frame[frame.round_title == "Tiebreaker"]
+
+            if len(tb) > 0:
+                frame.loc[tb.index, "question_number"] = range(1, len(tb) + 1)
+
+            # print(frame.question_number)
+            frame["rd_quest"] = list(
+                map(
+                    cls._round_question, frame["round_number"], frame["question_number"]
+                )
+            )
+
             # all tie breakers have 0.0 as the question number, so allow duplicates for them
             not_unique = {
                 val
                 for val in (frame[frame.rd_quest.duplicated()].rd_quest)
-                if val != "0.0"
+                # if val != "0.0"
             }
 
             if len(not_unique) == 0:

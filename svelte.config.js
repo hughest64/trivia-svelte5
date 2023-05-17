@@ -14,7 +14,8 @@ const config = {
             out: testMode ? 'build_test' : 'build'
         }),
         outDir: testMode ? '.svelte-test' : '.svelte-kit'
-    }
+    },
+    vitePlugin: { inspector: true }
 };
 
 export default config;

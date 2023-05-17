@@ -1,7 +1,7 @@
 from django.urls import path, re_path
 from django.shortcuts import redirect
 
-from .views import common, game, host, team
+from .views import common, game, host, team, airtable
 
 app_name = "game"
 
@@ -41,6 +41,7 @@ urlpatterns = [
     re_path(r"^team/select/?$", team.TeamSelectView.as_view()),
     re_path(r"^team/create/?$", team.TeamCreateView.as_view()),
     re_path(r"^team/?$", team.TeamView.as_view()),
+    re_path(r"^airtable-import/?$", airtable.airtable_import, name="airtable_import"),
     # for testing only!
     re_path(r"^reset-event-data/?$", common.ClearEventDataView.as_view()),
     re_path(r"^run-game/?$", common.RunGameView.as_view()),
