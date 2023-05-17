@@ -1,6 +1,9 @@
+from datetime import timedelta
 from typing import List
 
-from django.db.models import QuerySet
+from django.db.models import QuerySet, Q
+from django.utils import timezone
+
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 
@@ -84,17 +87,25 @@ class EventSetupView(APIView):
 
     def get(self, request):
         """get this weeks games and a list of locations"""
-        # TODO: add active param to game model, possibly use celery to update the attr
         # TODO: we need to send data indicating if game/event combinations already exist
         # to duplicate the join vs start logic in the current app
-        locations = queryset_to_json(Location.objects.filter(active=True))
-        games = queryset_to_json(Game.objects.all())
+
+        # convert the utc to the tz specified in settings
+        now = timezone.localdate(timezone.now())
+        # 0-6, mon-sun
+        weekday_int = now.weekday()
+        # start will always land on Monday
+        start = now - timedelta(days=weekday_int)
+        end = start + timedelta(days=6)
+        games = Game.objects.filter(Q(date_used__gte=start) & Q(date_used__lte=end))
+
+        locations = Location.objects.filter(active=True)
         user_data = request.user.to_json()
 
         return Response(
             {
-                "location_select_data": locations,
-                "game_select_data": games,
+                "location_select_data": queryset_to_json(locations),
+                "game_select_data": queryset_to_json(games),
                 "user_data": user_data,
             }
         )
