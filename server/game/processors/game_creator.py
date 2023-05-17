@@ -225,7 +225,7 @@ class TriviaGameCreator:
                 game=self.no_sound_game,
                 round_number=round_number,
                 defaults={
-                    "title": round_data.game_title,
+                    "title": round_data.round_title,
                     "round_description": round_data.round_description,
                 },
             )
