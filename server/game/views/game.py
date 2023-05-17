@@ -66,7 +66,9 @@ class EventView(APIView):
 
         response_summary = QuestionResponse.summarize(event)
 
-        question_responses = QuestionResponse.objects.filter(team=user.active_team)
+        question_responses = QuestionResponse.objects.filter(
+            team=user.active_team, event=event
+        )
 
         # TODO: chats (last 50 for the players active team on this event)
 
