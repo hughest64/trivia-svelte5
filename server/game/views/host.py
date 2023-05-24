@@ -91,13 +91,14 @@ class EventSetupView(APIView):
         # to duplicate the join vs start logic in the current app
 
         # convert the utc to the tz specified in settings
-        now = timezone.localdate(timezone.now())
+        now = timezone.localdate()
         # 0-6, mon-sun
         weekday_int = now.weekday()
         # start will always land on Monday
         start = now - timedelta(days=weekday_int)
         end = start + timedelta(days=6)
         games = Game.objects.filter(Q(date_used__gte=start) & Q(date_used__lte=end))
+        blocks = set([game.block for game in games])
 
         locations = Location.objects.filter(active=True)
         user_data = request.user.to_json()
@@ -106,6 +107,7 @@ class EventSetupView(APIView):
             {
                 "location_select_data": queryset_to_json(locations),
                 "game_select_data": queryset_to_json(games),
+                "game_block_data": blocks,
                 "user_data": user_data,
             }
         )

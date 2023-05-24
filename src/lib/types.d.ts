@@ -66,6 +66,7 @@ export interface LocationSelectData {
 export interface GameSelectData {
     game_id: string | number;
     game_title: string;
+    block: string;
 }
 
 export interface HostSelectData {

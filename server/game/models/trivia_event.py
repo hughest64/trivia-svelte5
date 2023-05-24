@@ -179,6 +179,10 @@ class Game(models.Model):
     description = models.TextField(blank=True, null=True)
     date_used = models.DateField(default=timezone.now)
 
+    @property
+    def block(self):
+        return self.block_code.split(" ")[0].capitalize()
+
     class Meta:
         ordering = ["-date_used", "title"]
 
@@ -189,6 +193,8 @@ class Game(models.Model):
         return {
             "game_id": self.pk,
             "game_title": self.title,
+            # TODO: this doesn't need to be in the event data to_json, make sure it isn't
+            "block": self.block
             # "block_code": self.block_code,
             # "description": self.description,
         }
