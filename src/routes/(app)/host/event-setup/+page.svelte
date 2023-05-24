@@ -12,12 +12,7 @@
 
     // TODO: default based on a user setting?
     let selectedBlock = gameBlocks[0];
-    $: availableGames = gameSelectData.filter((g) => {
-        if (g.block !== selectedBlock) return false;
-        if (!useSound) return g.game_title.endsWith('xNoSound');
-
-        return !g.game_title.endsWith('xNoSound');
-    });
+    $: availableGames = gameSelectData.filter((g) => g.block === selectedBlock && g.use_sound === useSound);
 
     // TODO: set to the host's "home" location
     let selectLocation: string;

@@ -67,6 +67,7 @@ export interface GameSelectData {
     game_id: string | number;
     game_title: string;
     block: string;
+    use_sound: boolean;
 }
 
 export interface HostSelectData {

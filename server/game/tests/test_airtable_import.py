@@ -157,6 +157,7 @@ class AirtableImportTestCase(TestCase):
     # - ensure the proper airtable base id and table names are used for the import
 
 
+# TODO: add test for the use_sound field
 class GameCreatorTestCase(TestCase):
     def setUp(self) -> None:
         # game data from the week of 1/16/23 = 1/22/23

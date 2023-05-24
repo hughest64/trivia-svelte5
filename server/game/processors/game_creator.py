@@ -27,6 +27,8 @@ from game.processors.airtable_importer import AirtableData
 
 PRIVATE_EVENT = bool(settings.PRIVATE_EVENT)
 
+NO_SOUND_SLUG = " - xNoSound"
+
 # TODO:
 # logging
 # testing - be sure to add a test that validates rd 0 is not fetched when serializing game data
@@ -141,6 +143,7 @@ class TriviaGameCreator:
             defaults={
                 "block_code": first_row.block_code,
                 "date_used": first_row.date_used,
+                "use_sound": not slug == NO_SOUND_SLUG,
             },
         )
         if created:
@@ -290,7 +293,7 @@ class TriviaGameCreator:
                 # create sound and no sound versions of the same game if it's not a private envent
                 if max_round == 9 and not self.private_event:
                     self.game = self._update_or_create_game(slug=" - Sound")
-                    self.no_sound_game = self._update_or_create_game(slug=" - xNoSound")
+                    self.no_sound_game = self._update_or_create_game(slug=NO_SOUND_SLUG)
                 else:
                     self.game = self._update_or_create_game()
 
