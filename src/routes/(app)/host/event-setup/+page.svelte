@@ -8,15 +8,19 @@
     const gameBlocks = ($page.data?.game_block_data || []).sort();
 
     // TODO: default based on a user setting?
-    let useSound = true;
-
-    // TODO: default based on a user setting?
     let selectedBlock = gameBlocks[0];
-    $: availableGames = gameSelectData.filter((g) => g.block === selectedBlock && g.use_sound === useSound);
 
-    // TODO: set to the host's "home" location
-    let selectLocation: string;
-    $: selectedGame = availableGames[0].game_id;
+    let useSound = locationSelectData[0].use_sound;
+    let selectedLocation = locationSelectData[0].location_id;
+
+    $: availableGames = gameSelectData.filter((g) => g.block === selectedBlock && g.use_sound === useSound);
+    $: selectedGame = availableGames[0]?.game_id;
+
+    const handleLocationChange = (event: Event) => {
+        const target = event.target as HTMLSelectElement;
+        const newloc = locationSelectData.find((l) => String(l.location_id) === target.value);
+        useSound = newloc?.use_sound === false ? false : true;
+    };
 </script>
 
 <svelte:head><title>Trivia Mafia | Event Setup</title></svelte:head>
@@ -41,17 +45,24 @@
 
     <form action="?/fetchEventData" method="POST">
         {#if form?.error}<p class="error">{form?.error}</p>{/if}
+
+        <label for="loaction-select" class="select-label">Choose your Venue</label>
+        <select
+            class="select"
+            name="location-select"
+            id="location-select"
+            bind:value={selectedLocation}
+            on:change={handleLocationChange}
+        >
+            {#each locationSelectData as location (location.location_id)}
+                <option value={location.location_id}>{location.location_name}</option>
+            {/each}
+        </select>
+
         <label class="select-label" for="game-select">Choose your Game</label>
         <select class="select" name="game-select" id="game-select" bind:value={selectedGame}>
             {#each availableGames as game (game.game_id)}
                 <option value={game.game_id}>{game.game_title}</option>
-            {/each}
-        </select>
-
-        <label for="loaction-select" class="select-label">Choose your Venue</label>
-        <select class="select" name="location-select" id="location-select" bind:value={selectLocation}>
-            {#each locationSelectData as location (location.location_id)}
-                <option value={location.location_id}>{location.location_name}</option>
             {/each}
         </select>
 
@@ -63,7 +74,6 @@
     .switch-container {
         display: flex;
         justify-content: space-between;
-        flex-wrap: wrap;
         width: 100%;
         max-width: var(--max-element-width);
         label {

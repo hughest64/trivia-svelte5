@@ -27,7 +27,7 @@ export interface UserData {
     active_team?: UserTeam | undefined;
     teams: UserTeam[];
     user_is_anonymous?: boolean;
-    user_home_locations?: string[];
+    home_location?: LocationSelectData;
 }
 export interface UserTeam {
     id: string | number;
@@ -61,6 +61,7 @@ export interface Leaderboard {
 export interface LocationSelectData {
     location_id: string | number;
     location_name: string;
+    use_sound: boolean;
 }
 
 export interface GameSelectData {

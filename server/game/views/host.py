@@ -87,9 +87,6 @@ class EventSetupView(APIView):
 
     def get(self, request):
         """get this weeks games and a list of locations"""
-        # TODO: we need to send data indicating if game/event combinations already exist
-        # to duplicate the join vs start logic in the current app
-
         # convert the utc to the tz specified in settings
         now = timezone.localdate()
         # 0-6, mon-sun
@@ -97,18 +94,30 @@ class EventSetupView(APIView):
         # start will always land on Monday
         start = now - timedelta(days=weekday_int)
         end = start + timedelta(days=6)
-        games = Game.objects.filter(Q(date_used__gte=start) & Q(date_used__lte=end))
+        games = Game.objects.filter(
+            Q(date_used__gte=start) & Q(date_used__lte=end)
+            # include theme nights for the whole month
+            | Q(block_code__istartswith="theme", date_used__month=now.month)
+        )
         blocks = set([game.block for game in games])
 
-        locations = Location.objects.filter(active=True)
-        user_data = request.user.to_json()
+        user_data = request.user
+
+        try:
+            locations = [user_data.home_location.to_json()] + queryset_to_json(
+                Location.objects.filter(active=True).exclude(
+                    name=user_data.home_location.name
+                )
+            )
+        except AttributeError:
+            locations = queryset_to_json(Location.objects.filter(active=True))
 
         return Response(
             {
-                "location_select_data": queryset_to_json(locations),
+                "location_select_data": locations,
                 "game_select_data": queryset_to_json(games),
                 "game_block_data": blocks,
-                "user_data": user_data,
+                "user_data": user_data.to_json(),
             }
         )
 
