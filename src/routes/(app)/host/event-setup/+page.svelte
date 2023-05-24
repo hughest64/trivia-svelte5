@@ -67,7 +67,7 @@
         width: 100%;
         max-width: var(--max-element-width);
         label {
-            margin-left: 0;
+            margin-right: 0;
         }
     }
 </style>
