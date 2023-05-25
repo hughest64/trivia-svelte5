@@ -125,12 +125,15 @@ class EventSetupView(APIView):
     def post(self, request):
         """create a new event or fetch an existing one with a specified game/location combo"""
         data = DataCleaner(request.data)
+        player_limit = data.as_bool("player_limit")
         game_id = data.as_int("game_select")
         location_id = data.as_int("location_select")
 
         game = get_game_or_404(game_id)
         location = get_location_or_404(location_id)
-        event = TriviaEventCreator(game=game, location=location).event
+        event = TriviaEventCreator(
+            game=game, location=location, player_limit=player_limit
+        ).event
 
         user_data = request.user.to_json()
 
@@ -168,6 +171,7 @@ class QuestionRevealView(APIView):
 
     @method_decorator(csrf_protect)
     def post(self, request, joincode):
+        # TODO: we don't need this try except
         try:
             data = DataCleaner(request.data)
             round_number = data.as_int("round_number")
