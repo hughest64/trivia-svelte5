@@ -12,6 +12,7 @@
 
     let useSound = locationSelectData[0].use_sound;
     let selectedLocation = locationSelectData[0].location_id;
+    let playerLimit = false;
 
     $: availableGames = gameSelectData.filter((g) => g.block === selectedBlock && g.use_sound === useSound);
     $: selectedGame = availableGames[0]?.game_id;
@@ -28,23 +29,39 @@
 <main class="short">
     <h1>Choose a Trivia Event</h1>
 
-    <div class="switch-container">
-        <h4>Use Sound</h4>
-        <label for="sound-choice" class="switch">
-            <input type="hidden" bind:value={useSound} name="sound-choice" />
-            <button class="slider" class:revealed={useSound} on:click={() => (useSound = !useSound)} />
-        </label>
-    </div>
-
-    <label class="select-label" for="block-select">Choose A Block</label>
-    <select class="select" name="block-select" id="block-select" bind:value={selectedBlock}>
-        {#each gameBlocks as block}
-            <option value={block}>{block}</option>
-        {/each}
-    </select>
-
     <form action="?/fetchEventData" method="POST">
         {#if form?.error}<p class="error">{form?.error}</p>{/if}
+
+        <div class="switch-container">
+            <h4>Use Sound</h4>
+            <label for="sound-choice" class="switch">
+                <input type="hidden" bind:value={useSound} name="sound-choice" />
+                <button
+                    class="slider"
+                    class:revealed={useSound}
+                    on:click|preventDefault={() => (useSound = !useSound)}
+                />
+            </label>
+        </div>
+
+        <div class="switch-container">
+            <h4>Player Limit</h4>
+            <label for="player_limit" class="switch">
+                <input type="hidden" bind:value={playerLimit} name="player_limit" />
+                <button
+                    class="slider"
+                    class:revealed={playerLimit}
+                    on:click|preventDefault={() => (playerLimit = !playerLimit)}
+                />
+            </label>
+        </div>
+
+        <label class="select-label" for="block-select">Choose A Block</label>
+        <select class="select" name="block-select" id="block-select" bind:value={selectedBlock}>
+            {#each gameBlocks as block}
+                <option value={block}>{block}</option>
+            {/each}
+        </select>
 
         <label for="location_select" class="select-label">Choose your Venue</label>
         <select
@@ -75,6 +92,7 @@
         display: flex;
         justify-content: space-between;
         width: min(var(--max-element-width), 100%);
+        margin-left: 0;
         label {
             margin-right: 0;
         }

@@ -17,6 +17,8 @@ class TriviaEventCreator:
         self.joincode = joincode
         self.create_joincode = joincode is None
         self.event = None
+        # for now, True = 1, False = None
+        self.player_limit = 1 if kwargs.get("player_limit") else None
         if auto_create:
             # self.create_event(**kwargs)
             self.get_or_create_event()
@@ -55,6 +57,9 @@ class TriviaEventCreator:
                 game=self.game,
                 location=self.location,
                 joincode=self.joincode,
+                # TODO: hard coding a one player limit for now, could be expaned
+                # if we want to allow more player per team, but still limit
+                player_limit=self.player_limit,
                 # date=date.today(),
                 create_joincode=self.joincode is None,
             )
