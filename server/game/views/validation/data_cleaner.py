@@ -2,7 +2,7 @@ import json
 
 from rest_framework.exceptions import NotFound
 
-from game.models import TriviaEvent
+from game.models import Game, Location, TriviaEvent
 from user.models import User
 
 from game.views.validation.exceptions import (
@@ -45,6 +45,20 @@ def get_event_or_404(joincode) -> TriviaEvent:
         return TriviaEvent.objects.get(joincode=joincode)
     except TriviaEvent.DoesNotExist:
         raise NotFound(detail=f"Event with join code {joincode} does not exist")
+
+
+def get_game_or_404(id) -> Game:
+    try:
+        return Game.objects.get(id=id)
+    except Game.DoesNotExist:
+        raise NotFound(detail=f"Game with id {id} does not exist")
+
+
+def get_location_or_404(id) -> Location:
+    try:
+        return Location.objects.get(id=id)
+    except Location.DoesNotExist:
+        raise NotFound(detail=f"Location with id {id} does not exist")
 
 
 class DataCleaner:

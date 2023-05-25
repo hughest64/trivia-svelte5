@@ -1,6 +1,9 @@
+from datetime import timedelta
 from typing import List
 
-from django.db.models import QuerySet
+from django.db.models import QuerySet, Q
+from django.utils import timezone
+
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 
@@ -8,10 +11,13 @@ from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from game.processors import TriviaEventCreator
 from game.views.validation.data_cleaner import (
     DataCleaner,
     DataValidationError,
     get_event_or_404,
+    get_game_or_404,
+    get_location_or_404,
 )
 from user.authentication import JwtAuthentication
 
@@ -31,9 +37,6 @@ from game.models import (
 from game.models.utils import queryset_to_json
 from game.processors import LeaderboardProcessor
 from game.utils.socket_classes import SendEventMessage, SendHostMessage
-
-# TODO: remove once creating event is implemented
-DEMO_EVENT_JOIN_CODE = 1234
 
 
 class EventHostView(APIView):
@@ -84,26 +87,51 @@ class EventSetupView(APIView):
 
     def get(self, request):
         """get this weeks games and a list of locations"""
-        # TODO: add active param to game model, possibly use celery to update the attr
-        # TODO: we need to send data indicating if game/event combinations already exist
-        # to duplicate the join vs start logic in the current app
-        locations = queryset_to_json(Location.objects.filter(active=True))
-        games = queryset_to_json(Game.objects.all())
-        user_data = request.user.to_json()
+        # convert the utc to the tz specified in settings
+        now = timezone.localdate()
+        # 0-6, mon-sun
+        weekday_int = now.weekday()
+        # start will always land on Monday
+        start = now - timedelta(days=weekday_int)
+        end = start + timedelta(days=6)
+        games = Game.objects.filter(
+            Q(date_used__gte=start) & Q(date_used__lte=end)
+            # include theme nights for the whole month
+            | Q(block_code__istartswith="theme", date_used__month=now.month)
+        )
+        blocks = set([game.block for game in games])
+
+        user_data = request.user
+
+        try:
+            locations = [user_data.home_location.to_json()] + queryset_to_json(
+                Location.objects.filter(active=True).exclude(
+                    name=user_data.home_location.name
+                )
+            )
+        except AttributeError:
+            locations = queryset_to_json(Location.objects.filter(active=True))
 
         return Response(
             {
                 "location_select_data": locations,
-                "game_select_data": games,
-                "user_data": user_data,
+                "game_select_data": queryset_to_json(games),
+                "game_block_data": blocks,
+                "user_data": user_data.to_json(),
             }
         )
 
     @method_decorator(csrf_protect)
     def post(self, request):
         """create a new event or fetch an existing one with a specified game/location combo"""
-        # TODO: use DataCleaner when we no longer use the demo code
-        event = TriviaEvent.objects.get(joincode=DEMO_EVENT_JOIN_CODE)
+        data = DataCleaner(request.data)
+        game_id = data.as_int("game_select")
+        location_id = data.as_int("location_select")
+
+        game = get_game_or_404(game_id)
+        location = get_location_or_404(location_id)
+        event = TriviaEventCreator(game=game, location=location).event
+
         user_data = request.user.to_json()
 
         return Response(
