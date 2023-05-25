@@ -74,8 +74,7 @@
     .switch-container {
         display: flex;
         justify-content: space-between;
-        width: 100%;
-        max-width: var(--max-element-width);
+        width: min(var(--max-element-width), 100%);
         label {
             margin-right: 0;
         }
