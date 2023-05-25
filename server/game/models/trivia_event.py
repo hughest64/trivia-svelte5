@@ -156,6 +156,9 @@ class GameRound(models.Model):
         "Game", related_name="game_rounds", on_delete=models.CASCADE
     )
 
+    class Meta:
+        ordering = ["game", "round_number"]
+
     def __str__(self):
         return f"Round {self.round_number}: {self.title} for game {self.game}"
 
