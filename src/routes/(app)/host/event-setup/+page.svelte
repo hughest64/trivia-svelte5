@@ -46,11 +46,11 @@
     <form action="?/fetchEventData" method="POST">
         {#if form?.error}<p class="error">{form?.error}</p>{/if}
 
-        <label for="loaction-select" class="select-label">Choose your Venue</label>
+        <label for="location_select" class="select-label">Choose your Venue</label>
         <select
             class="select"
-            name="location-select"
-            id="location-select"
+            name="location_select"
+            id="location_select"
             bind:value={selectedLocation}
             on:change={handleLocationChange}
         >
@@ -59,8 +59,8 @@
             {/each}
         </select>
 
-        <label class="select-label" for="game-select">Choose your Game</label>
-        <select class="select" name="game-select" id="game-select" bind:value={selectedGame}>
+        <label class="select-label" for="game_select">Choose your Game</label>
+        <select class="select" name="game_select" id="game_select" bind:value={selectedGame}>
             {#each availableGames as game (game.game_id)}
                 <option value={game.game_id}>{game.game_title}</option>
             {/each}

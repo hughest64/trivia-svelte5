@@ -11,10 +11,13 @@ from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from game.processors import TriviaEventCreator
 from game.views.validation.data_cleaner import (
     DataCleaner,
     DataValidationError,
     get_event_or_404,
+    get_game_or_404,
+    get_location_or_404,
 )
 from user.authentication import JwtAuthentication
 
@@ -34,9 +37,6 @@ from game.models import (
 from game.models.utils import queryset_to_json
 from game.processors import LeaderboardProcessor
 from game.utils.socket_classes import SendEventMessage, SendHostMessage
-
-# TODO: remove once creating event is implemented
-DEMO_EVENT_JOIN_CODE = 1234
 
 
 class EventHostView(APIView):
@@ -124,8 +124,14 @@ class EventSetupView(APIView):
     @method_decorator(csrf_protect)
     def post(self, request):
         """create a new event or fetch an existing one with a specified game/location combo"""
-        # TODO: use DataCleaner when we no longer use the demo code
-        event = TriviaEvent.objects.get(joincode=DEMO_EVENT_JOIN_CODE)
+        data = DataCleaner(request.data)
+        game_id = data.as_int("game_select")
+        location_id = data.as_int("location_select")
+
+        game = get_game_or_404(game_id)
+        location = get_location_or_404(location_id)
+        event = TriviaEventCreator(game=game, location=location).event
+
         user_data = request.user.to_json()
 
         return Response(

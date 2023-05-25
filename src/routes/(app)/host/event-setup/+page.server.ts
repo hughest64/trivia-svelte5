@@ -8,14 +8,12 @@ export const load: PageServerLoad = async (loadEvent) => {
 };
 
 const fetchEventData: Action = async ({ fetch, request }) => {
-    const data = await request.formData();
-    const gameId = data.get('game-select');
-    const locationId = data.get('location-select');
+    const data = Object.fromEntries(await request.formData());
 
     const apiHost = env.PUBLIC_API_HOST;
     const response = await fetch(`${apiHost}/host/event-setup/`, {
         method: 'POST',
-        body: JSON.stringify({ gameId, locationId })
+        body: JSON.stringify(data)
     });
 
     const responseData = await response.json();

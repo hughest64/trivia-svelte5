@@ -1,23 +1,34 @@
+from datetime import date
+
 from game.models import *
 
 
 class TriviaEventCreator:
     def __init__(
-        self, game: Game, joincode: int = None, auto_create=True, **kwargs
+        self,
+        game: Game,
+        location: Location,
+        joincode: int = None,
+        auto_create=True,
+        **kwargs
     ) -> None:
         self.game = game
+        self.location = location
         self.joincode = joincode
         self.create_joincode = joincode is None
         self.event = None
         if auto_create:
-            self.create_event(**kwargs)
+            # self.create_event(**kwargs)
+            self.get_or_create_event()
 
+    # TODO: probably deprecate in favor of get_or_create_event, but review the significance of kwargs first!
     def create_event(self, **kwargs):
         """Create an event"""
         try:
             self.event = TriviaEvent.objects.create(
                 game=self.game,
                 joincode=self.joincode,
+                location=self.location,
                 create_joincode=self.create_joincode,
                 **kwargs,
             )
@@ -29,6 +40,25 @@ class TriviaEventCreator:
 
         else:
             self.create_event_states()
+
+    def get_or_create_event(self):
+        try:
+            if self.joincode is not None:
+                self.event = TriviaEvent.objects.get(joincode=self.joincode)
+            else:
+                self.event = TriviaEvent.objects.get(
+                    game=self.game, location=self.location, date=date.today()
+                )
+
+        except TriviaEvent.DoesNotExist:
+            self.event = TriviaEvent.objects.create(
+                game=self.game,
+                location=self.location,
+                joincode=self.joincode,
+                # date=date.today(),
+                create_joincode=self.joincode is None,
+            )
+        self.create_event_states()
 
     def create_event_states(self):
         """Create round states for the event"""
