@@ -65,7 +65,7 @@
         <p>Image Missing</p>
     {/if}
 
-    {#if question.answer_notes}<p>question.answer_notes</p>{/if}
+    {#if question.answer_notes}<p>{question.answer_notes}</p>{/if}
 
     <button class="button button-tertiary" on:click={() => (answerDisplayed = !answerDisplayed)}>
         Click To {answerDisplayed ? 'Hide' : 'Reveal'} Answer
