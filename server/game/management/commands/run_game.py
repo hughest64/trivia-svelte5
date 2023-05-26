@@ -119,6 +119,7 @@ class Command(BaseCommand):
         self,
         reuse=False,
         game_id: int = None,
+        location: int = None,  # id
         joincode: int = None,
         teams=0,
         rounds_to_play: int = None,
@@ -137,7 +138,7 @@ class Command(BaseCommand):
             if game_id is not None:
                 game = Game.objects.get(id=game_id)
             g = GameActions(
-                game=game, joincode=joincode, team_count=teams, auto_create=not reuse
+                game=game, joincode=joincode, team_count=teams, auto_create=True
             )
             self.stdout.write(f"playing: {g.event}")
 
