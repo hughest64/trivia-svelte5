@@ -13,6 +13,11 @@ from game.views.validation.exceptions import (
 
 
 def check_player_limit(event: TriviaEvent, user: User, join_required=False):
+    """
+    Check the user's active team against the active team of other user's on the event.
+    Raise an error if too many players have joined the vent for the user's active team.
+    Return a boolean indicating whether or not the user has already joined the event.
+    """
     # members of the user's active team already on the event
     team_players = event.players.filter(active_team=user.active_team)
     player_limit = event.player_limit or 0

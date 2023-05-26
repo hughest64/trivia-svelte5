@@ -32,7 +32,7 @@ class TeamRequired(APIException):
 
 class PlayerLimitExceeded(APIException):
     status_code = HTTP_403_FORBIDDEN
-    default_detail = "Players per team limit exceeded for this event"
+    default_detail = "Somone from your team has already joined this event"
     default_code = "player_limit_exceeded"
 
 
