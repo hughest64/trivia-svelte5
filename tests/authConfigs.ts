@@ -14,22 +14,22 @@ export const userAuthConfigs: UserAuthConfigs = {
     playerTwo: {
         username: 'player_two',
         password: 'player_two',
-        authStoragePath: 'playwright/.auth/player.json'
+        authStoragePath: 'playwright/.auth/playertwo.json'
     },
     playerThree: {
         username: 'player_three',
         password: 'player_three',
-        authStoragePath: 'playwright/.auth/player.json'
+        authStoragePath: 'playwright/.auth/playerthree.json'
     },
     playerFour: {
         username: 'player_four',
         password: 'player_four',
-        authStoragePath: 'playwright/.auth/player.json'
+        authStoragePath: 'playwright/.auth/playerfour.json'
     },
     host: {
         username: 'sample_admin',
         password: 'sample_admin',
-        authStoragePath: 'playwright/.auth/player.json'
+        authStoragePath: 'playwright/.auth/host.json'
     },
     run_game_user_1: {
         username: 'run_game_user_1',
