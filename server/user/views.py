@@ -84,6 +84,7 @@ class GuestView(APIView):
         jwt = request.COOKIES.get("jwt")
         user = decode_token(jwt)
 
+        # TODO: we need to create a new user here
         if user.is_anonymous:
             user = User.objects.get(username="guest")
             valid_token = False
@@ -125,6 +126,26 @@ class LoginView(APIView):
         return response
 
 
+# TODO: reference https://github.com/authlib/demo-oauth-client/tree/master/django-google-login for implementation details
+class GoogleLoginView(APIView):
+    @method_decorator(csrf_protect)
+    def post(self, request):
+        # TODO: is this actually available on the DRF request?
+        # redirect_uri = request.build_absolute_uri(reverse('auth'))
+        # return oauth.google.authorize_redirect(request, redirect_uri)
+        return Response({"success": True})
+
+
+class GoogleAuthView(APIView):
+    # TODO: is this a post? (probably)
+    # token = oauth.google.authorize_access_token(request)
+    # get_or_create a user w/ token["userinfo"] (or whatever key it is)
+    # we may need to modify the username in the case of create if the username already exists (try/catch?)
+
+    # create a jwt and set the cookie as in standard login
+    pass
+
+
 class UserView(APIView):
     authentication_classes = [JwtAuthentication]
 
@@ -137,7 +158,6 @@ class UserView(APIView):
 # NOTE: not currently used as cookies are controlled in SvelteKit
 class LogoutView(APIView):
     def post(self, request):
-
         response = Response()
         response.delete_cookie("jwt")
         response.delete_cookie("csrftoken")
