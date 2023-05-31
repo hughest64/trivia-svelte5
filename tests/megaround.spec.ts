@@ -2,7 +2,7 @@ import { test, request, expect } from '@playwright/test';
 import type { APIRequestContext } from '@playwright/test';
 import type { PlayerGamePage } from './gamePages.js';
 import { getUserPage } from './authConfigs.js';
-import { api_port } from './utils.js';
+import { api_port, resetEventData } from './utils.js';
 
 let apicontext: APIRequestContext;
 let player: PlayerGamePage;
@@ -18,7 +18,7 @@ const game_data = {
     team_configs: {
         '1': {
             score_percentage: 80,
-            megaround: { round: 6, values: { '1': 1, '2': 2, '3': 3, '4': 4, '5': 5 } }
+            megaround: { round: 5, values: { '1': 1, '2': 2, '3': 3, '4': 4, '5': 5 } }
         }
     }
 };
@@ -35,6 +35,10 @@ test.beforeAll(async ({ browser }) => {
     });
     expect(response.status()).toBe(200);
 });
+
+// test.afterEach(async () => {
+//     await resetEventData({ joincodes: '7812' });
+// });
 
 test.afterAll(async () => {
     apicontext.dispose();
@@ -83,7 +87,7 @@ test('the megaround updates properly', async () => {
 
 test('a player that has not joined the game cannot submit a megaround', async () => {
     await p3.page.goto('/game/7812/megaround');
-    await expect(player.page).toHaveURL('/game/7812/megaround');
+    await expect(p3.page).toHaveURL('/game/7812/megaround');
 
     await expect(p3.page.locator('h3.not-joined-warning')).toBeVisible();
     await p3.page.locator('div.round-selector').locator('button', { hasText: /8/ }).click();

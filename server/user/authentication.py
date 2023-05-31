@@ -89,6 +89,7 @@ class JwtAuthentication(authentication.BaseAuthentication):
 # TODO: maybe move this right into the ops app
 class OpsAuthentication(JwtAuthentication):
     def authenticate(self, request):
+        # TODO: check for debug (and secret?) here, raise AuthenticationFailed if it fails
         self.token = request.META.get("HTTP_AUTHORIZATION").rsplit()[-1]
         return super().authenticate(request)
 

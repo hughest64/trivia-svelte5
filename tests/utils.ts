@@ -103,3 +103,10 @@ export const checkLbEntry = async (entry: Locator, config: LbEntryConfig) => {
     await expect(entry.locator('h3.rank')).toHaveText(rank);
     await expect(entry.locator('h3.points')).toHaveText(points);
 };
+
+export const createApiContext = async () => {
+    return await request.newContext({
+        baseURL: `http://localhost:${api_port}`,
+        extraHTTPHeaders: { 'content-type': 'application/json', accept: 'application/json' }
+    });
+};

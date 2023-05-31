@@ -100,6 +100,7 @@ class RunGameView(APIView):
             if config_file is not None:
                 msg = management.call_command("run_game", config=config_file)
             elif game_data is not None:
+                print(game_data)
                 msg = management.call_command("run_game", data=game_data)
             else:
                 return Response(

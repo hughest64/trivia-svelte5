@@ -1,8 +1,8 @@
-import { test, request, expect } from '@playwright/test';
-import { api_port, checkLbEntry, resetEventData } from './utils.js';
+import { test, expect } from '@playwright/test';
+import { createApiContext, checkLbEntry, resetEventData } from './utils.js';
+import { getUserPage } from './authConfigs.js';
 import type { APIRequestContext } from '@playwright/test';
 import type { PlayerGamePage, HostGamePage } from './gamePages.js';
-import { getUserPage, userAuthConfigs } from './authConfigs.js';
 
 // TODO: refactor to use the new api game_runner, also factor in megaround scores at the end of the game
 
@@ -27,11 +27,8 @@ test.beforeAll(async ({ browser }) => {
     p1 = (await getUserPage(browser, 'playerOne')) as PlayerGamePage;
     p3 = (await getUserPage(browser, 'playerThree')) as PlayerGamePage;
     host = (await getUserPage(browser, 'host')) as HostGamePage;
-    apicontext = await request.newContext({
-        baseURL: `http://localhost:${api_port}`,
-        extraHTTPHeaders: { 'content-type': 'application/json', accept: 'application/json' }
-    });
-
+    apicontext = await createApiContext();
+    // set up the event
     const response = await apicontext.post('/run-game', {
         data: { secret: 'todd is great', game_data: JSON.stringify(game_data) }
     });
@@ -80,10 +77,9 @@ test('host leaderboard updates on round lock, public updates on btn click', asyn
     // correct answer
     await p3.setResponse('basketball', { submit: true });
 
-    // TODO: add a method on HostPage and GamePage (BasePage) so that we have the jwt as an attr on init
-    const hostCookies = await host.page.context().cookies();
+    // lock the round
     const r = await apicontext.post('/ops/rlock/', {
-        headers: { Authorization: 'Basic ' + hostCookies.find((c) => c.name === 'jwt')?.value || '' },
+        headers: await host.getAuthHeader(),
         data: JSON.stringify({ round_number: 1, locked: true, joincode })
     });
     expect(r.status()).toBe(200);

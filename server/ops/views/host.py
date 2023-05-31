@@ -46,7 +46,7 @@ from game.utils.socket_classes import SendEventMessage, SendHostMessage
 class HostControlsView(APIView):
     authentication_classes = [OpsAuthentication]
 
-    def post(self, request);
+    def post(self, request):
         data = DataCleaner(request.data)
         round_number = data.as_int("round_number")
         locked = data.as_bool("locked")

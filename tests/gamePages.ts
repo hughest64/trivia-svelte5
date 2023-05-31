@@ -32,7 +32,11 @@ class BasePage {
         }
     }
 
-    // NOTE: not needed to use this with the custom fixtures as they auto-login
+    async getAuthHeader() {
+        const cookies = await this.page.context().cookies();
+        return { Authorization: 'Basic ' + cookies.find((c) => c.name === 'jwt')?.value || '' };
+    }
+
     async login(username?: string, password?: string) {
         const uname = username || this.testConfig?.username || '';
         const pword = password || this.testConfig?.password || '';
