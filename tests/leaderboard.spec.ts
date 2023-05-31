@@ -78,9 +78,10 @@ test('host leaderboard updates on round lock, public updates on btn click', asyn
     await asyncTimeout(500);
     await host.page.goto(`${hostUrl}/leaderboard`);
 
-    // TODO: fail starts here
-    const syncBtn = host.page.locator('button#sync-button');
-    await expect(syncBtn).toBeVisible();
+    const revealBtn = host.page.locator('button#reveal-button');
+    await expect(revealBtn).toBeVisible();
+    await revealBtn.click();
+    // TODO: should we check for answer reveal player side here?
 
     // expect host lb to have p1 w/ rank 1, 1pt & p3 w/ rank '-', 0 pts
     const hostlb = host.page.locator('ul#host-leaderboard-view').locator('li.leaderboard-entry-container');
@@ -113,7 +114,11 @@ test('host leaderboard updates on round lock, public updates on btn click', asyn
 
     // sync the leaderboards
     await host.page.locator('button#host-view').click();
+
+    const syncBtn = host.page.locator('button#sync-button');
+    await expect(syncBtn).toBeVisible();
     await syncBtn.click();
+
     await host.page.locator('button#public-view').click();
     await expect(host.page.locator('button#sync-button')).not.toBeVisible();
 
