@@ -1,7 +1,7 @@
 import { expect, request } from '@playwright/test';
-import type { Browser, Cookie, Page } from '@playwright/test';
+import type { Browser, Cookie, Locator, Page } from '@playwright/test';
 
-const api_port = process.env.API_PORT || '7000';
+export const api_port = process.env.API_PORT || '7000';
 
 /**
  * test refator ideas:
@@ -89,4 +89,17 @@ export const resetEventData = async (body: Record<string, unknown> = {}) => {
     });
     expect(response.status()).toBe(200);
     context.dispose();
+};
+
+export interface LbEntryConfig {
+    name: RegExp | string;
+    rank: RegExp | string;
+    points: RegExp | string;
+}
+
+export const checkLbEntry = async (entry: Locator, config: LbEntryConfig) => {
+    const { name, rank, points } = config;
+    await expect(entry.locator('h3.team-name')).toHaveText(name);
+    await expect(entry.locator('h3.rank')).toHaveText(rank);
+    await expect(entry.locator('h3.points')).toHaveText(points);
 };

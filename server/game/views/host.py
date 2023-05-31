@@ -225,10 +225,10 @@ class QuestionRevealView(APIView):
 
 
 class RoundLockView(APIView):
-    authentication_classes = [JwtAuthentication]
-    permission_classes = [IsAdminUser]
+    # authentication_classes = [JwtAuthentication]
+    # permission_classes = [IsAdminUser]
 
-    @method_decorator(csrf_protect)
+    # @method_decorator(csrf_protect)
     def post(self, request, joincode):
         try:
             data = DataCleaner(request.data)

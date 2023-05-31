@@ -2,8 +2,7 @@ import { test, request, expect } from '@playwright/test';
 import type { APIRequestContext } from '@playwright/test';
 import type { PlayerGamePage } from './gamePages.js';
 import { getUserPage } from './authConfigs.js';
-
-const api_port = process.env.API_PORT || '7000';
+import { api_port } from './utils.js';
 
 let apicontext: APIRequestContext;
 let player: PlayerGamePage;
@@ -28,14 +27,12 @@ test.beforeAll(async ({ browser }) => {
     player = (await getUserPage(browser, 'run_game_user_1')) as PlayerGamePage;
     p3 = (await getUserPage(browser, 'playerThree')) as PlayerGamePage;
 
-    // set up the evnet data
+    // set up the event data
     apicontext = await request.newContext({ baseURL: `http://localhost:${api_port}` });
-
     const response = await apicontext.post('/run-game', {
         headers: { 'content-type': 'application/json', accept: 'application/json' },
         data: { secret: 'todd is great', game_data: JSON.stringify(game_data) }
     });
-
     expect(response.status()).toBe(200);
 });
 
