@@ -19,7 +19,7 @@ from game.views.validation.data_cleaner import (
     get_game_or_404,
     get_location_or_404,
 )
-from user.authentication import JwtAuthentication
+from user.authentication import OpsAuthentication
 
 from game.models import (
     Game,
@@ -39,15 +39,14 @@ from game.processors import LeaderboardProcessor
 from game.utils.socket_classes import SendEventMessage, SendHostMessage
 
 # TODO:
-# - ensure that all functions require debug=False AND the secrt or gtfo
-# - OR - use a custom (dirty) auth sceme here to extract the jwt from an auth header
-# - this could even be an alternate method on the JWT Auth class (or new auth class?)
 # - maybe convert to regular view functions as there will be a lot of stuffz here
 # - extrapolate common processing and share w/ the actual view func
 
 
 class HostControlsView(APIView):
-    def post(self, request):
+    authentication_classes = [OpsAuthentication]
+
+    def post(self, request);
         data = DataCleaner(request.data)
         round_number = data.as_int("round_number")
         locked = data.as_bool("locked")

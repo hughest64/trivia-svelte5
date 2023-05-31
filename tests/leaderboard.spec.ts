@@ -1,8 +1,8 @@
 import { test, request, expect } from '@playwright/test';
-import { api_port, asyncTimeout, checkLbEntry, resetEventData } from './utils.js';
+import { api_port, checkLbEntry, resetEventData } from './utils.js';
 import type { APIRequestContext } from '@playwright/test';
 import type { PlayerGamePage, HostGamePage } from './gamePages.js';
-import { getUserPage } from './authConfigs.js';
+import { getUserPage, userAuthConfigs } from './authConfigs.js';
 
 // TODO: refactor to use the new api game_runner, also factor in megaround scores at the end of the game
 
@@ -80,7 +80,10 @@ test('host leaderboard updates on round lock, public updates on btn click', asyn
     // correct answer
     await p3.setResponse('basketball', { submit: true });
 
+    // TODO: add a method on HostPage and GamePage (BasePage) so that we have the jwt as an attr on init
+    const hostCookies = await host.page.context().cookies();
     const r = await apicontext.post('/ops/rlock/', {
+        headers: { Authorization: 'Basic ' + hostCookies.find((c) => c.name === 'jwt')?.value || '' },
         data: JSON.stringify({ round_number: 1, locked: true, joincode })
     });
     expect(r.status()).toBe(200);
