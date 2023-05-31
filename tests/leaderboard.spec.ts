@@ -18,9 +18,7 @@ let host: HostGamePage;
 
 const game_data = {
     game_id: 15,
-    joincode,
-    // only making sure the event exists, no other setup, joincode and game_id need to be required here!
-    create_only: true
+    joincode
 };
 
 test.beforeAll(async ({ browser }) => {
@@ -30,7 +28,7 @@ test.beforeAll(async ({ browser }) => {
     apicontext = await createApiContext();
     // set up the event
     const response = await apicontext.post('/run-game', {
-        data: { secret: 'todd is great', game_data: JSON.stringify(game_data) }
+        data: { secret: 'todd is great', create_only: true, game_data: JSON.stringify(game_data) }
     });
     expect(response.status()).toBe(200);
 });

@@ -131,6 +131,7 @@ class TeamActions:
         """
         if megaround_data is None:
             megaround_data = {}
+        print(megaround_data)
 
         selected_megaround = megaround_data.get("round", 0)
         megaround_values = megaround_data.get("values", {})

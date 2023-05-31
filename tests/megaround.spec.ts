@@ -31,7 +31,7 @@ test.beforeAll(async ({ browser }) => {
     apicontext = await request.newContext({ baseURL: `http://localhost:${api_port}` });
     const response = await apicontext.post('/run-game', {
         headers: { 'content-type': 'application/json', accept: 'application/json' },
-        data: { secret: 'todd is great', game_data: JSON.stringify(game_data) }
+        data: { secret: 'todd is great', game_data: JSON.stringify(game_data), create_only: false }
     });
     expect(response.status()).toBe(200);
 });

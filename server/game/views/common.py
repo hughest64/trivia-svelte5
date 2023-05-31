@@ -83,7 +83,8 @@ class RunGameView(APIView):
         # data = DataCleaner(request.data)
         # create_only = data.as_bool("create_only")
         # TODO: this all terrible, I think we need another option in run_game to handle create_only
-        create_only = True
+        data = DataCleaner(request.data)
+        create_only = data.as_bool("create_only")
         config_file = request.data.get("config_name")
         game_data = request.data.get("game_data")
         if create_only:
