@@ -19,17 +19,20 @@ let host: HostGamePage;
 const game_data = {
     game_id: 15,
     joincode,
-    create_only: true // just make sure the event exists, no other setup, joincode and game_id need to be required here!
+    // only making sure the event exists, no other setup, joincode and game_id need to be required here!
+    create_only: true
 };
 
 test.beforeAll(async ({ browser }) => {
     p1 = (await getUserPage(browser, 'playerOne')) as PlayerGamePage;
     p3 = (await getUserPage(browser, 'playerThree')) as PlayerGamePage;
     host = (await getUserPage(browser, 'host')) as HostGamePage;
-    apicontext = await request.newContext({ baseURL: `http://localhost:${api_port}` });
+    apicontext = await request.newContext({
+        baseURL: `http://localhost:${api_port}`,
+        extraHTTPHeaders: { 'content-type': 'application/json', accept: 'application/json' }
+    });
 
     const response = await apicontext.post('/run-game', {
-        headers: { 'content-type': 'application/json', accept: 'application/json' },
         data: { secret: 'todd is great', game_data: JSON.stringify(game_data) }
     });
     expect(response.status()).toBe(200);
@@ -78,7 +81,6 @@ test('host leaderboard updates on round lock, public updates on btn click', asyn
     await p3.setResponse('basketball', { submit: true });
 
     const r = await apicontext.post(`/host/${joincode}/lock`, {
-        headers: { 'content-type': 'application/json', accept: 'application/json' },
         data: JSON.stringify({ round_number: 1, locked: true })
     });
 
