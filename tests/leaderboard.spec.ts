@@ -80,11 +80,9 @@ test('host leaderboard updates on round lock, public updates on btn click', asyn
     // correct answer
     await p3.setResponse('basketball', { submit: true });
 
-    const r = await apicontext.post(`/host/${joincode}/lock`, {
-        data: JSON.stringify({ round_number: 1, locked: true })
+    const r = await apicontext.post('/ops/rlock/', {
+        data: JSON.stringify({ round_number: 1, locked: true, joincode })
     });
-
-    // console.log(await r.json());
     expect(r.status()).toBe(200);
 
     await p1.page.goto(`${eventUrl}/leaderboard`);

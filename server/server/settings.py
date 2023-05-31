@@ -67,6 +67,7 @@ INSTALLED_APPS = [
     # apps
     "user",
     "game",
+    "ops",
 ]
 
 MIDDLEWARE = [
