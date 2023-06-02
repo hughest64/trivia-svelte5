@@ -7,23 +7,18 @@ from rest_framework.response import Response
 from rest_framework.status import HTTP_400_BAD_REQUEST
 from rest_framework.views import APIView
 
-from game.views.validation.data_cleaner import (
-    DataCleaner,
-    get_event_or_404,
-)
-from user.authentication import JwtAuthentication
-
-from game.models import (
-    EventRoundState,
-    TriviaEvent,
-    LeaderboardEntry,
-    LEADERBOARD_TYPE_HOST,
-)
-
 from game.db import HostActions, ValidateData
+from game.views.validation.data_cleaner import get_event_or_404
+
+from user.authentication import JwtAuthentication
 
 
 class OpsAuthentication(JwtAuthentication):
+    """
+    Auth class used for testing only which inherits from JwtAuthentication.
+    Parses the jwt from an auth header and is only valid when DEBUG=True
+    """
+
     def authenticate(self, request):
         # only allow this method of auth for develeopment and testing
         if not settings.DEBUG:
