@@ -10,6 +10,7 @@ from django.core import management
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 
+from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework.status import HTTP_400_BAD_REQUEST
@@ -23,7 +24,7 @@ from game.views.validation.data_cleaner import (
     get_game_or_404,
     get_location_or_404,
 )
-from user.authentication import OpsAuthentication
+from user.authentication import JwtAuthentication
 
 from game.models import (
     Game,
@@ -45,6 +46,20 @@ from game.utils.socket_classes import SendEventMessage, SendHostMessage
 # TODO:
 # - maybe convert to regular view functions as there will be a lot of stuffz here
 # - extrapolate common processing and share w/ the actual view func
+
+
+class OpsAuthentication(JwtAuthentication):
+    def authenticate(self, request):
+        # only allow this method of auth for develeopment and testing
+        if not settings.DEBUG:
+            raise AuthenticationFailed("not allowed")
+
+        auth_header = request.META.get("HTTP_AUTHORIZATION")
+        if auth_header is None:
+            raise AuthenticationFailed("not authorized")
+
+        self.token = auth_header.rsplit()[-1]
+        return super().authenticate(request)
 
 
 class HostControlsView(APIView):
@@ -108,13 +123,9 @@ class HostControlsView(APIView):
 class RunGameView(APIView):
     """A view class for using the run_game management command"""
 
+    authentication_classes = [OpsAuthentication]
+
     def post(self, request):
-        secret = request.data.get("secret")
-        if secret != "todd is great" or not settings.DEBUG:
-            return Response(
-                {"detail": "ah ah ah, you didn't say the magic word"},
-                status=HTTP_400_BAD_REQUEST,
-            )
         # data = DataCleaner(request.data)
         # create_only = data.as_bool("create_only")
         # TODO: this all terrible, I think we need another option in run_game to handle create_only
@@ -149,6 +160,8 @@ class RunGameView(APIView):
 
 
 class ValidateDataView(APIView):
+    authentication_classes = [OpsAuthentication]
+
     def post(self, request):
         # TODO: data cleaner
         secret = request.data.get("secret")

@@ -6,7 +6,6 @@ from channels.sessions import CookieMiddleware
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
-from django.http import QueryDict
 
 from rest_framework import authentication
 from rest_framework.exceptions import AuthenticationFailed
@@ -83,15 +82,6 @@ class JwtAuthentication(authentication.BaseAuthentication):
             raise AuthenticationFailed("User not found")
 
         return (user, None)
-
-
-# Use for testing only!
-# TODO: maybe move this right into the ops app
-class OpsAuthentication(JwtAuthentication):
-    def authenticate(self, request):
-        # TODO: check for debug (and secret?) here, raise AuthenticationFailed if it fails
-        self.token = request.META.get("HTTP_AUTHORIZATION").rsplit()[-1]
-        return super().authenticate(request)
 
 
 class JwtAuthMiddleware:

@@ -30,6 +30,7 @@ test.beforeAll(async ({ browser }) => {
     // set up the event data
     apicontext = apicontext = await createApiContext();
     const response = await apicontext.post('ops/run-game/', {
+        headers: await player.getAuthHeader(),
         data: { secret: 'todd is great', game_data: JSON.stringify(game_data), create_only: false }
     });
     expect(response.status()).toBe(200);
@@ -72,7 +73,7 @@ test('the megaround updates properly', async () => {
 
     // validate the we've update the selected megaround in the database
     const response = await apicontext.post('ops/validate/', {
-        // TODO: once /validate is authed, get the users auth header
+        headers: await player.getAuthHeader(),
         // rd 8 should be the megaround for team 1
         data: { secret: 'todd is great', type: 'megaround', round: 8, team: 1, joincode: 7812 }
     });
@@ -91,7 +92,7 @@ test('a player that has not joined the game cannot submit a megaround', async ()
 
 test('a player cannot see locked megarounds', async () => {
     const response = await apicontext.post('ops/validate/', {
-        headers: { 'content-type': 'application/json', accept: 'application/json' },
+        headers: await player.getAuthHeader(),
         // rd 8 should be the megaround for team 1
         data: { secret: 'todd is great', type: 'megaround_lock', joincode: 7812 }
     });
