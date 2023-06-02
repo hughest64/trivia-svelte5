@@ -5,7 +5,7 @@ from django.core.management.base import BaseCommand
 from django.db import transaction
 
 from game.models import *
-from game.utils.game_play import GameActions, TeamActions, HostActions
+from game.utils.game_play import EventSetup, TeamActions, HostActions
 
 """
 TODO: it would be nice to use an existing event and start/stop and an rd. that way we could
@@ -148,7 +148,7 @@ class Command(BaseCommand):
                 game = Game.objects.latest("id")
                 print(f"no game with id {game_id} exists, falling back on {game.id}")
 
-            g = GameActions(
+            g = EventSetup(
                 game=game, joincode=joincode, team_count=teams, auto_create=True
             )
             self.stdout.write(f"playing: {g.event}")

@@ -4,7 +4,7 @@ from game.processors import LeaderboardProcessor, TriviaEventCreator
 from user.models import User
 
 
-class GameActions(TriviaEventCreator):
+class EventSetup(TriviaEventCreator):
     def __init__(
         self,
         game: Game,
@@ -69,6 +69,12 @@ class TeamActions:
         self.event = event
         self.game = event.game
         self.team = team
+
+    def create_team(self):
+        pass
+
+    def add_team_to_event(self):
+        pass
 
     # TODO: megaround!
     def answer_questions(
