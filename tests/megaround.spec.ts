@@ -12,9 +12,7 @@ const game_data = {
     game_id: null,
     joincode: 7812,
     teams: 1,
-    use_score_percentage: true,
     rounds_to_play: 8,
-    reuse: true,
     team_configs: {
         '1': {
             score_percentage: 80,

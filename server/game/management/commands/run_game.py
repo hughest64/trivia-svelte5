@@ -99,27 +99,23 @@ class Command(BaseCommand):
         else:
             game_data = options
 
+        # just need to make sure a given event exist, create one if not
         if game_data.get("create_only"):
             self.get_or_create_event(game_data)
             return
 
-        reuse = game_data.get("reuse")
         joincode = game_data.get("joincode")
         game_id = game_data.get("game_id")
 
-        # TODO, re-evaluate this reuse business
-        if reuse and joincode is None:
-            raise ValueError("-r cannot be used without -j")
-
-        if game_id is not None or reuse:
-            self.play_game(**game_data)
-
-        elif joincode is not None and options.get("delete"):
+        if joincode is not None and options.get("delete"):
             self.delete_data(joincode=joincode)
             self.stdout.write("deleted")
+            return
 
-        else:
-            self.stdout.write("unrecognized command")
+        if game_id is None and joincode is None:
+            raise ValueError("at least one of joincode or game_id is required")
+
+        self.play_game(**game_data)
 
     def get_or_create_event(self, game_data):
         _, created = TriviaEvent.objects.get_or_create(
@@ -131,16 +127,13 @@ class Command(BaseCommand):
 
     def play_game(
         self,
-        reuse=False,
         game_id: int = None,
-        location: int = None,  # id
         joincode: int = None,
         teams=0,
         rounds_to_play: int = None,
         team_configs=None,
         host_config=None,
-        use_score_percentage=None,
-        **_,
+        **kwargs,
     ):
         if team_configs is None:
             team_configs = {}
@@ -149,8 +142,12 @@ class Command(BaseCommand):
 
         with transaction.atomic():
             game = None
-            if game_id is not None:
+            try:
                 game = Game.objects.get(id=game_id)
+            except Game.DoesNotExist:
+                game = Game.objects.latest("id")
+                print(f"no game with id {game_id} exists, falling back on {game.id}")
+
             g = GameActions(
                 game=game, joincode=joincode, team_count=teams, auto_create=True
             )
@@ -159,34 +156,32 @@ class Command(BaseCommand):
             teams_dict = {team.name: TeamActions(g.event, team) for team in g.teams}
             host = HostActions(g.event)
 
-            # answer questions based on desired %correct
-            if use_score_percentage:
-                print("answering questions from percentage")
-                for i, team in enumerate(teams_dict.values(), start=1):
-                    team_config = team_configs[str(i)]
+            for i, team in enumerate(teams_dict.values(), start=1):
+                team_config = team_configs[str(i)]
+                # use the score percentage if provided
+                if team_config.get("score_percentage") is not None:
                     team.answer_questions_from_percentage(
-                        team_config.get("score_percentage", 0),
+                        team_config.get("score_percentage"),
                         through_rd=rounds_to_play,
                         megaround_data=team_config.get("megaround"),
                     )
-
-            # or play each round and answer questions based on the config
-            else:
-                for r in range(1, rounds_to_play + 1):
-                    for i, team in enumerate(teams_dict.values(), start=1):
-                        team_rd = (
-                            team_configs.get(str(i), {})
-                            .get("rounds", {})
-                            .get(str(r), [])
-                        )
+                # else answer questions on a per round played basis
+                else:
+                    team_rds = team_config.get("rounds", {})
+                    for r in range(1, rounds_to_play + 1):
+                        team_rd = team_rds.get(str(r), [])
+                        # we have predetermined answers for this round
                         if len(team_rd) > 0:
                             team.answer_questions_from_config(r, team_rd)
+                        # no answers provided, get exactly half the points (in a 5 question round)
                         else:
                             # TODO: perhaps poinst should be random here?
                             team.answer_questions(rd_num=r, points_awarded=2.5)
 
             if rounds_to_play is not None and host_config.get("lock_rounds"):
                 [host.lock(r) for r in range(1, rounds_to_play + 1)]
+
+            # TODO: handle there scenarios or remove them
             # host.score(r)
             # host.reveal_answers(r)
             # host.update_leaderboard()
