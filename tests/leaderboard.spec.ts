@@ -4,7 +4,7 @@ import { getUserPage } from './authConfigs.js';
 import type { APIRequestContext } from '@playwright/test';
 import type { PlayerGamePage, HostGamePage } from './gamePages.js';
 
-// TODO: refactor to use the new api game_runner, also factor in megaround scores at the end of the game
+// TODO: factor in megaround scores at the end of the game
 
 const joincode = '9900';
 const eventUrl = `/game/${joincode}`;
@@ -27,7 +27,7 @@ test.beforeAll(async ({ browser }) => {
     host = (await getUserPage(browser, 'host')) as HostGamePage;
     apicontext = await createApiContext();
     // set up the event
-    const response = await apicontext.post('/run-game', {
+    const response = await apicontext.post('ops/run-game/', {
         data: { secret: 'todd is great', create_only: true, game_data: JSON.stringify(game_data) }
     });
     expect(response.status()).toBe(200);

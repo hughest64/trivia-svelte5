@@ -1,8 +1,8 @@
-import { test, request, expect } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 import type { APIRequestContext } from '@playwright/test';
 import type { PlayerGamePage } from './gamePages.js';
 import { getUserPage } from './authConfigs.js';
-import { api_port, resetEventData } from './utils.js';
+import { createApiContext } from './utils.js';
 
 let apicontext: APIRequestContext;
 let player: PlayerGamePage;
@@ -18,7 +18,7 @@ const game_data = {
     team_configs: {
         '1': {
             score_percentage: 80,
-            megaround: { round: 5, values: { '1': 1, '2': 2, '3': 3, '4': 4, '5': 5 } }
+            megaround: { round: 6, values: { '1': 1, '2': 2, '3': 3, '4': 4, '5': 5 } }
         }
     }
 };
@@ -28,17 +28,12 @@ test.beforeAll(async ({ browser }) => {
     p3 = (await getUserPage(browser, 'playerThree')) as PlayerGamePage;
 
     // set up the event data
-    apicontext = await request.newContext({ baseURL: `http://localhost:${api_port}` });
-    const response = await apicontext.post('/run-game', {
-        headers: { 'content-type': 'application/json', accept: 'application/json' },
+    apicontext = apicontext = await createApiContext();
+    const response = await apicontext.post('ops/run-game/', {
         data: { secret: 'todd is great', game_data: JSON.stringify(game_data), create_only: false }
     });
     expect(response.status()).toBe(200);
 });
-
-// test.afterEach(async () => {
-//     await resetEventData({ joincodes: '7812' });
-// });
 
 test.afterAll(async () => {
     apicontext.dispose();
@@ -76,8 +71,8 @@ test('the megaround updates properly', async () => {
     await submitBtn.click();
 
     // validate the we've update the selected megaround in the database
-    const response = await apicontext.post('/validate', {
-        headers: { 'content-type': 'application/json', accept: 'application/json' },
+    const response = await apicontext.post('ops/validate/', {
+        // TODO: once /validate is authed, get the users auth header
         // rd 8 should be the megaround for team 1
         data: { secret: 'todd is great', type: 'megaround', round: 8, team: 1, joincode: 7812 }
     });
@@ -95,7 +90,7 @@ test('a player that has not joined the game cannot submit a megaround', async ()
 });
 
 test('a player cannot see locked megarounds', async () => {
-    const response = await apicontext.post('/validate', {
+    const response = await apicontext.post('ops/validate/', {
         headers: { 'content-type': 'application/json', accept: 'application/json' },
         // rd 8 should be the megaround for team 1
         data: { secret: 'todd is great', type: 'megaround_lock', joincode: 7812 }
