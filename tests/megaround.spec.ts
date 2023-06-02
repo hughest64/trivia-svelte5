@@ -75,7 +75,7 @@ test('the megaround updates properly', async () => {
     const response = await apicontext.post('ops/validate/', {
         headers: await player.getAuthHeader(),
         // rd 8 should be the megaround for team 1
-        data: { type: 'megaround', round: 8, team: 1, joincode: 7812 }
+        data: { type: 'validate_megaround', round: 8, team: 1, joincode: 7812 }
     });
     // for simplicity the api should return a 400 if something doesn't line up, 200 otherwise
     expect(response.status()).toBe(200);
