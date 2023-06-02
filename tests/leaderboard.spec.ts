@@ -30,7 +30,7 @@ test.beforeAll(async ({ browser }) => {
     // set up the event
     const response = await apicontext.post('ops/run-game/', {
         headers: await host.getAuthHeader(),
-        data: { secret: 'todd is great', game_data: JSON.stringify(game_data) }
+        data: { game_data: JSON.stringify(game_data) }
     });
     expect(response.status()).toBe(200);
 });

@@ -31,7 +31,7 @@ test.beforeAll(async ({ browser }) => {
     apicontext = apicontext = await createApiContext();
     const response = await apicontext.post('ops/run-game/', {
         headers: await player.getAuthHeader(),
-        data: { secret: 'todd is great', game_data: JSON.stringify(game_data) }
+        data: { game_data: JSON.stringify(game_data) }
     });
     expect(response.status()).toBe(200);
 });
@@ -75,7 +75,7 @@ test('the megaround updates properly', async () => {
     const response = await apicontext.post('ops/validate/', {
         headers: await player.getAuthHeader(),
         // rd 8 should be the megaround for team 1
-        data: { secret: 'todd is great', type: 'megaround', round: 8, team: 1, joincode: 7812 }
+        data: { type: 'megaround', round: 8, team: 1, joincode: 7812 }
     });
     // for simplicity the api should return a 400 if something doesn't line up, 200 otherwise
     expect(response.status()).toBe(200);
@@ -94,7 +94,7 @@ test('a player cannot see locked megarounds', async () => {
     const response = await apicontext.post('ops/validate/', {
         headers: await player.getAuthHeader(),
         // rd 8 should be the megaround for team 1
-        data: { secret: 'todd is great', type: 'megaround_lock', joincode: 7812 }
+        data: { type: 'megaround_lock', joincode: 7812 }
     });
     expect(response.status()).toBe(200);
 
