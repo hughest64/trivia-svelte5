@@ -99,9 +99,15 @@ class Command(BaseCommand):
         else:
             game_data = options
 
+        if game_data.get("create_only"):
+            self.get_or_create_event(game_data)
+            return
+
         reuse = game_data.get("reuse")
         joincode = game_data.get("joincode")
         game_id = game_data.get("game_id")
+
+        # TODO, re-evaluate this reuse business
         if reuse and joincode is None:
             raise ValueError("-r cannot be used without -j")
 
@@ -114,6 +120,14 @@ class Command(BaseCommand):
 
         else:
             self.stdout.write("unrecognized command")
+
+    def get_or_create_event(self, game_data):
+        _, created = TriviaEvent.objects.get_or_create(
+            joincode=game_data["joincode"],
+            defaults={"game_id": game_data["game_id"]},
+        )
+        created_msg = "was created" if created else "already exists"
+        print(f"event with joincode {game_data['joincode']} {created_msg}")
 
     def play_game(
         self,

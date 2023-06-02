@@ -18,7 +18,8 @@ let host: HostGamePage;
 
 const game_data = {
     game_id: 15,
-    joincode
+    joincode,
+    create_only: true
 };
 
 test.beforeAll(async ({ browser }) => {
@@ -29,7 +30,7 @@ test.beforeAll(async ({ browser }) => {
     // set up the event
     const response = await apicontext.post('ops/run-game/', {
         headers: await host.getAuthHeader(),
-        data: { secret: 'todd is great', create_only: true, game_data: JSON.stringify(game_data) }
+        data: { secret: 'todd is great', game_data: JSON.stringify(game_data) }
     });
     expect(response.status()).toBe(200);
 });

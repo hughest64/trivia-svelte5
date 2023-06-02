@@ -31,7 +31,7 @@ test.beforeAll(async ({ browser }) => {
     apicontext = apicontext = await createApiContext();
     const response = await apicontext.post('ops/run-game/', {
         headers: await player.getAuthHeader(),
-        data: { secret: 'todd is great', game_data: JSON.stringify(game_data), create_only: false }
+        data: { secret: 'todd is great', game_data: JSON.stringify(game_data) }
     });
     expect(response.status()).toBe(200);
 });

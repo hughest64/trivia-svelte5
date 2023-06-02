@@ -48,7 +48,7 @@ class HostControlsView(APIView):
         try:
             return HostActions.get(post_type)(request, joincode)
         except KeyError:
-            raise NotFound
+            raise NotFound(f"type {post_type} does not exist")
 
 
 class RunGameView(APIView):
@@ -57,36 +57,18 @@ class RunGameView(APIView):
     authentication_classes = [OpsAuthentication]
 
     def post(self, request):
-        # data = DataCleaner(request.data)
-        # create_only = data.as_bool("create_only")
-        # TODO: this all terrible, I think we need another option in run_game to handle create_only
-        data = DataCleaner(request.data)
-        create_only = data.as_bool("create_only")
         config_file = request.data.get("config_name")
         game_data = request.data.get("game_data")
-        if create_only:
-            game_data = json.loads(game_data)
-            _, created = TriviaEvent.objects.get_or_create(
-                joincode=game_data["joincode"],
-                defaults={"game_id": game_data["game_id"]},
-            )
-            created_msg = "was created" if created else "already exists"
-            print(f"event with joincode {game_data['joincode']} {created_msg}")
 
-        else:
-            # for now we only care about the config, but other features should be added;
-            if config_file is not None:
-                msg = management.call_command("run_game", config=config_file)
-            elif game_data is not None:
-                print(game_data)
-                msg = management.call_command("run_game", data=game_data)
-            else:
-                return Response(
-                    {"detail": "config_name or game_data is required"},
-                    status=HTTP_400_BAD_REQUEST,
-                )
-            print(msg)
-        # look up data as needed to return - or should the mgmt cmd do this?
+        if config_file is None and game_data is None:
+            return Response(
+                {"detail": "config_name or game_data is required"},
+                status=HTTP_400_BAD_REQUEST,
+            )
+
+        msg = management.call_command("run_game", config=config_file, data=game_data)
+        print(msg)
+
         return Response({"sucesss": True})
 
 
