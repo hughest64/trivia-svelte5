@@ -153,18 +153,15 @@ class Command(BaseCommand):
 
             g = EventSetup(game=game, joincode=joincode, auto_create=True)
             self.stdout.write(f"playing: {g.event}")
-
-            teams_dict = {}
-            for i in range(1, teams + 1):
-                teamClass = TeamActions(g.event)
-                teamClass.get_or_create_team(i)
-                teamClass.add_team_to_event()
-                teams_dict[teamClass.team.name] = teamClass
-
             host = HostActions(g.event)
 
-            for i, team in enumerate(teams_dict.values(), start=1):
+            for i in range(1, teams + 1):
                 team_config = team_configs[str(i)]
+                team = TeamActions(g.event)
+                team.get_or_create_team(
+                    team_config.get("name"), i, players=team_config.get("players")
+                )
+                team.add_team_to_event()
                 # use the score percentage if provided
                 if team_config.get("score_percentage") is not None:
                     team.answer_questions_from_percentage(

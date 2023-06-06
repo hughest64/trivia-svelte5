@@ -19,6 +19,7 @@ export const api_port = process.env.API_PORT || '7000';
 export interface TestConfig {
     username?: string;
     password?: string;
+    teamName?: string;
     pageUrl?: string;
     destinationUrl?: string;
     joincode?: string;

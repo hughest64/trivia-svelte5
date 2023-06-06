@@ -22,29 +22,39 @@ class EventSetup(TriviaEventCreator):
 # provide various getters/setters to update the db to simulate game play
 class TeamActions:
     def __init__(
-        self, event: TriviaEvent, team: Team = None, team_id: int = None, user=None
+        self, event: TriviaEvent, team: Team = None, team_id: int = None
     ) -> None:
         self.event = event
         self.game = event.game
         self.team = team
         self.team_id = team_id
-        self.user = user
+        self.players = []
 
-    def get_or_create_team(self, i=None):
+    def get_or_create_team(self, team_name=None, i=None, players=None):
+        if team_name is None:
+            team_name = f"run_game_team_{i}"
+
+        if players is None:
+            players = [f"run_game_user_{i}"]
+
+        # TODO: we probably don't need to set the password cuz auto create
+        # (but probably only with the yet to be implemented new version)
         self.team, _ = Team.objects.get_or_create(
-            name=f"run_game_team_{i}", password=f"run_game_team_{i}"
+            name=team_name, defaults={"password": f"12345_{i}"}
         )
-        user, created = User.objects.get_or_create(
-            username=f"run_game_user_{i}",
-            defaults={"active_team": self.team, "password": 12345},
-        )
-        if created:
-            user.set_password("12345")
-            user.save()
 
-        self.user = user
+        for player in players:
+            user, created = User.objects.get_or_create(
+                username=player,
+                defaults={"active_team": self.team, "password": 12345},
+            )
+            if created:
+                user.set_password("12345")
+                user.save()
 
-        self.team.members.add(user)
+            self.players.append(user)
+
+        self.team.members.set(self.players)
 
     def add_team_to_event(self, i=None):
         LeaderboardEntry.objects.get_or_create(
@@ -54,7 +64,7 @@ class TeamActions:
             event=self.event, team=self.team, leaderboard_type=LEADERBOARD_TYPE_PUBLIC
         )
         self.event.event_teams.add(self.team)
-        self.event.players.add(self.user)
+        self.event.players.add(*self.players)
 
     # TODO: megaround!
     def answer_questions(

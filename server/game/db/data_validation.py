@@ -26,7 +26,7 @@ class ValidateData:
         try:
             lbe = LeaderboardEntry.objects.get(
                 event=event,
-                team__name=f"run_game_team_{team}",
+                team__name=team,
                 leaderboard_type=LEADERBOARD_TYPE_HOST,
             )
         except LeaderboardEntry.DoesNotExist:

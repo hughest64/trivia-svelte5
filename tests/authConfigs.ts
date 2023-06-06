@@ -3,12 +3,16 @@ import { PlayerGamePage, HostGamePage } from './gamePages.js';
 import type { Browser, Cookie } from '@playwright/test';
 import type { TestConfig } from './utils.js';
 
-export type UserAuthConfigs = Record<string, Pick<TestConfig, 'username' | 'password' | 'authStoragePath' | 'cookies'>>;
+export type UserAuthConfigs = Record<
+    string,
+    Pick<TestConfig, 'username' | 'password' | 'authStoragePath' | 'cookies' | 'teamName'>
+>;
 
 export const userAuthConfigs: UserAuthConfigs = {
     playerOne: {
         username: 'player',
         password: 'player',
+        teamName: 'hello world',
         authStoragePath: 'playwright/.auth/player.json'
     },
     playerTwo: {

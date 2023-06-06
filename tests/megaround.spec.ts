@@ -3,10 +3,13 @@ import type { APIRequestContext } from '@playwright/test';
 import type { PlayerGamePage } from './gamePages.js';
 import { getUserPage } from './authConfigs.js';
 import { createApiContext } from './utils.js';
+import { userAuthConfigs } from './authConfigs.js';
 
 let apicontext: APIRequestContext;
 let player: PlayerGamePage;
 let p3: PlayerGamePage;
+
+const { playerOne } = userAuthConfigs;
 
 const game_data = {
     game_id: null,
@@ -15,6 +18,8 @@ const game_data = {
     rounds_to_play: 8,
     team_configs: {
         '1': {
+            name: playerOne.teamName,
+            players: [playerOne.username],
             score_percentage: 80,
             megaround: { round: 6, values: { '1': 1, '2': 2, '3': 3, '4': 4, '5': 5 } }
         }
@@ -22,7 +27,7 @@ const game_data = {
 };
 
 test.beforeAll(async ({ browser }) => {
-    player = (await getUserPage(browser, 'run_game_user_1')) as PlayerGamePage;
+    player = (await getUserPage(browser, 'playerOne')) as PlayerGamePage;
     p3 = (await getUserPage(browser, 'playerThree')) as PlayerGamePage;
 
     // set up the event data
@@ -73,10 +78,11 @@ test('the megaround updates properly', async () => {
     const response = await apicontext.post('ops/validate/', {
         headers: await player.getAuthHeader(),
         // rd 8 should be the megaround for team 1
-        data: { type: 'validate_megaround', round: 8, team: 1, joincode: 7812 }
+        data: { type: 'validate_megaround', round: 8, team: playerOne.teamName, joincode: 7812 }
     });
-    // for simplicity the api should return a 400 if something doesn't line up, 200 otherwise
-    expect(response.status()).toBe(200);
+    if (response.status() !== 200) {
+        throw new Error(await response.json());
+    }
 });
 
 test('a player that has not joined the game cannot submit a megaround', async () => {
