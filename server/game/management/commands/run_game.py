@@ -117,7 +117,7 @@ class Command(BaseCommand):
 
         self.play_game(**game_data)
 
-    # TODO dep
+    # TODO this may be superfluous as we can get or create on the EventSetup class
     def get_or_create_event(self, game_data):
         _, created = TriviaEvent.objects.get_or_create(
             joincode=game_data["joincode"],
@@ -161,7 +161,6 @@ class Command(BaseCommand):
                 teamClass.add_team_to_event()
                 teams_dict[teamClass.team.name] = teamClass
 
-            # teams_dict = {team.name: TeamActions(g.event, team) for team in g.teams}
             host = HostActions(g.event)
 
             for i, team in enumerate(teams_dict.values(), start=1):
@@ -197,6 +196,6 @@ class Command(BaseCommand):
     def delete_data(game_id=None, event_id=None, joincode=None):
         """Delete all downstream data associated with game_id"""
         if joincode is not None:
-            # due models.CASCADE, this will delete associated leaderboard entries and round states
+            # due to models.CASCADE, this will delete associated leaderboard entries and round states
             # but NOT teams or users
             TriviaEvent.objects.filter(joincode=joincode).delete()
