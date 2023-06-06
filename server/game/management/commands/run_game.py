@@ -117,6 +117,7 @@ class Command(BaseCommand):
 
         self.play_game(**game_data)
 
+    # TODO dep
     def get_or_create_event(self, game_data):
         _, created = TriviaEvent.objects.get_or_create(
             joincode=game_data["joincode"],
@@ -146,14 +147,21 @@ class Command(BaseCommand):
                 game = Game.objects.get(id=game_id)
             except Game.DoesNotExist:
                 game = Game.objects.latest("id")
-                print(f"no game with id {game_id} exists, falling back on {game.id}")
+                print(
+                    f"Game with id {game_id} does no exist, using latest id, {game.id}"
+                )
 
-            g = EventSetup(
-                game=game, joincode=joincode, team_count=teams, auto_create=True
-            )
+            g = EventSetup(game=game, joincode=joincode, auto_create=True)
             self.stdout.write(f"playing: {g.event}")
 
-            teams_dict = {team.name: TeamActions(g.event, team) for team in g.teams}
+            teams_dict = {}
+            for i in range(1, teams + 1):
+                teamClass = TeamActions(g.event)
+                teamClass.get_or_create_team(i)
+                teamClass.add_team_to_event()
+                teams_dict[teamClass.team.name] = teamClass
+
+            # teams_dict = {team.name: TeamActions(g.event, team) for team in g.teams}
             host = HostActions(g.event)
 
             for i, team in enumerate(teams_dict.values(), start=1):

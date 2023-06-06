@@ -6,23 +6,10 @@ from user.models import User
 
 class EventSetup(TriviaEventCreator):
     def __init__(
-        self,
-        game: Game,
-        joincode: int = None,
-        team_count: int = None,
-        auto_create=False,
-        **kwargs,
+        self, game: Game, joincode: int = None, auto_create=False, **kwargs
     ) -> None:
         super().__init__(game, joincode=joincode, auto_create=auto_create, **kwargs)
         self.joincode = joincode
-        # number of teams to create and add to the event
-        self.team_count = team_count
-        self.players = []
-        self.teams = []
-
-        if self.team_count > 0:
-            self.create_teams()
-            self.add_teams_to_event()
 
     def get_or_create_event(self, reset=True):
         super().get_or_create_event()
@@ -31,50 +18,43 @@ class EventSetup(TriviaEventCreator):
             QuestionResponse.objects.filter(event=self.event).delete()
             LeaderboardEntry.objects.filter(event=self.event).delete()
 
-    def create_teams(self):
-        """Create the desired number of teams and player user per teams"""
-        for i in range(1, self.team_count + 1):
-            team, _ = Team.objects.get_or_create(
-                name=f"run_game_team_{i}", password=f"run_game_team_{i}"
-            )
-            user, created = User.objects.get_or_create(
-                username=f"run_game_user_{i}",
-                defaults={"active_team": team, "password": 12345},
-            )
-            if created:
-                user.set_password("12345")
-                user.save()
-
-            team.members.add(user)
-            self.players.append(user)
-            self.teams.append(team)
-
-    def add_teams_to_event(self):
-        """Add teams to the event"""
-        # create leaderboard entries for each team (based off of user active team)
-        for team in self.teams:
-            LeaderboardEntry.objects.get_or_create(
-                event=self.event, team=team, leaderboard_type=LEADERBOARD_TYPE_HOST
-            )
-            LeaderboardEntry.objects.get_or_create(
-                event=self.event, team=team, leaderboard_type=LEADERBOARD_TYPE_PUBLIC
-            )
-        self.event.event_teams.set(self.teams)
-        self.event.players.set(self.players)
-
 
 # provide various getters/setters to update the db to simulate game play
 class TeamActions:
-    def __init__(self, event: TriviaEvent, team: Team) -> None:
+    def __init__(
+        self, event: TriviaEvent, team: Team = None, team_id: int = None, user=None
+    ) -> None:
         self.event = event
         self.game = event.game
         self.team = team
+        self.team_id = team_id
+        self.user = user
 
-    def create_team(self):
-        pass
+    def get_or_create_team(self, i=None):
+        self.team, _ = Team.objects.get_or_create(
+            name=f"run_game_team_{i}", password=f"run_game_team_{i}"
+        )
+        user, created = User.objects.get_or_create(
+            username=f"run_game_user_{i}",
+            defaults={"active_team": self.team, "password": 12345},
+        )
+        if created:
+            user.set_password("12345")
+            user.save()
 
-    def add_team_to_event(self):
-        pass
+        self.user = user
+
+        self.team.members.add(user)
+
+    def add_team_to_event(self, i=None):
+        LeaderboardEntry.objects.get_or_create(
+            event=self.event, team=self.team, leaderboard_type=LEADERBOARD_TYPE_HOST
+        )
+        LeaderboardEntry.objects.get_or_create(
+            event=self.event, team=self.team, leaderboard_type=LEADERBOARD_TYPE_PUBLIC
+        )
+        self.event.event_teams.add(self.team)
+        self.event.players.add(self.user)
 
     # TODO: megaround!
     def answer_questions(
@@ -137,7 +117,6 @@ class TeamActions:
         """
         if megaround_data is None:
             megaround_data = {}
-        print(megaround_data)
 
         selected_megaround = megaround_data.get("round", 0)
         megaround_values = megaround_data.get("values", {})
