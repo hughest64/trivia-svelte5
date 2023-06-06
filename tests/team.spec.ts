@@ -26,3 +26,5 @@ test('join team via code', async ({ p1Page }) => {
     await expect(p1Page.page).toHaveURL('/game/join');
     await expect(p1Page.page.locator('p', { hasText: /hello world/i })).toBeVisible();
 });
+
+// TODO: we need a test for selecting an exiting team

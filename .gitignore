@@ -19,5 +19,7 @@ server/static/
 server/db*.sqlite3
 # production settings
 server/server/settings_prod.py
+# a file that changes frequently and is only used for development
+utility.ipynb
 
 playwright/.auth

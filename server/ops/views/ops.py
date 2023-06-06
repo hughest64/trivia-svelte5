@@ -1,5 +1,8 @@
+import re
+
 from django.conf import settings
 from django.core import management
+from django.utils import timezone
 
 from rest_framework.exceptions import AuthenticationFailed, NotFound
 from rest_framework.permissions import IsAdminUser
@@ -8,6 +11,7 @@ from rest_framework.status import HTTP_400_BAD_REQUEST
 from rest_framework.views import APIView
 
 from game.db import HostActions, ValidateData
+from game.models import Game, TriviaEvent
 from game.views.validation.data_cleaner import get_event_or_404
 
 from user.authentication import JwtAuthentication
@@ -42,6 +46,43 @@ class HostControlsView(APIView):
             return HostActions.get(post_type)(request, joincode)
         except KeyError:
             raise NotFound(f"type {post_type} does not exist")
+
+
+class GameSetupView(APIView):
+    """Update test block games to this week"""
+
+    authentication_classes = [OpsAuthentication]
+
+    @staticmethod
+    def get_date_string():
+        return f"{timezone.localdate():%Y%m%d}"
+
+    def post(self, request):
+        game_set = Game.objects.filter(block_code__in=["test_A", "test_B"])
+        if not game_set.exists:
+            raise NotFound("no games for test block A or test block B exist")
+
+        # update date used and title so the host has current games available
+        for game in game_set:
+            game.title = re.sub(r"^\d+", self.get_date_string(), game.title)
+            game.date_used = timezone.localdate()
+
+        Game.objects.bulk_update(game_set, fields=["title", "date_used"])
+
+        return Response({"success": True})
+
+
+class GameDeleteView(APIView):
+    authentication_classes = [OpsAuthentication]
+
+    def post(self, request):
+        joincodes = request.data.get("joincodes")
+        if joincodes is None:
+            raise NotFound("no joincodes found in post data")
+
+        TriviaEvent.objects.filter(joincode__in=joincodes).delete()
+
+        return Response({"success": True})
 
 
 class RunGameView(APIView):
