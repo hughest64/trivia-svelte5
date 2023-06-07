@@ -45,18 +45,17 @@ test.beforeAll(async ({ browser }) => {
     host = (await getUserPage(browser, 'host')) as HostGamePage;
 });
 
-test.beforeEach(async () => {
-    // await resetEventData({ joincodes: joincode });
-    await apicontext.post('/ops/run-game/', {
-        headers: await host.getAuthHeader(),
-        data: { game_data: JSON.stringify(game_data) }
-    });
-});
-
 test.afterAll(async () => {
     await p1.page.context().close();
     await host.page.context().close();
     await apicontext.dispose();
+});
+
+test.beforeEach(async () => {
+    await apicontext.post('/ops/run-game/', {
+        headers: await host.getAuthHeader(),
+        data: { game_data: JSON.stringify(game_data) }
+    });
 });
 
 test('scoring updates properly update the leaderboards', async () => {
@@ -108,6 +107,7 @@ test('scoring updates properly update the leaderboards', async () => {
     await expect(hostEntry2.locator('h3.points')).toHaveText('1');
 });
 
+// TODO: this should really be in leaderboard.spec
 test('host reveal questions to players', async () => {
     // p1 should not see answer summary
     await p1.page.goto(`/game/${joincode}`);
