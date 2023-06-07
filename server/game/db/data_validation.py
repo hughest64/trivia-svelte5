@@ -38,17 +38,12 @@ class ValidateData:
                 leaderboard_type=LEADERBOARD_TYPE_HOST,
             )
         except LeaderboardEntry.DoesNotExist:
-            return Response(
-                {"detail": f"no leaderboard entry for team {team}"},
-                status=HTTP_400_BAD_REQUEST,
-            )
+            raise TestFailed(f"no leaderboard entry for team {team}")
+
         else:
             if lbe.selected_megaround != round:
-                return Response(
-                    {
-                        "detail": f"selected megaround {lbe.selected_megaround} does not equal {round}"
-                    },
-                    status=HTTP_400_BAD_REQUEST,
+                raise TestFailed(
+                    f"selected megaround {lbe.selected_megaround} does not equal {round}"
                 )
 
         return Response({"success": True})
