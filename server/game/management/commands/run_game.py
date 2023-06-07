@@ -177,18 +177,18 @@ class Command(BaseCommand):
                     team.answer_questions(team_config.get("questions"))
 
                 # else answer questions on a per round played basis
-                else:
-                    team_rds = team_config.get("rounds", {})
-                    for r in range(1, rounds_to_play + 1):
-                        team_rd = team_rds.get(str(r), [])
-                        # we have predetermined answers for this round
-                        if len(team_rd) > 0:
-                            team.answer_questions_from_config(r, team_rd)
+                # else:
+                #     team_rds = team_config.get("rounds", {})
+                #     for r in range(1, rounds_to_play + 1):
+                #         team_rd = team_rds.get(str(r), [])
+                #         # we have predetermined answers for this round
+                #         if len(team_rd) > 0:
+                #             team.answer_questions_from_config(r, team_rd)
 
-                        else:
-                            # TODO: eliminate or raise
-                            pass
-                            # team.answer_questions(rd_num=r, points_awarded=2.5)
+                #         else:
+                #             # TODO: eliminate or raise
+                #             pass
+                #             # team.answer_questions(rd_num=r, points_awarded=2.5)
 
             if rounds_to_play is not None and host_config.get("lock_rounds"):
                 [host.lock(r) for r in range(1, rounds_to_play + 1)]

@@ -44,7 +44,6 @@ class TeamActions:
         self.team, _ = Team.objects.get_or_create(
             name=team_name, defaults={"password": f"12345_{i}"}
         )
-
         for player in players:
             user, created = User.objects.get_or_create(
                 username=player,
@@ -72,7 +71,6 @@ class TeamActions:
     def answer_questions(self, question_data, megaround_data=None):
         """Answer a set of questions for for an event round"""
         questions = self.game.game_questions.all()
-        print(question_data.keys())
 
         for q in questions:
             # only answer questions provided
