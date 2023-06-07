@@ -21,9 +21,9 @@ test.beforeAll(async ({ browser }) => {
 });
 
 test.afterEach(async () => {
-    const response = await apicontext.post('ops/game-delete/', {
+    const response = await apicontext.post('ops/delete/', {
         headers: await host.getAuthHeader(),
-        data: { joincodes }
+        data: { type: 'game', joincodes }
     });
     joincodes = [];
     expect(response.status()).toBe(200);

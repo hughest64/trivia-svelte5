@@ -11,7 +11,7 @@ from rest_framework.status import HTTP_400_BAD_REQUEST
 from rest_framework.views import APIView
 
 from game.db import HostActions, ValidateData
-from game.models import Game, TriviaEvent
+from game.models import Game, TriviaEvent, Team
 from game.views.validation.data_cleaner import get_event_or_404
 
 from user.authentication import JwtAuthentication
@@ -72,15 +72,27 @@ class GameSetupView(APIView):
         return Response({"success": True})
 
 
-class GameDeleteView(APIView):
+class DeleteView(APIView):
     authentication_classes = [OpsAuthentication]
 
     def post(self, request):
-        joincodes = request.data.get("joincodes")
-        if joincodes is None:
-            raise NotFound("no joincodes found in post data")
+        delete_type = request.data.get("type")
+        # TODO
+        # if delete_type is None:
+        #     raise "an exception"
+        if delete_type == "game":
+            joincodes = request.data.get("joincodes")
+            if joincodes is None:
+                raise NotFound("no joincodes found in post data")
 
-        TriviaEvent.objects.filter(joincode__in=joincodes).delete()
+            TriviaEvent.objects.filter(joincode__in=joincodes).delete()
+
+        if delete_type == "team":
+            team_names = request.data.get("team_names")
+            if team_names is None:
+                raise NotFound("no team names were provided")
+
+            Team.objects.filter(name__in=team_names).delete()
 
         return Response({"success": True})
 
