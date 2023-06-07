@@ -7,6 +7,8 @@ import type { HostGamePage } from './gamePages.js';
 let apicontext: APIRequestContext;
 let host: HostGamePage;
 
+let joincodes: string[] = [];
+
 test.beforeAll(async ({ browser }) => {
     host = (await getUserPage(browser, 'host')) as HostGamePage;
     apicontext = apicontext = await createApiContext();
@@ -18,12 +20,21 @@ test.beforeAll(async ({ browser }) => {
     expect(response.status()).toBe(200);
 });
 
+test.afterEach(async () => {
+    const response = await apicontext.post('ops/game-delete/', {
+        headers: await host.getAuthHeader(),
+        data: { joincodes }
+    });
+    joincodes = [];
+    expect(response.status()).toBe(200);
+});
+
 test.afterAll(async () => {
     await host.page.context().close();
     await apicontext.dispose();
 });
 
-test('host can view game options', async () => {
+test('default selected event changes based on inputs', async () => {
     await host.page.goto('/host/event-setup');
     await expect(host.page).toHaveURL('/host/event-setup');
     // expecthost home location is happening place and use sound is not checked
@@ -49,22 +60,48 @@ test('host can view game options', async () => {
 
     const joincodeHeader = host.page.locator('h4', { hasText: /event join code/i }).locator('strong');
     const joincode = await joincodeHeader.textContent();
+    joincodes.push(joincode as string);
 
-    // TODO api check that there is no player limit
-
-    const response = await apicontext.post('ops/game-delete/', {
+    // expect a player limit to not be set
+    const response = await apicontext.post('ops/validate/', {
         headers: await host.getAuthHeader(),
-        data: { joincodes: [joincode] }
+        data: { type: 'player_limit', limit: null, joincode }
     });
+
+    // log the response if we don't get a 200
+    if (response.status() !== 200) {
+        console.log(await response.json());
+    }
     expect(response.status()).toBe(200);
 });
 
-// NEW TEST
-// goto page select
-// change block (?)
-// expect game to have the new name
+test('player limit gets set properly', async () => {
+    await host.page.goto('/host/event-setup');
+    await expect(host.page).toHaveURL('/host/event-setup');
 
-// test player limit setting
-// - check the box and post
-// - use the api context to valdiate the event was created w/ a one player limit
-// - add created jc to the list
+    const playerLimit = host.page.locator('#player-limit-btn');
+    await expect(playerLimit).toBeVisible();
+    await playerLimit.click();
+
+    const submitBtn = host.page.locator('button[type="submit"]');
+    await expect(submitBtn).toBeVisible();
+    await submitBtn.click();
+
+    const joincodeHeader = host.page.locator('h4', { hasText: /event join code/i }).locator('strong');
+    const joincode = await joincodeHeader.textContent();
+    joincodes.push(joincode as string);
+
+    // expect a player limit to not be set
+    const response = await apicontext.post('ops/validate/', {
+        headers: await host.getAuthHeader(),
+        data: { type: 'player_limit', limit: 1, joincode }
+    });
+
+    // log the response if we don't get a 200
+    if (response.status() !== 200) {
+        console.log(await response.json());
+    }
+    expect(response.status()).toBe(200);
+});
+
+// TODO: selecta  new block and validate the selected game

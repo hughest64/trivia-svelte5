@@ -1,3 +1,4 @@
+from rest_framework.exceptions import APIException
 from rest_framework.response import Response
 from rest_framework.status import HTTP_400_BAD_REQUEST
 
@@ -8,12 +9,19 @@ from game.models import (
 )
 
 
+class TestFailed(APIException):
+    status_code = HTTP_400_BAD_REQUEST
+    default_detail = "The test failed"
+    default_code = "test_failed"
+
+
 class ValidateData:
     @classmethod
     def get(cls, key):
         method_dct = {
             "validate_megaround": cls.validate_megaround,
             "megaround_lock": cls.megaround_lock,
+            "player_limit": cls.player_limit,
         }
 
         return method_dct[key]
@@ -52,4 +60,13 @@ class ValidateData:
             EventRoundState.objects.update_or_create(
                 event=event, round_number=i, defaults={"locked": True}
             )
+        return Response({"sucess": True})
+
+    @classmethod
+    def player_limit(cls, request, event):
+        limit = request.data.get("limit")
+
+        if limit != event.player_limit:
+            raise TestFailed(f"limit {limit} != event limit {event.player_limit}")
+
         return Response({"sucess": True})
