@@ -42,6 +42,7 @@ test.afterAll(async () => {
     await host.page.context().close();
 });
 
+// TODO: figure out what needs to be reset so this can be deprecated
 test.afterEach(async () => {
     await resetEventData({ joincodes: joincode });
 });
@@ -140,6 +141,7 @@ test('host leaderboard updates on round lock, public updates on btn click', asyn
     await checkLbEntry(p1entry2, { name: /hello world/i, rank: '-', points: '0' });
 });
 
+// TODO: with the new implementation, this has trouble with auth but not all the time, why?
 test('round headers on the leaderboard navigate back to the game', async () => {
     await p1.page.goto(leaderboardUrl);
     await expect(p1.page).toHaveURL(leaderboardUrl);

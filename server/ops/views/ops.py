@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from rest_framework.status import HTTP_400_BAD_REQUEST
 from rest_framework.views import APIView
 
-from game.db import HostActions, ValidateData
+from game.db import HostActions, ValidateData, TestFailed
 from game.models import Game, TriviaEvent, Team
 from game.views.validation.data_cleaner import get_event_or_404
 
@@ -77,9 +77,9 @@ class DeleteView(APIView):
 
     def post(self, request):
         delete_type = request.data.get("type")
-        # TODO
-        # if delete_type is None:
-        #     raise "an exception"
+        if delete_type is None:
+            raise TestFailed("please provide a delete type")
+
         if delete_type == "game":
             joincodes = request.data.get("joincodes")
             if joincodes is None:

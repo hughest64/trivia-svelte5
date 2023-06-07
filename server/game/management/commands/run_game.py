@@ -130,6 +130,7 @@ class Command(BaseCommand):
         self,
         game_id: int = None,
         joincode: int = None,
+        reset_event=True,
         teams=0,
         rounds_to_play: int = None,
         team_configs=None,
@@ -151,7 +152,9 @@ class Command(BaseCommand):
                     f"Game with id {game_id} does no exist, using latest id, {game.id}"
                 )
 
-            g = EventSetup(game=game, joincode=joincode, auto_create=True)
+            g = EventSetup(
+                game=game, joincode=joincode, auto_create=True, reset=reset_event
+            )
             self.stdout.write(f"playing: {g.event}")
             host = HostActions(g.event)
 
@@ -162,6 +165,7 @@ class Command(BaseCommand):
                     team_config.get("name"), i, players=team_config.get("players")
                 )
                 team.add_team_to_event()
+
                 # use the score percentage if provided
                 if team_config.get("score_percentage") is not None:
                     team.answer_questions_from_percentage(
@@ -169,6 +173,9 @@ class Command(BaseCommand):
                         through_rd=rounds_to_play,
                         megaround_data=team_config.get("megaround"),
                     )
+                elif team_config.get("questions") is not None:
+                    team.answer_questions(team_config.get("questions"))
+
                 # else answer questions on a per round played basis
                 else:
                     team_rds = team_config.get("rounds", {})
@@ -177,10 +184,11 @@ class Command(BaseCommand):
                         # we have predetermined answers for this round
                         if len(team_rd) > 0:
                             team.answer_questions_from_config(r, team_rd)
-                        # no answers provided, get exactly half the points (in a 5 question round)
+
                         else:
-                            # TODO: perhaps poinst should be random here?
-                            team.answer_questions(rd_num=r, points_awarded=2.5)
+                            # TODO: eliminate or raise
+                            pass
+                            # team.answer_questions(rd_num=r, points_awarded=2.5)
 
             if rounds_to_play is not None and host_config.get("lock_rounds"):
                 [host.lock(r) for r in range(1, rounds_to_play + 1)]
