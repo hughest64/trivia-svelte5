@@ -1,8 +1,7 @@
-import { test } from '@playwright/test';
-import { asyncTimeout } from './utils.js';
-import { createApiContext } from './utils.js';
+import { test, expect } from '@playwright/test';
+import { asyncTimeout, createApiContext } from './utils.js';
 import { getUserPage, userAuthConfigs } from './authConfigs.js';
-import { expect, type APIRequestContext, type APIResponse } from '@playwright/test';
+import type { APIRequestContext, APIResponse } from '@playwright/test';
 import type { PlayerGamePage } from './gamePages.js';
 
 const submissionOne = 'answer for question';
@@ -103,4 +102,17 @@ test('responses only update for the same team on the same event', async () => {
     await p2.expectInputValueToBe(submissionOne);
     await p3.expectInputValueToBeFalsy();
     await p4.expectInputValueToBe(submissionTwo);
+});
+
+test('unsubmitted class is applied properly', async () => {
+    await p1.page.goto(`/game/${joincode_1}`);
+    const responseInput = p1.page.locator('input[name="response_text"]');
+    // expect the class not be to applied
+    await expect(p1.page.locator('div#response-container')).not.toHaveClass(/notsubmitted/);
+
+    await responseInput.fill('I know the answer');
+    await expect(p1.page.locator('div#response-container')).toHaveClass(/notsubmitted/);
+
+    await p1.page.locator('button:has-text("Submit")').click();
+    await expect(p1.page.locator('div#response-container')).toHaveClass(/notsubmitted/);
 });
