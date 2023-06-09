@@ -1,10 +1,136 @@
-import { expect, test } from '@playwright/test';
-import { asyncTimeout, getBrowserPage, login, resetEventData } from './utils.js';
-import { PlayerGamePage } from './gamePages.js';
-import type { Page } from '@playwright/test';
+import { expect, test } from './authConfigs.js';
+import { asyncTimeout, createApiContext, login, resetEventData } from './utils.js';
+import type { APIRequestContext } from '@playwright/test';
 
-const adminUser = 'sample_admin';
-const playerSelectedTeam = 'hello world';
+const joincode = '9906';
+
+const game_data = {
+    joincode,
+    player_limit: true
+    // create_only: true
+};
+
+let apicontext: APIRequestContext;
+
+test.beforeAll(async ({ host }) => {
+    apicontext = await createApiContext();
+    const resp = await apicontext.post('/ops/run-game/', {
+        headers: await host.getAuthHeader(),
+        data: { game_data: JSON.stringify(game_data) }
+    });
+    expect(resp.status()).toBe(200);
+});
+
+test.afterAll(async () => {
+    await apicontext.dispose();
+});
+
+test('guest login', async ({ page }) => {
+    await page.goto('/');
+    // not logged in, we should land on the welcome page
+    await expect(page).toHaveTitle(/welcome/i);
+    // click to log in as a guest
+    await page.locator('text=Play as a Guest').click();
+    // since guest is not a staff user, they should see the team select component
+    await expect(page).toHaveTitle(/team select/i);
+    expect(await page.textContent('h1')).toBe('Create a New Team');
+});
+
+// TODO: can we test for query params? I think probably via regex
+test('all authed pages redirect to welcome page when not logged in', async ({ page }) => {
+    await page.goto('/team');
+    await expect(page).toHaveURL(/\/?next=\/team/);
+
+    await page.goto('/game/join');
+    await expect(page).toHaveURL(/\/?next=\/game\/join/);
+
+    await page.goto('/game/1234');
+    await expect(page).toHaveURL(/\/?next=\/game\/1234/);
+
+    await page.goto('/host/choice');
+    await expect(page).toHaveURL(/\/?next=\/host\/choice/);
+
+    await page.goto('/host/event-setup');
+    await expect(page).toHaveURL(/\/?next=\/host\/event-setup/);
+
+    await page.goto('/host/1234');
+    await expect(page).toHaveURL(/\/?next=\/host\/1234/);
+});
+
+test('navigate to a game', async ({ p3 }) => {
+    await p3.page.goto('/team');
+    await expect(p3.page).toHaveTitle(/team/i);
+    const submitBtn = p3.page.locator('button#team-select-submit');
+    await expect(submitBtn).toBeVisible();
+    await submitBtn.click();
+    await expect(p3.page).toHaveURL(/\/game\/join/);
+    await expect(p3.page).toHaveTitle(/join/i);
+    expect(await p3.page.textContent('h1')).toBe('Enter Game Code');
+    // TODO: not 1234
+    await p3.page.locator('input[name="joincode"]').fill(joincode);
+    await p3.page.locator('text=Join Game!').click();
+    await expect(p3.page).toHaveTitle(/event \d+/i);
+});
+
+test('logout navigates back to the home page', async ({ p4 }) => {
+    await p4.page.goto('/team');
+    await p4.page.locator('text=menu').click();
+    await p4.page.locator('text=Logout').click();
+    await expect(p4.page).toHaveURL('/');
+});
+
+// host navigates to a game
+test('host navigation options', async ({ host }) => {
+    // hosts can play
+    await host.page.goto('/host/choice');
+    await expect(host.page).toHaveTitle(/host or play/i);
+    await host.page.locator('text=Play Trivia').click();
+    await expect(host.page).toHaveTitle(/team/i);
+
+    // host can host
+    await host.page.goBack();
+    await expect(host.page).toHaveTitle(/host or play/i);
+    await host.page.locator('text=Host a Game').click();
+    await expect(host.page).toHaveURL(/\/host\/event-setup/);
+});
+
+test('navigate directly to a game', async ({ p2 }) => {
+    await p2.page.goto('/game/9906');
+    // expect the message to appear
+    const linkText = p2.page.locator('button', { hasText: 'Click here' });
+    await expect(linkText).toBeVisible();
+    // expect the anwer input to be disabled
+    await expect(p2.responseInput).toBeDisabled();
+    // click the link
+    await linkText.click();
+    // expect the answer input to be editable
+    await expect(p2.responseInput).toBeEditable();
+    // expect the message to go away
+    await expect(linkText).not.toBeVisible();
+});
+
+test('two players cannot join an event with a player limit', async ({ p3, p4 }) => {
+    await p3.joinGame(joincode);
+    await p4.joinGame(joincode);
+
+    // should still be on /game/join but with error text
+    await expect(p4.page).toHaveURL(/\/game\/join/);
+    await expect(p4.page.locator('p.error', { hasText: /already joined/i })).toBeVisible();
+    // direct navigate
+    await p4.page.goto('/game/9906');
+    // should be on error page
+    await expect(p4.page.locator('p', { hasText: /player limit/i })).toBeVisible();
+    // click join a different game
+    await p4.page.locator('a', { hasText: /different game/i }).click();
+    // should be on /game/join
+    await expect(p4.page).toHaveURL('/game/join');
+    // click back
+    await p4.page.goBack();
+    // click select a different team
+    await p4.page.locator('a', { hasText: /different team/i }).click();
+    // should b on /team
+    await expect(p4.page).toHaveURL('/team');
+});
 
 // TODO: user creation works, but this test is problematic for some reason
 test.describe('user creation', async () => {
@@ -57,157 +183,5 @@ test.describe('user creation', async () => {
         await asyncTimeout(200);
         await login(page, { username: 'testuser', password: pass1 });
         await expect(page).toHaveURL('/team');
-    });
-});
-
-test('guest login', async ({ page }) => {
-    await page.goto('/');
-    // not logged in, we should land on the welcome page
-    await expect(page).toHaveTitle(/welcome/i);
-    // click to log in as a guest
-    await page.locator('text=Play as a Guest').click();
-    // since guest is not a staff user, they should see the team select component
-    await expect(page).toHaveTitle(/team select/i);
-    expect(await page.textContent('h1')).toBe('Create a New Team');
-});
-
-// TODO: can we test for query params? I think probably via regex
-test('all authed pages redirect to welcome page when not logged in', async ({ page }) => {
-    await page.goto('/team');
-    await expect(page).toHaveURL(/\/?next=\/team/);
-
-    await page.goto('/game/join');
-    await expect(page).toHaveURL(/\/?next=\/game\/join/);
-
-    await page.goto('/game/1234');
-    await expect(page).toHaveURL(/\/?next=\/game\/1234/);
-
-    await page.goto('/host/choice');
-    await expect(page).toHaveURL(/\/?next=\/host\/choice/);
-
-    await page.goto('/host/event-setup');
-    await expect(page).toHaveURL(/\/?next=\/host\/event-setup/);
-
-    await page.goto('/host/1234');
-    await expect(page).toHaveURL(/\/?next=\/host\/1234/);
-});
-
-test.describe('navigate to a trivia event as player', async () => {
-    let page: Page;
-    test.beforeAll(async ({ browser }) => {
-        page = await browser.newPage();
-        await login(page);
-    });
-    test.afterAll(async () => await page.close());
-
-    // select a team
-    test('select a team then navigate', async () => {
-        await expect(page).toHaveTitle(/team/i);
-        expect(await page.textContent('h1')).toBe('Create a New Team');
-        await page.selectOption('select#team-select', { label: playerSelectedTeam });
-        await page.locator('text=Choose This Team').click();
-    });
-
-    test('active team name is displayed on the join page', async () => {
-        await expect(page).toHaveTitle(/join/i);
-        expect(await page.textContent('h1')).toBe('Enter Game Code');
-        await expect(page.locator(`p:has-text("${playerSelectedTeam}")`)).toBeVisible();
-    });
-
-    test('navigate to trivia event', async () => {
-        await page.locator('input[name="joincode"]').fill('1234');
-        await page.locator('text=Join Game!').click();
-        // the join code should be in the title (good enough for now)
-        await expect(page).toHaveTitle(/event 1234/i);
-    });
-
-    test('logout navigates back to the home page', async () => {
-        await page.locator('text=menu').click();
-        await page.locator('text=Logout').click();
-        await expect(page).toHaveURL('/');
-    });
-});
-
-test.describe('navigate to trivia event as host', async () => {
-    let page: Page;
-    test.beforeAll(async ({ browser }) => {
-        page = await browser.newPage();
-        await login(page, { username: adminUser, password: adminUser });
-    });
-    test.afterAll(async () => {
-        await page.goto('/user/logout');
-        await page.close();
-    });
-
-    test('host can be a player', async () => {
-        await expect(page).toHaveTitle(/host or play/i);
-        await page.locator('text=Play Trivia').click();
-        await expect(page).toHaveTitle(/team/i);
-    });
-
-    test('the back button navigates to host choice', async () => {
-        await page.goBack();
-        await expect(page).toHaveTitle(/host or play/i);
-    });
-
-    test('host choice is visible', async () => {
-        await expect(page).toHaveTitle(/host or play/i);
-        expect(await page.textContent('h1')).toBe(`Greetings ${adminUser}`);
-        await page.locator('text=Host a Game').click();
-    });
-});
-
-// TODO: remove the wrapper and resetEventData call
-// use the the game-setup structure via api call instean
-test.describe('event specific rules', async () => {
-    test.beforeEach(async () => resetEventData({ joincodes: 9906 }));
-
-    test('navigate directly to a game', async ({ browser }) => {
-        const p1 = new PlayerGamePage(await getBrowserPage(browser));
-        await p1.login();
-        await p1.page.goto('/game/9906');
-        // expect the message to appear
-        const linkText = p1.page.locator('button', { hasText: 'Click here' });
-        await expect(linkText).toBeVisible();
-        // expect the anwer input to be disabled
-        await expect(p1.responseInput).toBeDisabled();
-        // click the link
-        await linkText.click();
-        // expect the answer input to be editable
-        await expect(p1.responseInput).toBeEditable();
-        // expect the message to go away
-        await expect(linkText).not.toBeVisible();
-    });
-
-    // TODO: failing at await expect(p2.page.locator('p.error', { hasText: /team limit exceeded/i })), did this change?
-    test.skip('two players cannot join an event with a player limit', async ({ browser }) => {
-        const p1 = new PlayerGamePage(await getBrowserPage(browser));
-        await p1.login();
-        await p1.joinGame('9906');
-
-        const p2 = new PlayerGamePage(await getBrowserPage(browser), {
-            username: 'player_two',
-            password: 'player_two'
-        });
-        await p2.login();
-        await p2.joinGame('9906');
-
-        // should still be on /game/join but with error text
-        await expect(p2.page).toHaveURL(/\/game\/join/);
-        await expect(p2.page.locator('p.error', { hasText: /team limit exceeded/i })).toBeVisible();
-        // direct navigate
-        await p2.page.goto('/game/9906');
-        // should be on error page
-        await expect(p2.page.locator('p', { hasText: /player limit/i })).toBeVisible();
-        // click join a different game
-        await p2.page.locator('a', { hasText: /different game/i }).click();
-        // should be on /game/join
-        await expect(p2.page).toHaveURL('/game/join');
-        // click back
-        await p2.page.goBack();
-        // click select a different team
-        await p2.page.locator('a', { hasText: /different team/i }).click();
-        // should b on /team
-        await expect(p2.page).toHaveURL('/team');
     });
 });

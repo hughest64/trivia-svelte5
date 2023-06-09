@@ -138,6 +138,7 @@ class Command(BaseCommand):
         game_id: int = None,
         joincode: int = None,
         reset_event=True,
+        player_limit=False,
         teams=0,
         rounds_to_play: int = None,
         team_configs=None,
@@ -160,7 +161,11 @@ class Command(BaseCommand):
                 )
 
             g = EventSetup(
-                game=game, joincode=joincode, auto_create=True, reset=reset_event
+                game=game,
+                joincode=joincode,
+                auto_create=True,
+                reset=reset_event,
+                player_limit=player_limit,
             )
             self.stdout.write(f"playing: {g.event}")
             host = HostActions(g.event)

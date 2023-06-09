@@ -16,6 +16,8 @@ class EventSetup(TriviaEventCreator):
         super().get_or_create_event()
         if self.reset:
             self.event.round_states.update(locked=False, scored=False, revealed=False)
+            self.event.players.clear()
+            self.event.event_teams.clear()
             QuestionResponse.objects.filter(event=self.event).delete()
             LeaderboardEntry.objects.filter(event=self.event).delete()
             QuestionResponse.objects.filter(event=self.event).delete()
