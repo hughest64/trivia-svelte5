@@ -1,8 +1,7 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './authConfigs.js';
 import { createApiContext } from './utils.js';
-import { getUserPage, userAuthConfigs } from './authConfigs.js';
+import { userAuthConfigs } from './authConfigs.js';
 import type { APIRequestContext } from '@playwright/test';
-import type { PlayerGamePage, HostGamePage } from './gamePages.js';
 
 const joincode = '9907';
 const hostUrl = `/host/${joincode}`;
@@ -10,8 +9,6 @@ const hostUrl = `/host/${joincode}`;
 const { playerOne, playerThree } = userAuthConfigs;
 
 let apicontext: APIRequestContext;
-let p1: PlayerGamePage;
-let host: HostGamePage;
 
 const game_data = {
     joincode,
@@ -39,26 +36,22 @@ const game_data = {
     host_config: { lock_rounds: true }
 };
 
-test.beforeAll(async ({ browser }) => {
+test.beforeAll(async () => {
     apicontext = await createApiContext();
-    p1 = (await getUserPage(browser, 'playerOne')) as PlayerGamePage;
-    host = (await getUserPage(browser, 'host')) as HostGamePage;
 });
 
 test.afterAll(async () => {
-    await p1.page.context().close();
-    await host.page.context().close();
     await apicontext.dispose();
 });
 
-test.beforeEach(async () => {
+test.beforeEach(async ({ host }) => {
     await apicontext.post('/ops/run-game/', {
         headers: await host.getAuthHeader(),
         data: { game_data: JSON.stringify(game_data) }
     });
 });
 
-test('scoring updates properly update the leaderboards', async () => {
+test('scoring updates properly update the leaderboards', async ({ host }) => {
     await host.page.goto(hostUrl);
 
     // click "score this round"
@@ -108,7 +101,7 @@ test('scoring updates properly update the leaderboards', async () => {
 });
 
 // TODO: this should really be in leaderboard.spec
-test('host reveal questions to players', async () => {
+test('host reveal questions to players', async ({ p1, host }) => {
     // p1 should not see answer summary
     await p1.page.goto(`/game/${joincode}`);
     const answerSummary = p1.page.locator('div.answer-summary');

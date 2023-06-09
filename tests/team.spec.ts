@@ -1,20 +1,16 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './authConfigs.js';
 import { createApiContext } from './utils.js';
-import { getUserPage } from './authConfigs.js';
-import type { PlayerGamePage } from './gamePages.js';
 import type { APIRequestContext } from '@playwright/test';
 
 const TEST_TEAM_NAME = 'My Cool Team TEST';
 
-let p1: PlayerGamePage;
 let apicontext: APIRequestContext;
 
-test.beforeAll(async ({ browser }) => {
+test.beforeAll(async () => {
     apicontext = await createApiContext();
-    p1 = (await getUserPage(browser, 'playerOne')) as PlayerGamePage;
 });
 
-test.afterEach(async () => {
+test.afterEach(async ({ p1 }) => {
     const response = await apicontext.post('ops/delete/', {
         headers: await p1.getAuthHeader(),
         data: { type: 'team', team_names: [TEST_TEAM_NAME] }
@@ -23,11 +19,10 @@ test.afterEach(async () => {
 });
 
 test.afterAll(async () => {
-    await p1.page.context().close();
     await apicontext.dispose();
 });
 
-test('correct handling of team creation', async () => {
+test('correct handling of team creation', async ({ p1 }) => {
     await p1.page.goto('/team');
     // click create a new team
     await p1.page.locator('button', { hasText: /create a new team/i }).click();
@@ -40,7 +35,7 @@ test('correct handling of team creation', async () => {
     await expect(p1.page.locator('p', { hasText: /my cool team/i })).toBeVisible();
 });
 
-test('join team via code', async () => {
+test('join team via code', async ({ p1 }) => {
     await p1.page.goto('/team');
     await p1.page.locator('button', { hasText: 'Enter Team Password' }).click();
     await p1.page.locator('input[name="team_password"]').first().fill('supurb-glorify-bright');

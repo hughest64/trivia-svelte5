@@ -1,8 +1,6 @@
-import { test, expect } from '@playwright/test';
 import { asyncTimeout, createApiContext } from './utils.js';
-import { getUserPage, userAuthConfigs } from './authConfigs.js';
+import { userAuthConfigs, test, expect } from './authConfigs.js';
 import type { APIRequestContext, APIResponse } from '@playwright/test';
-import type { PlayerGamePage } from './gamePages.js';
 
 const submissionOne = 'answer for question';
 const submissionTwo = 'a different answer';
@@ -13,10 +11,6 @@ const joincode_2 = '9903';
 const { playerOne, playerTwo, playerThree, playerFour } = userAuthConfigs;
 
 let apicontext: APIRequestContext;
-let p1: PlayerGamePage;
-let p2: PlayerGamePage;
-let p3: PlayerGamePage;
-let p4: PlayerGamePage;
 
 const game_1 = {
     joincode: joincode_1,
@@ -44,23 +38,15 @@ const game_2 = {
     }
 };
 
-test.beforeAll(async ({ browser }) => {
+test.beforeAll(async () => {
     apicontext = await createApiContext();
-    p1 = (await getUserPage(browser, 'playerOne')) as PlayerGamePage;
-    p2 = (await getUserPage(browser, 'playerTwo')) as PlayerGamePage;
-    p3 = (await getUserPage(browser, 'playerThree')) as PlayerGamePage;
-    p4 = (await getUserPage(browser, 'playerFour')) as PlayerGamePage;
 });
 
 test.afterAll(async () => {
-    await p1.page.context().close();
-    await p2.page.context().close();
-    await p3.page.context().close();
-    await p4.page.context().close();
     await apicontext.dispose();
 });
 
-test.beforeEach(async () => {
+test.beforeEach(async ({ p1 }) => {
     let response: APIResponse;
     response = await apicontext.post('/ops/run-game/', {
         headers: await p1.getAuthHeader(),
@@ -75,7 +61,7 @@ test.beforeEach(async () => {
     expect(response.status()).toBe(200);
 });
 
-test('responses only update for the same team on the same event', async () => {
+test('responses only update for the same team on the same event', async ({ p1, p2, p3, p4 }) => {
     await p1.page.goto(`/game/${joincode_1}`);
     await p2.page.goto(`/game/${joincode_1}`);
     await p3.page.goto(`/game/${joincode_1}`);
@@ -104,7 +90,7 @@ test('responses only update for the same team on the same event', async () => {
     await p4.expectInputValueToBe(submissionTwo);
 });
 
-test('unsubmitted class is applied properly', async () => {
+test('unsubmitted class is applied properly', async ({ p1 }) => {
     await p1.page.goto(`/game/${joincode_1}`);
     const responseInput = p1.page.locator('input[name="response_text"]');
     // expect the class not be to applied

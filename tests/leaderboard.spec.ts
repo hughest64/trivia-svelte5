@@ -1,8 +1,6 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './authConfigs.js';
 import { createApiContext, checkLbEntry, resetEventData } from './utils.js';
-import { getUserPage } from './authConfigs.js';
 import type { APIRequestContext } from '@playwright/test';
-import type { PlayerGamePage, HostGamePage } from './gamePages.js';
 
 // TODO: factor in megaround scores at the end of the game
 
@@ -12,9 +10,6 @@ const hostUrl = `/host/${joincode}`;
 const leaderboardUrl = `${eventUrl}/leaderboard`;
 
 let apicontext: APIRequestContext;
-let p1: PlayerGamePage;
-let p3: PlayerGamePage;
-let host: HostGamePage;
 
 const game_data = {
     game_id: 15,
@@ -22,10 +17,7 @@ const game_data = {
     create_only: true
 };
 
-test.beforeAll(async ({ browser }) => {
-    p1 = (await getUserPage(browser, 'playerOne')) as PlayerGamePage;
-    p3 = (await getUserPage(browser, 'playerThree')) as PlayerGamePage;
-    host = (await getUserPage(browser, 'host')) as HostGamePage;
+test.beforeAll(async ({ host }) => {
     apicontext = await createApiContext();
     // set up the event
     const response = await apicontext.post('ops/run-game/', {
@@ -37,9 +29,6 @@ test.beforeAll(async ({ browser }) => {
 
 test.afterAll(async () => {
     apicontext.dispose();
-    await p1.page.context().close();
-    await p3.page.context().close();
-    await host.page.context().close();
 });
 
 // TODO: figure out what needs to be reset so this can be deprecated
@@ -47,7 +36,7 @@ test.afterEach(async () => {
     await resetEventData({ joincodes: joincode });
 });
 
-test('player one leaderboard updates when another team joins', async () => {
+test('player one leaderboard updates when another team joins', async ({ p1, p3 }) => {
     await p1.joinGame(joincode);
     await p1.page.goto(leaderboardUrl);
     await expect(p1.page).toHaveURL(leaderboardUrl);
@@ -68,7 +57,7 @@ test('player one leaderboard updates when another team joins', async () => {
     await expect(p3.page.locator('h3.team-name', { hasText: /for all the marbles/i })).toBeVisible();
 });
 
-test('host leaderboard updates on round lock, public updates on btn click', async () => {
+test('host leaderboard updates on round lock, public updates on btn click', async ({ p1, p3, host }) => {
     // p1 & p3 each answer the same question (1 correct 1 incorrect)
     await p1.joinGame(joincode);
     await p3.joinGame(joincode);
@@ -142,7 +131,7 @@ test('host leaderboard updates on round lock, public updates on btn click', asyn
 });
 
 // TODO: with the new implementation, this has trouble with auth but not all the time, why?
-test('round headers on the leaderboard navigate back to the game', async () => {
+test('round headers on the leaderboard navigate back to the game', async ({ p1 }) => {
     await p1.page.goto(leaderboardUrl);
     await expect(p1.page).toHaveURL(leaderboardUrl);
     // click on round 5

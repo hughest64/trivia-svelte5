@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import { expect, test as base } from '@playwright/test';
 import { PlayerGamePage, HostGamePage } from './gamePages.js';
 import type { Browser, Cookie } from '@playwright/test';
 import type { TestConfig } from './utils.js';
@@ -7,6 +8,14 @@ export type UserAuthConfigs = Record<
     string,
     Pick<TestConfig, 'username' | 'password' | 'authStoragePath' | 'cookies' | 'teamName'>
 >;
+
+export interface AuthFixtures {
+    p1: PlayerGamePage;
+    p2: PlayerGamePage;
+    p3: PlayerGamePage;
+    p4: PlayerGamePage;
+    host: HostGamePage;
+}
 
 export const userAuthConfigs: UserAuthConfigs = {
     playerOne: {
@@ -68,3 +77,34 @@ export const getUserPage = async (browser: Browser, userId: string) => {
 
     return userPage;
 };
+
+export const test = base.extend<AuthFixtures>({
+    p1: async ({ browser }, use) => {
+        const pg = (await getUserPage(browser, 'playerOne')) as PlayerGamePage;
+        await use(pg);
+        await pg.page.context().close();
+    },
+    p2: async ({ browser }, use) => {
+        const pg = (await getUserPage(browser, 'playerTwo')) as PlayerGamePage;
+        await use(pg);
+        await pg.page.context().close();
+    },
+    p3: async ({ browser }, use) => {
+        const pg = (await getUserPage(browser, 'playerThree')) as PlayerGamePage;
+        await use(pg);
+        await pg.page.context().close();
+    },
+    p4: async ({ browser }, use) => {
+        const pg = (await getUserPage(browser, 'playerFour')) as PlayerGamePage;
+        await use(pg);
+        await pg.page.context().close();
+    },
+    host: async ({ browser }, use) => {
+        const pg = (await getUserPage(browser, 'host')) as HostGamePage;
+        await use(pg);
+        await pg.page.context().close();
+    }
+});
+
+// alias expect so we can import test an expect from the same file
+export { expect };
