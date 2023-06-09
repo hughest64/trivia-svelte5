@@ -1,5 +1,5 @@
 import { expect, test } from './authConfigs.js';
-import { asyncTimeout, createApiContext, login, resetEventData } from './utils.js';
+import { asyncTimeout, createApiContext, login } from './utils.js';
 import type { APIRequestContext } from '@playwright/test';
 
 const joincode = '9906';
@@ -134,8 +134,7 @@ test('two players cannot join an event with a player limit', async ({ p3, p4 }) 
 
 // TODO: user creation works, but this test is problematic for some reason
 test.describe('user creation', async () => {
-    test.afterEach(async () => await resetEventData());
-
+    // TODO delete the user when done
     test.skip('correct handling of user creation', async ({ page }) => {
         const pass1 = 'abc123';
         const pass2 = 'abd345';

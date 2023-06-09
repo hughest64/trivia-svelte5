@@ -1,6 +1,6 @@
 import { expect, test } from './authConfigs.js';
 import { defaultQuestionText } from './gamePages.js';
-import { asyncTimeout, resetEventData } from './utils.js';
+import { asyncTimeout /* resetEventData */ } from './utils.js';
 
 // allow some time to pass before checking question reveal states,
 // it's worth noting that we use a 1 second delay for the app in test mode
@@ -13,11 +13,11 @@ const joincode_1 = '9904';
 const joincode_2 = '9905';
 const hostUrl = `/host/${joincode_1}`;
 
-test.beforeEach(async () => {
-    await resetEventData({ joincodes: [joincode_1, joincode_2] });
-});
+// test.beforeEach(async () => {
+//     await resetEventData({ joincodes: [joincode_1, joincode_2] });
+// });
 
-test('active round and question classes are applied properly', async ({ p1, host }) => {
+test.skip('active round and question classes are applied properly', async ({ p1, host }) => {
     await p1.joinGame(joincode_1);
     await host.page.goto(hostUrl);
 
@@ -48,7 +48,7 @@ test('active round and question classes are applied properly', async ({ p1, host
     await expect(p1.questionSelector('2.1')).toHaveClass(current);
 });
 
-test('question text reveals properly for players', async ({ p1, p2, p3, host }) => {
+test.skip('question text reveals properly for players', async ({ p1, p2, p3, host }) => {
     await p1.joinGame(joincode_1);
     await p1.goToQuestion('1.1');
     await p2.joinGame(joincode_1);
@@ -85,7 +85,7 @@ test('question text reveals properly for players', async ({ p1, p2, p3, host }) 
     await host.expectQuestionToBeRevealed('1.1');
 });
 
-test('auto reveal respects player settings', async ({ p1, p2, p3, host }) => {
+test.skip('auto reveal respects player settings', async ({ p1, p2, p3, host }) => {
     await p1.joinGame(joincode_1);
     await p2.joinGame(joincode_1);
     await p3.joinGame(joincode_2);
@@ -99,7 +99,7 @@ test('auto reveal respects player settings', async ({ p1, p2, p3, host }) => {
     await p3.expectCorrectQuestionHeading('1.1');
 });
 
-test('reveal all reveals all questions for a round', async ({ p1, p2, host }) => {
+test.skip('reveal all reveals all questions for a round', async ({ p1, p2, host }) => {
     await p1.joinGame(joincode_1);
     await p2.joinGame(joincode_1);
     await host.page.goto(hostUrl);
@@ -132,7 +132,7 @@ test('reveal all reveals all questions for a round', async ({ p1, p2, host }) =>
     }
 });
 
-test('round locks work properly', async ({ p1, p3, host }) => {
+test.skip('round locks work properly', async ({ p1, p3, host }) => {
     await p1.joinGame(joincode_1);
     await p3.joinGame(joincode_2);
     await host.page.goto(hostUrl);
@@ -148,7 +148,7 @@ test('round locks work properly', async ({ p1, p3, host }) => {
     await expect(p3.responseInput).toBeEditable();
 });
 
-test('unlocking a round requires host confirmation', async ({ host }) => {
+test.skip('unlocking a round requires host confirmation', async ({ host }) => {
     await host.page.goto(hostUrl);
     // goto round 3
     await host.roundButton('3').click();

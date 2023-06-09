@@ -1,5 +1,5 @@
 import { test, expect } from './authConfigs.js';
-import { createApiContext, checkLbEntry, resetEventData } from './utils.js';
+import { createApiContext, checkLbEntry } from './utils.js';
 import type { APIRequestContext } from '@playwright/test';
 
 // TODO: factor in megaround scores at the end of the game
@@ -29,11 +29,6 @@ test.beforeAll(async ({ host }) => {
 
 test.afterAll(async () => {
     apicontext.dispose();
-});
-
-// TODO: figure out what needs to be reset so this can be deprecated
-test.afterEach(async () => {
-    await resetEventData({ joincodes: joincode });
 });
 
 test('player one leaderboard updates when another team joins', async ({ p1, p3 }) => {
