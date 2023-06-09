@@ -39,12 +39,6 @@ class ClearEventDataView(APIView):
     """Endpoint used for resetting event data during tests"""
 
     def post(self, request):
-        # TODO: this kinda get's buried in the test run (we only see the 400 response)
-        if not settings.ALLOW_EVENT_RESET:
-            return Response(
-                {"detail": "that is not allowed"}, status=HTTP_400_BAD_REQUEST
-            )
-
         secret = request.data.get("secret")
         joincodes = request.data.get("joincodes", [])
         if isinstance(joincodes, (str, int)):
