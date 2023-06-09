@@ -13,8 +13,7 @@ let apicontext: APIRequestContext;
 
 const game_data = {
     game_id: 15,
-    joincode,
-    create_only: true
+    joincode
 };
 
 test.beforeAll(async ({ host }) => {
