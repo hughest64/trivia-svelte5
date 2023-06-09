@@ -8,11 +8,11 @@ const testcmd = `
     node -r dotenv/config build_test dotenv_config_path=./.env.test
 `;
 
-// const djangoservercmd = `
-//     DJANGO_SETTINGS_MODULE=server.settings_tst\
-//     pipenv run gunicorn -w 4 -k uvicorn.workers.UvicornWorker\
-//     --bind 127.0.0.1:7000 server.asgi:application
-// `;
+const djangoservercmd = `
+    DJANGO_SETTINGS_MODULE=server.settings_tst\
+    pipenv run gunicorn -w 4 -k uvicorn.workers.UvicornWorker\
+    --bind 127.0.0.1:7000 server.asgi:application
+`;
 
 const config: PlaywrightTestConfig = {
     // retries: 1,
@@ -22,12 +22,14 @@ const config: PlaywrightTestConfig = {
         {
             command: testcmd,
             port: 4173
+        },
+        {
+            command: djangoservercmd,
+            cwd: 'server',
+            port: 7000,
+            // https://playwright.dev/docs/api/class-testconfig#test-config-web-server
+            reuseExistingServer: true
         }
-        // {
-        //     command: djangoservercmd,
-        //     cwd: 'server',
-        //     port: 7000
-        // }
     ],
     use: { baseURL: 'http://127.0.0.1:4173' }
 };
