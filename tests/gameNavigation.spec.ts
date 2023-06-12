@@ -8,8 +8,7 @@ const gameUrl = '/game/' + joincode;
 let apicontext: APIRequestContext;
 
 const game_data = {
-    joincode,
-    create_only: true
+    joincode
 };
 
 test.beforeAll(async () => {

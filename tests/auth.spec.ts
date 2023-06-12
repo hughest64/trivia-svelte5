@@ -1,5 +1,5 @@
 import { expect, test } from './authConfigs.js';
-import { asyncTimeout, createApiContext, login } from './utils.js';
+import { createApiContext, login } from './utils.js';
 import type { APIRequestContext } from '@playwright/test';
 
 const joincode = '9906';
@@ -7,7 +7,6 @@ const joincode = '9906';
 const game_data = {
     joincode,
     player_limit: true
-    // create_only: true
 };
 
 let apicontext: APIRequestContext;

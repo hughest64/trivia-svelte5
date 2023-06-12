@@ -99,11 +99,6 @@ class Command(BaseCommand):
         else:
             game_data = options
 
-        # just need to make sure a given event exist, create one if not
-        if game_data.get("create_only"):
-            self.get_or_create_event(game_data)
-            return
-
         joincode = game_data.get("joincode")
         game_id = game_data.get("game_id")
 
@@ -116,22 +111,6 @@ class Command(BaseCommand):
             raise ValueError("at least one of joincode or game_id is required")
 
         self.play_game(**game_data)
-
-    # TODO this may be superfluous as we can get or create on the EventSetup class
-    def get_or_create_event(self, game_data):
-        game_id = game_data.get("game_id")
-        try:
-            game = Game.objects.get(id=game_id)
-        except Game.DoesNotExist:
-            game = Game.objects.latest("id")
-            print("game with id {game_id} does not exist, using latest id {game.id}")
-
-        _, created = TriviaEvent.objects.get_or_create(
-            joincode=game_data["joincode"],
-            defaults={"game": game},
-        )
-        created_msg = "was created" if created else "already exists"
-        print(f"event with joincode {game_data['joincode']} {created_msg}")
 
     def play_game(
         self,
