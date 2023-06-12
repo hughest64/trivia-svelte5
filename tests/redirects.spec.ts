@@ -1,5 +1,4 @@
 import { expect, test } from './authConfigs.js';
-import type { PlayerGamePage, HostGamePage } from './gamePages.js';
 
 const playerSelectedTeam = 'hello world';
 

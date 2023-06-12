@@ -13,14 +13,9 @@ class EventSetup(TriviaEventCreator):
         super().__init__(game, joincode=joincode, auto_create=auto_create, **kwargs)
 
     def get_or_create_event(self):
-        super().get_or_create_event()
         if self.reset:
-            self.event.round_states.update(locked=False, scored=False, revealed=False)
-            self.event.players.clear()
-            self.event.event_teams.clear()
-            QuestionResponse.objects.filter(event=self.event).delete()
-            LeaderboardEntry.objects.filter(event=self.event).delete()
-            QuestionResponse.objects.filter(event=self.event).delete()
+            TriviaEvent.objects.filter(joincode=self.joincode).delete()
+        super().get_or_create_event()
 
 
 # provide various getters/setters to update the db to simulate game play
