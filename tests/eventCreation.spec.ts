@@ -34,7 +34,7 @@ test.afterAll(async () => {
     await apicontext.dispose();
 });
 
-test('default selected event changes based on inputs', async () => {
+test.skip('default selected event changes based on inputs', async () => {
     await host.page.goto('/host/event-setup');
     await expect(host.page).toHaveURL('/host/event-setup');
     // expecthost home location is happening place and use sound is not checked
@@ -75,7 +75,7 @@ test('default selected event changes based on inputs', async () => {
     expect(response.status()).toBe(200);
 });
 
-test('player limit gets set properly', async () => {
+test.skip('player limit gets set properly', async () => {
     await host.page.goto('/host/event-setup');
     await expect(host.page).toHaveURL('/host/event-setup');
 

@@ -1,6 +1,6 @@
 import { userAuthConfigs, expect, test } from './authConfigs.js';
 import { defaultQuestionText } from './gamePages.js';
-import { /* asyncTimeout, */ createApiContext } from './utils.js';
+import { asyncTimeout, createApiContext } from './utils.js';
 import type { APIRequestContext, APIResponse } from '@playwright/test';
 
 // const revealDelay = 500;
@@ -153,6 +153,7 @@ test('reveal all reveals all questions for a round', async ({ host }) => {
 
     // host find and click reveal all
     await host.revealQuestion('all');
+    await asyncTimeout();
 
     const response = await apicontext.post('ops/validate/', {
         headers: await host.getAuthHeader(),
@@ -169,6 +170,7 @@ test('round locks work properly', async ({ p1, p3, host }) => {
     await p1.page.goto(game1Url);
     await p3.page.goto(game2Url);
     await host.page.goto(hostUrl);
+
     await expect(p1.responseInput).toBeEditable();
     await expect(p3.responseInput).toBeEditable();
 

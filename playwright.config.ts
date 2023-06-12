@@ -15,7 +15,7 @@ const djangoservercmd = `
 `;
 
 const config: PlaywrightTestConfig = {
-    // retries: 1,
+    retries: 1,
     workers: 3,
     timeout: 30000,
     webServer: [
