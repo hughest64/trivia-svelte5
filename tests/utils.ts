@@ -1,5 +1,5 @@
 import { expect, request } from '@playwright/test';
-import type { Browser, Cookie, Locator, Page } from '@playwright/test';
+import type { Cookie, Locator, Page } from '@playwright/test';
 
 export const api_port = process.env.API_PORT || '7000';
 
@@ -41,27 +41,6 @@ export const createSelectorPromises = (page: Page, visibleLinks: string[], foote
 export async function asyncTimeout(ms = 100): Promise<ReturnType<typeof setTimeout>> {
     return new Promise((resolve) => setTimeout(resolve, ms));
 }
-
-/**
- * Return a Page object from the Browser context
- * @param browser
- * @returns page
- */
-export const getBrowserPage = async (browser: Browser): Promise<Page> => {
-    return browser.newContext().then((context) => context.newPage());
-};
-
-export const resetEventData = async (body: Record<string, unknown> = {}) => {
-    const context = await request.newContext({
-        baseURL: `http://localhost:${api_port}`
-    });
-    const response = await context.post('/reset-event-data', {
-        headers: { 'content-type': 'application/json', accept: 'application/json' },
-        data: { secret: 'todd is great', ...body }
-    });
-    expect(response.status()).toBe(200);
-    context.dispose();
-};
 
 export interface LbEntryConfig {
     name: RegExp | string;
