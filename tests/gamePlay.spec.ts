@@ -1,6 +1,6 @@
 import { userAuthConfigs, expect, test } from './authConfigs.js';
 import { defaultQuestionText } from './gamePages.js';
-import { asyncTimeout, createApiContext } from './utils.js';
+import { /* asyncTimeout, */ createApiContext } from './utils.js';
 import type { APIRequestContext, APIResponse } from '@playwright/test';
 
 // const revealDelay = 500;
@@ -145,9 +145,7 @@ test('auto reveal respects player settings', async ({ p1, p2, p3, host }) => {
     await p3.expectCorrectQuestionHeading('1.1');
 });
 
-test.skip('reveal all reveals all questions for a round', async ({ p1, p2, host }) => {
-    await p1.page.goto(game1Url);
-    await p2.page.goto(game1Url);
+test('reveal all reveals all questions for a round', async ({ host }) => {
     await host.page.goto(hostUrl);
     // host reveals all for round 2
     await host.roundButton('2').click();
@@ -156,25 +154,14 @@ test.skip('reveal all reveals all questions for a round', async ({ p1, p2, host 
     // host find and click reveal all
     await host.revealQuestion('all');
 
-    await asyncTimeout(1500);
-    await p1.expectCorrectQuestionHeading('2.1');
-    await p2.expectCorrectQuestionHeading('1.1');
-    await p2.roundButton('2').click();
-
-    const questionNumbers = ['2.1', '2.2', '2.3', '2.4', '2.5'];
-    for (const key of questionNumbers) {
-        await host.expectQuestionToBeRevealed(key);
-
-        await p1.goToQuestion(key);
-        await p2.goToQuestion(key);
-        // NOTE: this makes this test very slow, but it's necessary
-        // in order to allow the question transition to complete
-        await asyncTimeout(350);
-
-        await p1.expectCorrectQuestionHeading(key);
-        await p1.expectQuestionTextNotToBeDefault(key);
-        await p2.expectCorrectQuestionHeading(key);
-        await p2.expectQuestionTextNotToBeDefault(key);
+    const response = await apicontext.post('ops/validate/', {
+        headers: await host.getAuthHeader(),
+        data: { round_number: 2, joincode: joincode_1, type: 'validate_reveal_all' }
+    });
+    if (response.status() !== 200) {
+        const details = await response.json();
+        console.log(details);
+        throw new Error('fail');
     }
 });
 
