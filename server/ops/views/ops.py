@@ -15,6 +15,7 @@ from game.models import Game, TriviaEvent, Team
 from game.views.validation.data_cleaner import get_event_or_404
 
 from user.authentication import JwtAuthentication
+from user.models import User
 
 
 class OpsAuthentication(JwtAuthentication):
@@ -87,12 +88,20 @@ class DeleteView(APIView):
 
             TriviaEvent.objects.filter(joincode__in=joincodes).delete()
 
-        if delete_type == "team":
+        elif delete_type == "team":
             team_names = request.data.get("team_names")
             if team_names is None:
                 raise NotFound("no team names were provided")
 
             Team.objects.filter(name__in=team_names).delete()
+
+        elif delete_type == "user":
+            usernames = request.data.get("usernames")
+
+            if usernames is None:
+                raise NotFound("no users were provided")
+            users = User.objects.filter(username__in=usernames)
+            users.delete()
 
         return Response({"success": True})
 

@@ -132,20 +132,29 @@ test('two players cannot join an event with a player limit', async ({ p3, p4 }) 
     await expect(p4.page).toHaveURL('/team');
 });
 
-// TODO: user creation works, but this test is problematic for some reason
 test.describe('user creation', async () => {
+    test.beforeEach(async ({ host }) => {
+        apicontext.post('ops/delete/', {
+            headers: await host.getAuthHeader(),
+            data: { type: 'user', usernames: ['testuser'] }
+        });
+    });
+
     // TODO delete the user when done
-    test.skip('correct handling of user creation', async ({ page }) => {
+    test('correct handling of user creation', async ({ page }) => {
         const pass1 = 'abc123';
         const pass2 = 'abd345';
 
+        await page.goto('/user/login');
+
         const usernameField = page.locator('input[name="username"]');
+
         const pass1Field = page.locator('input[name="pass"]');
         const pass2Field = page.locator('input[name="pass2"]');
         const emailField = page.locator('input[name="email"]');
         const submitButton = page.locator('button', { hasText: /sign up/i });
 
-        // user should not exist
+        // // user should not exist
         await login(page, { username: 'testuser', password: pass1 });
         await expect(page.locator('h3', { hasText: /invalid/i })).toBeVisible();
 
@@ -176,11 +185,6 @@ test.describe('user creation', async () => {
         await emailField.fill('no@no.no');
         await submitButton.click();
 
-        // TODO: for some reason the test doesn't redirect to /team properly, but it works in the ui.
-        // It seems like the cookie isn't getting set properly.
-        // For now the best we can do is confirm that the user was created but actually logging in.
-        await asyncTimeout(200);
-        await login(page, { username: 'testuser', password: pass1 });
         await expect(page).toHaveURL('/team');
     });
 });
