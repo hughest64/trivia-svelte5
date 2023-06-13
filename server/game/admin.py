@@ -4,7 +4,9 @@ from .models import *
 
 
 class GameAdmin(admin.ModelAdmin):
+    search_fields = ("block_code",)
     list_display = ("title", "active_through")
+    list_filter = ("block_code", "use_sound")
 
 
 admin.site.register(Team)
