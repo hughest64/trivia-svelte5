@@ -11,7 +11,8 @@ from rest_framework.status import HTTP_400_BAD_REQUEST
 from rest_framework.views import APIView
 
 from game.db import HostActions, ValidateData, TestFailed
-from game.models import Game, TriviaEvent, Team
+from game.models import Game, TriviaEvent, Team, get_end_of_week
+from game.processors.game_creator import SOUND_SLUG, NO_SOUND_SLUG
 from game.views.validation.data_cleaner import get_event_or_404
 
 from user.authentication import JwtAuthentication
@@ -55,20 +56,34 @@ class GameSetupView(APIView):
     authentication_classes = [OpsAuthentication]
 
     @staticmethod
-    def get_date_string():
-        return f"{timezone.localdate():%Y%m%d}"
+    def update_through_date(block_code: str, fallback: Game):
+        """update the active through date on existing games or create new ones from fallback"""
+        for _type in [SOUND_SLUG, NO_SOUND_SLUG]:
+            game = Game.objects.filter(
+                block_code=block_code, title__iendswith=_type
+            ).last()
+            created = False
+            if game is None:
+                game = Game(**fallback)
+                game.block_code = block_code
+                game.title = f"Test Game {block_code}{_type}"
+                game.use_sound = _type == SOUND_SLUG
+                created = True
+
+            game.active_through = get_end_of_week()
+            game.save()
+
+            if created:
+                game.game_rounds.set(fallback.game_rounds.all())
+                game.game_questions.set(fallback.game_questions.all())
 
     def post(self, request):
-        game_set = Game.objects.filter(block_code__in=["test_A", "test_B"])
-        if not game_set.exists:
-            raise NotFound("no games for test block A or test block B exist")
+        fallback = Game.objects.latest("id")
+        if fallback is None:
+            raise NotFound("no games for testing")
 
-        # update date used and title so the host has current games available
-        for game in game_set:
-            game.title = re.sub(r"^\d+", self.get_date_string(), game.title)
-            game.date_used = timezone.localdate()
-
-        Game.objects.bulk_update(game_set, fields=["title", "date_used"])
+        self.update_through_date("A", fallback)
+        self.update_through_date("B", fallback)
 
         return Response({"success": True})
 
@@ -122,7 +137,6 @@ class RunGameView(APIView):
             )
 
         msg = management.call_command("run_game", config=config_file, data=game_data)
-        print(msg)
 
         return Response({"sucesss": True})
 
