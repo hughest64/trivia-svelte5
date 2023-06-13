@@ -27,6 +27,7 @@ from game.processors.airtable_importer import AirtableData
 
 PRIVATE_EVENT = bool(settings.PRIVATE_EVENT)
 
+SOUND_SLUG = " - Sound"
 NO_SOUND_SLUG = " - xNoSound"
 
 # TODO:
@@ -292,7 +293,7 @@ class TriviaGameCreator:
                 max_round = max(round_numbers)
                 # create sound and no sound versions of the same game if it's not a private envent
                 if max_round == 9 and not self.private_event:
-                    self.game = self._update_or_create_game(slug=" - Sound")
+                    self.game = self._update_or_create_game(slug=SOUND_SLUG)
                     self.no_sound_game = self._update_or_create_game(slug=NO_SOUND_SLUG)
                 else:
                     self.game = self._update_or_create_game()

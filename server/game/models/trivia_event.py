@@ -189,7 +189,7 @@ class Game(models.Model):
     # TODO: I don't think this field is actually used or even exists in Airtable
     description = models.TextField(blank=True, null=True)
     date_used = models.DateField(default=timezone.now)
-    active_through = models.DateField(default=get_end_of_week, blank=True)
+    active_through = models.DateField(default=get_end_of_week, null=True, blank=True)
     use_sound = models.BooleanField(default=True)
 
     @property
