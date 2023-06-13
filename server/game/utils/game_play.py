@@ -1,108 +1,92 @@
 from game.models import *
-from game.processors import LeaderboardProcessor, TriviaEventCreator
+from game.processors import LeaderboardProcessor, TriviaEventCreator, QuestionResponse
 
 from user.models import User
 
 
-class GameActions(TriviaEventCreator):
+class EventSetup(TriviaEventCreator):
     def __init__(
-        self,
-        game: Game,
-        joincode: int = None,
-        team_count: int = None,
-        auto_create=False,
-        **kwargs,
+        self, game: Game, joincode: int = None, auto_create=False, reset=True, **kwargs
     ) -> None:
-        super().__init__(game, joincode, auto_create, **kwargs)
+        self.reset = reset
+        self.joincode = joincode
+        super().__init__(game, joincode=joincode, auto_create=auto_create, **kwargs)
 
-        if not auto_create:
-            self.set_existing_event()
+    def get_or_create_event(self):
+        if self.reset:
+            TriviaEvent.objects.filter(joincode=self.joincode).delete()
+        super().get_or_create_event()
 
-        # number of teams to create and add to the event
-        self.team_count = team_count
+
+# provide various getters/setters to update the db to simulate game play
+class TeamActions:
+    def __init__(
+        self, event: TriviaEvent, team: Team = None, team_id: int = None
+    ) -> None:
+        self.event = event
+        self.game = event.game
+        self.team = team
+        self.team_id = team_id
         self.players = []
-        self.teams = []
 
-        if self.team_count > 0:
-            self.create_teams()
-            self.add_teams_to_event()
+    def get_or_create_team(self, team_name=None, i=None, players=None):
+        if team_name is None:
+            team_name = f"run_game_team_{i}"
 
-    def set_existing_event(self, reset=True):
-        self.event = TriviaEvent.objects.get(joincode=self.joincode)
-        self.game = self.event.game
-        if reset:
-            self.event.round_states.update(locked=False, scored=False, revealed=False)
-            QuestionResponse.objects.filter(event=self.event).delete()
-            LeaderboardEntry.objects.filter(event=self.event).delete()
+        if players is None:
+            players = [f"run_game_user_{i}"]
 
-    def create_teams(self):
-        """Create the desired number of teams and player user per teams"""
-        for i in range(1, self.team_count + 1):
-            team, _ = Team.objects.get_or_create(
-                name=f"run_game_team_{i}", password=f"run_game_team_{i}"
-            )
+        # TODO: we probably don't need to set the password cuz auto create
+        # (but probably only with the yet to be implemented new version)
+        self.team, _ = Team.objects.get_or_create(
+            name=team_name, defaults={"password": f"12345_{i}"}
+        )
+        for player in players:
             user, created = User.objects.get_or_create(
-                username=f"run_game_user_{i}",
-                defaults={"active_team": team, "password": 12345},
+                username=player,
+                defaults={"active_team": self.team, "password": 12345},
             )
             if created:
                 user.set_password("12345")
                 user.save()
 
-            team.members.add(user)
             self.players.append(user)
-            self.teams.append(team)
 
-    def add_teams_to_event(self):
-        """Add teams to the event"""
-        # create leaderboard entries for each team (based off of user active team)
-        for team in self.teams:
-            LeaderboardEntry.objects.get_or_create(
-                event=self.event, team=team, leaderboard_type=LEADERBOARD_TYPE_HOST
-            )
-            LeaderboardEntry.objects.get_or_create(
-                event=self.event, team=team, leaderboard_type=LEADERBOARD_TYPE_PUBLIC
-            )
-        self.event.event_teams.set(self.teams)
-        self.event.players.set(self.players)
+        self.team.members.set(self.players)
 
-
-# provide various getters/setters to update the db to simulate game play
-class TeamActions:
-    def __init__(self, event: TriviaEvent, team: Team) -> None:
-        self.event = event
-        self.game = event.game
-        self.team = team
+    def add_team_to_event(self, i=None):
+        LeaderboardEntry.objects.get_or_create(
+            event=self.event, team=self.team, leaderboard_type=LEADERBOARD_TYPE_HOST
+        )
+        LeaderboardEntry.objects.get_or_create(
+            event=self.event, team=self.team, leaderboard_type=LEADERBOARD_TYPE_PUBLIC
+        )
+        self.event.event_teams.add(self.team)
+        self.event.players.add(*self.players)
 
     # TODO: megaround!
-    def answer_questions(
-        self, rd_num: int, question_count: int = None, points_awarded: int = None
-    ):
+    def answer_questions(self, question_data, megaround_data=None):
         """Answer a set of questions for for an event round"""
-        rd_questions = self.game.game_questions.filter(round_number=rd_num)
-        if question_count is not None:
-            rd_questions = rd_questions[: (question_count - 1)]
-        points_available = points_awarded
+        questions = self.game.game_questions.all()
 
-        for q in rd_questions:
-            resp = QuestionResponse(
+        for q in questions:
+            # only answer questions provided
+            if q.key not in question_data:
+                continue
+
+            q_data = question_data[q.key]
+            QuestionResponse.objects.update_or_create(
                 event=self.event,
                 game_question=q,
                 team=self.team,
-                # how do we handle this? use some condition to lookup the correct answer
-                recorded_answer="maybe look me up, or get it wrong or purpose",
+                defaults={
+                    "recorded_answer": q_data.get("answer"),
+                    "points_awarded": q_data.get("points"),
+                },
             )
-            # this works, but doesn't allow random point assigning, I think that's ok at least for now
-            if points_available >= 1:
-                resp.points_awarded = 1
-                points_available -= 1
-            elif points_available == 0.5:
-                resp.points_awarded = 0.5
-                points_available = 0
-
-            resp.save()
 
     # TODO: megaround!
+    # also TODO: do we even need this one anymore?
     def answer_questions_from_config(self, rd_num, team_rd):
         rd_questions = self.game.game_questions.filter(round_number=rd_num)
         # loop the config so we only answer desired questions

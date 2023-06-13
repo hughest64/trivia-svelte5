@@ -37,6 +37,7 @@
             <label for="sound-choice" class="switch">
                 <input type="hidden" bind:value={useSound} name="sound-choice" />
                 <button
+                    id="sound-btn"
                     class="slider"
                     class:revealed={useSound}
                     on:click|preventDefault={() => (useSound = !useSound)}
@@ -49,6 +50,7 @@
             <label for="player_limit" class="switch">
                 <input type="hidden" bind:value={playerLimit} name="player_limit" />
                 <button
+                    id="player-limit-btn"
                     class="slider"
                     class:revealed={playerLimit}
                     on:click|preventDefault={() => (playerLimit = !playerLimit)}
