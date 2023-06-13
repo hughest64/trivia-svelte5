@@ -37,10 +37,11 @@ test.afterAll(async () => {
 test('default selected event changes based on inputs', async () => {
     await host.page.goto('/host/event-setup');
     await expect(host.page).toHaveURL('/host/event-setup');
-    // expecthost home location is happening place and use sound is not checked
     await expect(host.page.locator('#location_select')).toHaveText(/happening place/i);
     // expect that the game title endswith /nosound/i
     await expect(host.page.locator('#game_select')).toHaveText(/nosound/i);
+
+    // return;
 
     // choose use sound
     const soundBtn = host.page.locator('#sound-btn');
@@ -104,4 +105,4 @@ test('player limit gets set properly', async () => {
     expect(response.status()).toBe(200);
 });
 
-// TODO: selecta  new block and validate the selected game
+// TODO: select a new block and validate the selected game
