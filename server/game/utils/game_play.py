@@ -134,8 +134,12 @@ class TeamActions:
         question_count = len(game_questions)
         correct = round(question_count * percent_correct / 100)
         incorrect = question_count - correct
+        # genearate a list of random True or False values based on the above percentages
         correct_values = random.sample(
-            [True, False], counts=[correct, incorrect], k=question_count
+            # counts only available >= 3.9 :(
+            # [True, False], counts=[correct, incorrect], k=question_count
+            ([True] * correct) + ([False] * incorrect),
+            k=question_count,
         )
         resps = []
         for i, q in enumerate(game_questions):
