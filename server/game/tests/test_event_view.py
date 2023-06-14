@@ -1,4 +1,5 @@
 from django.test import TestCase
+from django.utils import timezone
 
 from rest_framework.test import APIClient
 
@@ -7,13 +8,34 @@ from user.models import User
 
 
 class EventViewTestCase(TestCase):
-    fixtures = ["initial.json"]
-
     def setUp(self):
         self.client = APIClient()
-        self.player = User.objects.get(username="player")
+
+        t, _ = Team.objects.get_or_create(name="hello world", password="team one pass")
+
+        # create player one
+        self.player, _ = User.objects.get_or_create(
+            username="player", email="player@no.no", password=12345, active_team=t
+        )
+        # create player two
+        User.objects.get_or_create(
+            username="player_two",
+            email="player_two@no.no",
+            password=12345,
+            active_team=t,
+        )
         self.client.force_authenticate(user=self.player)
-        self.event = TriviaEvent.objects.get(joincode=1234)
+
+        g, _ = Game.objects.get_or_create(
+            title="test title A", block_code="A", date_used=timezone.localdate()
+        )
+        self.event, _ = TriviaEvent.objects.get_or_create(joincode=1234, game=g)
+
+    def tearDown(self) -> None:
+        TriviaEvent.objects.all().delete()
+        Game.objects.all().delete()
+        User.objects.all().delete()
+        Team.objects.all().delete()
 
     # GET requests
 
