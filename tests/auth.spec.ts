@@ -163,16 +163,25 @@ test.describe('user creation', async () => {
         await usernameField.fill('player');
         await pass1Field.fill(pass1);
         await pass2Field.fill(pass1);
+        await emailField.fill('testuser@no.no');
+        await submitButton.click();
+        await expect(page).toHaveURL('/user/create');
+        await expect(page.locator('p.error')).toHaveText(/already exists/i);
+
+        // update the username but use an exisiting email
+        await usernameField.fill('testuser');
+        await pass1Field.fill(pass1);
+        await pass2Field.fill(pass1);
         await emailField.fill('no@no.no');
         await submitButton.click();
         await expect(page).toHaveURL('/user/create');
-        await expect(page.locator('p.error')).toHaveText(/username already exists/i);
+        await expect(page.locator('p.error')).toHaveText(/already exists/i);
 
         // fill in the form w/ passwords that don't match
         await usernameField.fill('testuser');
         await pass1Field.fill(pass1);
         await pass2Field.fill(pass2);
-        await emailField.fill('no@no.no');
+        await emailField.fill('testuser@no.no');
         await submitButton.click();
         await expect(page).toHaveURL('/user/create');
         await expect(page.locator('p.error')).toHaveText(/passwords do not match/i);
@@ -181,7 +190,7 @@ test.describe('user creation', async () => {
         await usernameField.fill('testuser');
         await pass1Field.fill(pass1);
         await pass2Field.fill(pass1);
-        await emailField.fill('no@no.no');
+        await emailField.fill('testuser@no.no');
         await submitButton.click();
 
         await expect(page).toHaveURL('/team');

@@ -26,10 +26,10 @@ class CreateView(APIView):
         pass2 = data.as_string("pass2")
 
         # return Response({"success": True})
-        user_query = User.objects.filter(username=username)
+        user_query = User.objects.filter(Q(username=username) | Q(email=email))
         if user_query.exists():
             return Response(
-                {"detail": "A user with that username already exists"},
+                {"detail": "A user with that username or email address already exists"},
                 status=HTTP_400_BAD_REQUEST,
             )
 
@@ -137,7 +137,6 @@ class UserView(APIView):
 # NOTE: not currently used as cookies are controlled in SvelteKit
 class LogoutView(APIView):
     def post(self, request):
-
         response = Response()
         response.delete_cookie("jwt")
         response.delete_cookie("csrftoken")
