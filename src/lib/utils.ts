@@ -1,9 +1,18 @@
+import * as cookie from 'cookie';
 import { error, redirect } from '@sveltejs/kit';
 import { env } from '$env/dynamic/public';
 import { getContext, setContext } from 'svelte';
 import jwt_decode from 'jwt-decode';
 import type { Cookies } from '@sveltejs/kit';
-import type { CustomLoadEvent, GameQuestion, GameRound, JwtPayload, StoreTypes, UserTeam } from './types';
+import type {
+    ActiveEventData,
+    CustomLoadEvent,
+    GameQuestion,
+    GameRound,
+    JwtPayload,
+    StoreTypes,
+    UserTeam
+} from './types';
 
 /**
  * take one or many cookie keys and invalidate them by creating new cookies with an exipiration
@@ -80,10 +89,27 @@ export const resolveBool = (value: string | boolean) => {
     return Boolean(value);
 };
 
+// use javascript to set a cookie that tracks the round and question a user is currently viewing
+export const setEventCookie = (data: ActiveEventData, joincode: string) => {
+    try {
+        const cook = cookie.serialize(`event-${joincode}`, JSON.stringify(data), {
+            path: '/',
+            httpOnly: false,
+            maxAge: Number(env.PUBLIC_COOKIE_MAX_AGE) || 3600,
+            sameSite: 'lax'
+        });
+
+        document.cookie = cook;
+
+        return cook;
+    } catch (e) {
+        console.error('could not set event cookie', e);
+    }
+};
+
 /**
  * Custom load functions to help keep trivia event endpoints dry. Player
  * and Host routes are handled separately as the logic differs a bit.
- * TODO: these belong in a separate auth.ts file
  */
 
 const apiMap = new Map([

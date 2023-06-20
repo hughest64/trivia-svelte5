@@ -57,7 +57,7 @@ export const getUserPage = async (browser: Browser, userId: string) => {
     const storagePath = config.authStoragePath || '';
     if (storagePath && !fs.existsSync(storagePath)) {
         fs.writeFileSync(storagePath, JSON.stringify({}));
-    } else {
+    } else if (storagePath) {
         const cookieData: Cookie[] = JSON.parse(fs.readFileSync(storagePath).toString()).cookies || [];
         const jwtExp = Math.round(cookieData.find((cookie) => cookie.name === 'jwt')?.expires || 0) * 1000;
 

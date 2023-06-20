@@ -5,7 +5,7 @@
     import { sineInOut } from 'svelte/easing';
     import { page } from '$app/stores';
     import { swipeQuestion } from './swipe';
-    import { getStore, getQuestionKeys, splitQuestionKey } from '$lib/utils';
+    import { getStore, getQuestionKeys, setEventCookie, splitQuestionKey } from '$lib/utils';
     import type { GameRound } from '$lib/types';
 
     const joincode = $page.params?.joincode;
@@ -55,11 +55,7 @@
             activeQuestionKey: nextQuestionKey
         }));
 
-        // post to the game endpoint to set active round and question in a cookie
-        await fetch('/update', {
-            method: 'POST',
-            body: JSON.stringify({ activeEventData: $activeEventData, joincode })
-        });
+        setEventCookie($activeEventData, joincode);
     };
 </script>
 

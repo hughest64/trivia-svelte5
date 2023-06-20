@@ -1,7 +1,7 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { goto } from '$app/navigation';
-    import { getStore } from '$lib/utils';
+    import { getStore, setEventCookie } from '$lib/utils';
 
     const rounds = getStore('rounds');
     const roundNumbers = $rounds?.map((rd) => rd.round_number) || [];
@@ -18,13 +18,8 @@
             activeQuestionKey: `${target.id}.1`
         };
 
-        // post to the game endpoint to set active round and question in a cookie
-        await fetch('/update', {
-            method: 'POST',
-            body: JSON.stringify({ activeEventData: $activeEventData, joincode })
-        }).then(() => {
-            $page.url.pathname.endsWith('leaderboard') && goto(`/game/${joincode}`);
-        });
+        setEventCookie($activeEventData, joincode);
+        $page.url.pathname.endsWith('leaderboard') && goto(`/game/${joincode}`);
     };
 </script>
 
