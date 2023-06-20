@@ -22,7 +22,8 @@
                 <h3>{loaderror}</h3>
             {:else}
                 <a class="button button-primary" href={`/user/login${$page.url.search}`}> Login/Create Account </a>
-                <form action="" method="POST">
+                <form action="/user/create" method="POST">
+                    <input type="hidden" name="guest_user" value="true" />
                     <input class="button button-tertiary" type="submit" value="Play as a Guest" />
                 </form>
                 {#if form?.error}<p>{form?.error}</p>{/if}

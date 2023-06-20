@@ -1,5 +1,15 @@
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, UserManager
 from django.db import models
+from django.utils.crypto import get_random_string
+
+
+class CustomUserManager(UserManager):
+    def create_guest_user(self):
+        last_id = self.last().id
+
+        return super().create_user(
+            username=f"_guest_{last_id + 1}", password=get_random_string(12)
+        )
 
 
 class User(AbstractUser):
@@ -11,6 +21,8 @@ class User(AbstractUser):
     home_location = models.ForeignKey(
         "game.Location", blank=True, null=True, on_delete=models.SET_NULL
     )
+
+    objects = CustomUserManager()
 
     def teams_json(self):
         return [team.to_json() for team in self.teams.all()]
