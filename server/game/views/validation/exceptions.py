@@ -48,6 +48,12 @@ class JoincodeError(APIException):
     default_code = "joincode_error"
 
 
+class TeamPasswordError(APIException):
+    status_code = HTTP_400_BAD_REQUEST
+    default_detail = "An error occured with the team password"
+    default_code = "team_password_error"
+
+
 class TeamNotFound(APIException):
     status_code = HTTP_400_BAD_REQUEST
     default_detail = "No Trivia Team Found"
