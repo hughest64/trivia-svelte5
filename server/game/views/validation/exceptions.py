@@ -72,7 +72,7 @@ def event_exception_handler(exc, context):
 
         return response
 
-    if isinstance(exc, (DataValidationError, JoincodeError)):
+    if isinstance(exc, (DataValidationError, JoincodeError, TeamPasswordError)):
         return Response(data=exc.response, status=exc.status)
 
     return None
