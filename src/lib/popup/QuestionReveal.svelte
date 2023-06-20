@@ -3,7 +3,7 @@
     import { fly } from 'svelte/transition';
     import { page } from '$app/stores';
     import CloseButton from './CloseButton.svelte';
-    import { createQuestionKey, getStore } from '$lib/utils';
+    import { createQuestionKey, getStore, setEventCookie } from '$lib/utils';
 
     const userData = getStore('userData');
 
@@ -20,10 +20,7 @@
                 activeRoundNumber: popData?.round_number,
                 activeQuestionNumber: popData?.question_number
             };
-            await fetch('/update', {
-                method: 'post',
-                body: JSON.stringify({ activeData: $activeEventData, joincode: $page.params.joincode })
-            });
+            setEventCookie($activeEventData, $page.params.joincode);
         }
     };
 
