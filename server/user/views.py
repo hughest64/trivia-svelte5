@@ -95,6 +95,7 @@ class LoginView(APIView):
 # for now this is only used to auto-login on password reset
 # it requires a non-expired short-lived token
 class RefreshTokenView(APIView):
+    @method_decorator(csrf_protect)
     def post(self, request):
         token = request.data.get("token")
         user = decode_token(token)
