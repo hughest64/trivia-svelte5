@@ -174,3 +174,12 @@ REST_FRAMEWORK = {
 
 with open(BASE_DIR / "game/word_lists/positive.txt", "r") as f:
     WORD_LISZT = f.read().split("\n")
+
+# email settings
+EMAIL_HOST = "smtp.mailgun.org"
+EMAIL_PORT = 587
+EMAIL_HOST_USER = env.str("MAILGUN_USER")
+EMAIL_HOST_PASSWORD = env.str("MAILGUN_PASSWORD")
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = "Trivia Mafia Admin <noreply@triviamafia.com>"
+EMAIL_SUBJECT_PREFIX = "[Trivia Mafia] "

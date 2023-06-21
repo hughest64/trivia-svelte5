@@ -15,13 +15,13 @@ import jwt
 User = get_user_model()
 
 
-def create_token(user):
+def create_token(user, expires_in=None):
     """Create a jwt token from a user id"""
     payload = {
         "id": user.id,
         "staff_user": user.is_staff,
         "exp": datetime.datetime.utcnow()
-        + datetime.timedelta(minutes=settings.JWT_TOKEN_TTL),
+        + datetime.timedelta(minutes=expires_in or settings.JWT_TOKEN_TTL),
         "iat": datetime.datetime.utcnow(),
     }
 

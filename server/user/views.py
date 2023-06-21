@@ -10,6 +10,7 @@ from rest_framework.status import HTTP_400_BAD_REQUEST
 
 from user.authentication import create_token, decode_token, JwtAuthentication
 from user.models import User
+from user.utils import Mailer
 
 from game.views.validation.data_cleaner import DataCleaner
 
@@ -100,22 +101,44 @@ class UserView(APIView):
         return Response({"user_data": user_data})
 
 
-class ResetPasswordView(APIView):
-    @method_decorator(csrf_protect)
+class ForgotPasswordView(APIView):
     def post(self, request):
-        raise NotFound("this is not the page you are looking for")
-
         data = DataCleaner(request.data)
-        username = data.as_string("username")  # is this needed?
-        email = data.as_string("email")  # or just this?
+        username = data.as_string("username")
+
+        try:
+            user = User.objects.get(Q(username=username) | Q(email=username))
+        except User.DoesNotExist:
+            raise NotFound("No user with that username or email address exists")
+
+        Mailer().send_password_reset(user)
+
+        return Response({"sucess": True})
+
+
+class ResetPasswordView(APIView):
+    # @method_decorator(csrf_protect)
+    def post(self, request):
+        data = DataCleaner(request.data)
+        token = data.as_string("token")
+        user = decode_token(token)
+
+        if user.is_anonymous:
+            raise AuthenticationFailed("The reset token is not valid")
+
         pass1 = data.as_string("pass1")
         pass2 = data.as_string("pass2")
+        if pass1 != pass2:
+            raise AuthenticationFailed("Passwords do not match!")
 
-        # look up the user throw if not a thing
-        # validate that the passwords match
-        # user.set_password
-        # create a token ???
-        # let them know everthing is hunky dory
+        user.set_password(pass1)
+        user.save()
+        token = create_token(user)
+
+        response = Response({"user_data": user.to_json()})
+        response.set_cookie(key="jwt", value=token, httponly=True)
+
+        return response
 
 
 # NOTE: not currently used as cookies are controlled in SvelteKit
