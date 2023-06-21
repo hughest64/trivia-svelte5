@@ -1,6 +1,8 @@
 import type { ParamMatcher } from '@sveltejs/kit';
+import { getJwtPayload } from '$lib/utils';
 
-export const match: ParamMatcher = (param) => {
-    // TODO: use jwtdecode to ensure it's a valid token
-    return true;
+export const match: ParamMatcher = (token) => {
+    const payload = getJwtPayload(token);
+
+    return payload.validtoken || false;
 };

@@ -92,6 +92,21 @@ class LoginView(APIView):
         return response
 
 
+# for now this is only used to auto-login on password reset
+# it requires a non-expired short-lived token
+class RefreshTokenView(APIView):
+    def post(self, request):
+        token = request.data.get("token")
+        user = decode_token(token)
+        if user.is_anonymous:
+            return AuthenticationFailed("the token has expired")
+        token = create_token(user)
+
+        response = Response({"success": True})
+        response.set_cookie(key="jwt", value=token, httponly=True)
+        return response
+
+
 class UserView(APIView):
     authentication_classes = [JwtAuthentication]
 
@@ -102,6 +117,7 @@ class UserView(APIView):
 
 
 class ForgotPasswordView(APIView):
+    @method_decorator(csrf_protect)
     def post(self, request):
         data = DataCleaner(request.data)
         username = data.as_string("username")
@@ -111,13 +127,13 @@ class ForgotPasswordView(APIView):
         except User.DoesNotExist:
             raise NotFound("No user with that username or email address exists")
 
-        Mailer().send_password_reset(user)
+        Mailer(user).send_password_reset()
 
         return Response({"sucess": True})
 
 
 class ResetPasswordView(APIView):
-    # @method_decorator(csrf_protect)
+    @method_decorator(csrf_protect)
     def post(self, request):
         data = DataCleaner(request.data)
         token = data.as_string("token")
