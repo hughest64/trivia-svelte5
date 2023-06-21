@@ -24,6 +24,7 @@ test.afterAll(async () => {
     await apicontext.dispose();
 });
 
+// TODO: what is the best way to delete the newly created guest user?
 test('guest login', async ({ page }) => {
     await page.goto('/');
     // not logged in, we should land on the welcome page
