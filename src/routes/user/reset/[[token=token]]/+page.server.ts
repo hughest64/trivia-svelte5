@@ -17,7 +17,6 @@ export const load: PageServerLoad = async ({ cookies, fetch, params, url }) => {
     if (cookies.get('jwt')) return;
 
     const csrftoken = cookies.get('csrftoken') || '';
-    console.log(csrftoken);
 
     // request a long-lived token for auto-login
     const resp = await fetch(`${env.PUBLIC_API_HOST}/user/refresh`, {
