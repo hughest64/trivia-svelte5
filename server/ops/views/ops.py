@@ -13,10 +13,11 @@ from rest_framework.views import APIView
 from game.db import HostActions, ValidateData, TestFailed
 from game.models import Game, TriviaEvent, Team, get_end_of_week
 from game.processors.game_creator import SOUND_SLUG, NO_SOUND_SLUG
-from game.views.validation.data_cleaner import get_event_or_404
+from game.views.validation.data_cleaner import DataCleaner, get_event_or_404
 
 from user.authentication import JwtAuthentication
 from user.models import User
+from user.utils import Mailer
 
 
 class OpsAuthentication(JwtAuthentication):
@@ -155,3 +156,39 @@ class ValidateDataView(APIView):
             return ValidateData.get(validation_type)(request, event)
         except KeyError:
             raise NotFound(f"validation_type {validation_type} does not exist")
+
+
+class CreateUserView(APIView):
+    authentication_classes = [OpsAuthentication]
+
+    def post(self, request):
+        data = DataCleaner(request.data)
+        username = data.as_string("username")
+        password = data.as_string("password")
+
+        user, created = User.objects.get_or_create_user(
+            username=username, password=password
+        )
+        if created:
+            user.set_password(password)
+            user.save()
+
+        return Response({"success": True})
+
+
+class ResetLinkView(APIView):
+    authentication_classes = [OpsAuthentication]
+
+    def get(self, request):
+        data = DataCleaner(request.data)
+        username = data.as_string("username")
+
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            raise NotFound(f"a user with username {username} does not exist")
+
+        mailer = Mailer(user)
+        reset_link = mailer.get_reset_link()
+
+        return Response({"link": reset_link})

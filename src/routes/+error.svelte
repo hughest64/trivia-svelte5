@@ -11,6 +11,7 @@ a component form an object (or acutal map) -->
     {#if !code}
         <h1>{$page.status}</h1>
         <h5>{$page.error?.message}</h5>
+        <!-- TODO: a link back to the home page? -->
     {:else}
         <h1>Sorry</h1>
         <p>The player limit for your team has been reached for this event</p>

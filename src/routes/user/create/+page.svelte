@@ -5,6 +5,8 @@
     $: form = $page.form;
 </script>
 
+<svelte:head><title>Trivia Mafia | Sign Up</title></svelte:head>
+
 <h1>Sign Up</h1>
 
 <form action="" method="post" use:enhance>

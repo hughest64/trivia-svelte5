@@ -161,7 +161,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # jwt settings
 
 # token expiration in minutes
-JWT_TOKEN_TTL = 24 * 60  # 24 hrs
+JWT_TOKEN_TTL = 24 * 60 * 60  # 24 hrs in seconds
 
 # use an env variable for prod
 JWT_TOKEN_SECRET = SECRET_KEY
@@ -174,3 +174,12 @@ REST_FRAMEWORK = {
 
 with open(BASE_DIR / "game/word_lists/positive.txt", "r") as f:
     WORD_LISZT = f.read().split("\n")
+
+# email settings
+EMAIL_HOST = "smtp.mailgun.org"
+EMAIL_PORT = 587
+EMAIL_HOST_USER = env.str("MAILGUN_USER")
+EMAIL_HOST_PASSWORD = env.str("MAILGUN_PASSWORD")
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = "Trivia Mafia Admin <noreply@triviamafia.com>"
+EMAIL_SUBJECT_PREFIX = "[Trivia Mafia] "

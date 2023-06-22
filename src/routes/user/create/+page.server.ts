@@ -17,11 +17,18 @@ export const actions: Actions = {
         const pass2 = formData.get('pass2');
         const email = formData.get('email');
 
-        if (!username || !pass || !pass2 || !email) {
-            return fail(400, { error: 'Please fill in all required fields' });
-        }
-        if (pass !== pass2) {
-            return fail(400, { error: 'Passwords do not match!' });
+        let body = '';
+        if (formData.get('guest_user')) {
+            body = JSON.stringify({ guest_user: true });
+        } else {
+            if (!username || !pass || !pass2 || !email) {
+                return fail(400, { error: 'Please fill in all required fields' });
+            }
+            if (pass !== pass2) {
+                return fail(400, { error: 'Passwords do not match!' });
+            }
+
+            body = JSON.stringify({ username, pass, pass2, email });
         }
 
         const csrftoken = cookies.get('csrftoken') || '';
@@ -35,7 +42,7 @@ export const actions: Actions = {
                 Cookie: `csrftoken=${csrftoken}`,
                 'X-CSRFToken': csrftoken
             },
-            body: JSON.stringify({ username, pass, pass2, email })
+            body
         });
 
         const respData = await response.json();
@@ -58,6 +65,5 @@ export const actions: Actions = {
             return redirect(302, next as string);
         }
         throw redirect(302, '/team');
-        // return { success: true };
     }
 };
