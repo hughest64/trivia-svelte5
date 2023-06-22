@@ -4,14 +4,10 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 
 from rest_framework.response import Response
-from rest_framework.status import (
-    HTTP_400_BAD_REQUEST,
-    HTTP_403_FORBIDDEN,
-    HTTP_404_NOT_FOUND,
-)
+from rest_framework.status import HTTP_400_BAD_REQUEST
 from rest_framework.views import APIView
 
-from game.models import Team, generate_team_password
+from game.models import Team
 from game.views.validation.exceptions import TeamNotFound
 from game.views.validation.data_cleaner import DataCleaner
 from user.authentication import JwtAuthentication
@@ -39,15 +35,8 @@ class TeamCreateView(APIView):
         user: User = request.user
         data = DataCleaner(request.data)
         team_name = data.as_string("team_name")
-        try:
-            password = generate_team_password()
-        except StopIteration:
-            return Response(
-                {"detail": "An error occured, please try again"},
-                status=HTTP_400_BAD_REQUEST,
-            )
 
-        team = Team.objects.create(name=team_name, password=password)
+        team = Team.objects.create(name=team_name, create_password=True)
         team.members.add(request.user)
         user.active_team = team
         user.save()

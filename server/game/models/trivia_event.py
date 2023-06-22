@@ -1,3 +1,4 @@
+from datetime import timedelta
 import random
 
 from django.core.exceptions import ValidationError
@@ -175,12 +176,20 @@ class GameRound(models.Model):
         super().save(*args, **kwargs)
 
 
+def get_end_of_week(dt=None):
+    """return the end of the week from dt or the current local date"""
+    reference_date = dt or timezone.localdate()
+    return reference_date + timedelta(days=6 - reference_date.weekday())
+
+
 class Game(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     block_code = models.CharField(max_length=150, default="")
     title = models.CharField(max_length=200)
+    # TODO: I don't think this field is actually used or even exists in Airtable
     description = models.TextField(blank=True, null=True)
     date_used = models.DateField(default=timezone.now)
+    active_through = models.DateField(default=get_end_of_week, null=True, blank=True)
     use_sound = models.BooleanField(default=True)
 
     @property
@@ -197,12 +206,16 @@ class Game(models.Model):
         return {
             "game_id": self.pk,
             "game_title": self.title,
-            # TODO: this doesn't need to be in the event data to_json, make sure it isn't
             "block": self.block,
-            "use_sound": self.use_sound
-            # "block_code": self.block_code,
-            # "description": self.description,
+            "use_sound": self.use_sound,
         }
+
+    def clean(self, *args, **kwargs):
+        # add active through date to new instances which do not already have on set
+        if not self.pk and self.active_through is None:
+            self.active_through = get_end_of_week(dt=self.date_used)
+
+        super().clean(*args, **kwargs)
 
     def save(self, *args, **kwargs):
         self.full_clean()

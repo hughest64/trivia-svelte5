@@ -15,7 +15,7 @@ const djangoservercmd = `
 `;
 
 const config: PlaywrightTestConfig = {
-    // retries: 1,
+    retries: 1,
     workers: 3,
     timeout: 30000,
     webServer: [
@@ -26,7 +26,9 @@ const config: PlaywrightTestConfig = {
         {
             command: djangoservercmd,
             cwd: 'server',
-            port: 7000
+            port: 7000,
+            // https://playwright.dev/docs/api/class-testconfig#test-config-web-server
+            reuseExistingServer: true
         }
     ],
     use: { baseURL: 'http://127.0.0.1:4173' }

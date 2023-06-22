@@ -1,24 +1,12 @@
 import { expect, request } from '@playwright/test';
-import type { Browser, Cookie, Page } from '@playwright/test';
+import type { Cookie, Locator, Page } from '@playwright/test';
 
-const api_port = process.env.API_PORT || '7000';
-
-/**
- * test refator ideas:
- * use repeatable authentication (file based creds with storageState)
- * - https://playwright.dev/docs/auth#multiple-signed-in-roles
- * integrate that with POM classes
- * - https://playwright.dev/docs/auth#testing-multiple-roles-with-pom-fixtures
- * consider running tests in bigger files in parallel
- * - https://playwright.dev/docs/test-parallel
- * must figure out a better data reset system
- * must use data that won't be modified by users (i.e. don't user event 1234)
- * must reduce configurations (i.e. vscode tasks, playwright configs, npm tasks)
- */
+export const api_port = process.env.API_PORT || '7000';
 
 export interface TestConfig {
     username?: string;
     password?: string;
+    teamName?: string;
     pageUrl?: string;
     destinationUrl?: string;
     joincode?: string;
@@ -41,22 +29,6 @@ export const login = async (page: Page, config: TestConfig = {}): Promise<void> 
     await page.locator('button', { hasText: 'Submit' }).click();
 };
 
-export const authRedirects = async (page: Page, config: TestConfig = {}) => {
-    const { pageUrl, username, password, destinationUrl }: TestConfig = { ...defaultTestConfig, ...config };
-    // expect to land on a destination url if proived otherwise the original page url
-    const endpoint = destinationUrl || pageUrl;
-
-    await page.goto(pageUrl as string);
-    await expect(page).toHaveTitle(/welcome/i);
-
-    await page.locator('text=Login/Create Account').click();
-    await expect(page).toHaveTitle(/login/i);
-    expect(await page.textContent('h1')).toBe('Login');
-
-    await login(page, { username, password, pageUrl: '' });
-    await expect(page).toHaveURL(endpoint as string);
-};
-
 export const createSelectorPromises = (page: Page, visibleLinks: string[], footerLinks: string[]): Promise<void>[] => {
     const linkPromises = footerLinks.map((link: string) => {
         const selector = expect(page.locator(`p:has-text("${link}")`));
@@ -70,23 +42,22 @@ export async function asyncTimeout(ms = 100): Promise<ReturnType<typeof setTimeo
     return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-/**
- * Return a Page object from the Browser context
- * @param browser
- * @returns page
- */
-export const getBrowserPage = async (browser: Browser): Promise<Page> => {
-    return browser.newContext().then((context) => context.newPage());
+export interface LbEntryConfig {
+    name: RegExp | string;
+    rank: RegExp | string;
+    points: RegExp | string;
+}
+
+export const checkLbEntry = async (entry: Locator, config: LbEntryConfig) => {
+    const { name, rank, points } = config;
+    await expect(entry.locator('h3.team-name')).toHaveText(name);
+    await expect(entry.locator('h3.rank')).toHaveText(rank);
+    await expect(entry.locator('h3.points')).toHaveText(points);
 };
 
-export const resetEventData = async (body: Record<string, unknown> = {}) => {
-    const context = await request.newContext({
-        baseURL: `http://localhost:${api_port}`
+export const createApiContext = async () => {
+    return await request.newContext({
+        baseURL: `http://localhost:${api_port}`,
+        extraHTTPHeaders: { 'content-type': 'application/json', accept: 'application/json' }
     });
-    const response = await context.post('/reset-event-data', {
-        headers: { 'content-type': 'application/json', accept: 'application/json' },
-        data: { secret: 'todd is great', ...body }
-    });
-    expect(response.status()).toBe(200);
-    context.dispose();
 };

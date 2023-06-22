@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { getStore } from '$lib/utils';
+    import { getStore, setEventCookie } from '$lib/utils';
     import RoundSelector from '../RoundSelector.svelte';
     import ResponseGroup from './ResponseGroup.svelte';
 
@@ -28,46 +28,36 @@
         const next = scoringQuestionNumber + 1;
         const maxQuestion = Math.max(...roundQuestionNumbers);
         const maxRound = Math.max(...roundNumbers);
+
         if (next <= maxQuestion) {
             activeEventData.update((data) => ({
                 ...data,
                 activeQuestionKey: `${roundNumber}.${next}`,
                 activeQuestionNumber: next
             }));
-            await fetch('/update', {
-                method: 'post',
-                body: JSON.stringify({ activeEventData: $activeEventData, joincode: joincode })
-            });
         } else if (next > maxQuestion) {
             const nextRound = roundNumber + 1;
             if (roundNumber < maxRound) {
-                const postData = {
+                $activeEventData = {
                     activeRoundNumber: nextRound,
                     activeQuestionNumber: 1,
                     activeQuestionKey: `${nextRound}.1`
                 };
-                $activeEventData = postData;
-                await fetch('/update', {
-                    method: 'post',
-                    body: JSON.stringify({ activeEventData: postData, joincode: joincode })
-                });
             }
         }
+        setEventCookie($activeEventData, joincode);
     };
 
     const goBack = async () => {
         const previousQ = scoringQuestionNumber - 1;
         const minQuestion = Math.min(...roundQuestionNumbers);
+
         if (previousQ >= minQuestion) {
             activeEventData.update((data) => ({
                 ...data,
                 activeQuestionKey: `${roundNumber}.${previousQ}`,
                 activeQuestionNumber: previousQ
             }));
-            await fetch('/update', {
-                method: 'post',
-                body: JSON.stringify({ activeEventData: $activeEventData, joincode: joincode })
-            });
         } else if (previousQ < minQuestion) {
             const minRound = Math.min(...roundNumbers);
             const previousround = roundNumber - 1;
@@ -75,18 +65,14 @@
                 const previousRoundMaxQ = Math.max(
                     ...$allQuestions.filter((q) => q.round_number === previousround).map((q) => q.question_number)
                 );
-                const postData = {
+                $activeEventData = {
                     activeRoundNumber: previousround,
                     activeQuestionNumber: previousRoundMaxQ,
                     activeQuestionKey: `${previousround}.${previousRoundMaxQ}`
                 };
-                $activeEventData = postData;
-                await fetch('/update', {
-                    method: 'post',
-                    body: JSON.stringify({ activeEventData: postData, joincode: joincode })
-                });
             }
         }
+        setEventCookie($activeEventData, joincode);
     };
 
     const handleKeyPress = (event: KeyboardEvent) => {

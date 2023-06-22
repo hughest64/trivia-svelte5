@@ -1,6 +1,8 @@
 import type { RequestHandler } from './$types';
 import { env } from '$env/dynamic/private';
 
+// TODO: this endpoint is no longer used and should be deprecated
+
 export const POST: RequestHandler = async ({ cookies, request, url }) => {
     const data = await request.json();
 

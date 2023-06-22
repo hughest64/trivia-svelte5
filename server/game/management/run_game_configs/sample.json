@@ -1,10 +1,8 @@
 {
     "game_id": null,
-    "joincode": 7812,
+    "joincode": 9800,
     "teams": 2,
-    "use_score_percentage": true,
     "rounds_to_play": 8,
-    "reuse": true,
     "team_configs": {
         "1": {
             "score_percentage": 80,
@@ -15,6 +13,9 @@
                 "4": 4,
                 "5": 5
             }},
+            "questions": {
+                "1.1": { "answer": "", "points": 0}
+            },
             "rounds": {
                 "1": [
                     {

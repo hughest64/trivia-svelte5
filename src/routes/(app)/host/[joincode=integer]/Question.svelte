@@ -10,6 +10,7 @@
     const questionStates = getStore('questionStates') || [];
     $: questionRevealed = $questionStates.find((qs) => qs.key === question.key)?.question_displayed;
     $: hasImage = question.question_type.toLocaleLowerCase().startsWith('image');
+    $: hasSoundLink = question.question_type.toLocaleLowerCase().startsWith('sound');
     let displayLightbox = false;
 
     // TODO: default should be set based on whether or not answers are revealed for all
@@ -54,15 +55,23 @@
 
     <p>{question.question_text}</p>
 
+    <!-- Immage Round -->
     {#if hasImage && question?.question_url}
         {#if displayLightbox}
-            <Lightbox source={question?.question_url} on:click={() => (displayLightbox = false)} />
+            <Lightbox source={question.question_url} on:click={() => (displayLightbox = false)} />
         {/if}
         <button class="button-image" on:click={() => (displayLightbox = true)}>
             <img src={question?.question_url} alt="img round" />
         </button>
     {:else if hasImage}
         <p>Image Missing</p>
+    {/if}
+
+    <!-- Sound Round -->
+    {#if hasSoundLink && question?.question_url}
+        <a href={question.question_url} rel="external" target="_blank">Link to sound file</a>
+    {:else if hasSoundLink}
+        <p>Sound Link Missing</p>
     {/if}
 
     {#if question.answer_notes}<p>{question.answer_notes}</p>{/if}

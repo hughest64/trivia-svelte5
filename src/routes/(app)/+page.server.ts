@@ -1,8 +1,6 @@
 import * as cookie from 'cookie';
 import { fail, redirect } from '@sveltejs/kit';
 import { env } from '$env/dynamic/public';
-import { getJwtPayload } from '$lib/utils';
-import type { Action, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ cookies, fetch, locals, url }) => {
     const apiHost = env.PUBLIC_API_HOST;
@@ -31,41 +29,4 @@ export const load: PageServerLoad = async ({ cookies, fetch, locals, url }) => {
         console.error('cound not connect to', apiHost);
         return { loaderror: 'Error: Could Not Connect to the Server' };
     }
-};
-
-// guest login
-const guestLogin: Action = async ({ cookies, fetch, url }) => {
-    const apiHost = env.PUBLIC_API_HOST;
-    const secureCookie = url.protocol === 'https:';
-    const csrftoken = cookies.get('csrftoken') || '';
-    const response = await fetch(`${apiHost}/user/guest/`, {
-        method: 'POST',
-        headers: {
-            accept: 'application/json',
-            'content-type': 'application/json',
-            Cookie: `csrftoken=${csrftoken}`,
-            'X-CSRFToken': csrftoken
-        }
-    });
-
-    const responseData = await response.json();
-
-    if (!response.ok) {
-        return fail(responseData.status, { error: responseData.detail });
-    }
-
-    const responseCookies = response.headers.get('set-cookie') || '';
-    const jwt = cookie.parse(responseCookies)?.jwt;
-    if (jwt) {
-        const jwtData = getJwtPayload(jwt);
-        const expires = new Date((jwtData.exp as number) * 1000);
-        cookies.set('jwt', jwt, { path: '/', expires, httpOnly: true, secure: secureCookie });
-    }
-    const next = url.searchParams.get('next') || '/team';
-
-    throw redirect(302, next);
-};
-
-export const actions = {
-    default: guestLogin
 };

@@ -1,65 +1,30 @@
-import { expect, test } from '@playwright/test';
-import { asyncTimeout, authRedirects, getBrowserPage, login, resetEventData } from './utils.js';
-import { PlayerGamePage } from './gamePages.js';
-import type { Page } from '@playwright/test';
+import { expect, test } from './authConfigs.js';
+import { createApiContext, login } from './utils.js';
+import type { APIRequestContext } from '@playwright/test';
 
-const adminUser = 'sample_admin';
-const playerSelectedTeam = 'hello world';
+const joincode = '9906';
 
-// TODO: user creation works, but this test is problematic for some reason
-test.describe('user creation', async () => {
-    test.afterEach(async () => await resetEventData());
+const game_data = {
+    joincode,
+    player_limit: true
+};
 
-    test.skip('correct handling of user creation', async ({ page }) => {
-        const pass1 = 'abc123';
-        const pass2 = 'abd345';
+let apicontext: APIRequestContext;
 
-        const usernameField = page.locator('input[name="username"]');
-        const pass1Field = page.locator('input[name="pass"]');
-        const pass2Field = page.locator('input[name="pass2"]');
-        const emailField = page.locator('input[name="email"]');
-        const submitButton = page.locator('button', { hasText: /sign up/i });
-
-        // user should not exist
-        await login(page, { username: 'testuser', password: pass1 });
-        await expect(page.locator('h3', { hasText: /invalid/i })).toBeVisible();
-
-        // or / and click login then click create account
-        await page.goto('/user/create');
-        // fill in the form w/ a username that already exists
-        await usernameField.fill('player');
-        await pass1Field.fill(pass1);
-        await pass2Field.fill(pass1);
-        await emailField.fill('no@no.no');
-        await submitButton.click();
-        await expect(page).toHaveURL('/user/create');
-        await expect(page.locator('p.error')).toHaveText(/username already exists/i);
-
-        // fill in the form w/ passwords that don't match
-        await usernameField.fill('testuser');
-        await pass1Field.fill(pass1);
-        await pass2Field.fill(pass2);
-        await emailField.fill('no@no.no');
-        await submitButton.click();
-        await expect(page).toHaveURL('/user/create');
-        await expect(page.locator('p.error')).toHaveText(/passwords do not match/i);
-
-        // fill in the form correctly
-        await usernameField.fill('testuser');
-        await pass1Field.fill(pass1);
-        await pass2Field.fill(pass1);
-        await emailField.fill('no@no.no');
-        await submitButton.click();
-
-        // TODO: for some reason the test doesn't redirect to /team properly, but it works in the ui.
-        // It seems like the cookie isn't getting set properly.
-        // For now the best we can do is confirm that the user was created but actually logging in.
-        await asyncTimeout(200);
-        await login(page, { username: 'testuser', password: pass1 });
-        await expect(page).toHaveURL('/team');
+test.beforeAll(async ({ host }) => {
+    apicontext = await createApiContext();
+    const resp = await apicontext.post('/ops/run-game/', {
+        headers: await host.getAuthHeader(),
+        data: { game_data: JSON.stringify(game_data) }
     });
+    expect(resp.status()).toBe(200);
 });
 
+test.afterAll(async () => {
+    await apicontext.dispose();
+});
+
+// TODO: what is the best way to delete the newly created guest user?
 test('guest login', async ({ page }) => {
     await page.goto('/');
     // not logged in, we should land on the welcome page
@@ -71,140 +36,240 @@ test('guest login', async ({ page }) => {
     expect(await page.textContent('h1')).toBe('Create a New Team');
 });
 
-// redirects to specific endpoints
-test('proper redirect for game home page', async ({ page }) => authRedirects(page, { pageUrl: '/team' }));
-test('proper redirect for game join page', async ({ page }) => authRedirects(page, { pageUrl: '/game/join' }));
-test('proper redirect for game page', async ({ page }) => authRedirects(page, { pageUrl: '/game/1234' }));
-test('proper redirect for host choice page', async ({ page }) =>
-    authRedirects(page, { username: adminUser, password: adminUser, pageUrl: '/host/choice' }));
-test('proper redirect for host event setup', async ({ page }) =>
-    authRedirects(page, { username: adminUser, password: adminUser, pageUrl: '/host/event-setup' }));
-test('proper redirect for host game page', async ({ page }) =>
-    authRedirects(page, { username: adminUser, password: adminUser, pageUrl: '/host/1234' }));
+// TODO: can we test for query params? I think probably via regex
+test('all authed pages redirect to welcome page when not logged in', async ({ page }) => {
+    await page.goto('/team');
+    await expect(page).toHaveURL(/\/?next=\/team/);
 
-test.describe('navigate to a trivia event as player', async () => {
-    let page: Page;
-    test.beforeAll(async ({ browser }) => {
-        page = await browser.newPage();
-        await login(page);
-    });
-    test.afterAll(async () => await page.close());
+    await page.goto('/game/join');
+    await expect(page).toHaveURL(/\/?next=\/game\/join/);
 
-    // select a team
-    test('select a team then navigate', async () => {
-        await expect(page).toHaveTitle(/team/i);
-        expect(await page.textContent('h1')).toBe('Create a New Team');
-        await page.selectOption('select#team-select', { label: playerSelectedTeam });
-        await page.locator('text=Choose This Team').click();
-    });
+    await page.goto('/game/1234');
+    await expect(page).toHaveURL(/\/?next=\/game\/1234/);
 
-    test('active team name is displayed on the join page', async () => {
-        await expect(page).toHaveTitle(/join/i);
-        expect(await page.textContent('h1')).toBe('Enter Game Code');
-        await expect(page.locator(`p:has-text("${playerSelectedTeam}")`)).toBeVisible();
-    });
+    await page.goto('/host/choice');
+    await expect(page).toHaveURL(/\/?next=\/host\/choice/);
 
-    test('navigate to trivia event', async () => {
-        await page.locator('input[name="joincode"]').fill('1234');
-        await page.locator('text=Join Game!').click();
-        // the join code should be in the title (good enough for now)
-        await expect(page).toHaveTitle(/event 1234/i);
-    });
+    await page.goto('/host/event-setup');
+    await expect(page).toHaveURL(/\/?next=\/host\/event-setup/);
 
-    test('logout navigates back to the home page', async () => {
-        await page.locator('text=menu').click();
-        await page.locator('text=Logout').click();
-        await expect(page).toHaveURL('/');
-    });
+    await page.goto('/host/1234');
+    await expect(page).toHaveURL(/\/?next=\/host\/1234/);
 });
 
-test.describe('navigate to trivia event as host', async () => {
-    let page: Page;
-    test.beforeAll(async ({ browser }) => {
-        page = await browser.newPage();
-        await login(page, { username: adminUser, password: adminUser });
-    });
-    test.afterAll(async () => {
-        await page.goto('/user/logout');
-        await page.close();
-    });
-
-    test('host can be a player', async () => {
-        await expect(page).toHaveTitle(/host or play/i);
-        await page.locator('text=Play Trivia').click();
-        await expect(page).toHaveTitle(/team/i);
-    });
-
-    test('the back button navigates to host choice', async () => {
-        await page.goBack();
-        await expect(page).toHaveTitle(/host or play/i);
-    });
-
-    test('host choice is visible', async () => {
-        await expect(page).toHaveTitle(/host or play/i);
-        expect(await page.textContent('h1')).toBe(`Greetings ${adminUser}`);
-        await page.locator('text=Host a Game').click();
-    });
-
-    test('event setup has event options', async () => {
-        await expect(page).toHaveURL('/host/event-setup');
-        expect(await page.textContent('h1')).toBe('Choose a Trivia Event');
-
-        // TODO: test the select menus for content
-
-        await page.locator('button:has-text("Begin Event")').click();
-        await expect(page).toHaveURL(/\/host\/\d+\/?$/i);
-    });
+test('navigate to a game', async ({ p3 }) => {
+    await p3.page.goto('/team');
+    await expect(p3.page).toHaveTitle(/team/i);
+    const submitBtn = p3.page.locator('button#team-select-submit');
+    await expect(submitBtn).toBeVisible();
+    await submitBtn.click();
+    await expect(p3.page).toHaveURL(/\/game\/join/);
+    await expect(p3.page).toHaveTitle(/join/i);
+    expect(await p3.page.textContent('h1')).toBe('Enter Game Code');
+    // TODO: not 1234
+    await p3.page.locator('input[name="joincode"]').fill(joincode);
+    await p3.page.locator('text=Join Game!').click();
+    await expect(p3.page).toHaveTitle(/event \d+/i);
 });
 
-test.describe('event specific rules', async () => {
-    test.beforeEach(async () => resetEventData({ joincodes: 9906 }));
+test('logout navigates back to the home page', async ({ p4 }) => {
+    await p4.page.goto('/team');
+    await p4.page.locator('text=menu').click();
+    await p4.page.locator('text=Logout').click();
+    await expect(p4.page).toHaveURL('/');
+});
 
-    test('navigate directly to a game', async ({ browser }) => {
-        const p1 = new PlayerGamePage(await getBrowserPage(browser));
-        await p1.login();
-        await p1.page.goto('/game/9906');
-        // expect the message to appear
-        const linkText = p1.page.locator('button', { hasText: 'Click here' });
-        await expect(linkText).toBeVisible();
-        // expect the anwer input to be disabled
-        await expect(p1.responseInput).toBeDisabled();
-        // click the link
-        await linkText.click();
-        // expect the answer input to be editable
-        await expect(p1.responseInput).toBeEditable();
-        // expect the message to go away
-        await expect(linkText).not.toBeVisible();
-    });
+// host navigates to a game
+test('host navigation options', async ({ host }) => {
+    // hosts can play
+    await host.page.goto('/host/choice');
+    await expect(host.page).toHaveTitle(/host or play/i);
+    await host.page.locator('text=Play Trivia').click();
+    await expect(host.page).toHaveTitle(/team/i);
 
-    test('two players cannot join an event with a player limit', async ({ browser }) => {
-        const p1 = new PlayerGamePage(await getBrowserPage(browser));
-        await p1.login();
-        await p1.joinGame('9906');
+    // host can host
+    await host.page.goBack();
+    await expect(host.page).toHaveTitle(/host or play/i);
+    await host.page.locator('text=Host a Game').click();
+    await expect(host.page).toHaveURL(/\/host\/event-setup/);
+});
 
-        const p2 = new PlayerGamePage(await getBrowserPage(browser), {
-            username: 'player_two',
-            password: 'player_two'
+test('navigate directly to a game', async ({ p2 }) => {
+    await p2.page.goto('/game/9906');
+    // expect the message to appear
+    const linkText = p2.page.locator('button', { hasText: 'Click here' });
+    await expect(linkText).toBeVisible();
+    // expect the anwer input to be disabled
+    await expect(p2.responseInput).toBeDisabled();
+    // click the link
+    await linkText.click();
+    // expect the answer input to be editable
+    await expect(p2.responseInput).toBeEditable();
+    // expect the message to go away
+    await expect(linkText).not.toBeVisible();
+});
+
+test('two players cannot join an event with a player limit', async ({ p3, p4 }) => {
+    await p3.joinGame(joincode);
+    await p4.joinGame(joincode);
+
+    // should still be on /game/join but with error text
+    await expect(p4.page).toHaveURL(/\/game\/join/);
+    await expect(p4.page.locator('p.error', { hasText: /already joined/i })).toBeVisible();
+    // direct navigate
+    await p4.page.goto('/game/9906');
+    // should be on error page
+    await expect(p4.page.locator('p', { hasText: /player limit/i })).toBeVisible();
+    // click join a different game
+    await p4.page.locator('a', { hasText: /different game/i }).click();
+    // should be on /game/join
+    await expect(p4.page).toHaveURL('/game/join');
+    // click back
+    await p4.page.goBack();
+    // click select a different team
+    await p4.page.locator('a', { hasText: /different team/i }).click();
+    // should b on /team
+    await expect(p4.page).toHaveURL('/team');
+});
+
+test.describe('user creation', async () => {
+    test.beforeEach(async ({ host }) => {
+        apicontext.post('ops/delete/', {
+            headers: await host.getAuthHeader(),
+            data: { type: 'user', usernames: ['testuser'] }
         });
-        await p2.login();
-        await p2.joinGame('9906');
-
-        // should still be on /game/join but with error text
-        await expect(p2.page).toHaveURL(/\/game\/join/);
-        await expect(p2.page.locator('p.error', { hasText: /team limit exceeded/i })).toBeVisible();
-        // direct navigate
-        await p2.page.goto('/game/9906');
-        // should be on error page
-        await expect(p2.page.locator('p', { hasText: /player limit/i })).toBeVisible();
-        // click join a different game
-        await p2.page.locator('a', { hasText: /different game/i }).click();
-        // should be on /game/join
-        await expect(p2.page).toHaveURL('/game/join');
-        // click back
-        await p2.page.goBack();
-        // click select a different team
-        await p2.page.locator('a', { hasText: /different team/i }).click();
-        // should b on /team
-        await expect(p2.page).toHaveURL('/team');
     });
+
+    // TODO delete the user when done
+    test('correct handling of user creation', async ({ page }) => {
+        const pass1 = 'abc123';
+        const pass2 = 'abd345';
+
+        await page.goto('/user/login');
+
+        const usernameField = page.locator('input[name="username"]');
+
+        const pass1Field = page.locator('input[name="pass"]');
+        const pass2Field = page.locator('input[name="pass2"]');
+        const emailField = page.locator('input[name="email"]');
+        const submitButton = page.locator('button', { hasText: /sign up/i });
+
+        // // user should not exist
+        await login(page, { username: 'testuser', password: pass1 });
+        await expect(page.locator('h3', { hasText: /invalid/i })).toBeVisible();
+
+        // or / and click login then click create account
+        await page.goto('/user/create');
+        // fill in the form w/ a username that already exists
+        await usernameField.fill('player');
+        await pass1Field.fill(pass1);
+        await pass2Field.fill(pass1);
+        await emailField.fill('testuser@no.no');
+        await submitButton.click();
+        await expect(page).toHaveURL('/user/create');
+        await expect(page.locator('p.error')).toHaveText(/already exists/i);
+
+        // update the username but use an exisiting email
+        await usernameField.fill('testuser');
+        await pass1Field.fill(pass1);
+        await pass2Field.fill(pass1);
+        await emailField.fill('no@no.no');
+        await submitButton.click();
+        await expect(page).toHaveURL('/user/create');
+        await expect(page.locator('p.error')).toHaveText(/already exists/i);
+
+        // fill in the form w/ passwords that don't match
+        await usernameField.fill('testuser');
+        await pass1Field.fill(pass1);
+        await pass2Field.fill(pass2);
+        await emailField.fill('testuser@no.no');
+        await submitButton.click();
+        await expect(page).toHaveURL('/user/create');
+        await expect(page.locator('p.error')).toHaveText(/passwords do not match/i);
+
+        // fill in the form correctly
+        await usernameField.fill('testuser');
+        await pass1Field.fill(pass1);
+        await pass2Field.fill(pass1);
+        await emailField.fill('testuser@no.no');
+        await submitButton.click();
+
+        await expect(page).toHaveURL('/team');
+    });
+});
+
+// TODO: possibly wrap these and send an after each to delete the new user
+test('password reset for logged in user', async ({ p1 }) => {
+    // p1 should get redirected (cuz logged in) from /user/forgot
+    await p1.page.goto('/user/forgot');
+    await expect(p1.page).toHaveURL(/\/team/);
+
+    // p1 can access /user/reset/
+    await p1.page.goto('/user/reset');
+    await expect(p1.page).toHaveURL(/\/reset/);
+
+    const pass1Field = p1.page.locator('input[name="pass1"]');
+    const pass2Field = p1.page.locator('input[name="pass2"]');
+    const updateBtn = p1.page.locator('button', { hasText: /update/i });
+
+    // cannot submit mismatched passwords
+    await pass1Field.fill('new_pass');
+    await pass2Field.fill('bad_pass');
+    await updateBtn.click();
+    await expect(p1.page.locator('p.error')).toHaveText(/passwords do not match/i);
+
+    // TODO: actual reset, but we must consider how it affects other tests
+});
+
+test('password reset for not logged in user', async ({ page, host }) => {
+    // post to the api to create a user
+    let resp = await apicontext.post('/ops/create-user/', {
+        headers: await host.getAuthHeader(),
+        data: { username: 'reset_user', password: 'pass_one' }
+    });
+    expect(resp.status()).toBe(200);
+
+    await page.goto('/user/forgot');
+    await expect(page).toHaveURL(/forgot/i);
+
+    const usernameField = page.locator('input[name="username"]');
+    const submitBtn = page.locator('button', { hasText: /password reset/i });
+    // the username doesn't matter here since we won't get an email
+    await usernameField.fill('a player');
+    await submitBtn.click();
+    await expect(page.locator('p.error')).toHaveText(/receive an email/i);
+
+    // use the api to get a reset link for the new player
+    resp = await apicontext.get('/ops/reset-link/', {
+        headers: await host.getAuthHeader(),
+        data: { username: 'reset_user' }
+    });
+    expect(resp.status()).toBe(200);
+    const content = await resp.json();
+    // go to the link and check for a valid token
+    const link = new URL(content.link);
+    await page.goto(link.pathname);
+
+    await expect(page).toHaveURL(/user\/reset/i);
+    const cookies = await page.context().cookies();
+    expect(cookies.find((c) => c.name === 'jwt')).toBeTruthy();
+
+    // post w/ good passwords, get redirected
+    const pass1Field = page.locator('input[name="pass1"]');
+    const pass2Field = page.locator('input[name="pass2"]');
+    const updateBtn = page.locator('button', { hasText: /update/i });
+
+    // cannot submit mismatched passwords
+    await pass1Field.fill('new_pass');
+    await pass2Field.fill('new_pass');
+    await updateBtn.click();
+    await expect(page).toHaveURL(/\/team/i);
+
+    // logout
+    await page.goto('/user/logout');
+    await expect(page).toHaveURL('/');
+
+    // login w/ the new password
+    await login(page, { username: 'reset_user', password: 'new_pass' });
+    await expect(page).toHaveURL(/\/team/i);
 });

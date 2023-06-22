@@ -98,6 +98,8 @@ class DataCleaner:
         return value
 
     def as_bool(self, key=None, data=None):
+        if self.data.get(key) is None and data is None:
+            return False
         value = self._get_value_from_key(key, data)
         if isinstance(value, bool):
             return value

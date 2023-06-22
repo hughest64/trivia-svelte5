@@ -32,7 +32,11 @@ class BasePage {
         }
     }
 
-    // NOTE: not needed to use this with the custom fixtures as they auto-login
+    async getAuthHeader() {
+        const cookies = await this.page.context().cookies();
+        return { Authorization: 'Basic ' + cookies.find((c) => c.name === 'jwt')?.value || '' };
+    }
+
     async login(username?: string, password?: string) {
         const uname = username || this.testConfig?.username || '';
         const pword = password || this.testConfig?.password || '';
@@ -78,14 +82,26 @@ export class PlayerGamePage extends BasePage {
         return this.page.locator('.question-selector').locator(`id=${text}`);
     }
 
+    roundSelector(text: string): Locator {
+        return this.page.locator('.round-selector').locator('button', { hasText: text });
+    }
+
     async joinGame(joincode: string): Promise<void> {
         await this.page.goto('/game/join');
         await this.page.locator('input[name="joincode"]').fill(joincode);
         await this.page.locator('button[type="submit"]').click();
     }
 
+    async goToQuestionFromKey(text: string): Promise<void> {
+        const [round] = text.split('.');
+        await this.roundSelector(round).click();
+        await this.goToQuestion(text);
+    }
+
     async goToQuestion(text: string): Promise<void> {
-        await this.questionSelector(text).click();
+        const locator = this.questionSelector(text);
+        await expect(locator).toBeVisible();
+        await locator.click();
     }
 
     async expectQuestionTextNotToBeDefault(text: string): Promise<void> {

@@ -87,22 +87,11 @@ class EventSetupView(APIView):
 
     def get(self, request):
         """get this weeks games and a list of locations"""
-        # convert the utc to the tz specified in settings
-        now = timezone.localdate()
-        # 0-6, mon-sun
-        weekday_int = now.weekday()
-        # start will always land on Monday
-        start = now - timedelta(days=weekday_int)
-        end = start + timedelta(days=6)
-        games = Game.objects.filter(
-            Q(date_used__gte=start) & Q(date_used__lte=end)
-            # include theme nights for the whole month
-            | Q(block_code__istartswith="theme", date_used__month=now.month)
-        )
+        games = Game.objects.filter(active_through__gte=timezone.localdate())
         blocks = set([game.block for game in games])
-
         user_data = request.user
 
+        # if the host has a home location set, put it at the front
         try:
             locations = [user_data.home_location.to_json()] + queryset_to_json(
                 Location.objects.filter(active=True).exclude(

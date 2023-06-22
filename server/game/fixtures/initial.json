@@ -15674,8 +15674,7 @@
         "created_at": "2022-11-19T17:09:27.416Z",
         "name": "Todd's Garage",
         "address": "My House",
-        "active": true,
-        "primary_host": null
+        "active": true
     }
 },
 {
@@ -15685,8 +15684,7 @@
         "created_at": "2022-11-19T17:09:27.416Z",
         "name": "The Most Happening Place in the World",
         "address": "",
-        "active": true,
-        "primary_host": null
+        "active": true
     }
 },
 {
