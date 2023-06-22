@@ -64,10 +64,18 @@ class UserViewsTestCase(TestCase):
         self.assertIsNotNone(response.data.get("user_data"))
         self.assertIsNotNone(response.cookies.get("jwt"))
 
+    def test_play_as_guest(self):
+        response = self.client.post("/user/create", data={"guest_user": True})
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue("jwt" in response.cookies)
+        username = response.data.get("user_data").get("username")
+        self.assertTrue(username.startswith("_guest"))
+
+        response = self.client.post("/user/create", data={"guest_user": True})
+        username2 = response.data.get("user_data").get("username")
+        self.assertIsNotNone(username2)
+        self.assertEqual(username2, username)
+
     # TODO once implemented
     def test_password_reset(self):
-        pass
-
-    # TODO once proper guest creation is implemented
-    def test_play_as_guest(self):
         pass
