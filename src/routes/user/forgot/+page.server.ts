@@ -14,7 +14,7 @@ export const actions: Actions = {
         let csrftoken = cookies.get('csrftoken') || '';
         // if a user came here directly (not via the forgot link) then we won't have a csrf token, let's get one
         if (!csrftoken) {
-            const csrfResp = await fetch('/user/login');
+            const csrfResp = await fetch(`${env.PUBLIC_API_HOST}/user/login`);
             const csrfCookie = cookie.parse(csrfResp.headers.get('set-cookie') || '');
             csrftoken = csrfCookie?.csrftoken || '';
             cookies.set('csrftoken', csrftoken, {

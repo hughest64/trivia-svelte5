@@ -197,3 +197,51 @@ test.describe('user creation', async () => {
         await expect(page).toHaveURL('/team');
     });
 });
+
+// TODO: possibly wrap these and send an after each to delete the new user
+test('password reset for logged in user', async ({ p1 }) => {
+    // p1 should get redirected (cuz logged in) from /user/forgot
+    await p1.page.goto('/user/forgot');
+    await expect(p1.page).toHaveURL(/\/team/);
+
+    // p1 can access /user/reset/
+    await p1.page.goto('/user/reset');
+    await expect(p1.page).toHaveURL(/\/reset/);
+
+    const pass1Field = p1.page.locator('input[name="pass1"]');
+    const pass2Field = p1.page.locator('input[name="pass2"]');
+    const updateBtn = p1.page.locator('button', { hasText: /update/i });
+
+    // cannot submit mismatched passwords
+    await pass1Field.fill('new_pass');
+    await pass2Field.fill('bad_pass');
+    await updateBtn.click();
+    await expect(p1.page.locator('p.error')).toHaveText(/passwords do not match/i);
+
+    // TODO: actual reset, but we must consider how it affects other tests
+});
+
+test('password reset for not logged in user', async ({ page, host }) => {
+    // post to the api to create a user
+    const resp = await apicontext.post('/ops/create-user/', {
+        headers: await host.getAuthHeader(),
+        data: { username: 'reset_user', password: 'pass_one' }
+    });
+    expect(resp.status()).toBe(200);
+
+    await page.goto('/user/forgot');
+    await expect(page).toHaveURL(/forgot/i);
+
+    const usernameField = page.locator('input[name="username"]');
+    const submitBtn = page.locator('button', { hasText: /password reset/i });
+    // the username doesn't matter here since we won't get an email
+    await usernameField.fill('a player');
+    await submitBtn.click();
+    await expect(page.locator('p.error')).toHaveText(/receive an email/i);
+
+    // use the api to get a reset link for the new player
+    // go to the link, should get a fresh jwt (how to test that?)
+    // post w/ good passwords, get redirected
+    // logout
+    // login w/ new password
+});

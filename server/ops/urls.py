@@ -11,4 +11,5 @@ urlpatterns = [
     path("rlock/<joincode>/", ops.HostControlsView.as_view(), name="round_lock"),
     path("run-game/", ops.RunGameView.as_view(), name="run_game"),
     path("validate/", ops.ValidateDataView.as_view(), name="validate"),
+    path("create-user/", ops.CreateUserView.as_view(), name="create-user"),
 ]
