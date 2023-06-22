@@ -247,7 +247,9 @@ test('password reset for not logged in user', async ({ page, host }) => {
     expect(resp.status()).toBe(200);
     const content = await resp.json();
     // go to the link and check for a valid token
-    await page.goto(content.link);
+    const link = new URL(content.link);
+    await page.goto(link.pathname);
+
     await expect(page).toHaveURL(/user\/reset/i);
     const cookies = await page.context().cookies();
     expect(cookies.find((c) => c.name === 'jwt')).toBeTruthy();
