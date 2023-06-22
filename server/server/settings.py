@@ -161,7 +161,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # jwt settings
 
 # token expiration in minutes
-JWT_TOKEN_TTL = 24 * 60  # 24 hrs
+JWT_TOKEN_TTL = 24 * 60 * 60  # 24 hrs in seconds
 
 # use an env variable for prod
 JWT_TOKEN_SECRET = SECRET_KEY
