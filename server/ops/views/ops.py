@@ -17,6 +17,7 @@ from game.views.validation.data_cleaner import DataCleaner, get_event_or_404
 
 from user.authentication import JwtAuthentication
 from user.models import User
+from user.utils import Mailer
 
 
 class OpsAuthentication(JwtAuthentication):
@@ -173,3 +174,21 @@ class CreateUserView(APIView):
             user.save()
 
         return Response({"success": True})
+
+
+class ResetLinkView(APIView):
+    authentication_classes = [OpsAuthentication]
+
+    def get(self, request):
+        data = DataCleaner(request.data)
+        username = data.as_string("username")
+
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            raise NotFound(f"a user with username {username} does not exist")
+
+        mailer = Mailer(user)
+        reset_link = mailer.get_reset_link()
+
+        return Response({"link": reset_link})

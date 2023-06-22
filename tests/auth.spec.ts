@@ -223,7 +223,7 @@ test('password reset for logged in user', async ({ p1 }) => {
 
 test('password reset for not logged in user', async ({ page, host }) => {
     // post to the api to create a user
-    const resp = await apicontext.post('/ops/create-user/', {
+    let resp = await apicontext.post('/ops/create-user/', {
         headers: await host.getAuthHeader(),
         data: { username: 'reset_user', password: 'pass_one' }
     });
@@ -240,8 +240,34 @@ test('password reset for not logged in user', async ({ page, host }) => {
     await expect(page.locator('p.error')).toHaveText(/receive an email/i);
 
     // use the api to get a reset link for the new player
-    // go to the link, should get a fresh jwt (how to test that?)
+    resp = await apicontext.get('/ops/reset-link/', {
+        headers: await host.getAuthHeader(),
+        data: { username: 'reset_user' }
+    });
+    expect(resp.status()).toBe(200);
+    const content = await resp.json();
+    // go to the link and check for a valid token
+    await page.goto(content.link);
+    await expect(page).toHaveURL(/user\/reset/i);
+    const cookies = await page.context().cookies();
+    expect(cookies.find((c) => c.name === 'jwt')).toBeTruthy();
+
     // post w/ good passwords, get redirected
+    const pass1Field = page.locator('input[name="pass1"]');
+    const pass2Field = page.locator('input[name="pass2"]');
+    const updateBtn = page.locator('button', { hasText: /update/i });
+
+    // cannot submit mismatched passwords
+    await pass1Field.fill('new_pass');
+    await pass2Field.fill('new_pass');
+    await updateBtn.click();
+    await expect(page).toHaveURL(/\/team/i);
+
     // logout
-    // login w/ new password
+    await page.goto('/user/logout');
+    await expect(page).toHaveURL('/');
+
+    // login w/ the new password
+    await login(page, { username: 'reset_user', password: 'new_pass' });
+    await expect(page).toHaveURL(/\/team/i);
 });
