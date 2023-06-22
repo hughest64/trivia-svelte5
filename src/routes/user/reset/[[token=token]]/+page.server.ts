@@ -1,8 +1,16 @@
 import { env } from '$env/dynamic/public';
-import { fail, redirect } from '@sveltejs/kit';
+import { error, fail, redirect } from '@sveltejs/kit';
 import * as cookie from 'cookie';
 import { getJwtPayload } from '$lib/utils';
 import type { Actions, PageServerLoad } from './$types';
+
+/**
+ * TODO: right now there is no path for a logged in user to change their password
+ * We need a path for that, perhaps:
+ * - the token should be optional (still needs to be valid if present)
+ * - if there is no token, a valid jwt cookie is required
+ * - if neither condition is met, redirect to /forgot?
+ */
 
 export const load: PageServerLoad = async ({ cookies, fetch, params, url }) => {
     // no need to fetch a token if we have one.
@@ -25,7 +33,11 @@ export const load: PageServerLoad = async ({ cookies, fetch, params, url }) => {
 
     if (!resp.ok) {
         const respData = await resp.json();
-        return fail(resp.status, { error: respData.detail });
+        if (respData?.reason === 'authentication_failed') {
+            throw redirect(307, '/user/forgot');
+        }
+        const message = respData?.detail || 'an error ocurred';
+        throw error(resp.status, { message });
     }
 
     // set the long-lived token as a cookie
@@ -40,7 +52,7 @@ export const load: PageServerLoad = async ({ cookies, fetch, params, url }) => {
 };
 
 export const actions: Actions = {
-    default: async ({ request, fetch, params }) => {
+    default: async ({ cookies, request, fetch, params }) => {
         const data = await request.formData();
         const { pass1, pass2 } = Object.fromEntries(data);
 
@@ -48,7 +60,8 @@ export const actions: Actions = {
             return fail(400, { error: 'Passwords do not match' });
         }
 
-        const token = params.token;
+        // get the token from the url param or the cookie of an already logged in user
+        const token = params.token || cookies.get('jwt') || '';
 
         const resp = await fetch(`${env.PUBLIC_API_HOST}/user/reset`, {
             method: 'post',

@@ -2,7 +2,12 @@ import type { ParamMatcher } from '@sveltejs/kit';
 import { getJwtPayload } from '$lib/utils';
 
 export const match: ParamMatcher = (token) => {
-    const payload = getJwtPayload(token);
+    try {
+        const payload = getJwtPayload(token);
+        console.log(payload);
 
-    return payload.validtoken || false;
+        return !!payload?.id;
+    } catch {
+        return false;
+    }
 };

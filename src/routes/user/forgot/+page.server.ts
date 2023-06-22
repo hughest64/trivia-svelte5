@@ -1,9 +1,13 @@
 import { env } from '$env/dynamic/public';
-import { fail } from '@sveltejs/kit';
+import { fail, redirect } from '@sveltejs/kit';
 import * as cookie from 'cookie';
-import type { Actions } from './$types';
+import type { Actions, PageServerLoad } from './$types';
 
-// TODO: add load and redirect if the user has a validtoken
+export const load: PageServerLoad = async ({ locals }) => {
+    if (locals.validtoken) {
+        throw redirect(302, '/team');
+    }
+};
 
 export const actions: Actions = {
     default: async ({ cookies, request, fetch }) => {

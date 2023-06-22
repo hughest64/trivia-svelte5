@@ -100,7 +100,7 @@ class RefreshTokenView(APIView):
         token = request.data.get("token")
         user = decode_token(token)
         if user.is_anonymous:
-            return AuthenticationFailed("the token has expired")
+            raise AuthenticationFailed("the token is missing or has expired")
         token = create_token(user)
 
         response = Response({"success": True})
