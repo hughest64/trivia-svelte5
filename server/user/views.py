@@ -137,7 +137,11 @@ class ResetPasswordView(APIView):
     @method_decorator(csrf_protect)
     def post(self, request):
         data = DataCleaner(request.data)
-        token = data.as_string("token")
+        token = request.data.get("token")
+
+        if token is None:
+            raise AuthenticationFailed("The reset token is missing")
+
         user = decode_token(token)
 
         if user.is_anonymous:

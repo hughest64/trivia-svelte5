@@ -21,7 +21,7 @@ def create_token(user, expires_in=None):
         "id": user.id,
         "staff_user": user.is_staff,
         "exp": datetime.datetime.utcnow()
-        + datetime.timedelta(minutes=expires_in or settings.JWT_TOKEN_TTL),
+        + datetime.timedelta(seconds=expires_in or settings.JWT_TOKEN_TTL * 60),
         "iat": datetime.datetime.utcnow(),
     }
 
