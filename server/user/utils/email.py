@@ -5,7 +5,7 @@ from user.models import User
 from user.authentication import create_token
 
 # TODO: get from env variable via settings
-SITE_LINK = "http://127.0.0.1:5173/user/reset"
+SITE_LINK = settings.EMAIL_REDIRECT_HOST
 
 
 class Mailer:
@@ -35,4 +35,4 @@ class Mailer:
         if self.reset_token is None:
             self.set_reset_token()
 
-        return f"{SITE_LINK}/{self.reset_token}"
+        return f"{SITE_LINK}/user/reset/{self.reset_token}"

@@ -183,3 +183,4 @@ EMAIL_HOST_PASSWORD = env.str("MAILGUN_PASSWORD")
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = "Trivia Mafia Admin <noreply@triviamafia.com>"
 EMAIL_SUBJECT_PREFIX = "[Trivia Mafia] "
+EMAIL_REDIRECT_HOST = env("EMAIL_REDIRECT_HOST")

@@ -10,7 +10,6 @@ const updateleaderboard: Action = async ({ fetch, params }) => {
 
     if (!response.ok) {
         const respJson = await response.json();
-        console.log(respJson);
         return fail(response.status, { error: respJson.detail });
     }
     return { sucess: true };
@@ -24,7 +23,6 @@ const revealanswers: Action = async ({ fetch, params }) => {
 
     if (!response.ok) {
         const respJson = await response.json();
-        console.log(respJson);
         return fail(response.status, { error: respJson.detail });
     }
 
@@ -39,7 +37,6 @@ const finishgame: Action = async ({ fetch, params }) => {
 
     if (!response.ok) {
         const respJson = await response.json();
-        console.log(respJson);
         return fail(response.status, { error: respJson.detail });
     }
 
