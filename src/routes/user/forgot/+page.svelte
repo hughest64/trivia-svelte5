@@ -3,6 +3,8 @@
     export let form: Record<string, unknown>;
 </script>
 
+<svelte:head><title>Trivia Mafia | Forgot Password</title></svelte:head>
+
 <h1>Password Reset</h1>
 
 <form action="" method="POST" use:enhance>

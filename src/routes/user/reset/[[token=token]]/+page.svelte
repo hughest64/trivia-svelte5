@@ -3,6 +3,8 @@
     export let form: Record<string, unknown>;
 </script>
 
+<svelte:head><title>Trivia Mafia | Reset Password</title></svelte:head>
+
 <h1>Password Reset</h1>
 
 <!-- TODO: possibly add a message if the reset token is expired with a link back to /user/forgot? -->
