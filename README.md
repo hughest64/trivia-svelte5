@@ -3,6 +3,7 @@
 The Trivia Mafia app built with SveletKit and Django
 
 ## System Dependencies
+
 `redis-server`, `postgresql`, `pipenv` (python pip install), `node 16`
 
 ## Installation
@@ -16,8 +17,10 @@ Make sure you have `node >=16` then `npm i` to install the dependencies
 `pipenv install` to add the python dependencies
 
 ### Environment Variables
+
 The following files are required at the root of the project but are git ignored as the values may vary between environments:\
 `.env`
+
 ```bash
 PUBLIC_API_HOST='http://127.0.0.1:8000'
 PUBLIC_WEBSOCKET_HOST='ws://127.0.0.1:8000'
@@ -26,6 +29,7 @@ PUBLIC_QUESTION_REVEAL_TIMEOUT=5000 # ms
 ```
 
 `.env.test`
+
 ```bash
 PUBLIC_API_HOST='http://127.0.0.1:7000'
 PUBLIC_WEBSOCKET_HOST='ws://127.0.0.1:7000'
@@ -33,6 +37,7 @@ PUBLIC_QUESTION_REVEAL_TIMEOUT=1000
 ```
 
 `.env.django`
+
 ```bash
 # change to False in production
 DEBUG=True
@@ -49,6 +54,7 @@ PRIVATE_EVENT=
 Two Postgres databases are used in the project, `triviamafia_main` and a testing database called `triviamafia_tst`
 
 Create the main database:
+
 ```bash
 # start psql
 sudo -u postres psql
@@ -58,12 +64,13 @@ ALTER USER triviamafia CREATEDB;
 # create the db
 CREATE DATABASE triviamafia_main OWNER triviamafia;
 ```
-The test database can be created manually as above or with this command *AFTER* following the migration steps in the next sections.\
+
+The test database can be created manually as above or with this command _AFTER_ following the migration steps in the next sections.\
 `CREATE DATABASE triviamafia_tst WITH TEMPLATE triviamafia_main OWNER triviamafia;`
 
 ### Migrations
 
-Migrations are tracked in the repo so there is no need to run `makemigrations` for the inital setup. These commands *WILL* need to be invoked two times as shown below for all migrations after that. Django explicitly does not migrate multiple databases simeltaneously.
+Migrations are tracked in the repo so there is no need to run `makemigrations` for the inital setup. These commands _WILL_ need to be invoked two times as shown below for all migrations after that. Django explicitly does not migrate multiple databases simeltaneously.
 
 -   `python manage.py makemigrations <appname>` for the standard db
 -   `python manage.py makemigrations <appname> --settings=server.settings_tst` for the test database
@@ -71,8 +78,9 @@ Migrations are tracked in the repo so there is no need to run `makemigrations` f
 -   `python manage.py migrate --settings=server.settings_tst` for the test database
 
 ### Load Initial Data
+
 -   `python manage.py loaddata game/fixtures/initial.json`
--   `python manage.py loaddata game/fixtures/initial.json --settings=server.settings_tst` (only required if *NOT* copying the main database)
+-   `python manage.py loaddata game/fixtures/initial.json --settings=server.settings_tst` (only required if _NOT_ copying the main database)
 
 ### Create a Super User
 
@@ -108,14 +116,18 @@ See the [testing readme](/tests/README.md) for information on creating Playwrigh
 ## Deployment
 
 ### Setup
-- Example deployment configuration files are located in `/deploy` and they are set up to run the app as a user called `triviamafia`.
+
+-   Example deployment configuration files are located in `/deploy` and they are set up to run the app as a user called `triviamafia`.
 
 ### Additional files
--  `server/server/settings_prod.py` with variables for `ALLOWED_HOSTS` and `CSRF_TRUSTED_ORIGINS`
-- `/tmp` folder, this is where the unix socket file is placed for production
+
+-   `server/server/settings_prod.py` with variables for `ALLOWED_HOSTS` and `CSRF_TRUSTED_ORIGINS`
+-   `/tmp` folder, this is where the unix socket file is placed for production
 
 ### Deployment procedure
+
 `Note` that this is a work in progress, and ideally will be fully automated with pipelines.
+
 1. merge production ready code into the `main` branch
 2. from the remote server, `git fetch origin main` then `git pull origin main`
 3. if necessary `pipenv run python manage.py migrate` and/or `pipenv run python manage.py collectstatic`
@@ -123,5 +135,3 @@ See the [testing readme](/tests/README.md) for information on creating Playwrigh
 5. if all tests pass, `npm run build` and restart the service(s):
     - `sudo sytemctl restart tmdemo`
     - `sudo sytemctl restart tmapi`
-
-
