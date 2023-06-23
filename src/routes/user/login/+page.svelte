@@ -18,7 +18,7 @@
     <h2>-or-</h2>
 
     <!-- TODO: add an action, maybe action='?/login' -->
-    <form method="POST">
+    <form action="?/login" method="POST">
         {#if form?.error}<h3>{form?.error}</h3>{/if}
         <div class="input-container">
             <input type="text" id="username" name="username" autocapitalize="off" autocomplete="username" required />

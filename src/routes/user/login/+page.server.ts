@@ -75,5 +75,5 @@ const login: Action = async ({ cookies, fetch, request, url }) => {
 
 // TODO: will need to remove the default as we need more actions (reset, github, google, etc)
 export const actions = {
-    default: login
+    login
 };
