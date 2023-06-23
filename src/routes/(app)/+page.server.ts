@@ -1,6 +1,7 @@
 import * as cookie from 'cookie';
 import { fail, redirect } from '@sveltejs/kit';
 import { env } from '$env/dynamic/public';
+import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ cookies, fetch, locals, url }) => {
     const apiHost = env.PUBLIC_API_HOST;

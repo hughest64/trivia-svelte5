@@ -38,7 +38,7 @@
             const response = await fetch('?/lock', { method: 'post', body: data });
             const result = deserialize(await response.text());
             if (result.type === 'failure') {
-                error = result.data?.error || 'An Error Occured';
+                error = (result.data?.error as string) || 'An Error Occured';
                 locked = !locked;
             }
         }

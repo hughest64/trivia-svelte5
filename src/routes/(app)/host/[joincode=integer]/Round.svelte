@@ -36,7 +36,7 @@
         const response = await fetch('?/reveal', { method: 'POST', body: data });
         const result = deserialize(await response.text());
         if (result.type === 'failure') {
-            error = result.data?.error;
+            error = result.data?.error as string;
             allQuestionsRevealed = !allQuestionsRevealed;
         }
         updating = false;
