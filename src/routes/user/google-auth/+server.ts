@@ -1,4 +1,5 @@
-import { env } from '$env/dynamic/public';
+import { PUBLIC_GOOGLE_CLIENT_ID } from '$env/static/public';
+import { PRIVATE_GOOGLE_CLIENT_SECRET } from '$env/static/private';
 import { redirect } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
@@ -6,8 +7,8 @@ export const GET = (async ({ fetch, url }) => {
     const code = url.searchParams.get('code');
     // TODO: handle if we don't have a code
     const body = {
-        client_id: env.PUBLIC_GOOGLE_CLIENT_ID,
-        client_secret: env.PUBLIC_GOOGLE_CLIENT_SECRET,
+        client_id: PUBLIC_GOOGLE_CLIENT_ID,
+        client_secret: PRIVATE_GOOGLE_CLIENT_SECRET,
         redirect_uri: 'http://127.0.0.1:5173/user/google-auth',
         grant_type: 'authorization_code',
         code

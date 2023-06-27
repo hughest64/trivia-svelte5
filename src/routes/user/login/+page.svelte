@@ -1,12 +1,12 @@
 <script lang="ts">
-    import { env } from '$env/dynamic/public';
+    import { PUBLIC_GOOGLE_CLIENT_ID } from '$env/static/public';
     import { page } from '$app/stores';
 
     $: form = $page.form;
     $: loaderror = $page.data.loaderror;
 
     const googleAuthParams = new URLSearchParams({
-        client_id: env.PUBLIC_GOOGLE_CLIENT_ID,
+        client_id: PUBLIC_GOOGLE_CLIENT_ID,
         // TODO: get from env variable or use url.host?
         redirect_uri: 'http://127.0.0.1:5173/user/google-auth',
         scope: [
