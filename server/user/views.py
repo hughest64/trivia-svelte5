@@ -94,7 +94,7 @@ class LoginView(APIView):
 
 # TODO: reference https://github.com/authlib/demo-oauth-client/tree/master/django-google-login for implementation details
 class GoogleLoginView(APIView):
-    @method_decorator(csrf_protect)
+    # @method_decorator(csrf_protect)
     def post(self, request):
         # TODO: is this actually available on the DRF request?
         # redirect_uri = request.build_absolute_uri(reverse('auth'))

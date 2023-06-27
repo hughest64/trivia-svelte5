@@ -1,11 +1,8 @@
 from authlib.integrations.django_client import OAuth
 from authlib.integrations.requests_client import OAuth2Session
 
-from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import ensure_csrf_cookie, csrf_protect
+from django.http import JsonResponse
 
-
-import json
 from django.urls import reverse
 from django.shortcuts import render, redirect
 
@@ -28,19 +25,22 @@ oauth.register(
 def google_login(request):
     # change the uri to a sveltekit endpoint (for dev like: http://localhost:5173/user/google)
     # create an api endpoint there which will
-    # redirect_uri = request.build_absolute_uri(reverse("auth"))
-    # return oauth.google.authorize_redirect(request, redirect_uri)
-    return redirect("game:team")
+    redirect_uri = request.build_absolute_uri(reverse("user:google_auth"))
+    print(redirect_uri)
+    return oauth.google.authorize_redirect(request, redirect_uri)
+    return redirect("user:google_auth")
 
 
-# probably not a thing
 def google_auth(request):
+    print("hello google auth")
     token = oauth.google.authorize_access_token(request)
     user_email = token.get("email")
+    print(token)
 
     # this needs to get or create a user based on
     # request.session['user'] = token['userinfo']
-    return redirect("/team")
+    # return redirect("game:team")
+    return JsonResponse({"status": "test"})
 
 
 # ref: https://docs.authlib.org/en/latest/client/oauth2.html#oidc-session

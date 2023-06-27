@@ -73,7 +73,6 @@ const login: Action = async ({ cookies, fetch, request, url }) => {
     throw redirect(302, next);
 };
 
-// TODO: will need to remove the default as we need more actions (reset, github, google, etc)
 export const actions = {
-    login
+    default: login
 };
