@@ -113,6 +113,7 @@ class GoogleAuthView(APIView):
             )
         return user
 
+    @method_decorator(csrf_protect)
     def post(self, request):
         access_token = request.META.get("HTTP_AUTHORIZATION")
         if access_token is None:
