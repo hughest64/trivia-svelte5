@@ -95,24 +95,29 @@ class LoginView(APIView):
         return response
 
 
+def get_or_create_oauth_user(name, email):
+    """
+    use an email address to get or create a user, attempt to create a unique username from
+    oauth credentials. in cases where the provided username is taken but the email is not
+    """
+    try:
+        user = User.objects.get(email=email)
+
+    except User.DoesNotExist:
+        normalized_name = name.lower().replace(" ", "_")
+
+        # the username is taken, try to make it unique
+        user_set = User.objects.filter(username=normalized_name)
+        if user_set.exists():
+            normalized_name += f"_{get_random_string(6)}"
+
+        user = User.objects.create_user(
+            username=normalized_name, email=email, password=get_random_string(12)
+        )
+    return user
+
+
 class GoogleAuthView(APIView):
-    def get_or_create_user(self, name, email):
-        try:
-            user = User.objects.get(email=email)
-
-        except User.DoesNotExist:
-            normalized_name = name.lower().replace(" ", "_")
-
-            # the username is taken, try to make it unique
-            user_set = User.objects.filter(username=normalized_name)
-            if user_set.exists():
-                normalized_name += f"_{get_random_string(6)}"
-
-            user = User.objects.create_user(
-                username=normalized_name, email=email, password=get_random_string(12)
-            )
-        return user
-
     @method_decorator(csrf_protect)
     def post(self, request):
         access_token = request.META.get("HTTP_AUTHORIZATION")
@@ -135,10 +140,43 @@ class GoogleAuthView(APIView):
         name = response_data.get("name")
         email = response_data.get("email")
 
-        user = self.get_or_create_user(name, email)
+        user = get_or_create_oauth_user(name, email)
         token = create_token(user)
 
         response = Response({"user_data": user.to_json()})
+        response.set_cookie(key="jwt", value=token, httponly=True)
+
+        return response
+
+
+class GithubAuthView(APIView):
+    def post(self, request):
+        access_token = request.META.get("HTTP_AUTHORIZATION")
+        print(access_token)
+        if access_token is None:
+            raise AuthenticationFailed("could not authenticate with google")
+
+        auth_response = requests.get(
+            "https://api.github.com/user",
+            headers={
+                "Authorization": access_token,
+                "content-type": "application/json",
+                "accept": "application/json",
+            },
+        )
+
+        if auth_response.status_code != 200:
+            raise AuthenticationFailed("could not authenticate with github")
+
+        response_data = auth_response.json()
+        print(response_data)
+        name = response_data.get("name")
+        email = response_data.get("email")
+
+        user = get_or_create_oauth_user(name, email)
+        token = create_token(user)
+
+        response = Response()  # Response({"user_data": user.to_json()})
         response.set_cookie(key="jwt", value=token, httponly=True)
 
         return response
