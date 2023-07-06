@@ -1,8 +1,18 @@
 <script lang="ts">
     import { page } from '$app/stores';
+    import { googleAuthUrl } from '../utils';
+    import * as cookie from 'cookie';
 
     $: form = $page.form;
     $: loaderror = $page.data.loaderror;
+
+    const setNextEndPoint = () => {
+        const nextParam = $page.url.searchParams.get('next');
+        if (!nextParam) return;
+
+        const nextCookie = cookie.serialize('next', nextParam, { path: '/', httpOnly: false, sameSite: true });
+        document.cookie = nextCookie;
+    };
 </script>
 
 <svelte:head><title>Trivia Mafia | Login</title></svelte:head>
@@ -13,12 +23,11 @@
     <h3>{loaderror}</h3>
 {:else}
     <button class="button button-primary">login with Github</button>
-    <button class="button button-primary">login with Google</button>
+    <a href={googleAuthUrl()} class="button button-primary" on:click={setNextEndPoint}>login with Google</a>
 
     <h2>-or-</h2>
 
-    <!-- TODO: add an action, maybe action='?/login' -->
-    <form method="POST">
+    <form action="" method="POST">
         {#if form?.error}<h3>{form?.error}</h3>{/if}
         <div class="input-container">
             <input type="text" id="username" name="username" autocapitalize="off" autocomplete="username" required />

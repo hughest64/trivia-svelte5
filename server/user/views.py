@@ -1,4 +1,5 @@
 from django.core.exceptions import ValidationError
+from django.utils.crypto import get_random_string
 from django.db.models import Q
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_protect
@@ -7,6 +8,8 @@ from rest_framework.exceptions import AuthenticationFailed, NotFound
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.status import HTTP_400_BAD_REQUEST
+
+import requests
 
 from user.authentication import create_token, decode_token, JwtAuthentication
 from user.models import User
@@ -92,6 +95,55 @@ class LoginView(APIView):
         return response
 
 
+class GoogleAuthView(APIView):
+    def get_or_create_user(self, name, email):
+        try:
+            user = User.objects.get(email=email)
+
+        except User.DoesNotExist:
+            normalized_name = name.lower().replace(" ", "_")
+
+            # the username is taken, try to make it unique
+            user_set = User.objects.filter(username=normalized_name)
+            if user_set.exists():
+                normalized_name += f"_{get_random_string(6)}"
+
+            user = User.objects.create_user(
+                username=normalized_name, email=email, password=get_random_string(12)
+            )
+        return user
+
+    @method_decorator(csrf_protect)
+    def post(self, request):
+        access_token = request.META.get("HTTP_AUTHORIZATION")
+        if access_token is None:
+            raise AuthenticationFailed("could not authenticate with google")
+
+        auth_response = requests.get(
+            "https://www.googleapis.com/oauth2/v2/userinfo",
+            headers={
+                "Authorization": access_token,
+                "content-type": "application/json",
+                "accept": "application/json",
+            },
+        )
+
+        if auth_response.status_code != 200:
+            raise AuthenticationFailed("could not authenticate with google")
+
+        response_data = auth_response.json()
+        name = response_data.get("name")
+        email = response_data.get("email")
+
+        user = self.get_or_create_user(name, email)
+        token = create_token(user)
+
+        response = Response({"user_data": user.to_json()})
+        response.set_cookie(key="jwt", value=token, httponly=True)
+
+        return response
+
+
 # for now this is only used to auto-login on password reset
 # it requires a non-expired short-lived token
 class RefreshTokenView(APIView):
@@ -103,7 +155,7 @@ class RefreshTokenView(APIView):
             raise AuthenticationFailed("the token is missing or has expired")
         token = create_token(user)
 
-        response = Response({"success": True})
+        response = Response({"user_data": user.to_json()})
         response.set_cookie(key="jwt", value=token, httponly=True)
         return response
 
