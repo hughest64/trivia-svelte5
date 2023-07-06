@@ -6,7 +6,6 @@ import { redirect } from '@sveltejs/kit';
 import { getJwtPayload } from '$lib/utils';
 import { googleAuthToken } from '../utils';
 import type { RequestHandler } from './$types';
-import type { JwtPayload } from '$lib/types';
 
 export const GET = (async ({ cookies, fetch, url }) => {
     const code = url.searchParams.get('code') || '';
@@ -39,7 +38,8 @@ export const GET = (async ({ cookies, fetch, url }) => {
     const expires = new Date((jwtData.exp as number) * 1000);
     cookies.set('jwt', jwt, { path: '/', expires, httpOnly: true, secure: secureCookie });
 
-    // TODO: how to handle other redirects, like a next param?
-    const next = jwtData?.staff_user ? '/host/choice' : '/team';
+    const next = cookies.get('next') || (jwtData?.staff_user ? '/host/choice' : '/team');
+    cookies.delete('next', { path: '/' });
+
     throw redirect(302, next);
 }) satisfies RequestHandler;

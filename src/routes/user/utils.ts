@@ -5,7 +5,7 @@ import { PUBLIC_OAUTH_CALLBACK_URL, PUBLIC_GOOGLE_CLIENT_ID } from '$env/static/
 export const googleAuthUrl = () => {
     const googleAuthParams = new URLSearchParams({
         client_id: PUBLIC_GOOGLE_CLIENT_ID,
-        redirect_uri: PUBLIC_OAUTH_CALLBACK_URL,
+        redirect_uri: `${PUBLIC_OAUTH_CALLBACK_URL}`,
         scope: 'email profile',
         response_type: 'code',
         access_type: 'offline'
