@@ -150,9 +150,9 @@ class GoogleAuthView(APIView):
 
 
 class GithubAuthView(APIView):
+    @method_decorator(csrf_protect)
     def post(self, request):
         access_token = request.META.get("HTTP_AUTHORIZATION")
-        print(access_token)
         if access_token is None:
             raise AuthenticationFailed("could not authenticate with google")
 
