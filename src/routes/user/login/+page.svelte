@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { googleAuthUrl } from '../utils';
+    import { googleAuthUrl, githubAuthUrl } from '../utils';
     import * as cookie from 'cookie';
 
     $: form = $page.form;
@@ -22,7 +22,7 @@
 {#if loaderror}
     <h3>{loaderror}</h3>
 {:else}
-    <button class="button button-primary">login with Github</button>
+    <a href={githubAuthUrl()} class="button button-primary" on:click={setNextEndPoint}>login with Github</a>
     <a href={googleAuthUrl()} class="button button-primary" on:click={setNextEndPoint}>login with Google</a>
 
     <h2>-or-</h2>
