@@ -164,7 +164,6 @@ class AirtableData:
 
         date_filter = f"AND(IS_AFTER({{date_used}},{self.start!r}),IS_BEFORE({{date_used}},{self.end!r}))"
         logger.info(f"Airtable API date filter:\n{date_filter}")
-        logger.error(f"this is a test error comment to test logging")
         params = {"filterByFormula": date_filter}
         session = requests.session()
 
