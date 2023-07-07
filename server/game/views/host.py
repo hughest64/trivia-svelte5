@@ -47,7 +47,6 @@ class EventHostView(APIView):
         """fetch a specific event from the joincode parsed from the url"""
         user_data = request.user.to_json()
         event = get_event_or_404(joincode=joincode)
-        # TODO: host side as well and make this a helper
         lb_entries = LeaderboardEntry.objects.filter(event=event)
         public_lb_entries = lb_entries.filter(leaderboard_type=LEADERBOARD_TYPE_PUBLIC)
         host_lb_entries = lb_entries.filter(leaderboard_type=LEADERBOARD_TYPE_HOST)
@@ -233,7 +232,6 @@ class RoundLockView(APIView):
             round_number=round_number,
             defaults={"locked": locked},
         )
-        # TODO: bind these so we can send the updated values back in the socket
         # lock or unlock responses for the round
         resps = QuestionResponse.objects.filter(
             event=event, game_question__round_number=round_number
@@ -418,7 +416,6 @@ class UpdatePublicLeaderboardView(APIView):
         return Response({"success": True})
 
 
-# TODO
 class RevealAnswersView(APIView):
     authentication_classes = [JwtAuthentication]
     permission_classes = [IsAdminUser]

@@ -23,6 +23,7 @@ class CreateView(APIView):
         data = DataCleaner(request.data)
         # TODO: add as_username to DataClass and validate it's a valid Django style username
         # i.e =- This value may contain only letters, numbers, and @/./+/-/_ characters.
+        # actually, just get rid of the damn validation, user beware
         username = data.as_string("username")
         email = data.as_string("email")
         pass1 = data.as_string("pass")

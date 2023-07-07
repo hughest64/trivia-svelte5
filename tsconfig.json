@@ -9,8 +9,6 @@
         "skipLibCheck": true,
         "sourceMap": true,
         "strict": true,
-        // TODO: investigate 'importsNotUsedAsValues' deprecation warning for v5.5
-        // it's getting set in the build folders, so is SK specific
         "ignoreDeprecations": "5.0"
     }
 }

@@ -36,8 +36,6 @@ class TeamActions:
         if players is None:
             players = [f"run_game_user_{i}"]
 
-        # TODO: we probably don't need to set the password cuz auto create
-        # (but probably only with the yet to be implemented new version)
         self.team, _ = Team.objects.get_or_create(
             name=team_name, defaults={"password": f"12345_{i}"}
         )

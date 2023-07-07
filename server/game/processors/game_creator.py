@@ -14,6 +14,8 @@ game's meta data with the following criteria:
 - Question ids are not written back to Airtable as they are not used as a lookup value.
 - Tiebreakers rounds (rd 0) are tied to the game but excluded when using the to_json method on the game model
 """
+import logging
+
 from textwrap import dedent
 
 import pandas as pd
@@ -24,6 +26,8 @@ from django.utils.safestring import mark_safe
 
 from game.models import *
 from game.processors.airtable_importer import AirtableData
+
+logger = logging.getLogger(__name__)
 
 PRIVATE_EVENT = bool(settings.PRIVATE_EVENT)
 
@@ -87,7 +91,6 @@ def validate_sequence(sequence, drop_zero=True):
         except IndexError:
             pass
 
-    # TODO: I'd rather not convert to strings here, but it's mighty convienient later perhaps a kwarg?
     return dict(
         missing=[str(x) for x in missing], duplicated=[str(x) for x in duplicated]
     )
@@ -179,7 +182,6 @@ class TriviaGameCreator:
             )
 
         data = rd_frame.iloc[0]
-        # TODO: update to match db architecture
         trivia_event, created = TriviaEvent.objects.update_or_create(
             game=self.game,
             private_event=self.private_event_instance,
@@ -189,7 +191,7 @@ class TriviaGameCreator:
             use_megaround=False,
             defaults={"date": data.date_used},
         )
-        # TODO: js generator is not yet implemented, jc's are also no longer a table
+        # TODO: update to use the new joincode creation system?
         if created:
             trivia_event.join_code_id = (
                 1234  # db.create_join_code("game").get("join_code_id")
@@ -204,7 +206,6 @@ class TriviaGameCreator:
         round_data = rd_frame.iloc[0]
         round_number = round_data.round_number
 
-        # TODO: we still need better handling of sound vs. no sound game creation
         # create the sound round version first
         if round_number != 9:
             _, created = GameRound.objects.update_or_create(
@@ -314,9 +315,7 @@ class TriviaGameCreator:
                     raise RuntimeError("Transaction not commited!")
 
         except RuntimeError as e:
-            # TODO: log e
-            pass
-            # print(e)
+            logger.exception(e)
 
     def validation_data_html(self):
         """Format validation data as a user digestable string"""

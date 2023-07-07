@@ -37,7 +37,7 @@ export const megaRoundValueStore = (initial?: MegaRoundValue[]): MegaRoundValueS
         subscribe,
         set,
         update,
-        // TODO: consider this experimental! This is defnitely not standard.
+        // NOTE: consider this experimental! This is defnitely not standard.
         getValue: (num) => internalValues.find((val) => val.num === num),
         reset: () =>
             update((current) => {

@@ -70,7 +70,6 @@ class LeaderboardProcessor:
         )
         tb_index = 0
         for lbe in leaderboard_entries:
-            # TODO: should it be this way, or maybe just no rank if no question's were answered?
             # don't assign rank for 0 points
             if lbe.total_points == 0:
                 lbe.rank = None

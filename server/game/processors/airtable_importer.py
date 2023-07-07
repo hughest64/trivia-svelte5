@@ -40,7 +40,6 @@ COLUMN_LABEL_MAP = {
 
 PRIVATE_EVENT = bool(settings.PRIVATE_EVENT)
 AIRTABLE_API_TOKEN = os.environ.get("AIRTABLE_API_TOKEN")
-# TODO: these should all be env variables so the app doesn't need to be updated if something changes
 BASE_URL = os.environ.get("AIRTABLE_BASE_URL")
 BASE_ID = os.environ.get("AIRTABLE_BASE_ID")
 TABLE_NAME = os.environ.get("AIRTABLE_TABLE_NAME")
@@ -112,7 +111,6 @@ class AirtableData:
     def _validate_init(self) -> None:
         if not self.token:
             message = "Missing Airtable API Token"
-            # TODO: better error message handling
             logger.error(message)
             raise ValueError(message)
 
@@ -241,8 +239,8 @@ class AirtableData:
             if label not in df.columns:
                 missing_cols.append((i, label))
                 df.insert(i, label, col_value)
-        # TODO: log properly
-        print("added the following columns to the dataframe:", missing_cols)
+
+        logger.info("added the following columns to the dataframe:", missing_cols)
         return df
 
     @classmethod
