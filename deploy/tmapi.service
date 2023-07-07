@@ -14,7 +14,11 @@ User=triviamafia
 Environment="DJANGO_SETTINGS_MODULE=server.settings_prod"
 
 WorkingDirectory=/opt/cotn/triviamafia/app
-ExecStart=/home/triviamafia/.local/share/virtualenvs/tm-svelte-bQq8cgGE/bin/daphne server.asgi:application -u /opt/cotn/triviamafia/app/tmp/tmapi.sock
+# ExecStart=/home/triviamafia/.local/share/virtualenvs/tm-svelte-bQq8cgGE/bin/daphne server.asgi:application -u /opt/cotn/triviamafia/app/tmp/tmapi.sock
+ExecStart=/home/todd/.local/share/virtualenvs/tmdemo-Nf3jiFfx/bin/gunicorn -w 4 -k uvicorn.workers.UvicornWorker -b unix:/opt/tmdemo/tmp/tmdemo.sock server.asgi:application
+StandardOutput=append:/var/log/tmdemo/std_out.log
+StandardError=append:/var/log/tmdemo/std_err.log
+
 Restart=always
 RestartSec=10
 
