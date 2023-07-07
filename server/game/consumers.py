@@ -43,7 +43,7 @@ class SocketConsumer(AsyncJsonWebsocketConsumer):
 
     async def _set_connection(self):
         """Called after a user is validated. Will send an unauthenticated message
-        (eqivalent to http 401) if user.is_anonymous == True as well as send an
+        (equivalent to http 401) if user.is_anonymous == True as well as send an
         unauthorized (equvalant to http 403) messasge when accessing a game
         connection without an active team id set.
         """
