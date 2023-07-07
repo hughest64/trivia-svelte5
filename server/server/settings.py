@@ -175,6 +175,8 @@ REST_FRAMEWORK = {
 with open(BASE_DIR / "game/word_lists/positive.txt", "r") as f:
     WORD_LISZT = f.read().split("\n")
 
+MAIL_ADMINS = [("todd", "todd@codeofthenorth.com")]
+
 # email settings
 EMAIL_HOST = "smtp.mailgun.org"
 EMAIL_PORT = 587
@@ -184,3 +186,31 @@ EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = "Trivia Mafia Admin <noreply@triviamafia.com>"
 EMAIL_SUBJECT_PREFIX = "[Trivia Mafia] "
 EMAIL_REDIRECT_HOST = env("EMAIL_REDIRECT_HOST")
+
+# see default django settings here: https://docs.djangoproject.com/en/4.2/topics/logging/#configuring-logging
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "[{asctime} {levelname} {module} {process:d} {thread:d}] {message}",
+            "style": "{",
+        },
+        "simple": {
+            "format": "[{asctime} {levelname} {module}] {message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "console": {"class": "logging.StreamHandler", "formatter": "simple"},
+        "mail_admins": {
+            "level": "ERROR",
+            "class": "django.utils.log.AdminEmailHandler",
+            "formatter": "verbose",
+        },
+    },
+    "root": {
+        "handlers": ["console", "mail_admins"],
+        "level": "INFO",
+    },
+}

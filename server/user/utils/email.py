@@ -1,10 +1,13 @@
+import logging
+
 from django.core.mail import send_mail
 from django.conf import settings
 
 from user.models import User
 from user.authentication import create_token
 
-# TODO: get from env variable via settings
+logger = logging.getLogger(__name__)
+
 SITE_LINK = settings.EMAIL_REDIRECT_HOST
 
 
@@ -16,8 +19,8 @@ class Mailer:
         self.expires_in = 600  # in seconds
 
     def send_password_reset(self):
-        # TODO: log?
         if not self.user.email:
+            logger.warning(f"no email registered for {self.user}")
             return
 
         send_mail(

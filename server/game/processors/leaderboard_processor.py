@@ -1,3 +1,5 @@
+import logging
+
 from django.db import transaction
 
 from game.models import (
@@ -10,6 +12,8 @@ from game.models import (
     LEADERBOARD_TYPE_PUBLIC,
     queryset_to_json,
 )
+
+logger = logging.getLogger(__name__)
 
 
 class ProcedureError(Exception):
@@ -110,12 +114,12 @@ class LeaderboardProcessor:
                     ["total_points", "rank", "leaderboard", "megaround_applied"],
                 )
 
-            # TODO: log?
-            # return {"status": f"Host leaderboard updated through round {through_round}"}
+            logger.info(
+                f"Host leaderboard for event {self.event} updated through round {through_round}"
+            )
 
         except Exception as e:
-            # TODO: proper log
-            print(f"Could not update leaderboard. Reason: {e}")
+            logger.exception(f"Could not update leaderboard. Reason: {e}")
 
         self.processing = False
 

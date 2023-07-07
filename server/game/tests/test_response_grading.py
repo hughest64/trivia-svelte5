@@ -1,3 +1,4 @@
+import logging
 import json
 import timeit
 
@@ -7,6 +8,8 @@ from rest_framework.test import APIClient
 
 from game.models import *
 from user.models import User
+
+logger = logging.getLogger(__name__)
 
 
 class ResponseGradeTestCase(TestCase):
@@ -70,8 +73,7 @@ class HostResponseGrading(TestCase):
         and log how long it takes
         """
         timed = timeit.timeit(lambda: self.client.get("/host/9998/score"), number=1)
-        # TODO: make this a log
-        print(timed)
+        logger.info(timed)
 
     def test_update_funny_values(self) -> None:
         responses_to_update = QuestionResponse.objects.filter(
