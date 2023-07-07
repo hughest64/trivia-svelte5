@@ -169,7 +169,6 @@ class GithubAuthView(APIView):
             raise AuthenticationFailed("could not authenticate with github")
 
         response_data = auth_response.json()
-        print(response_data)
         name = response_data.get("name")
         email = response_data.get("email")
 

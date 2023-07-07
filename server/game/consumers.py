@@ -1,3 +1,5 @@
+import logging
+
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 
 from user.authentication import get_user
@@ -8,6 +10,8 @@ from game.utils.socket_classes import (
     get_user_group,
     get_host_group,
 )
+
+logger = logging.getLogger(__name__)
 
 
 class SocketConsumer(AsyncJsonWebsocketConsumer):
@@ -56,14 +60,13 @@ class SocketConsumer(AsyncJsonWebsocketConsumer):
             {"msg_type": "connected", "message": "Ready to Play Trivia!"}
         )
 
-        # TODO: proper log statement
         if self.gametype == "game":
-            print(
-                f"hello {self.user.username} your Join code is {self.joincode} and you are playing on {self.user.active_team_id}"
+            logger.info(
+                f"{self.user.username} joined event with joincode {self.joincode} playing on {self.user.active_team_id}"
             )
         elif self.gametype == "host":
-            print(
-                f"{self.user.username} is connected to event {self.joincode} for hosting"
+            logger.info(
+                f"{self.user.username} connected to event {self.joincode} for hosting"
             )
 
     async def join_socket_groups(self):
