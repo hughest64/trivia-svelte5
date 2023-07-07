@@ -175,8 +175,6 @@ REST_FRAMEWORK = {
 with open(BASE_DIR / "game/word_lists/positive.txt", "r") as f:
     WORD_LISZT = f.read().split("\n")
 
-MAIL_ADMINS = [("todd", "todd@codeofthenorth.com")]
-
 # email settings
 EMAIL_HOST = "smtp.mailgun.org"
 EMAIL_PORT = 587
@@ -203,14 +201,9 @@ LOGGING = {
     },
     "handlers": {
         "console": {"class": "logging.StreamHandler", "formatter": "simple"},
-        "mail_admins": {
-            "level": "ERROR",
-            "class": "django.utils.log.AdminEmailHandler",
-            "formatter": "verbose",
-        },
     },
     "root": {
-        "handlers": ["console", "mail_admins"],
+        "handlers": ["console"],
         "level": "INFO",
     },
 }
