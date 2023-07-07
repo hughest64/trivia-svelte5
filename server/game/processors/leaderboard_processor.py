@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 class ProcedureError(Exception):
     def __init__(self, message=None) -> None:
-        self.message = message or "This method should not be called indepentently"
+        self.message = message or "This method should not be called independently"
 
     def __str__(self):
         return self.message
@@ -32,7 +32,7 @@ class LeaderboardProcessor:
     def _check_order(self):
         """ensure that the update process is only run from update_host_leaderboard."""
         if self.processing == False:
-            raise ProcedureError("This method cannot be called indepentently")
+            raise ProcedureError("This method cannot be called independently")
 
     def _validate_round_number(self, through_round):
         if not self.event.game.game_rounds.filter(round_number=through_round).exists():
