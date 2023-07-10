@@ -166,6 +166,7 @@ class LeaderboardEntry(models.Model):
         return {
             "team_id": self.team.id,
             "team_name": self.team.name,
+            "team_password": self.team.password,
             "rank": self.rank or "-",
             "total_points": self.total_points,
             "megaround": self.selected_megaround,

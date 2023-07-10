@@ -40,6 +40,7 @@ export interface LeaderboardEntry {
     team_id: number;
     team_name: string;
     rank?: number;
+    team_password?: string;
     megaround?: number;
     total_points: number;
 }

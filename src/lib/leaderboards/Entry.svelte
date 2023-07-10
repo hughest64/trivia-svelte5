@@ -15,7 +15,7 @@
 <!-- TODO expandable for a user's active team or host in url route
     - for players, clicking on a response navigates to that question in the event
     - svgs for 1/.5. && 0 pts
-    - how to handle unaswered questions?
+    - how to handle unanswered questions?
     - slide transition for displaying/hiding content
     - how to fetch team data (password, name updates, banning, etc) for the host
 -->
@@ -36,7 +36,7 @@
     </div>
     {#if expanded}
         <div class="answer-container">
-            <p class="team-password">Team Password: TODO!</p>
+            <p class="team-password">Team Password: {entry.team_password}</p>
             <ul class="response-list">
                 <l1>conent</l1>
                 <l1>conent</l1>
