@@ -225,6 +225,7 @@ form {
 button {
     border: none;
     background-color: inherit;
+    font-family: inherit;
     cursor: pointer;
     &:disabled {
         cursor: not-allowed;
