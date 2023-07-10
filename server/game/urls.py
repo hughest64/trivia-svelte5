@@ -15,6 +15,11 @@ urlpatterns = [
     path("", redirect_to_admin, name="redirect_to_admin"),
     # host endpoints
     re_path(
+        r"^host/(?P<joincode>\d+)/leaderboard/responses/(?P<team_id>\d+)/?$",
+        host.EventTeamResponsesView.as_view(),
+        name="team_responses",
+    ),
+    re_path(
         r"^host/(?P<joincode>\d+)/lock/?$",
         host.RoundLockView.as_view(),
         name="round_lock",

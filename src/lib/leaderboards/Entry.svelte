@@ -1,15 +1,33 @@
 <script lang="ts">
+    import { page } from '$app/stores';
     import { getStore } from '$lib/utils';
-    import type { LeaderboardEntry } from '$lib/types';
+    import type { LeaderboardEntry, Response } from '$lib/types';
 
     export let entry: LeaderboardEntry;
-    $: console.log(entry);
+    let responses: Response[] = [];
+
     const userStore = getStore('userData');
 
-    let expanded = true;
-    // if on game/ then consider the user's active team first
+    let expanded = false;
+    // TODO: if on game/ then consider the user's active team first
     $: expandable = !expanded;
-    const handleExpand = () => (expanded = !expanded);
+
+    const handleExpand = async () => {
+        if (responses) {
+            expanded = !expanded;
+            return;
+        }
+
+        // TODO: we probably want a loading state here
+        const resp = await fetch(`${$page.url.pathname}/responses/${entry.team_id}`);
+        // TODO: handle !resp.ok
+        if (resp.ok) {
+            responses = (await resp.json())?.responses || [];
+        }
+
+        // TODO: update a store w/ the teams responses and then set expanded
+        expanded = !expanded;
+    };
 </script>
 
 <!-- TODO expandable for a user's active team or host in url route
@@ -34,13 +52,14 @@
         <h3 class="team-name">{entry.team_name}</h3>
         <h3 class="points">{entry.total_points}</h3>
     </div>
+
     {#if expanded}
         <div class="answer-container">
             <p class="team-password">Team Password: {entry.team_password}</p>
             <ul class="response-list">
-                <l1>conent</l1>
-                <l1>conent</l1>
-                <l1>conent</l1>
+                {#each responses || [] as response}
+                    <li>{response.key} {response.points_awarded} {response.recorded_answer}</li>
+                {/each}
             </ul>
         </div>
     {/if}

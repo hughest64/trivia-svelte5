@@ -80,6 +80,17 @@ class EventHostView(APIView):
         )
 
 
+class EventTeamResponsesView(APIView):
+    authentication_classes = [JwtAuthentication]
+    permission_classes = [IsAdminUser]
+
+    def get(self, request, joincode, team_id):
+        event = get_event_or_404(joincode=joincode)
+        resps = QuestionResponse.objects.filter(event=event, team_id=team_id)
+
+        return Response({"responses": queryset_to_json(resps)})
+
+
 class EventSetupView(APIView):
     authentication_classes = [JwtAuthentication]
     permission_classes = [IsAdminUser]
