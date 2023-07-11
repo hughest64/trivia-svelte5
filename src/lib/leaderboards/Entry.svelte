@@ -2,7 +2,8 @@
     import { slide } from 'svelte/transition';
     import { page } from '$app/stores';
     import { getStore } from '$lib/utils';
-    import type { LeaderboardEntry } from '$lib/types';
+    import RoundResponses from './RoundResponses.svelte';
+    import type { LeaderboardEntry, Response } from '$lib/types';
 
     // TODO:
     // - for players, clicking on a response navigates to that question in the event
@@ -20,7 +21,17 @@
     $: expandable = (!isPlayerEndpoint && lbView === 'host') || (isPlayerEndpoint && isPlayerTeamEntry);
 
     const teamResponseStore = getStore('responseData');
+    const respsByround = (resps: Response[]) => {
+        const roundResps: Record<string, Response[]> = {};
+        resps.forEach((resp) => {
+            const rdNum = resp.round_number;
+            rdNum in roundResps ? roundResps[rdNum].push(resp) : (roundResps[rdNum] = [resp]);
+        });
+        return Object.values(roundResps);
+    };
+
     $: responses = $teamResponseStore;
+    $: groupedResps = respsByround(responses);
 
     let expanded = false;
     $: collapsed = !expandable ? null : !expanded;
@@ -55,9 +66,9 @@
     {#if expanded}
         <div transition:slide class="answer-container">
             <p class="team-password">Team Password: {entry.team_password}</p>
-            <ul class="response-list">
-                {#each responses || [] as response}
-                    <li>{response.key} {response.points_awarded} {response.recorded_answer}</li>
+            <ul class="response-round-list">
+                {#each groupedResps || [] as group}
+                    <li class="response-group"><RoundResponses roundResps={group} /></li>
                 {/each}
             </ul>
         </div>
@@ -129,9 +140,14 @@
             .team-password {
                 align-self: flex-start;
             }
-            .response-list {
+            .response-round-list {
                 display: flex;
                 flex-direction: column;
+                width: 60%;
+                min-width: 20rem;
+            }
+            .response-group {
+                padding: 0.5rem;
             }
         }
     }
