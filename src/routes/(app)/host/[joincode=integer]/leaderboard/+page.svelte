@@ -45,7 +45,7 @@
 
         <ul id="public-leaderboard-view" class="leaderboard-rankings">
             {#each $leaderboard.public_leaderboard_entries as entry}
-                <Entry {entry} />
+                <Entry {entry} {lbView} />
             {/each}
         </ul>
     {:else}
@@ -68,7 +68,7 @@
 
         <ul id="host-leaderboard-view" class="leaderboard-rankings">
             {#each $leaderboard.host_leaderboard_entries || [] as entry}
-                <Entry {entry} />
+                <Entry {entry} {lbView} />
             {/each}
         </ul>
     {/if}

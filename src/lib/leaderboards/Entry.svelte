@@ -1,22 +1,39 @@
 <script lang="ts">
+    import { get } from 'svelte/store';
     import { page } from '$app/stores';
     import { getStore } from '$lib/utils';
     import type { LeaderboardEntry, Response } from '$lib/types';
 
+    // TODO:
+    // - for players, clicking on a response navigates to that question in the event
+    // - svgs for 1/.5. && 0 pts
+    // - how to handle unanswered questions?
+    // - slide transition for displaying/hiding content
+    // - how to fetch team data (password, name updates, banning, etc) for the host
+
     export let entry: LeaderboardEntry;
-    let responses: Response[] = [];
+    export let lbView: 'public' | 'host' = 'public';
 
     const userStore = getStore('userData');
+    const isPlayerEndpoint = $page.url.pathname.startsWith('/game');
+
+    $: isPlayerTeamEntry = entry.team_id === $userStore.active_team_id;
+    $: expandable = (!isPlayerEndpoint && lbView === 'host') || (isPlayerEndpoint && isPlayerTeamEntry);
+
+    let responses: Response[] | undefined;
+    $: if (isPlayerEndpoint && isPlayerTeamEntry) {
+        responses = get(getStore('responseData'));
+    }
 
     let expanded = false;
-    // TODO: if on game/ then consider the user's active team first
-    $: expandable = !expanded;
+    $: collapsed = !expandable ? null : !expanded;
 
     const handleExpand = async () => {
         if (responses) {
             expanded = !expanded;
             return;
         }
+        if (isPlayerEndpoint) return;
 
         // TODO: we probably want a loading state here
         const resp = await fetch(`${$page.url.pathname}/responses/${entry.team_id}`);
@@ -25,30 +42,21 @@
             responses = (await resp.json())?.responses || [];
         }
 
-        // TODO: update a store w/ the teams responses and then set expanded
         expanded = !expanded;
     };
 </script>
 
-<!-- TODO expandable for a user's active team or host in url route
-    - for players, clicking on a response navigates to that question in the event
-    - svgs for 1/.5. && 0 pts
-    - how to handle unanswered questions?
-    - slide transition for displaying/hiding content
-    - how to fetch team data (password, name updates, banning, etc) for the host
--->
 <li class="leaderboard-entry-container">
     <div class="leaderboard-entry-meta">
         <button
             class="rank"
-            class:expandable
+            class:collapsed
             class:expanded
             on:click={handleExpand}
             style:border-bottom-right-radius={expanded ? '10px' : 0}
         >
             <h3>{entry.rank}</h3>
         </button>
-        <!-- <h3 class="rank">{entry.rank}</h3> -->
         <h3 class="team-name">{entry.team_name}</h3>
         <h3 class="points">{entry.total_points}</h3>
     </div>
@@ -99,7 +107,7 @@
                 left: 15%;
             }
         }
-        .expandable {
+        .collapsed {
             position: relative;
             ::after {
                 content: '';
