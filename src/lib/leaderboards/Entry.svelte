@@ -47,19 +47,13 @@
 </script>
 
 <li class="leaderboard-entry-container">
-    <div class="leaderboard-entry-meta">
-        <button
-            class="rank"
-            class:collapsed
-            class:expanded
-            on:click={handleExpand}
-            style:border-bottom-right-radius={expanded ? '10px' : 0}
-        >
+    <button class="leaderboard-entry-meta" on:click={handleExpand}>
+        <div class="rank" class:collapsed class:expanded style:border-bottom-right-radius={expanded ? '10px' : 0}>
             <h3>{entry.rank}</h3>
-        </button>
-        <button class="team-name" on:click={handleExpand}><h3>{entry.team_name}</h3></button>
-        <button class="points" on:click={handleExpand}><h3>{entry.total_points}</h3></button>
-    </div>
+        </div>
+        <h3 class="team-name">{entry.team_name}</h3>
+        <h3 class="points">{entry.total_points}</h3>
+    </button>
 
     {#if expanded}
         <div class="answer-container">
@@ -85,6 +79,9 @@
         }
         .leaderboard-entry-meta {
             display: flex;
+            width: 100%;
+            padding: 0;
+            margin: 0;
         }
         .rank {
             justify-content: center;
