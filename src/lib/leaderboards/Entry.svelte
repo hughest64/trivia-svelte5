@@ -143,7 +143,7 @@
             .response-round-list {
                 display: flex;
                 flex-direction: column;
-                width: 60%;
+                width: 45%;
                 min-width: 20rem;
             }
             .response-group {
