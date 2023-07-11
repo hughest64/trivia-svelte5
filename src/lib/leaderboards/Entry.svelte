@@ -68,7 +68,7 @@
             <p class="team-password">Team Password: {entry.team_password}</p>
             <ul class="response-round-list">
                 {#each groupedResps || [] as group}
-                    <li class="response-group"><RoundResponses roundResps={group} /></li>
+                    <li><RoundResponses roundResps={group} /></li>
                 {/each}
             </ul>
         </div>
@@ -144,10 +144,7 @@
                 display: flex;
                 flex-direction: column;
                 width: 45%;
-                min-width: 20rem;
-            }
-            .response-group {
-                padding: 0.5rem;
+                min-width: 15rem;
             }
         }
     }

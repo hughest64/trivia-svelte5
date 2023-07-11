@@ -3,30 +3,31 @@
     export let roundResps: Response[];
 </script>
 
-<ul>
+<ul class="response-group">
     {#each roundResps as response}
-        <li class="response-data">
-            <span class="resp-key">{response.key}</span>
-            <span>*</span>
-            <span class="answer">{response.recorded_answer}</span>
-            <span>{response.points_awarded}</span>
+        <li class="response-container">
+            <div class="response-item">{response.key}</div>
+            <div class="response-item">*</div>
+            <div class="response-item">{response.recorded_answer}</div>
+            <div class="last-item">{response.points_awarded}</div>
         </li>
     {/each}
 </ul>
 
 <style lang="scss">
-    .response-data {
-        display: flex;
-        justify-content: start;
-        gap: 1rem;
-        span {
-            margin: 0.2rem 0;
+    .response-group {
+        padding: 0.5rem;
+    }
+    .response-container {
+        display: grid;
+        grid-template-columns: 35px 25px 1fr 1fr;
+        // gap: 0.5rem;
+        .response-item {
+            align-self: center;
+            padding: 0.1rem 0;
         }
-    }
-    .resp-key {
-        width: 5%;
-    }
-    .answer {
-        flex-grow: 1;
+        .last-item {
+            justify-self: right;
+        }
     }
 </style>
