@@ -22,11 +22,12 @@
     // TODO: let's use round states and limit things to locked rounds only
     const rounds = getStore('rounds');
     const roundStates = getStore('roundStates');
+    $: roundsToShow = $rounds.filter((rd) => $roundStates.find((rs) => rs.round_number === rd.round_number)?.locked);
 
     const teamResponseStore = getStore('responseData');
 
     $: responses = $teamResponseStore;
-    $: groupedResps = respsByround(responses, $rounds);
+    $: groupedResps = respsByround(responses, roundsToShow);
 
     let expanded = false;
     $: collapsed = !expandable ? null : !expanded;
