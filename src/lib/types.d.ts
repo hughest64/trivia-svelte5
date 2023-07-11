@@ -102,6 +102,7 @@ export interface GameRound {
     title: string;
     round_description: string;
     round_number: number;
+    question_count: number;
 }
 
 export interface RoundState {

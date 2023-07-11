@@ -1,14 +1,13 @@
 <script lang="ts">
     import { slide } from 'svelte/transition';
     import { page } from '$app/stores';
-    import { getStore } from '$lib/utils';
+    import { getStore, respsByround } from '$lib/utils';
     import RoundResponses from './RoundResponses.svelte';
-    import type { LeaderboardEntry, Response } from '$lib/types';
+    import type { LeaderboardEntry } from '$lib/types';
 
     // TODO:
     // - for players, clicking on a response navigates to that question in the event
     // - svgs for 1/.5. && 0 pts
-    // - how to handle unanswered questions?
     // - how to fetch team data (password, name updates, banning, etc) for the host
 
     export let entry: LeaderboardEntry;
@@ -20,18 +19,14 @@
     $: isPlayerTeamEntry = entry.team_id === $userStore.active_team_id;
     $: expandable = (!isPlayerEndpoint && lbView === 'host') || (isPlayerEndpoint && isPlayerTeamEntry);
 
+    // TODO: let's use round states and limit things to locked rounds only
+    const rounds = getStore('rounds');
+    const roundStates = getStore('roundStates');
+
     const teamResponseStore = getStore('responseData');
-    const respsByround = (resps: Response[]) => {
-        const roundResps: Record<string, Response[]> = {};
-        resps.forEach((resp) => {
-            const rdNum = resp.round_number;
-            rdNum in roundResps ? roundResps[rdNum].push(resp) : (roundResps[rdNum] = [resp]);
-        });
-        return Object.values(roundResps);
-    };
 
     $: responses = $teamResponseStore;
-    $: groupedResps = respsByround(responses);
+    $: groupedResps = respsByround(responses, $rounds);
 
     let expanded = false;
     $: collapsed = !expandable ? null : !expanded;

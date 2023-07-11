@@ -10,6 +10,8 @@ import type {
     GameQuestion,
     GameRound,
     JwtPayload,
+    Response,
+    RoundState,
     StoreTypes,
     UserTeam
 } from './types';
@@ -105,6 +107,27 @@ export const setEventCookie = (data: ActiveEventData, joincode: string) => {
     } catch (e) {
         console.error('could not set event cookie', e);
     }
+};
+
+export const respsByround = (resps: Response[], rounds: GameRound[]) => {
+    const roundResps: Record<string, Response[]> = {};
+
+    rounds.forEach((rd) => {
+        const rdNum = rd.round_number;
+        const rdResps = resps.filter((r) => r.round_number === rdNum) || [];
+        for (let i = 1; i < rd.question_count + 1; i++) {
+            const resp =
+                rdResps.find((r) => r.question_number === i) ||
+                ({
+                    key: `${rdNum}.${i}`,
+                    recorded_answer: '-',
+                    points_awarded: 0
+                } as Response);
+            rdNum in roundResps ? roundResps[rdNum].push(resp) : (roundResps[rdNum] = [resp]);
+        }
+    });
+
+    return Object.values(roundResps);
 };
 
 /**
