@@ -1,14 +1,13 @@
 <script lang="ts">
-    import { get } from 'svelte/store';
+    import { slide } from 'svelte/transition';
     import { page } from '$app/stores';
     import { getStore } from '$lib/utils';
-    import type { LeaderboardEntry, Response } from '$lib/types';
+    import type { LeaderboardEntry } from '$lib/types';
 
     // TODO:
     // - for players, clicking on a response navigates to that question in the event
     // - svgs for 1/.5. && 0 pts
     // - how to handle unanswered questions?
-    // - slide transition for displaying/hiding content
     // - how to fetch team data (password, name updates, banning, etc) for the host
 
     export let entry: LeaderboardEntry;
@@ -20,16 +19,14 @@
     $: isPlayerTeamEntry = entry.team_id === $userStore.active_team_id;
     $: expandable = (!isPlayerEndpoint && lbView === 'host') || (isPlayerEndpoint && isPlayerTeamEntry);
 
-    let responses: Response[] | undefined;
-    $: if (isPlayerEndpoint && isPlayerTeamEntry) {
-        responses = get(getStore('responseData'));
-    }
+    const teamResponseStore = getStore('responseData');
+    $: responses = $teamResponseStore;
 
     let expanded = false;
     $: collapsed = !expandable ? null : !expanded;
 
     const handleExpand = async () => {
-        if (responses) {
+        if (responses?.length > 0) {
             expanded = !expanded;
             return;
         }
@@ -48,7 +45,7 @@
 
 <li class="leaderboard-entry-container">
     <button class="leaderboard-entry-meta" on:click={handleExpand}>
-        <div class="rank" class:collapsed class:expanded style:border-bottom-right-radius={expanded ? '10px' : 0}>
+        <div class="rank" class:collapsed class:expanded>
             <h3>{entry.rank}</h3>
         </div>
         <h3 class="team-name">{entry.team_name}</h3>
@@ -56,7 +53,7 @@
     </button>
 
     {#if expanded}
-        <div class="answer-container">
+        <div transition:slide class="answer-container">
             <p class="team-password">Team Password: {entry.team_password}</p>
             <ul class="response-list">
                 {#each responses || [] as response}
@@ -91,6 +88,7 @@
             color: var(--color-tertiary);
         }
         .expanded {
+            border-bottom-right-radius: 10px;
             position: relative;
             ::after {
                 content: '';
