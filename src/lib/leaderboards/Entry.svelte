@@ -57,8 +57,8 @@
         >
             <h3>{entry.rank}</h3>
         </button>
-        <h3 class="team-name">{entry.team_name}</h3>
-        <h3 class="points">{entry.total_points}</h3>
+        <button class="team-name" on:click={handleExpand}><h3>{entry.team_name}</h3></button>
+        <button class="points" on:click={handleExpand}><h3>{entry.total_points}</h3></button>
     </div>
 
     {#if expanded}
@@ -75,7 +75,6 @@
 
 <style lang="scss">
     .leaderboard-entry-container {
-        // display: flex;
         width: 100%;
         margin: 0.5rem 0;
         border: 2px solid var(--color-secondary);
@@ -124,6 +123,7 @@
             flex-grow: 1;
             margin: 0.5rem 0;
             padding: 0 1rem;
+            text-align: left;
         }
         .points {
             padding: 1rem;
