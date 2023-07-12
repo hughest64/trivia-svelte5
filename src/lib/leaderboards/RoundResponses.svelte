@@ -8,6 +8,9 @@
     // TODO: for players, clicking on a response navigates to that question in the event
     // points adjustment (probably a component)
     // tiebreaker stuffz
+    // border for selectted megaround
+    // warning text for missing megaround
+    // warning text for tiebreakers
 
     export let roundResps: ResponseMeta[];
 
@@ -26,7 +29,7 @@
             {#if comp}
                 <svelte:component this={comp} />
             {:else}
-                <div style:padding-left=".3rem">*</div>
+                <div style:padding-left=".3rem">-</div>
             {/if}
             <div>{response.recorded_answer}</div>
             <div>{response.points_awarded}</div>
