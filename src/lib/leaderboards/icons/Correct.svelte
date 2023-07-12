@@ -6,7 +6,11 @@
 
 <style lang="scss">
     svg {
+        margin-top: 0.3rem;
         width: 1rem;
         height: 1rem;
+        path {
+            fill: var(--color-current);
+        }
     }
 </style>

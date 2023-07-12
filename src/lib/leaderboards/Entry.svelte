@@ -6,8 +6,6 @@
     import type { LeaderboardEntry } from '$lib/types';
 
     // TODO:
-    // - for players, clicking on a response navigates to that question in the event
-    // - svgs for 1/.5. && 0 pts
     // - how to fetch team data (name updates, banning, etc) for the host
     // - team name editable for host
 

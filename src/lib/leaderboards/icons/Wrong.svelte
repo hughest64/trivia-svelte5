@@ -8,3 +8,11 @@
         fillOpacity=".133"
     />
 </svg>
+
+<style lang="scss">
+    svg {
+        margin-top: 0.3rem;
+        width: 1rem;
+        height: 1rem;
+    }
+</style>

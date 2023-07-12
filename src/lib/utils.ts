@@ -127,14 +127,14 @@ export const respsByround = (resps: Response[], rounds: GameRound[], roundStates
 
             let pts: string | number = '-';
             if (rdState.scored && existingResp) {
-                pts = existingResp.points_awarded;
+                pts = String(existingResp.points_awarded);
             }
 
             const resp = {
                 key: `${rdNum}.${i}`,
                 recorded_answer: existingResp?.recorded_answer || '-',
                 points_awarded: pts
-            } as Response;
+            };
 
             rdNum in roundResps ? roundResps[rdNum].push(resp) : (roundResps[rdNum] = [resp]);
         }
