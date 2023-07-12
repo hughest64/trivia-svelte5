@@ -33,23 +33,22 @@
     let expanded = false;
     $: collapsed = !expandable ? null : !expanded;
 
+    let fetched = false;
     const handleExpand = async () => {
         if (!expandable) return;
 
-        // TODO: just add "fetched" variable - set to true if false then fetch, else don't fetch if true
-        // this could work as an object in a store (set higher up in context) to avoid re-fetching after navigation
-        // combine the if's w/ something like if (isPlayerEndpint || fetched) // toggle and return
-        if (responses?.length > 0) {
+        if (isPlayerEndpoint || fetched) {
             expanded = !expanded;
+
             return;
         }
-        if (isPlayerEndpoint) return;
 
         // TODO: we probably want a loading state here
         const resp = await fetch(`${$page.url.pathname}/responses/${entry.team_id}`);
         // TODO: handle !resp.ok
         if (resp.ok) {
             responses = (await resp.json())?.responses || [];
+            fetched = true;
         }
 
         expanded = !expanded;
