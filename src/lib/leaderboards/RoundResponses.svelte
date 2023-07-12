@@ -1,4 +1,5 @@
 <script lang="ts">
+    import Correct from '$lib/icons/Correct.svelte';
     import type { ResponseMeta } from '$lib/types';
 
     export let roundResps: ResponseMeta[];
@@ -8,7 +9,7 @@
     {#each roundResps as response}
         <li class="response-container">
             <div>{response.key}</div>
-            <div>*</div>
+            <Correct />
             <div>{response.recorded_answer}</div>
             <div>{response.points_awarded}</div>
         </li>
