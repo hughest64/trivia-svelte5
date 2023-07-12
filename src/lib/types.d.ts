@@ -147,6 +147,12 @@ export interface HostResponse extends Omit<Response, ['id', 'locked']> {
     fuzz_ratio?: number;
 }
 
+export interface ResponseMeta {
+    key: string;
+    recorded_answer: string;
+    points_awarded: string | number;
+}
+
 export interface ResponseSummaryValues {
     correct: number;
     half: number;
