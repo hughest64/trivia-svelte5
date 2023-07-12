@@ -20,6 +20,7 @@
     $: isPlayerTeamEntry = entry.team_id === $userStore.active_team_id;
     $: expandable = (!isPlayerEndpoint && lbView === 'host') || (isPlayerEndpoint && isPlayerTeamEntry);
 
+    // TODO: we need to consider scored vs. unscored for points display (unless we only display scored rds?)
     const rounds = getStore('rounds');
     const roundStates = getStore('roundStates');
     $: roundsToShow = $rounds.filter((rd) => $roundStates.find((rs) => rs.round_number === rd.round_number)?.locked);
