@@ -109,6 +109,9 @@ export const setEventCookie = (data: ActiveEventData, joincode: string) => {
     }
 };
 
+/**
+ * filter and back fill missing responses based on round data
+ */
 export const respsByround = (resps: Response[], rounds: GameRound[]) => {
     const roundResps: Record<string, Response[]> = {};
 

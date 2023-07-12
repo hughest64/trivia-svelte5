@@ -8,7 +8,8 @@
     // TODO:
     // - for players, clicking on a response navigates to that question in the event
     // - svgs for 1/.5. && 0 pts
-    // - how to fetch team data (password, name updates, banning, etc) for the host
+    // - how to fetch team data (name updates, banning, etc) for the host
+    // - team name editable for host
 
     export let entry: LeaderboardEntry;
     export let lbView: 'public' | 'host' = 'public';
@@ -19,20 +20,24 @@
     $: isPlayerTeamEntry = entry.team_id === $userStore.active_team_id;
     $: expandable = (!isPlayerEndpoint && lbView === 'host') || (isPlayerEndpoint && isPlayerTeamEntry);
 
-    // TODO: let's use round states and limit things to locked rounds only
     const rounds = getStore('rounds');
     const roundStates = getStore('roundStates');
     $: roundsToShow = $rounds.filter((rd) => $roundStates.find((rs) => rs.round_number === rd.round_number)?.locked);
 
     const teamResponseStore = getStore('responseData');
 
-    $: responses = $teamResponseStore;
+    $: responses = (expandable && $teamResponseStore) || [];
     $: groupedResps = respsByround(responses, roundsToShow);
 
     let expanded = false;
     $: collapsed = !expandable ? null : !expanded;
 
     const handleExpand = async () => {
+        if (!expandable) return;
+
+        // TODO: just add "fetched" variable - set to true if false then fetch, else don't fetch if true
+        // this could work as an object in a store (set higher up in context) to avoid re-fetching after navigation
+        // combine the if's w/ something like if (isPlayerEndpint || fetched) // toggle and return
         if (responses?.length > 0) {
             expanded = !expanded;
             return;
