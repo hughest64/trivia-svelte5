@@ -119,14 +119,14 @@ export const respsByround = (resps: Response[], rounds: GameRound[], roundStates
     rounds.forEach((rd) => {
         const rdNum = rd.round_number;
         const rdState = roundStates.find((rs) => rs.round_number === rdNum);
-        if (!rdState?.locked) return true;
+        // if (!rdState?.locked) return true;
 
         const rdResps = resps.filter((r) => r.round_number === rdNum) || [];
         for (let i = 1; i < rd.question_count + 1; i++) {
             const existingResp = rdResps.find((r) => r.question_number === i);
 
             let pts: string | number = '-';
-            if (rdState.scored && existingResp) {
+            if (rdState?.scored && existingResp) {
                 pts = String(existingResp.points_awarded);
             }
 

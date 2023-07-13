@@ -1,7 +1,7 @@
 <script lang="ts">
     import { slide } from 'svelte/transition';
     import { page } from '$app/stores';
-    import { getStore, respsByround } from '$lib/utils';
+    import { getStore, respsByround, splitQuestionKey } from '$lib/utils';
     import RoundResponses from './RoundResponses.svelte';
     import type { LeaderboardEntry } from '$lib/types';
 
@@ -34,7 +34,6 @@
 
         if (isPlayerEndpoint || fetched) {
             expanded = !expanded;
-
             return;
         }
 
@@ -64,7 +63,15 @@
             <p class="team-password">Team Password: {entry.team_password}</p>
             <ul class="response-round-list">
                 {#each groupedResps || [] as group}
-                    <li><RoundResponses roundResps={group} /></li>
+                    <!-- String(entry.megaround) -->
+                    {@const isMegaRound =
+                        expandable && splitQuestionKey(group[0].key).round === String(entry.megaround)}
+                    <li class:megaround={isMegaRound}>
+                        {#if isMegaRound}
+                            <h3>Mega Round!</h3>
+                        {/if}
+                        <RoundResponses roundResps={group} />
+                    </li>
                 {/each}
             </ul>
         </div>
@@ -141,6 +148,14 @@
                 flex-direction: column;
                 width: 45%;
                 min-width: 15rem;
+            }
+        }
+        .megaround {
+            border: 2px solid var(--color-primary);
+            border-radius: 10px;
+            h3 {
+                padding: 0.5rem;
+                padding-bottom: 0;
             }
         }
     }
