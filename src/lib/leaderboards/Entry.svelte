@@ -54,7 +54,13 @@
         <div class="rank" class:collapsed class:expanded>
             <h3>{entry.rank}</h3>
         </div>
-        <h3 class="team-name">{entry.team_name}</h3>
+        <div class="team-name">
+            <h3>{entry.team_name}</h3>
+            <!-- TODO: add condition for is second half?-->
+            {#if (isPlayerTeamEntry || !isPlayerEndpoint) && !entry.megaround}
+                <span class="megaround-alert">!Mega Round</span>
+            {/if}
+        </div>
         <h3 class="points">{entry.total_points}</h3>
     </button>
 
@@ -63,7 +69,6 @@
             <p class="team-password">Team Password: {entry.team_password}</p>
             <ul class="response-round-list">
                 {#each groupedResps || [] as group}
-                    <!-- String(entry.megaround) -->
                     {@const isMegaRound =
                         expandable && splitQuestionKey(group[0].key).round === String(entry.megaround)}
                     <li class:megaround={isMegaRound}>
@@ -129,6 +134,7 @@
             }
         }
         .team-name {
+            position: relative;
             flex-grow: 1;
             margin: 0.5rem 0;
             padding: 0 1rem;
@@ -149,6 +155,11 @@
                 width: 45%;
                 min-width: 15rem;
             }
+        }
+        .megaround-alert {
+            font-size: 14px;
+            color: var(--color-primary);
+            position: absolute;
         }
         .megaround {
             border: 2px solid var(--color-primary);
