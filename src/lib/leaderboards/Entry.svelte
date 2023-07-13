@@ -6,6 +6,7 @@
     import type { LeaderboardEntry } from '$lib/types';
 
     // TODO:
+    // warning text for tiebreakers
     // - how to fetch team data (name updates, banning, etc) for the host
     // - team name editable for host
 

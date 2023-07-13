@@ -9,9 +9,6 @@
     import type { ResponseMeta } from '$lib/types';
 
     // TODO:
-    // border for selected megaround
-    // warning text for missing megaround
-    // warning text for tiebreakers
     // points adjustment (probably a component)
     // tiebreaker stuffz
 
