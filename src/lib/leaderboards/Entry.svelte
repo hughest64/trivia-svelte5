@@ -88,10 +88,12 @@
             {/if}
         </div>
 
-        {#if expanded}
+        {#if expanded && !nameEditable}
             <button class="edit-teamname" on:click={() => (nameEditable = !nameEditable)}>
                 <EditTeamName />
             </button>
+        {:else if expanded}
+            <button class="edit-teamname submit-btn" type="submit"><div>✓</div></button>
         {/if}
 
         <button class="points" on:click={handleExpand}><h3>{entry.total_points}</h3></button>
@@ -174,6 +176,8 @@
                 font-weight: bold;
                 font-family: 'Montserrat';
                 padding: 0.3rem;
+                border: 2px solid var(--color-secondary);
+                border-radius: 5px;
             }
             button {
                 position: relative;
@@ -185,6 +189,18 @@
             padding: 0;
             flex-grow: 1;
             text-align: left;
+        }
+        .submit-btn {
+            font-size: 24px;
+            font-weight: bold;
+            div {
+                background-color: var(--color-current);
+                width: 2.25rem;
+                height: 2.25rem;
+                text-align: center;
+                border: 2px solid var(--color-secondary);
+                border-radius: 5px;
+            }
         }
         .points {
             padding: 1rem;
