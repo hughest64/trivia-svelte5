@@ -44,17 +44,17 @@
     $: submitText = submitted ? 'Submitted' : 'Submit';
 
     const getMegaRoundInput = (qnum?: number): HTMLElement | undefined => {
-        const els = document.getElementsByClassName('megaround-weight');
+        const els = document.getElementsByClassName('megaround-weight') as HTMLCollectionOf<HTMLInputElement>;
         let inputEl: HTMLInputElement | undefined;
 
         for (const el of els) {
             if (qnum) {
-                if ((el as HTMLElement).dataset.qnum === String(qnum)) {
-                    inputEl = el as HTMLInputElement;
+                if (el.dataset.qnum === String(qnum)) {
+                    inputEl = el;
                     break;
                 }
-            } else if (!(el as HTMLInputElement).value) {
-                inputEl = el as HTMLInputElement;
+            } else if (!el.value) {
+                inputEl = el;
                 break;
             }
         }
