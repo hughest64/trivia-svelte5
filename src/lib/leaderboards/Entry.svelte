@@ -112,12 +112,6 @@
             {/if}
         </div>
 
-        <!-- {#if !isPlayerEndpoint && expanded && !nameEditable}
-            <button class="edit-teamname" on:click={() => (nameEditable = !nameEditable)}>
-                <EditTeamName />
-            </button>
-        {/if} -->
-
         <button class="points" on:click={handleExpand}><h3>{entry.total_points}</h3></button>
     </div>
 
