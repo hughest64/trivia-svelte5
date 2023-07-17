@@ -2,6 +2,7 @@
     import { slide } from 'svelte/transition';
     import { page } from '$app/stores';
     import { getStore, respsByround, splitQuestionKey } from '$lib/utils';
+    import EditTeamName from './icons/EditTeamName.svelte';
     import RoundResponses from './RoundResponses.svelte';
     import type { LeaderboardEntry } from '$lib/types';
 
@@ -12,6 +13,8 @@
 
     export let entry: LeaderboardEntry;
     export let lbView: 'public' | 'host' = 'public';
+
+    $: teamName = entry.team_name;
 
     const userStore = getStore('userData');
     const isPlayerEndpoint = $page.url.pathname.startsWith('/game');
@@ -48,22 +51,51 @@
 
         expanded = !expanded;
     };
+    let nameEditable = false;
 </script>
 
 <li class="leaderboard-entry-container">
-    <button class="leaderboard-entry-meta" on:click={handleExpand}>
-        <div class="rank" class:collapsed class:expanded>
+    <div class="leaderboard-entry-meta">
+        <button class="rank" class:collapsed class:expanded on:click={handleExpand}>
             <h3>{entry.rank}</h3>
-        </div>
-        <div class="team-name">
-            <h3>{entry.team_name}</h3>
-            <!-- TODO: add condition for is second half?-->
-            {#if (isPlayerTeamEntry || !isPlayerEndpoint) && !entry.megaround}
-                <span class="megaround-alert">!Mega Round</span>
+        </button>
+
+        <div class="team-name" class:grow={!expanded}>
+            {#if !expanded}
+                <button on:click={handleExpand}>
+                    <h3>{teamName}</h3>
+
+                    <!-- TODO: add condition for is second half?-->
+                    {#if (isPlayerTeamEntry || !isPlayerEndpoint) && !entry.megaround}
+                        <span class="megaround-alert">!Mega Round</span>
+                    {/if}
+                </button>
+            {:else}
+                <form action="">
+                    {#if nameEditable}
+                        <input
+                            on:click={() => {
+                                if (!nameEditable) handleExpand();
+                            }}
+                            type="text"
+                            name="team_name"
+                            bind:value={teamName}
+                        />
+                    {:else}
+                        <h3>{teamName}</h3>
+                    {/if}
+                </form>
             {/if}
         </div>
-        <h3 class="points">{entry.total_points}</h3>
-    </button>
+
+        {#if expanded}
+            <button class="edit-teamname" on:click={() => (nameEditable = !nameEditable)}>
+                <EditTeamName />
+            </button>
+        {/if}
+
+        <button class="points" on:click={handleExpand}><h3>{entry.total_points}</h3></button>
+    </div>
 
     {#if expanded}
         <div transition:slide class="answer-container">
@@ -135,14 +167,28 @@
             }
         }
         .team-name {
-            position: relative;
-            flex-grow: 1;
             margin: 0.5rem 0;
             padding: 0 1rem;
+            input {
+                font-size: 1.25rem;
+                font-weight: bold;
+                font-family: 'Montserrat';
+                padding: 0.3rem;
+            }
+            button {
+                position: relative;
+                text-align: left;
+            }
+        }
+        .edit-teamname {
+            margin: 0;
+            padding: 0;
+            flex-grow: 1;
             text-align: left;
         }
         .points {
             padding: 1rem;
+            justify-self: end;
         }
         .answer-container {
             display: flex;
