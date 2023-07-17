@@ -1,6 +1,7 @@
 <script lang="ts">
     import { slide } from 'svelte/transition';
     import { page } from '$app/stores';
+    import { applyAction, enhance } from '$app/forms';
     import { getStore, respsByround, splitQuestionKey } from '$lib/utils';
     import EditTeamName from './icons/EditTeamName.svelte';
     import RoundResponses from './RoundResponses.svelte';
@@ -33,8 +34,14 @@
     $: collapsed = !expandable ? null : !expanded;
 
     let fetched = false;
+    let nameEditable = false;
     const handleExpand = async () => {
         if (!expandable) return;
+
+        if (expanded) {
+            teamName = entry.team_name;
+            nameEditable = false;
+        }
 
         if (isPlayerEndpoint || fetched) {
             expanded = !expanded;
@@ -51,7 +58,11 @@
 
         expanded = !expanded;
     };
-    let nameEditable = false;
+
+    const syncInputText = (e: Event) => {
+        const target = <HTMLInputElement>e.target;
+        teamName = target.value;
+    };
 </script>
 
 <li class="leaderboard-entry-container">
@@ -60,8 +71,8 @@
             <h3>{entry.rank}</h3>
         </button>
 
-        <div class="team-name" class:grow={!expanded}>
-            {#if !expanded}
+        <div class="team-name" class:grow={!expanded || isPlayerEndpoint}>
+            {#if isPlayerEndpoint}
                 <button on:click={handleExpand}>
                     <h3>{teamName}</h3>
 
@@ -71,7 +82,13 @@
                     {/if}
                 </button>
             {:else}
-                <form action="">
+                <form
+                    action="?/updateteamname"
+                    method="post"
+                    use:enhance={() =>
+                        ({ result }) =>
+                            applyAction(result)}
+                >
                     {#if nameEditable}
                         <input
                             on:click={() => {
@@ -79,8 +96,15 @@
                             }}
                             type="text"
                             name="team_name"
-                            bind:value={teamName}
+                            value={teamName}
+                            on:input={syncInputText}
                         />
+                        <button class="edit-teamname submit-btn" type="submit"><div>✓</div></button>
+                    {:else if expanded}
+                        <h3>{teamName}</h3>
+                        <button class="edit-teamname" on:click={() => (nameEditable = !nameEditable)}>
+                            <EditTeamName />
+                        </button>
                     {:else}
                         <h3>{teamName}</h3>
                     {/if}
@@ -88,13 +112,11 @@
             {/if}
         </div>
 
-        {#if expanded && !nameEditable}
+        <!-- {#if !isPlayerEndpoint && expanded && !nameEditable}
             <button class="edit-teamname" on:click={() => (nameEditable = !nameEditable)}>
                 <EditTeamName />
             </button>
-        {:else if expanded}
-            <button class="edit-teamname submit-btn" type="submit"><div>✓</div></button>
-        {/if}
+        {/if} -->
 
         <button class="points" on:click={handleExpand}><h3>{entry.total_points}</h3></button>
     </div>
@@ -171,6 +193,13 @@
         .team-name {
             margin: 0.5rem 0;
             padding: 0 1rem;
+            width: 100%;
+            form {
+                display: flex;
+                flex-direction: row;
+
+                gap: 1rem;
+            }
             input {
                 font-size: 1.25rem;
                 font-weight: bold;

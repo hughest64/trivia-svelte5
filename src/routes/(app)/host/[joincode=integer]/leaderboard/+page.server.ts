@@ -43,4 +43,9 @@ const finishgame: Action = async ({ fetch, params }) => {
     return { success: true };
 };
 
-export const actions = { updateleaderboard, revealanswers, finishgame };
+const updateteamname: Action = async ({ request }) => {
+    const data = Object.fromEntries(await request.formData());
+    console.log(data);
+};
+
+export const actions = { updateleaderboard, revealanswers, finishgame, updateteamname };
