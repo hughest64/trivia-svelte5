@@ -44,6 +44,7 @@
     const hostResponseStore = getStore('hostResponseData');
     const responseSummaryStore = getStore('responseSummary');
     const selectedMegaroundStore = getStore('selectedMegaRound');
+    const userStore = getStore('userData');
 
     const handlers: MessageHandler = {
         connected: () => console.log('connected!'),
@@ -253,7 +254,16 @@
 
                 return newLb;
             });
-            // console.log($leaderboardStore);
+            userStore.update((user) => {
+                const newUser = { ...user };
+                const { teams } = newUser;
+                const teamIndex = teams.findIndex((team) => team.id === msg.id);
+                if (teamIndex > -1) {
+                    teams[teamIndex].name = msg.name;
+                }
+
+                return newUser;
+            });
         }
     };
 
