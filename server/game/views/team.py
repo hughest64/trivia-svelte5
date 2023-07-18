@@ -106,9 +106,6 @@ class TeamUpdateName(APIView):
         team.name = team_name
         team.save()
 
-        # TODO: event socket message to update eryone
-        # - needs to update leaderboard entries for all
-        #   as well as user teams for that team
         SendEventMessage(
             joincode=joincode,
             message={"msg_type": "teamname_update", "message": team.to_json()},

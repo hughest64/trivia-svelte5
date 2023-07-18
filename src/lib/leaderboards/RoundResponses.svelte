@@ -62,7 +62,7 @@
     }
     .response-container {
         display: grid;
-        grid-template-columns: 30px 30px 1fr 1fr;
+        grid-template-columns: 30px 30px 3fr 1fr;
         width: 100%;
         text-align: left;
         font-size: 1rem;

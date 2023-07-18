@@ -5,6 +5,7 @@
     import { getStore, respsByround, splitQuestionKey } from '$lib/utils';
     import EditTeamName from './icons/EditTeamName.svelte';
     import RoundResponses from './RoundResponses.svelte';
+    import PointsAdjustment from './PointsAdjustment.svelte';
     import type { LeaderboardEntry } from '$lib/types';
 
     // TODO:
@@ -74,7 +75,7 @@
         </button>
 
         <div class="team-name">
-            {#if isPlayerEndpoint || !expanded}
+            {#if !expanded}
                 <button on:click={handleExpand}>
                     <h3>{teamName}</h3>
 
@@ -126,6 +127,9 @@
                 {/each}
             </ul>
         </div>
+    {/if}
+    {#if !isPlayerEndpoint && expanded}
+        <PointsAdjustment {entry} />
     {/if}
 </li>
 
