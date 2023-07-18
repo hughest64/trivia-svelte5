@@ -88,8 +88,10 @@
                     action="?/updateteamname"
                     method="post"
                     use:enhance={() =>
-                        ({ result }) =>
-                            applyAction(result)}
+                        ({ result }) => {
+                            nameEditable = false;
+                            applyAction(result);
+                        }}
                 >
                     {#if nameEditable}
                         <input type="hidden" name="team_id" value={entry.team_id} />

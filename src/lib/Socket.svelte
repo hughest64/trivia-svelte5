@@ -14,7 +14,8 @@
         RoundState,
         SocketMessage,
         HostResponse,
-        HostMegaRoundInstance
+        HostMegaRoundInstance,
+        UserTeam
     } from './types';
 
     const path = $page.url.pathname;
@@ -234,6 +235,25 @@
                 newLb.host_megaround_list = megaroundList;
                 return newLb;
             });
+        },
+        teamname_update: (msg: UserTeam) => {
+            leaderboardStore.update((lb) => {
+                const newLb = { ...lb };
+                const { public_leaderboard_entries, host_leaderboard_entries } = newLb;
+                const pubTeamIndex = public_leaderboard_entries.findIndex((entry) => Number(entry.team_id) === msg.id);
+                if (pubTeamIndex > -1) {
+                    public_leaderboard_entries[pubTeamIndex].team_name = msg.name;
+                }
+
+                const hostTeamIndex = host_leaderboard_entries?.findIndex((entry) => Number(entry.team_id) === msg.id);
+                if (hostTeamIndex !== undefined && hostTeamIndex > -1) {
+                    const entryToUpdate = (host_leaderboard_entries || [])[hostTeamIndex];
+                    entryToUpdate.team_name = msg.name;
+                }
+
+                return newLb;
+            });
+            // console.log($leaderboardStore);
         }
     };
 

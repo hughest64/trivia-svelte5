@@ -7,8 +7,10 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from game.models import Team
+from game.utils.socket_classes import SendEventMessage
 from game.views.validation.exceptions import TeamNotFound
 from game.views.validation.data_cleaner import DataCleaner
+
 from user.authentication import JwtAuthentication
 from user.models import User
 
@@ -94,6 +96,7 @@ class TeamUpdateName(APIView):
         data = DataCleaner(request.data)
         team_id = data.as_int("team_id")
         team_name = data.as_string("team_name")
+        joincode = data.as_int("joincode")
 
         try:
             team = Team.objects.get(id=team_id)
@@ -106,5 +109,9 @@ class TeamUpdateName(APIView):
         # TODO: event socket message to update eryone
         # - needs to update leaderboard entries for all
         #   as well as user teams for that team
+        SendEventMessage(
+            joincode=joincode,
+            message={"msg_type": "teamname_update", "message": team.to_json()},
+        )
 
         return Response({"success": True})

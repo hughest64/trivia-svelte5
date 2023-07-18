@@ -44,12 +44,12 @@ const finishgame: Action = async ({ fetch, params }) => {
     return { success: true };
 };
 
-const updateteamname: Action = async ({ request, fetch }) => {
+const updateteamname: Action = async ({ request, fetch, params }) => {
     const data = Object.fromEntries(await request.formData());
 
     const response = await fetch(`${PUBLIC_API_HOST}/team/updateteamname`, {
         method: 'post',
-        body: JSON.stringify(data)
+        body: JSON.stringify({ ...data, joincode: params.joincode })
     });
 
     if (!response.ok) {
