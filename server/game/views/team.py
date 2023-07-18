@@ -4,7 +4,6 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 
 from rest_framework.response import Response
-from rest_framework.status import HTTP_400_BAD_REQUEST
 from rest_framework.views import APIView
 
 from game.models import Team
@@ -85,3 +84,27 @@ class TeamSelectView(APIView):
         user.save()
 
         return Response({"active_team_id": team_id})
+
+
+class TeamUpdateName(APIView):
+    authentication_classes = [JwtAuthentication]
+
+    @method_decorator(csrf_protect)
+    def post(self, request):
+        data = DataCleaner(request.data)
+        team_id = data.as_int("team_id")
+        team_name = data.as_string("team_name")
+
+        try:
+            team = Team.objects.get(id=team_id)
+        except Team.DoesNotExist:
+            raise TeamNotFound
+
+        team.name = team_name
+        team.save()
+
+        # TODO: event socket message to update eryone
+        # - needs to update leaderboard entries for all
+        #   as well as user teams for that team
+
+        return Response({"success": True})

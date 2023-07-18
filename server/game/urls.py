@@ -71,6 +71,11 @@ urlpatterns = [
     re_path(r"^team/join/?$", team.TeamJoinView.as_view(), name="team_join"),
     re_path(r"^team/select/?$", team.TeamSelectView.as_view(), name="team_select"),
     re_path(r"^team/create/?$", team.TeamCreateView.as_view(), name="team_create"),
+    re_path(
+        r"^team/updateteamname/?$",
+        team.TeamUpdateName.as_view(),
+        name="teamname_update",
+    ),
     re_path(r"^team/?$", team.TeamView.as_view(), name="team"),
     re_path(r"^airtable-import/?$", airtable.airtable_import, name="airtable_import"),
 ]

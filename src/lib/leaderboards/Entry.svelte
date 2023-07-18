@@ -73,7 +73,6 @@
             <h3>{entry.rank}</h3>
         </button>
 
-        <!-- class:grow={!expanded || isPlayerEndpoint} -->
         <div class="team-name">
             {#if isPlayerEndpoint || !expanded}
                 <button on:click={handleExpand}>
@@ -93,6 +92,7 @@
                             applyAction(result)}
                 >
                     {#if nameEditable}
+                        <input type="hidden" name="team_id" value={entry.team_id} />
                         <input type="text" name="team_name" value={teamName} on:input={syncInputText} />
                         <button class="edit-teamname submit-btn" type="submit">✓</button>
                     {:else if expanded}
