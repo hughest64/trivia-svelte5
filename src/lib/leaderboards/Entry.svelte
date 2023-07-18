@@ -8,9 +8,11 @@
     import type { LeaderboardEntry } from '$lib/types';
 
     // TODO:
-    // warning text for tiebreakers
+    // - I think a "pop over" would be best for things like renaming/banning teams
+    // as things look pretty bad on mobile right now
+    //
+    // - warning text for tiebreakers
     // - how to fetch team data (name updates, banning, etc) for the host
-    // - team name editable for host
 
     export let entry: LeaderboardEntry;
     export let lbView: 'public' | 'host' = 'public';
@@ -71,8 +73,9 @@
             <h3>{entry.rank}</h3>
         </button>
 
-        <div class="team-name" class:grow={!expanded || isPlayerEndpoint}>
-            {#if isPlayerEndpoint}
+        <!-- class:grow={!expanded || isPlayerEndpoint} -->
+        <div class="team-name">
+            {#if isPlayerEndpoint || !expanded}
                 <button on:click={handleExpand}>
                     <h3>{teamName}</h3>
 
@@ -90,28 +93,18 @@
                             applyAction(result)}
                 >
                     {#if nameEditable}
-                        <input
-                            on:click={() => {
-                                if (!nameEditable) handleExpand();
-                            }}
-                            type="text"
-                            name="team_name"
-                            value={teamName}
-                            on:input={syncInputText}
-                        />
-                        <button class="edit-teamname submit-btn" type="submit"><div>✓</div></button>
+                        <input type="text" name="team_name" value={teamName} on:input={syncInputText} />
+                        <button class="edit-teamname submit-btn" type="submit">✓</button>
                     {:else if expanded}
-                        <h3>{teamName}</h3>
+                        <button on:click={handleExpand}><h3>{teamName}</h3></button>
                         <button class="edit-teamname" on:click={() => (nameEditable = !nameEditable)}>
                             <EditTeamName />
                         </button>
-                    {:else}
-                        <h3>{teamName}</h3>
                     {/if}
                 </form>
             {/if}
         </div>
-
+        <button class="grow filler-btn" on:click={handleExpand}>-</button>
         <button class="points" on:click={handleExpand}><h3>{entry.total_points}</h3></button>
     </div>
 
@@ -187,7 +180,6 @@
         .team-name {
             margin: 0.5rem 0;
             padding: 0 1rem;
-            width: 100%;
             form {
                 display: flex;
                 flex-direction: row;
@@ -214,16 +206,18 @@
             text-align: left;
         }
         .submit-btn {
+            flex-grow: 0;
             font-size: 24px;
             font-weight: bold;
-            div {
-                background-color: var(--color-current);
-                width: 2.25rem;
-                height: 2.25rem;
-                text-align: center;
-                border: 2px solid var(--color-secondary);
-                border-radius: 5px;
-            }
+            width: 2.25rem;
+            height: 2.25rem;
+            padding-left: 0.35rem;
+            background-color: var(--color-current);
+            border: 2px solid var(--color-secondary);
+            border-radius: 5px;
+        }
+        .filler-btn {
+            color: var(--color-tertiary);
         }
         .points {
             padding: 1rem;
