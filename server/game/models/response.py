@@ -144,7 +144,7 @@ class LeaderboardEntry(models.Model):
     total_points = models.FloatField(default=0)
     selected_megaround = models.IntegerField(blank=True, null=True)
     megaround_applied = models.BooleanField(default=False)
-    points_adjustment = models.IntegerField(default=0)
+    points_adjustment = models.FloatField(default=0)
     points_adjustment_reason = models.IntegerField(
         default=0,
         choices=PTS_ADJUSTMENT_OPTIONS,
@@ -190,6 +190,8 @@ class LeaderboardEntry(models.Model):
             "rank": self.rank or "-",
             "total_points": self.total_points,
             "megaround": self.selected_megaround,
+            "points_adjustment_value": self.points_adjustment,
+            "points_adjustment_reason_id": self.points_adjustment_reason,
         }
 
 

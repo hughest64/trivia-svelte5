@@ -114,6 +114,8 @@ class DataCleaner:
 
     def as_int(self, key=None, data=None):
         value = self._get_value_from_key(key, data)
+        if value is None:
+            return None
         try:
             return int(value)
         except ValueError:
@@ -121,6 +123,8 @@ class DataCleaner:
 
     def as_float(self, key=None, data=None):
         value = self._get_value_from_key(key, data)
+        if value is None:
+            return None
         try:
             return float(value)
         except ValueError:
