@@ -6,20 +6,59 @@
 
     const adjustmentReasons = $page.data.points_adjustment_reasons || [];
 
-    let adjustmentPoints = 0;
+    let adjustmentReason = entry.points_adjustment_reason_id;
+    console.log(adjustmentReason);
+    let adjustmentPoints = entry.points_adjustment_value;
+
+    const handleSetAdjustmentPoints = async (direction: 'up' | 'down') => {
+        direction === 'up' ? (adjustmentPoints += 0.5) : (adjustmentPoints -= 0.5);
+        const formData = new FormData();
+        formData.set('adjustment_points', String(adjustmentPoints));
+        formData.set('team_id', String(entry.team_id));
+
+        const response = await fetch('?/updatepointsadjustment', {
+            method: 'post',
+            body: formData
+        });
+        if (!response.ok) {
+            // reset the points
+            // show an error msg
+        }
+    };
+
+    const handleSetAdjustmentReason = async (e: Event) => {
+        const target = e.target as HTMLSelectElement;
+        const formData = new FormData();
+        formData.set(target.name, target.value);
+        formData.set('team_id', String(entry.team_id));
+
+        const response = await fetch('?/updatepointsadjustment', {
+            method: 'post',
+            body: formData
+        });
+        if (!response.ok) {
+            // reset the selected value
+            // show an error msg
+        }
+    };
 </script>
 
 <div class="points-adjustment-container">
     <p class="grow">Points Adjustment</p>
-    <button class="plus-minus">-</button>
+    <button class="plus-minus" on:click={() => handleSetAdjustmentPoints('down')}>-</button>
     <p>{adjustmentPoints}</p>
-    <button class="plus-minus last">+</button>
+    <button class="plus-minus last" on:click={() => handleSetAdjustmentPoints('up')}>+</button>
 </div>
 
 <!-- TODO: if adjustmentPoints !== 0 -->
 <div class="points-adjustment-container adjustment-reason">
     <p class="grow">Reason:</p>
-    <select name="ajustment_reason" id="ajustment_reason">
+    <select
+        name="adjustment_reason"
+        id="adjustment_reason"
+        bind:value={entry.points_adjustment_reason_id}
+        on:input={handleSetAdjustmentReason}
+    >
         {#each adjustmentReasons as reason}
             <option value={reason.id}>{reason.text}</option>
         {/each}

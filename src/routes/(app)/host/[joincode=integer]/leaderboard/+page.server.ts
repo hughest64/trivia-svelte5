@@ -59,4 +59,20 @@ const updateteamname: Action = async ({ request, fetch, params }) => {
     return { success: true };
 };
 
-export const actions = { updateleaderboard, revealanswers, finishgame, updateteamname };
+const updatepointsadjustment: Action = async ({ request, fetch, params }) => {
+    const data = await request.formData();
+    const jsonData = Object.fromEntries(data);
+    jsonData['update_type'] = data.has('adjustment_points') ? 'points' : 'reason';
+
+    const response = await fetch(`${PUBLIC_API_HOST}/host/${params.joincode}/pointsadjustment`, {
+        method: 'post',
+        body: JSON.stringify(jsonData)
+    });
+
+    if (!response.ok) {
+        // parse the reason and return fail
+    }
+    return { success: true };
+};
+
+export const actions = { updateleaderboard, revealanswers, finishgame, updateteamname, updatepointsadjustment };

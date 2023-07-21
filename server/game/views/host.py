@@ -1,7 +1,6 @@
-from datetime import timedelta
 from typing import List
 
-from django.db.models import QuerySet, Q
+from django.db.models import QuerySet
 from django.utils import timezone
 
 from django.utils.decorators import method_decorator
@@ -38,6 +37,7 @@ from game.models import (
 from game.models.utils import queryset_to_json
 from game.processors import LeaderboardProcessor
 from game.utils.socket_classes import SendEventMessage, SendHostMessage
+from game.views.validation.exceptions import LeaderboardEntryNotFound
 
 
 class EventHostView(APIView):
@@ -375,6 +375,7 @@ class ScoreRoundView(APIView):
         points_awarded = data.as_float("points_awarded")
         update_type = data.as_string("update_type")
 
+        # TODO: should we use transaction.atomic and/or select_for_update here?
         resps = QuestionResponse.objects.filter(id__in=id_list)
         resps.update(points_awarded=points_awarded, funny=funny)
 
@@ -405,6 +406,42 @@ class ScoreRoundView(APIView):
                 },
             },
         )
+
+        return Response({"success": True})
+
+
+class UpdateAdjustmentPointsView(APIView):
+    authentication_classes = [JwtAuthentication]
+    permission_classes = [IsAdminUser]
+
+    @method_decorator(csrf_protect)
+    def post(self, request, joincode):
+        data = DataCleaner(request.data)
+        points = data.as_float("adjustment_points")
+        adjustment_reason = data.as_int("adjustment_reason")
+        team_id = data.as_int("team_id")
+        update_type = data.as_string("update_type")
+
+        try:
+            lbe = LeaderboardEntry.objects.get(
+                event__joincode=joincode,
+                team_id=team_id,
+                leaderboard_type=LEADERBOARD_TYPE_HOST,
+            )
+
+        except LeaderboardEntry.DoesNotExist:
+            raise LeaderboardEntryNotFound
+
+        if points is not None:
+            print(points)
+            lbe.points_adjustment = points
+            # TODO use an F expression to update total pts
+        if adjustment_reason is not None:
+            lbe.points_adjustment_reason = adjustment_reason
+
+        lbe.save()
+
+        # TODO: send host socket msg
 
         return Response({"success": True})
 

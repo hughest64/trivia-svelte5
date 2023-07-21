@@ -13,7 +13,6 @@
     // as things look pretty bad on mobile right now
     //
     // - warning text for tiebreakers
-    // - how to fetch team data (name updates, banning, etc) for the host
 
     export let entry: LeaderboardEntry;
     export let lbView: 'public' | 'host' = 'public';

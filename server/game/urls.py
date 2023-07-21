@@ -30,6 +30,11 @@ urlpatterns = [
         name="finish_game",
     ),
     re_path(
+        r"^host/(?P<joincode>\d+)/pointsadjustment/?$",
+        host.UpdateAdjustmentPointsView.as_view(),
+        name="update_adjustment_points",
+    ),
+    re_path(
         r"^host/(?P<joincode>\d+)/score(/(?P<round_number>\d+))?/?$",
         host.ScoreRoundView.as_view(),
         name="score_round",

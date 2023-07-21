@@ -43,6 +43,8 @@ export interface LeaderboardEntry {
     team_password?: string;
     megaround?: number;
     total_points: number;
+    points_adjustment_value: number;
+    points_adjustment_reason_id: number;
 }
 
 export interface HostMegaRoundInstance {
