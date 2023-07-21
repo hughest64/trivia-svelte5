@@ -178,6 +178,11 @@ export interface ActiveEventData {
     activeQuestionKey: string;
 }
 
+export interface PointsAdjustmentReson {
+    id: string | number;
+    text: string;
+}
+
 export interface SocketMessage {
     msg_type: string;
     message: any;

@@ -27,6 +27,7 @@ declare namespace App {
         game_select_data?: Array<import('$lib/types').GameSelectData>;
         game_block_data?: string[];
         player_joined?: boolean;
+        points_adjustment_reasons?: Array<import('$lib/types').PointsAdjustmentReson>;
     }
     // interface Platform {}
     interface Error {

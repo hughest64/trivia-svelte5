@@ -33,6 +33,7 @@ from game.models import (
     LeaderboardEntry,
     LEADERBOARD_TYPE_PUBLIC,
     LEADERBOARD_TYPE_HOST,
+    PTS_ADJUSTMENT_OPTIONS_LIST,
 )
 from game.models.utils import queryset_to_json
 from game.processors import LeaderboardProcessor
@@ -69,6 +70,7 @@ class EventHostView(APIView):
             {
                 **event.to_json(),
                 "user_data": user_data,
+                "points_adjustment_reasons": PTS_ADJUSTMENT_OPTIONS_LIST,
                 "leaderboard_data": {
                     "public_leaderboard_entries": queryset_to_json(public_lb_entries),
                     "host_leaderboard_entries": queryset_to_json(host_lb_entries),

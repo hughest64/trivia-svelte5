@@ -79,7 +79,8 @@
                 <button on:click={handleExpand}>
                     <h3>{teamName}</h3>
 
-                    <!-- TODO: add condition for is second half?-->
+                    <!-- TODO: add condition for is second half-->
+                    <!-- TODO: add summary text for players -->
                     {#if (isPlayerTeamEntry || !isPlayerEndpoint) && !entry.megaround}
                         <span class="megaround-alert">!Mega Round</span>
                     {/if}
