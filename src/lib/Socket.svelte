@@ -17,6 +17,7 @@
         HostMegaRoundInstance,
         UserTeam
     } from './types';
+    import LeaderboardIcon from './footer/icons/LeaderboardIcon.svelte';
 
     const path = $page.url.pathname;
 
@@ -66,10 +67,25 @@
         },
         // TODO: better typings
         leaderboard_update: (msg: Record<string, unknown>) => {
+            console.log('updating');
             const { ...leaderboard } = msg;
             leaderboardStore.update((lb) => {
                 const newLb = { ...lb };
                 Object.assign(newLb, leaderboard);
+
+                return newLb;
+            });
+        },
+        leaderboard_update_host_entry: (msg: Record<string, LeaderboardEntry | string>) => {
+            const updatedEntry = msg.entry as LeaderboardEntry;
+            leaderboardStore.update((lb) => {
+                const newLb = { ...lb };
+                const entries = newLb.host_leaderboard_entries || [];
+                const indexToUpdate = entries.findIndex((entry) => entry.team_id === updatedEntry.team_id);
+                if (indexToUpdate !== undefined && indexToUpdate > -1) {
+                    entries[indexToUpdate] = updatedEntry;
+                }
+                // TODO: we should resort entries
 
                 return newLb;
             });

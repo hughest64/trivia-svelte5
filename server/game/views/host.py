@@ -421,25 +421,51 @@ class UpdateAdjustmentPointsView(APIView):
         adjustment_reason = data.as_int("adjustment_reason")
         team_id = data.as_int("team_id")
 
+        entries = LeaderboardEntry.objects.filter(
+            event__joincode=joincode, leaderboard_type=LEADERBOARD_TYPE_HOST
+        )
+
         try:
-            lbe = LeaderboardEntry.objects.get(
-                event__joincode=joincode,
-                team_id=team_id,
-                leaderboard_type=LEADERBOARD_TYPE_HOST,
-            )
+            lbe = entries.get(team_id=team_id)
 
         except LeaderboardEntry.DoesNotExist:
             raise LeaderboardEntryNotFound
 
-        if points is not None:
-            lbe.points_adjustment = points
-            # TODO use an F expression to update total pts
         if adjustment_reason is not None:
             lbe.points_adjustment_reason = adjustment_reason
+            lbe.save()
 
-        lbe.save()
+        leaderboard_data = None
+        if points is not None:
+            lbe.points_adjustment += points
+            lbe.total_points += points
+            lbe.save()
+            leaderboard_data = LeaderboardProcessor().rank_host_leaderboard(entries)
 
-        # TODO: send host socket msg
+        lbe.leaderboard.synced = False
+        lbe.leaderboard.save()
+
+        message = {
+            "msg_type": "leaderboard_update",
+            "message": {
+                "entry": lbe.to_json(),
+                "synced": False,
+            },
+        }
+
+        if leaderboard_data is not None:
+            message = {
+                "msg_type": "leaderboard_update",
+                "message": {
+                    "host_leaderboard_entries": leaderboard_data,
+                    "synced": False,
+                },
+            }
+
+        SendHostMessage(
+            joincode=joincode,
+            message={"msg_type": "leaderboard_update", "message": message},
+        )
 
         return Response({"success": True})
 

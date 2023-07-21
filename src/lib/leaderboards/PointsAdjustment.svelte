@@ -7,13 +7,14 @@
     const adjustmentReasons = $page.data.points_adjustment_reasons || [];
 
     let adjustmentReason = entry.points_adjustment_reason_id;
-    console.log(adjustmentReason);
     let adjustmentPoints = entry.points_adjustment_value;
 
     const handleSetAdjustmentPoints = async (direction: 'up' | 'down') => {
-        direction === 'up' ? (adjustmentPoints += 0.5) : (adjustmentPoints -= 0.5);
+        const pts = direction === 'up' ? 0.5 : -0.5;
+        adjustmentPoints += pts;
+
         const formData = new FormData();
-        formData.set('adjustment_points', String(adjustmentPoints));
+        formData.set('adjustment_points', String(pts));
         formData.set('team_id', String(entry.team_id));
 
         const response = await fetch('?/updatepointsadjustment', {
