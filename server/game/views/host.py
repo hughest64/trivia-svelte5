@@ -420,7 +420,6 @@ class UpdateAdjustmentPointsView(APIView):
         points = data.as_float("adjustment_points")
         adjustment_reason = data.as_int("adjustment_reason")
         team_id = data.as_int("team_id")
-        update_type = data.as_string("update_type")
 
         try:
             lbe = LeaderboardEntry.objects.get(
@@ -433,7 +432,6 @@ class UpdateAdjustmentPointsView(APIView):
             raise LeaderboardEntryNotFound
 
         if points is not None:
-            print(points)
             lbe.points_adjustment = points
             # TODO use an F expression to update total pts
         if adjustment_reason is not None:

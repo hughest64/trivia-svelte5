@@ -60,13 +60,11 @@ const updateteamname: Action = async ({ request, fetch, params }) => {
 };
 
 const updatepointsadjustment: Action = async ({ request, fetch, params }) => {
-    const data = await request.formData();
-    const jsonData = Object.fromEntries(data);
-    jsonData['update_type'] = data.has('adjustment_points') ? 'points' : 'reason';
+    const data = Object.fromEntries(await request.formData());
 
     const response = await fetch(`${PUBLIC_API_HOST}/host/${params.joincode}/pointsadjustment`, {
         method: 'post',
-        body: JSON.stringify(jsonData)
+        body: JSON.stringify(data)
     });
 
     if (!response.ok) {
