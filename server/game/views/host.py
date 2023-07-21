@@ -446,7 +446,7 @@ class UpdateAdjustmentPointsView(APIView):
         lbe.leaderboard.save()
 
         message = {
-            "msg_type": "leaderboard_update",
+            "msg_type": "leaderboard_update_host_entry",
             "message": {
                 "entry": lbe.to_json(),
                 "synced": False,
@@ -462,10 +462,7 @@ class UpdateAdjustmentPointsView(APIView):
                 },
             }
 
-        SendHostMessage(
-            joincode=joincode,
-            message={"msg_type": "leaderboard_update", "message": message},
-        )
+        SendHostMessage(joincode=joincode, message=message)
 
         return Response({"success": True})
 

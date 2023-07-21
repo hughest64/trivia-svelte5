@@ -67,7 +67,6 @@
         },
         // TODO: better typings
         leaderboard_update: (msg: Record<string, unknown>) => {
-            console.log('updating');
             const { ...leaderboard } = msg;
             leaderboardStore.update((lb) => {
                 const newLb = { ...lb };
@@ -85,7 +84,6 @@
                 if (indexToUpdate !== undefined && indexToUpdate > -1) {
                     entries[indexToUpdate] = updatedEntry;
                 }
-                // TODO: we should resort entries
 
                 return newLb;
             });

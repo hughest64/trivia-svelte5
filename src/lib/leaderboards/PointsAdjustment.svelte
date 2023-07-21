@@ -6,7 +6,6 @@
 
     const adjustmentReasons = $page.data.points_adjustment_reasons || [];
 
-    let adjustmentReason = entry.points_adjustment_reason_id;
     let adjustmentPoints = entry.points_adjustment_value;
 
     const handleSetAdjustmentPoints = async (direction: 'up' | 'down') => {
