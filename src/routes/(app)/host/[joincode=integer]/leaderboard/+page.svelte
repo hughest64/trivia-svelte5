@@ -1,8 +1,10 @@
 <script lang="ts">
     import { enhance } from '$app/forms';
+    import { page } from '$app/stores';
     import { getStore } from '$lib/utils';
     import Entry from '$lib/leaderboards/Entry.svelte';
     import RoundSelector from '../RoundSelector.svelte';
+    import type { LeaderboardEntry } from '$lib/types';
 
     const leaderboard = getStore('leaderboard');
     const rounds = getStore('rounds');
@@ -15,6 +17,18 @@
     $: gameComplete = completedRounds.length > 0 && $rounds.length === completedRounds.length;
 
     let lbView: 'public' | 'host' = 'host';
+
+    const showTiebreakerButton = (entry: LeaderboardEntry, index: number) => {
+        const hostEntries = $leaderboard?.host_leaderboard_entries || [];
+        const previousTiedForRank = hostEntries[index - 1]?.tied_for_rank;
+        const nextTiedForRank = hostEntries[index + 1]?.tied_for_rank;
+
+        return (
+            entry.tied_for_rank &&
+            entry.tied_for_rank !== nextTiedForRank &&
+            entry.tied_for_rank === previousTiedForRank
+        );
+    };
 </script>
 
 <div class="host-container flex-column">
@@ -67,14 +81,16 @@
         <h4>Host Leaderboard</h4>
 
         <ul id="host-leaderboard-view" class="leaderboard-rankings">
-            {#each $leaderboard.host_leaderboard_entries || [] as entry}
-                <!-- TODO: this probably better served as a helper function -->
-                <!-- {@const nextEntry = entries[i + 1]} -->
+            {#each $leaderboard.host_leaderboard_entries || [] as entry, index}
                 <Entry {entry} {lbView} />
-                <!-- {#if entry.tied_for_rank && entry.tied_for_rank < nextEntry?.tied_for_rank}
-                        add an anchor as a btn
-                    {/if}
-                 -->
+
+                {#if showTiebreakerButton(entry, index)}
+                    <div class="resolve-tiebreaker">
+                        <a href={`/host/${$page.params.joincode}/controlboard`} class=" button button-primary">
+                            Resolve Tiebreaker
+                        </a>
+                    </div>
+                {/if}
             {/each}
         </ul>
     {/if}
@@ -91,5 +107,9 @@
     }
     form {
         width: 100vw;
+    }
+    .resolve-tiebreaker {
+        display: flex;
+        justify-content: center;
     }
 </style>
