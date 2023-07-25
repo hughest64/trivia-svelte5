@@ -129,8 +129,12 @@ class TiebreakerQuestion(models.Model):
     )
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
 
+    @property
+    def answer(self):
+        return self.question.display_answer.text
+
     def __str__(self):
-        return f"Tiebreker Question for game {self.game}"
+        return f"Tiebreaker Question for game {self.game}"
 
     def to_json(self):
         question_data = self.question.to_json()

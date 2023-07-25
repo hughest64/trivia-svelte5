@@ -60,36 +60,40 @@ class LeaderboardProcessor:
 
         lbe.total_points = points + lbe.points_adjustment
 
-    # TODO: the tiebreaker bit needs work (do we reset it for example?)
     def _set_leaderboard_rank(self, leaderboard_entries):
         self._check_order()
         pts_vals = sorted(
             [lbe.total_points for lbe in leaderboard_entries],
             reverse=True,
         )
-        tb_index = 0
+        # trank the points and rank of ties like - {pts: index + 1}
+        ties = {}
+        seen = set()
+        for i, pts in enumerate(pts_vals, start=1):
+            if pts not in seen:
+                ties[pts] = i
+            seen.add(pts)
+
         for lbe in leaderboard_entries:
             # don't assign rank for 0 points
             if lbe.total_points == 0:
                 lbe.rank = None
                 continue
-            rank = pts_vals.index(lbe.total_points) + 1
-            if lbe.tiebreaker_rank is not None:
-                rank += tb_index
-                tb_index += 1
-            else:
-                tb_index = 0
-            lbe.rank = rank
 
-    def handle_tiebreaker(self):
-        return
+            if lbe.tiebreaker_rank is not None:
+                rank = lbe.tiebreaker_rank
+            else:
+                rank = pts_vals.index(lbe.total_points) + 1
+
+            lbe.rank = rank
+            lbe.tied_for_rank = ties.get(lbe.total_points)
 
     def rank_host_leaderboard(self, entries):
         """Apply new rankings to leaderboard entries"""
         self.processing = True
 
         self._set_leaderboard_rank(entries)
-        LeaderboardEntry.objects.bulk_update(entries, fields=["rank"])
+        LeaderboardEntry.objects.bulk_update(entries, fields=["rank", "tied_for_rank"])
 
         self.processing = False
         return queryset_to_json(entries.order_by("rank", "pk"))
@@ -118,7 +122,13 @@ class LeaderboardProcessor:
                 self._set_leaderboard_rank(entries)
                 LeaderboardEntry.objects.bulk_update(
                     entries,
-                    ["total_points", "rank", "leaderboard", "megaround_applied"],
+                    [
+                        "total_points",
+                        "rank",
+                        "tied_for_rank",
+                        "leaderboard",
+                        "megaround_applied",
+                    ],
                 )
 
             logger.info(

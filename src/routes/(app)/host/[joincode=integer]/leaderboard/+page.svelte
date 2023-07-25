@@ -68,7 +68,13 @@
 
         <ul id="host-leaderboard-view" class="leaderboard-rankings">
             {#each $leaderboard.host_leaderboard_entries || [] as entry}
+                <!-- TODO: this probably better served as a helper function -->
+                <!-- {@const nextEntry = entries[i + 1]} -->
                 <Entry {entry} {lbView} />
+                <!-- {#if entry.tied_for_rank && entry.tied_for_rank < nextEntry?.tied_for_rank}
+                        add an anchor as a btn
+                    {/if}
+                 -->
             {/each}
         </ul>
     {/if}

@@ -528,3 +528,32 @@ class FinishGameview(APIView):
         SendEventMessage(joincode, {"msg_type": "finish_game_popup", "message": ""})
 
         return Response({"success": True})
+
+
+class ResolveTiebreakerView(APIView):
+    authentication_classes = [JwtAuthentication]
+    permission_classes = [IsAdminUser]
+
+    @method_decorator(csrf_protect)
+    def post(self, request, joincode):
+        """
+        request.data = {
+            tied_for_rank: 1,
+            question_id: 45467,
+            team_data: {
+                team_id: 1234,
+                answer: 673456
+            }
+        }
+        """
+        # get the event
+        # get the tb question
+        # get the lb entries
+        # create (and grade) tb responese for each team
+        # - grade is the difference between their answer and the actual answer
+        # sort them by (absolute?) grade
+        # set lb rank (and rank) on each entry based on index + for_rank
+        # host socket message w/ updated lb entries (might need a new msg_type to handle selective updates)
+        # send some data back the client
+
+        return Response({"success": True})
