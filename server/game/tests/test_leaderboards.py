@@ -72,5 +72,10 @@ class LeaderboardSetup(TestCase):
             self.assertEqual(e.total_points, public_entry.total_points)
             self.assertEqual(e.tiebreaker_rank, public_entry.tiebreaker_rank)
 
+    # TODO
+    # def test_points_adjustment(self):
+    #     """test points adjustment (pts and resons) as well as rerank capabilities through the new view"""
+    #     return
+
     # this is probably worthy of a separate class as there are many scenarios
     # def test_tiebreakers(self):
