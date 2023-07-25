@@ -1,6 +1,7 @@
 import { env } from '$env/dynamic/public';
 import { fail } from '@sveltejs/kit';
 import type { Action } from './$types';
+import { PUBLIC_API_HOST } from '$env/static/public';
 
 const updateleaderboard: Action = async ({ fetch, params }) => {
     const publicApiHost = env.PUBLIC_API_HOST;
@@ -43,4 +44,34 @@ const finishgame: Action = async ({ fetch, params }) => {
     return { success: true };
 };
 
-export const actions = { updateleaderboard, revealanswers, finishgame };
+const updateteamname: Action = async ({ request, fetch, params }) => {
+    const data = Object.fromEntries(await request.formData());
+
+    const response = await fetch(`${PUBLIC_API_HOST}/team/updateteamname`, {
+        method: 'post',
+        body: JSON.stringify({ ...data, joincode: params.joincode })
+    });
+
+    if (!response.ok) {
+        const respJson = await response.json();
+        return fail(response.status, { error: respJson.detail });
+    }
+    return { success: true };
+};
+
+const updatepointsadjustment: Action = async ({ request, fetch, params }) => {
+    const data = Object.fromEntries(await request.formData());
+
+    const response = await fetch(`${PUBLIC_API_HOST}/host/${params.joincode}/pointsadjustment`, {
+        method: 'post',
+        body: JSON.stringify(data)
+    });
+
+    if (!response.ok) {
+        const respJson = await response.json();
+        return fail(response.status, { error: respJson.detail });
+    }
+    return { success: true };
+};
+
+export const actions = { updateleaderboard, revealanswers, finishgame, updateteamname, updatepointsadjustment };

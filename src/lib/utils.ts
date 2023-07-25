@@ -10,8 +10,11 @@ import type {
     GameQuestion,
     GameRound,
     JwtPayload,
+    Response,
+    RoundState,
     StoreTypes,
-    UserTeam
+    UserTeam,
+    ResponseMeta
 } from './types';
 
 /**
@@ -105,6 +108,38 @@ export const setEventCookie = (data: ActiveEventData, joincode: string) => {
     } catch (e) {
         console.error('could not set event cookie', e);
     }
+};
+
+/**
+ * filter and back fill missing responses based on round data
+ */
+export const respsByround = (resps: Response[], rounds: GameRound[], roundStates: RoundState[]) => {
+    const roundResps: Record<string, ResponseMeta[]> = {};
+
+    rounds.forEach((rd) => {
+        const rdNum = rd.round_number;
+        const rdState = roundStates.find((rs) => rs.round_number === rdNum);
+
+        const rdResps = resps.filter((r) => r.round_number === rdNum) || [];
+        for (let i = 1; i < rd.question_count + 1; i++) {
+            const existingResp = rdResps.find((r) => r.question_number === i);
+
+            let pts: string | number = '-';
+            if (rdState?.scored && existingResp) {
+                pts = String(existingResp.points_awarded);
+            }
+
+            const resp = {
+                key: `${rdNum}.${i}`,
+                recorded_answer: existingResp?.recorded_answer || '-',
+                points_awarded: pts
+            };
+
+            rdNum in roundResps ? roundResps[rdNum].push(resp) : (roundResps[rdNum] = [resp]);
+        }
+    });
+
+    return Object.values(roundResps);
 };
 
 /**

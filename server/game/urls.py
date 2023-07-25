@@ -15,6 +15,11 @@ urlpatterns = [
     path("", redirect_to_admin, name="redirect_to_admin"),
     # host endpoints
     re_path(
+        r"^host/(?P<joincode>\d+)/leaderboard/responses/(?P<team_id>\d+)/?$",
+        host.EventTeamResponsesView.as_view(),
+        name="team_responses",
+    ),
+    re_path(
         r"^host/(?P<joincode>\d+)/lock/?$",
         host.RoundLockView.as_view(),
         name="round_lock",
@@ -23,6 +28,11 @@ urlpatterns = [
         r"^host/(?P<joincode>\d+)/finishgame/?$",
         host.FinishGameview.as_view(),
         name="finish_game",
+    ),
+    re_path(
+        r"^host/(?P<joincode>\d+)/pointsadjustment/?$",
+        host.UpdateAdjustmentPointsView.as_view(),
+        name="update_adjustment_points",
     ),
     re_path(
         r"^host/(?P<joincode>\d+)/score(/(?P<round_number>\d+))?/?$",
@@ -66,6 +76,11 @@ urlpatterns = [
     re_path(r"^team/join/?$", team.TeamJoinView.as_view(), name="team_join"),
     re_path(r"^team/select/?$", team.TeamSelectView.as_view(), name="team_select"),
     re_path(r"^team/create/?$", team.TeamCreateView.as_view(), name="team_create"),
+    re_path(
+        r"^team/updateteamname/?$",
+        team.TeamUpdateName.as_view(),
+        name="teamname_update",
+    ),
     re_path(r"^team/?$", team.TeamView.as_view(), name="team"),
     re_path(r"^airtable-import/?$", airtable.airtable_import, name="airtable_import"),
 ]

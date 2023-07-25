@@ -1,7 +1,6 @@
-from datetime import timedelta
 from typing import List
 
-from django.db.models import QuerySet, Q
+from django.db.models import QuerySet
 from django.utils import timezone
 
 from django.utils.decorators import method_decorator
@@ -33,10 +32,12 @@ from game.models import (
     LeaderboardEntry,
     LEADERBOARD_TYPE_PUBLIC,
     LEADERBOARD_TYPE_HOST,
+    PTS_ADJUSTMENT_OPTIONS_LIST,
 )
 from game.models.utils import queryset_to_json
 from game.processors import LeaderboardProcessor
 from game.utils.socket_classes import SendEventMessage, SendHostMessage
+from game.views.validation.exceptions import LeaderboardEntryNotFound
 
 
 class EventHostView(APIView):
@@ -69,6 +70,7 @@ class EventHostView(APIView):
             {
                 **event.to_json(),
                 "user_data": user_data,
+                "points_adjustment_reasons": PTS_ADJUSTMENT_OPTIONS_LIST,
                 "leaderboard_data": {
                     "public_leaderboard_entries": queryset_to_json(public_lb_entries),
                     "host_leaderboard_entries": queryset_to_json(host_lb_entries),
@@ -78,6 +80,17 @@ class EventHostView(APIView):
                 },
             }
         )
+
+
+class EventTeamResponsesView(APIView):
+    authentication_classes = [JwtAuthentication]
+    permission_classes = [IsAdminUser]
+
+    def get(self, request, joincode, team_id):
+        event = get_event_or_404(joincode=joincode)
+        resps = QuestionResponse.objects.filter(event=event, team_id=team_id)
+
+        return Response({"responses": queryset_to_json(resps)})
 
 
 class EventSetupView(APIView):
@@ -362,6 +375,7 @@ class ScoreRoundView(APIView):
         points_awarded = data.as_float("points_awarded")
         update_type = data.as_string("update_type")
 
+        # TODO: should we use transaction.atomic and/or select_for_update here?
         resps = QuestionResponse.objects.filter(id__in=id_list)
         resps.update(points_awarded=points_awarded, funny=funny)
 
@@ -392,6 +406,63 @@ class ScoreRoundView(APIView):
                 },
             },
         )
+
+        return Response({"success": True})
+
+
+class UpdateAdjustmentPointsView(APIView):
+    authentication_classes = [JwtAuthentication]
+    permission_classes = [IsAdminUser]
+
+    @method_decorator(csrf_protect)
+    def post(self, request, joincode):
+        data = DataCleaner(request.data)
+        points = data.as_float("adjustment_points")
+        adjustment_reason = data.as_int("adjustment_reason")
+        team_id = data.as_int("team_id")
+
+        entries = LeaderboardEntry.objects.filter(
+            event__joincode=joincode, leaderboard_type=LEADERBOARD_TYPE_HOST
+        )
+
+        try:
+            lbe = entries.get(team_id=team_id)
+
+        except LeaderboardEntry.DoesNotExist:
+            raise LeaderboardEntryNotFound
+
+        if adjustment_reason is not None:
+            lbe.points_adjustment_reason = adjustment_reason
+            lbe.save()
+
+        leaderboard_data = None
+        if points is not None:
+            lbe.points_adjustment += points
+            lbe.total_points += points
+            lbe.save()
+            leaderboard_data = LeaderboardProcessor().rank_host_leaderboard(entries)
+
+        lbe.leaderboard.synced = False
+        lbe.leaderboard.save()
+
+        message = {
+            "msg_type": "leaderboard_update_host_entry",
+            "message": {
+                "entry": lbe.to_json(),
+                "synced": False,
+            },
+        }
+
+        if leaderboard_data is not None:
+            message = {
+                "msg_type": "leaderboard_update",
+                "message": {
+                    "host_leaderboard_entries": leaderboard_data,
+                    "synced": False,
+                },
+            }
+
+        SendHostMessage(joincode=joincode, message=message)
 
         return Response({"success": True})
 

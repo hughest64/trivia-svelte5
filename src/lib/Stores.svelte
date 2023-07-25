@@ -39,6 +39,7 @@
 
     $: createStore('roundStates', writable(data?.round_states || []));
     $: createStore('questionStates', writable(data?.question_states || []));
+    // responses grouped for scoring
     $: createStore('hostResponseData', writable(data?.host_response_data || []));
 
     $: responses = createStore('responseData', writable(data?.response_data || []));

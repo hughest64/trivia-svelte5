@@ -2,7 +2,14 @@ import { test, expect } from './authConfigs.js';
 import { createApiContext, checkLbEntry } from './utils.js';
 import type { APIRequestContext } from '@playwright/test';
 
-// TODO: factor in megaround scores at the end of the game
+/**
+ * TODO:
+ * factor in megaround scores at the end of the game
+ * additional tests:
+ * - name changing (inlcuding player lb)
+ * - adjustment points (check host then player before/after update)
+ * - adustment reason
+ */
 
 const joincode = '9900';
 const eventUrl = `/game/${joincode}`;
@@ -36,19 +43,19 @@ test('player one leaderboard updates when another team joins', async ({ p1, p3 }
     await expect(p1.page).toHaveURL(leaderboardUrl);
 
     // expect player 1's team to be on the leaderboard, but not p3
-    await expect(p1.page.locator('h3.team-name', { hasText: /hello world/i })).toBeVisible();
-    await expect(p1.page.locator('h3.team-name', { hasText: /for all the marbles/i })).not.toBeVisible();
+    await expect(p1.page.locator('h3.team-name-display', { hasText: /hello world/i })).toBeVisible();
+    await expect(p1.page.locator('h3.team-name-display', { hasText: /for all the marbles/i })).not.toBeVisible();
 
     // p3 joins the game
     await p3.joinGame(joincode);
     await p3.page.goto(leaderboardUrl);
 
     // player 1 should now see player 3's team
-    await expect(p1.page.locator('h3.team-name', { hasText: /for all the marbles/i })).toBeVisible();
+    await expect(p1.page.locator('h3.team-name-display', { hasText: /for all the marbles/i })).toBeVisible();
 
     // player 3 should see both teams
-    await expect(p3.page.locator('h3.team-name', { hasText: /hello world/i })).toBeVisible();
-    await expect(p3.page.locator('h3.team-name', { hasText: /for all the marbles/i })).toBeVisible();
+    await expect(p3.page.locator('h3.team-name-display', { hasText: /hello world/i })).toBeVisible();
+    await expect(p3.page.locator('h3.team-name-display', { hasText: /for all the marbles/i })).toBeVisible();
 });
 
 test('host leaderboard updates on round lock, public updates on btn click', async ({ p1, p3, host }) => {

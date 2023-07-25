@@ -25,7 +25,7 @@ class ProcedureError(Exception):
 
 
 class LeaderboardProcessor:
-    def __init__(self, event: TriviaEvent):
+    def __init__(self, event: TriviaEvent = None):
         self.event = event
         self.processing = False
 
@@ -48,7 +48,6 @@ class LeaderboardProcessor:
             game_question__round_number__lte=through_round,
         )
 
-        # TODO: factor in host manual points adjustments
         if lbe.megaround_applied and lbe.selected_megaround is not None:
             points = 0
             for resp in resps:
@@ -59,7 +58,7 @@ class LeaderboardProcessor:
         else:
             points = sum([resp.points_awarded for resp in resps])
 
-        lbe.total_points = points
+        lbe.total_points = points + lbe.points_adjustment
 
     # TODO: the tiebreaker bit needs work (do we reset it for example?)
     def _set_leaderboard_rank(self, leaderboard_entries):
@@ -85,7 +84,16 @@ class LeaderboardProcessor:
     def handle_tiebreaker(self):
         return
 
-    # TODO: add apply_megaround arg - or should we implicitly check that via the event and through round?
+    def rank_host_leaderboard(self, entries):
+        """Apply new rankings to leaderboard entries"""
+        self.processing = True
+
+        self._set_leaderboard_rank(entries)
+        LeaderboardEntry.objects.bulk_update(entries, fields=["rank"])
+
+        self.processing = False
+        return queryset_to_json(entries.order_by("rank", "pk"))
+
     def update_host_leaderboard(self, through_round):
         self._validate_round_number(through_round)
         self.processing = True

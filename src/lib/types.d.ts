@@ -40,8 +40,11 @@ export interface LeaderboardEntry {
     team_id: number;
     team_name: string;
     rank?: number;
+    team_password?: string;
     megaround?: number;
     total_points: number;
+    points_adjustment_value: number;
+    points_adjustment_reason_id: number;
 }
 
 export interface HostMegaRoundInstance {
@@ -101,6 +104,7 @@ export interface GameRound {
     title: string;
     round_description: string;
     round_number: number;
+    question_count: number;
 }
 
 export interface RoundState {
@@ -145,6 +149,12 @@ export interface HostResponse extends Omit<Response, ['id', 'locked']> {
     fuzz_ratio?: number;
 }
 
+export interface ResponseMeta {
+    key: string;
+    recorded_answer: string;
+    points_awarded: string | number;
+}
+
 export interface ResponseSummaryValues {
     correct: number;
     half: number;
@@ -168,6 +178,11 @@ export interface ActiveEventData {
     activeRoundNumber: number;
     activeQuestionNumber: number;
     activeQuestionKey: string;
+}
+
+export interface PointsAdjustmentReson {
+    id: string | number;
+    text: string;
 }
 
 export interface SocketMessage {

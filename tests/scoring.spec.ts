@@ -91,13 +91,13 @@ test('scoring updates properly update the leaderboards', async ({ host }) => {
     const hostlb = host.page.locator('ul#host-leaderboard-view').locator('li.leaderboard-entry-container');
     await expect(hostlb).toHaveCount(2);
     const hostEntry1 = hostlb.nth(0);
-    await expect(hostEntry1.locator('h3.team-name')).toHaveText(/for all the marbles/i);
-    await expect(hostEntry1.locator('h3.rank')).toHaveText('1');
-    await expect(hostEntry1.locator('h3.points')).toHaveText('2');
+    await expect(hostEntry1.locator('h3.team-name-display')).toHaveText(/for all the marbles/i);
+    await expect(hostEntry1.locator('h3.rank-display')).toHaveText('1');
+    await expect(hostEntry1.locator('h3.points-display')).toHaveText('2');
     const hostEntry2 = hostlb.nth(1);
-    await expect(hostEntry2.locator('h3.team-name')).toHaveText(/hello world/i);
-    await expect(hostEntry2.locator('h3.rank')).toHaveText('2');
-    await expect(hostEntry2.locator('h3.points')).toHaveText('1');
+    await expect(hostEntry2.locator('h3.team-name-display')).toHaveText(/hello world/i);
+    await expect(hostEntry2.locator('h3.rank-display')).toHaveText('2');
+    await expect(hostEntry2.locator('h3.points-display')).toHaveText('1');
 });
 
 // TODO: this should really be in leaderboard.spec

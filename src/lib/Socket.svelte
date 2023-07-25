@@ -14,7 +14,8 @@
         RoundState,
         SocketMessage,
         HostResponse,
-        HostMegaRoundInstance
+        HostMegaRoundInstance,
+        UserTeam
     } from './types';
 
     const path = $page.url.pathname;
@@ -43,6 +44,7 @@
     const hostResponseStore = getStore('hostResponseData');
     const responseSummaryStore = getStore('responseSummary');
     const selectedMegaroundStore = getStore('selectedMegaRound');
+    const userStore = getStore('userData');
 
     const handlers: MessageHandler = {
         connected: () => console.log('connected!'),
@@ -68,6 +70,19 @@
             leaderboardStore.update((lb) => {
                 const newLb = { ...lb };
                 Object.assign(newLb, leaderboard);
+
+                return newLb;
+            });
+        },
+        leaderboard_update_host_entry: (msg: Record<string, LeaderboardEntry | string>) => {
+            const updatedEntry = msg.entry as LeaderboardEntry;
+            leaderboardStore.update((lb) => {
+                const newLb = { ...lb };
+                const entries = newLb.host_leaderboard_entries || [];
+                const indexToUpdate = entries.findIndex((entry) => entry.team_id === updatedEntry.team_id);
+                if (indexToUpdate !== undefined && indexToUpdate > -1) {
+                    entries[indexToUpdate] = updatedEntry;
+                }
 
                 return newLb;
             });
@@ -233,6 +248,34 @@
                 indexToUpdate > -1 ? (megaroundList[indexToUpdate] = msg) : megaroundList?.push(msg);
                 newLb.host_megaround_list = megaroundList;
                 return newLb;
+            });
+        },
+        teamname_update: (msg: UserTeam) => {
+            leaderboardStore.update((lb) => {
+                const newLb = { ...lb };
+                const { public_leaderboard_entries, host_leaderboard_entries } = newLb;
+                const pubTeamIndex = public_leaderboard_entries.findIndex((entry) => Number(entry.team_id) === msg.id);
+                if (pubTeamIndex > -1) {
+                    public_leaderboard_entries[pubTeamIndex].team_name = msg.name;
+                }
+
+                const hostTeamIndex = host_leaderboard_entries?.findIndex((entry) => Number(entry.team_id) === msg.id);
+                if (hostTeamIndex !== undefined && hostTeamIndex > -1) {
+                    const entryToUpdate = (host_leaderboard_entries || [])[hostTeamIndex];
+                    entryToUpdate.team_name = msg.name;
+                }
+
+                return newLb;
+            });
+            userStore.update((user) => {
+                const newUser = { ...user };
+                const { teams } = newUser;
+                const teamIndex = teams.findIndex((team) => team.id === msg.id);
+                if (teamIndex > -1) {
+                    teams[teamIndex].name = msg.name;
+                }
+
+                return newUser;
             });
         }
     };

@@ -15,6 +15,24 @@ LEADERBOARD_TYPE_OPTIONS = [
 ]
 LEADERBOARD_TYPE_DICT = dict(LEADERBOARD_TYPE_OPTIONS)
 
+PTS_ADJUSTMENT_BLANK = 0
+PTS_ADJUSTMENT_TEAM_LIMIT = 1
+PTS_ADJUSTMENT_TEAM_NAME = 2
+PTS_ADJUSTMENT_FUNNY_ANSWER = 3
+PTS_ADJUSTMENT_TEAM_SPIRIT = 4
+PTS_ADJUSTMENT_DISCRETIONARY = 5
+
+PTS_ADJUSTMENT_OPTIONS = [
+    (PTS_ADJUSTMENT_BLANK, "-----"),
+    (PTS_ADJUSTMENT_TEAM_LIMIT, "Team Limit Exceeded"),
+    (PTS_ADJUSTMENT_TEAM_NAME, "Best Team Name"),
+    (PTS_ADJUSTMENT_FUNNY_ANSWER, "Funny Answer"),
+    (PTS_ADJUSTMENT_TEAM_SPIRIT, "Team Spirit"),
+    (PTS_ADJUSTMENT_DISCRETIONARY, "Host Discretion"),
+]
+
+PTS_ADJUSTMENT_OPTIONS_LIST = [{"id": k, "text": v} for k, v in PTS_ADJUSTMENT_OPTIONS]
+
 
 class QuestionResponse(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
@@ -126,10 +144,12 @@ class LeaderboardEntry(models.Model):
     total_points = models.FloatField(default=0)
     selected_megaround = models.IntegerField(blank=True, null=True)
     megaround_applied = models.BooleanField(default=False)
-
-    # Other fields:
-    # points_adjustment
-    # points_adjustment_reason
+    points_adjustment = models.FloatField(default=0)
+    points_adjustment_reason = models.IntegerField(
+        default=0,
+        choices=PTS_ADJUSTMENT_OPTIONS,
+        validators=[MinValueValidator(0), MaxValueValidator(5)],
+    )
 
     class Meta:
         unique_together = ("team", "event", "leaderboard_type")
@@ -166,9 +186,12 @@ class LeaderboardEntry(models.Model):
         return {
             "team_id": self.team.id,
             "team_name": self.team.name,
+            "team_password": self.team.password,
             "rank": self.rank or "-",
             "total_points": self.total_points,
             "megaround": self.selected_megaround,
+            "points_adjustment_value": self.points_adjustment,
+            "points_adjustment_reason_id": self.points_adjustment_reason,
         }
 
 

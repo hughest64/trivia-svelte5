@@ -30,6 +30,12 @@ class TeamRequired(APIException):
     default_code = "team_required"
 
 
+class LeaderboardEntryNotFound(APIException):
+    status_code = HTTP_400_BAD_REQUEST
+    default_detail = "A leaderboard entry for this team was not found"
+    default_code = "entry_not_foud"
+
+
 class PlayerLimitExceeded(APIException):
     status_code = HTTP_403_FORBIDDEN
     default_detail = "Somone from your team has already joined this event"
@@ -72,7 +78,15 @@ def event_exception_handler(exc, context):
 
         return response
 
-    if isinstance(exc, (DataValidationError, JoincodeError, TeamPasswordError)):
+    if isinstance(
+        exc,
+        (
+            DataValidationError,
+            JoincodeError,
+            TeamPasswordError,
+            LeaderboardEntryNotFound,
+        ),
+    ):
         return Response(data=exc.response, status=exc.status)
 
     return None

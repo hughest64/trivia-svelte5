@@ -157,6 +157,10 @@ class GameRound(models.Model):
         "Game", related_name="game_rounds", on_delete=models.CASCADE
     )
 
+    @property
+    def question_count(self):
+        return self.game.game_questions.filter(round_number=self.round_number).count()
+
     class Meta:
         ordering = ["game", "round_number"]
 
@@ -169,6 +173,7 @@ class GameRound(models.Model):
             "title": self.title,
             "round_description": self.round_description,
             "round_number": self.round_number,
+            "question_count": self.question_count,
         }
 
     def save(self, *args, **kwargs):

@@ -4,12 +4,13 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 
 from rest_framework.response import Response
-from rest_framework.status import HTTP_400_BAD_REQUEST
 from rest_framework.views import APIView
 
 from game.models import Team
+from game.utils.socket_classes import SendEventMessage
 from game.views.validation.exceptions import TeamNotFound
 from game.views.validation.data_cleaner import DataCleaner
+
 from user.authentication import JwtAuthentication
 from user.models import User
 
@@ -85,3 +86,29 @@ class TeamSelectView(APIView):
         user.save()
 
         return Response({"active_team_id": team_id})
+
+
+class TeamUpdateName(APIView):
+    authentication_classes = [JwtAuthentication]
+
+    @method_decorator(csrf_protect)
+    def post(self, request):
+        data = DataCleaner(request.data)
+        team_id = data.as_int("team_id")
+        team_name = data.as_string("team_name")
+        joincode = data.as_int("joincode")
+
+        try:
+            team = Team.objects.get(id=team_id)
+        except Team.DoesNotExist:
+            raise TeamNotFound
+
+        team.name = team_name
+        team.save()
+
+        SendEventMessage(
+            joincode=joincode,
+            message={"msg_type": "teamname_update", "message": team.to_json()},
+        )
+
+        return Response({"success": True})
