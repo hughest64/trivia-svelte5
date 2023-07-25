@@ -70,13 +70,13 @@
 <li class="leaderboard-entry-container">
     <div class="leaderboard-entry-meta">
         <button class="rank" class:collapsed class:expanded on:click={handleExpand}>
-            <h3>{entry.rank}</h3>
+            <h3 class="rank-display">{entry.rank}</h3>
         </button>
 
         <div class="team-name">
             {#if !expanded}
                 <button on:click={handleExpand}>
-                    <h3>{teamName}</h3>
+                    <h3 class="team-name-display">{teamName}</h3>
 
                     <!-- TODO: add condition for is second half-->
                     <!-- TODO: add summary text for players -->
@@ -108,7 +108,9 @@
             {/if}
         </div>
         <button class="grow filler-btn" on:click={handleExpand}>-</button>
-        <button class="points" on:click={handleExpand}><h3>{entry.total_points}</h3></button>
+        <button class="points" on:click={handleExpand}>
+            <h3 class="points-display">{entry.total_points}</h3>
+        </button>
     </div>
 
     {#if expanded}

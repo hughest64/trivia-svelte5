@@ -50,9 +50,9 @@ export interface LbEntryConfig {
 
 export const checkLbEntry = async (entry: Locator, config: LbEntryConfig) => {
     const { name, rank, points } = config;
-    await expect(entry.locator('h3.team-name')).toHaveText(name);
-    await expect(entry.locator('h3.rank')).toHaveText(rank);
-    await expect(entry.locator('h3.points')).toHaveText(points);
+    await expect(entry.locator('h3.team-name-display')).toHaveText(name);
+    await expect(entry.locator('h3.rank-display')).toHaveText(rank);
+    await expect(entry.locator('h3.points-display')).toHaveText(points);
 };
 
 export const createApiContext = async () => {
