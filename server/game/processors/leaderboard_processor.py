@@ -66,11 +66,11 @@ class LeaderboardProcessor:
             [lbe.total_points for lbe in leaderboard_entries],
             reverse=True,
         )
-        # trank the points and rank of ties like - {pts: index + 1}
+        # track the points and rank of ties like - {pts: index}
         ties = {}
         seen = set()
-        for i, pts in enumerate(pts_vals, start=1):
-            if pts not in seen:
+        for i, pts in enumerate(pts_vals):
+            if pts in seen and pts not in ties:
                 ties[pts] = i
             seen.add(pts)
 
@@ -78,6 +78,7 @@ class LeaderboardProcessor:
             # don't assign rank for 0 points
             if lbe.total_points == 0:
                 lbe.rank = None
+                lbe.tied_for_rank = None
                 continue
 
             if lbe.tiebreaker_rank is not None:
