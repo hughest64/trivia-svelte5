@@ -68,7 +68,8 @@ const updatepointsadjustment: Action = async ({ request, fetch, params }) => {
     });
 
     if (!response.ok) {
-        // parse the reason and return fail
+        const respJson = await response.json();
+        return fail(response.status, { error: respJson.detail });
     }
     return { success: true };
 };

@@ -1,5 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
+    import { deserialize } from '$app/forms';
     import type { LeaderboardEntry } from '$lib/types';
 
     export let entry: LeaderboardEntry;
@@ -7,8 +8,12 @@
     const adjustmentReasons = $page.data.points_adjustment_reasons || [];
 
     let adjustmentPoints = entry.points_adjustment_value;
+    let adjustmentReason = entry.points_adjustment_reason_id;
+
+    let error: string;
 
     const handleSetAdjustmentPoints = async (direction: 'up' | 'down') => {
+        error = '';
         const pts = direction === 'up' ? 0.5 : -0.5;
         adjustmentPoints += pts;
 
@@ -20,13 +25,16 @@
             method: 'post',
             body: formData
         });
-        if (!response.ok) {
-            // reset the points
-            // show an error msg
+
+        const result = deserialize(await response.text());
+        if (result.type === 'failure') {
+            error = result.data?.error as string;
+            adjustmentPoints = entry.points_adjustment_value;
         }
     };
 
     const handleSetAdjustmentReason = async (e: Event) => {
+        error = '';
         const target = e.target as HTMLSelectElement;
         const formData = new FormData();
         formData.set(target.name, target.value);
@@ -36,9 +44,10 @@
             method: 'post',
             body: formData
         });
-        if (!response.ok) {
-            // reset the selected value
-            // show an error msg
+        const result = deserialize(await response.text());
+        if (result.type === 'failure') {
+            adjustmentReason = entry.points_adjustment_reason_id;
+            error = result.data?.error as string;
         }
     };
 </script>
@@ -50,13 +59,17 @@
     <button class="plus-minus last" on:click={() => handleSetAdjustmentPoints('up')}>+</button>
 </div>
 
+{#if error}
+    <p class="error" style:align-self="center">{error}</p>
+{/if}
+
 <!-- TODO: if adjustmentPoints !== 0 -->
 <div class="points-adjustment-container adjustment-reason">
     <p class="grow">Reason:</p>
     <select
         name="adjustment_reason"
         id="adjustment_reason"
-        bind:value={entry.points_adjustment_reason_id}
+        bind:value={adjustmentReason}
         on:input={handleSetAdjustmentReason}
     >
         {#each adjustmentReasons as reason}
@@ -94,5 +107,10 @@
         border-radius: 10px;
         margin: 0 1.75rem;
         padding: 0 0.25rem;
+    }
+    .error {
+        width: 100%;
+        text-align: center;
+        color: var(--color-primary);
     }
 </style>

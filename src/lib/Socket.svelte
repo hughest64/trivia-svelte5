@@ -17,7 +17,6 @@
         HostMegaRoundInstance,
         UserTeam
     } from './types';
-    import LeaderboardIcon from './footer/icons/LeaderboardIcon.svelte';
 
     const path = $page.url.pathname;
 
