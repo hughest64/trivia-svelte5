@@ -26,6 +26,7 @@ from game.models import (
     Location,
     EventRoundState,
     EventQuestionState,
+    TiebreakerQuestion,
     TriviaEvent,
     QuestionResponse,
     Leaderboard,
@@ -33,6 +34,7 @@ from game.models import (
     LEADERBOARD_TYPE_PUBLIC,
     LEADERBOARD_TYPE_HOST,
     PTS_ADJUSTMENT_OPTIONS_LIST,
+    QUESTION_TYPE_TIE_BREAKER,
 )
 from game.models.utils import queryset_to_json
 from game.processors import LeaderboardProcessor
@@ -530,9 +532,18 @@ class FinishGameview(APIView):
         return Response({"success": True})
 
 
-class ResolveTiebreakerView(APIView):
+class TiebreakerView(APIView):
     authentication_classes = [JwtAuthentication]
     permission_classes = [IsAdminUser]
+
+    def get(self, request, joincode):
+        # get the tiebreaker questions for the event
+        event = get_event_or_404(joincode=joincode)
+        questions = GameQuestion.objects.filter(
+            game=event.game, question__question_type=QUESTION_TYPE_TIE_BREAKER
+        )
+        # get any existing tiebreaker responses
+        return Response({"tiebreaker_questions": queryset_to_json(questions)})
 
     @method_decorator(csrf_protect)
     def post(self, request, joincode):

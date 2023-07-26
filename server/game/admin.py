@@ -3,6 +3,15 @@ from django.contrib import admin
 from .models import *
 
 
+class LeaderboardEntryAdmin(admin.ModelAdmin):
+    list_filter = ["leaderboard_type"]
+
+
+class QuestionAdmin(admin.ModelAdmin):
+    list_display = ["__str__", "question_type"]
+    list_filter = ["question_type"]
+
+
 class GameAdmin(admin.ModelAdmin):
     search_fields = ("block_code",)
     list_display = ("title", "active_through")
@@ -10,7 +19,7 @@ class GameAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Team)
-admin.site.register(Question)
+admin.site.register(Question, QuestionAdmin)
 admin.site.register(QuestionAnswer)
 admin.site.register(GameQuestion)
 admin.site.register(TiebreakerQuestion)
@@ -22,4 +31,4 @@ admin.site.register(EventRoundState)
 admin.site.register(Location)
 admin.site.register(QuestionResponse)
 admin.site.register(Leaderboard)
-admin.site.register(LeaderboardEntry)
+admin.site.register(LeaderboardEntry, LeaderboardEntryAdmin)

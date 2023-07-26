@@ -1,9 +1,15 @@
 <script lang="ts">
-    import type { LeaderboardEntry } from '$lib/types';
+    import { slide } from 'svelte/transition';
+    import { page } from '$app/stores';
     import { getStore } from '$lib/utils';
+    import type { LeaderboardEntry } from '$lib/types';
 
     const leaderboardEntries = getStore('leaderboard');
     const hostEntries = $leaderboardEntries?.host_leaderboard_entries || [];
+
+    const questions = $page.data.tiebreaker_questions || [];
+    const selectedQuestion = questions[0];
+    let answerShown = true;
 
     const placeMap: Record<string, string> = {
         '1': 'st',
@@ -29,14 +35,24 @@
     $: groupedEntries = groupEntries(hostEntries);
 </script>
 
+<!-- TODO: needs to be selectable (slider?) -->
+<div class="tiebreaker-question-container flex-column">
+    <p>{selectedQuestion.question_text}</p>
+    <!-- TODO: add questions notes in here somewhere -->
+    <button class="button button-secondary" on:click={() => (answerShown = !answerShown)}>Show Answer</button>
+    {#if answerShown}
+        <p transition:slide>{selectedQuestion.display_answer}</p>
+    {/if}
+</div>
+
 <ul class="tiebreaker-list">
     {#each Object.entries(groupedEntries) as [forRank, group]}
         <li>
             <h3 class="spacer">For {forRank}{placeMap[forRank] || 'th'} Place</h3>
             <ul>
                 {#each group as entry}
-                    <li class="tiebreaker-group-item">
-                        <h3 class="spacer">{entry.team_name}</h3>
+                    <li class="input-container">
+                        <h3>{entry.team_name}</h3>
                         <input class="tiebreaker-answer" type="text" placeholder="Enter Answer" />
                     </li>
                 {/each}
@@ -53,21 +69,5 @@
     }
     .spacer {
         margin: 0.75rem 0;
-    }
-    .tiebreaker-group-item {
-        display: flex;
-        flex-direction: column;
-        .tiebreaker-answer {
-            width: 20rem;
-            max-width: 100%;
-            height: 3rem;
-            padding: 1rem;
-            font-size: 1rem;
-            font-weight: bold;
-            border-radius: 5px;
-            border: none;
-            background: var(--color-question-container-bg);
-            align-self: center;
-        }
     }
 </style>

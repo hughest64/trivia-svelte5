@@ -25,6 +25,11 @@ urlpatterns = [
         name="round_lock",
     ),
     re_path(
+        r"^host/(?P<joincode>\d+)/tiebreaker/?$",
+        host.TiebreakerView.as_view(),
+        name="round_lock",
+    ),
+    re_path(
         r"^host/(?P<joincode>\d+)/finishgame/?$",
         host.FinishGameview.as_view(),
         name="finish_game",
