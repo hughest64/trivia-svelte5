@@ -3,13 +3,15 @@
     import { page } from '$app/stores';
     import { getStore } from '$lib/utils';
     import type { LeaderboardEntry } from '$lib/types';
+    import { enhance } from '$app/forms';
 
     const leaderboardEntries = getStore('leaderboard');
     const hostEntries = $leaderboardEntries?.host_leaderboard_entries || [];
 
     const questions = $page.data.tiebreaker_questions || [];
     const selectedQuestion = questions[0];
-    let answerShown = true;
+    let answerShown = false;
+    $: answerButtonTxt = answerShown ? 'Hide Answer' : 'Show Answer';
 
     const placeMap: Record<string, string> = {
         '1': 'st',
@@ -33,13 +35,25 @@
         return groupedEntries;
     };
     $: groupedEntries = groupEntries(hostEntries);
+
+    const handleSubmit = async (e: Event) => {
+        const target = e.target as HTMLFormElement;
+        const data = new FormData(target);
+
+        const response = await fetch(target.action, {
+            method: target.method,
+            body: data
+        });
+    };
 </script>
 
 <!-- TODO: needs to be selectable (slider?) -->
 <div class="tiebreaker-question-container flex-column">
     <p>{selectedQuestion.question_text}</p>
     <!-- TODO: add questions notes in here somewhere -->
-    <button class="button button-secondary" on:click={() => (answerShown = !answerShown)}>Show Answer</button>
+    <button class="button button-secondary" on:click={() => (answerShown = !answerShown)}>
+        {answerButtonTxt}
+    </button>
     {#if answerShown}
         <p transition:slide>{selectedQuestion.display_answer}</p>
     {/if}
@@ -48,20 +62,33 @@
 <ul class="tiebreaker-list">
     {#each Object.entries(groupedEntries) as [forRank, group]}
         <li>
-            <h3 class="spacer">For {forRank}{placeMap[forRank] || 'th'} Place</h3>
-            <ul>
-                {#each group as entry}
-                    <li class="input-container">
-                        <h3>{entry.team_name}</h3>
-                        <input class="tiebreaker-answer" type="text" placeholder="Enter Answer" />
-                    </li>
-                {/each}
-            </ul>
+            <form action="?/submit_tiebreakers" method="post" on:submit|preventDefault={handleSubmit}>
+                <h3 class="spacer">For {forRank}{placeMap[forRank] || 'th'} Place</h3>
+                <input type="hidden" name="tied_for_rank" value={forRank} />
+                <input type="hidden" name="question_id" value={selectedQuestion.id} />
+                <ul>
+                    {#each group as entry}
+                        <li class="input-container">
+                            <h3>{entry.team_name}</h3>
+                            <input
+                                name="team.{entry.team_id}"
+                                class="tiebreaker-answer"
+                                type="text"
+                                placeholder="Enter Answer"
+                            />
+                        </li>
+                    {/each}
+                </ul>
+                <button type="submit" class="button button-primary">Apply Tiebreaker</button>
+            </form>
         </li>
     {/each}
 </ul>
 
 <style lang="scss">
+    .tiebreaker-question-container {
+        max-width: calc(100% - 2rem);
+    }
     .tiebreaker-list {
         width: calc(100% - 2rem);
         max-width: var(--max-element-width);

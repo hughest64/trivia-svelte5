@@ -120,6 +120,7 @@ class GameQuestion(models.Model):
         super().save(*args, **kwargs)
 
 
+# TODO: probably remove? it's just as easy to access tiebreaker type questions for any given game
 class TiebreakerQuestion(models.Model):
     """Like a GameQuestion, but for tiebreaker questions only with no round or question number."""
 

@@ -537,6 +537,9 @@ class TiebreakerView(APIView):
     permission_classes = [IsAdminUser]
 
     def get(self, request, joincode):
+        data = request.data
+        print(data)
+
         # get the tiebreaker questions for the event
         event = get_event_or_404(joincode=joincode)
         questions = GameQuestion.objects.filter(
@@ -551,12 +554,15 @@ class TiebreakerView(APIView):
         request.data = {
             tied_for_rank: 1,
             question_id: 45467,
-            team_data: {
-                team_id: 1234,
-                answer: 673456
-            }
+            team_data: [
+                {
+                    team_id: 1234,
+                    answer: 673456
+                }
+            ]
         }
         """
+        print(request.data)
         # get the event
         # get the tb question
         # get the lb entries

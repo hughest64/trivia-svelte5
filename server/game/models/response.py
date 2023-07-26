@@ -202,6 +202,7 @@ class LeaderboardEntry(models.Model):
         }
 
 
+# TODO: link to a GameQuestion, or Question? (Remove TieBreakerQuestion)
 class TiebreakerResponse(models.Model):
     tiebreaker_question = models.ForeignKey(
         "TiebreakerQuestion", on_delete=models.CASCADE
