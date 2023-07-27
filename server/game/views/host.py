@@ -538,15 +538,11 @@ class TiebreakerView(APIView):
     permission_classes = [IsAdminUser]
 
     def get(self, request, joincode):
-        data = request.data
-        print(data)
-
-        # get the tiebreaker questions for the event
         event = get_event_or_404(joincode=joincode)
         questions = GameQuestion.objects.filter(
             game=event.game, question__question_type=QUESTION_TYPE_TIE_BREAKER
         )
-        # get any existing tiebreaker responses
+        # TODO get any existing tiebreaker responses
         return Response({"tiebreaker_questions": queryset_to_json(questions)})
 
     @method_decorator(csrf_protect)
@@ -555,8 +551,6 @@ class TiebreakerView(APIView):
         tied_for_rank = data.as_int("tied_for_rank")
         question_id = data.as_int("question_id")
         team_data = request.data.get("team_data", [])
-
-        # return Response({"success": True})
 
         try:
             question = GameQuestion.objects.get(id=question_id)
@@ -587,13 +581,9 @@ class TiebreakerView(APIView):
                 defaults={"recorded_answer": answer},
             )
             question_responses.append(question_response)
-            print(question_response.grade)
 
-        # grade is abs(actual_answer = resp.answer)
-        sorted_resps = sorted(
-            question_responses,
-            key=lambda resp: resp.grade,
-        )
+        # grade is abs(actual_answer - resp.answer)
+        sorted_resps = sorted(question_responses, key=lambda resp: resp.grade)
         sorted_teams = [resp.team.id for resp in sorted_resps] + skipped_teams
 
         # set lb rank (and rank) on each entry based on index + for_rank
@@ -618,6 +608,6 @@ class TiebreakerView(APIView):
         }
 
         SendHostMessage(joincode=joincode, message=message)
-        # send some data back the client
 
+        # TODO send some data back the client
         return Response({"success": True})

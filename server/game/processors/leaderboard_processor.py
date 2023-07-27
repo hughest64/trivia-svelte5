@@ -82,12 +82,11 @@ class LeaderboardProcessor:
                 continue
 
             if lbe.tiebreaker_rank is not None:
-                rank = lbe.tiebreaker_rank
+                lbe.rank = lbe.tiebreaker_rank
+                lbe.tied_for_rank = None
             else:
-                rank = pts_vals.index(lbe.total_points) + 1
-
-            lbe.rank = rank
-            lbe.tied_for_rank = ties.get(lbe.total_points)
+                lbe.rank = pts_vals.index(lbe.total_points) + 1
+                lbe.tied_for_rank = ties.get(lbe.total_points)
 
     def rank_host_leaderboard(self, entries):
         """Apply new rankings to leaderboard entries"""
