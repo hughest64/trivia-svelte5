@@ -6,6 +6,7 @@ from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 
+from rest_framework.exceptions import NotFound
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -26,8 +27,8 @@ from game.models import (
     Location,
     EventRoundState,
     EventQuestionState,
-    TiebreakerQuestion,
     TriviaEvent,
+    TiebreakerResponse,
     QuestionResponse,
     Leaderboard,
     LeaderboardEntry,
@@ -550,27 +551,73 @@ class TiebreakerView(APIView):
 
     @method_decorator(csrf_protect)
     def post(self, request, joincode):
-        """
-        request.data = {
-            tied_for_rank: 1,
-            question_id: 45467,
-            team_data: [
-                {
-                    team_id: 1234,
-                    answer: 673456
-                }
-            ]
-        }
-        """
-        print(request.data)
-        # get the event
-        # get the tb question
-        # get the lb entries
-        # create (and grade) tb responese for each team
-        # - grade is the difference between their answer and the actual answer
-        # sort them by (absolute?) grade
+        data = DataCleaner(request.data)
+        tied_for_rank = data.as_int("tied_for_rank")
+        question_id = data.as_int("question_id")
+        team_data = request.data.get("team_data", [])
+
+        # return Response({"success": True})
+
+        try:
+            question = GameQuestion.objects.get(id=question_id)
+        except GameQuestion.DoesNotExist:
+            raise NotFound(f"could not find Game Question with id {question_id}")
+
+        event = get_event_or_404(joincode=joincode)
+        leaderboard_entries = LeaderboardEntry.objects.filter(
+            event=event,
+            leaderboard_type=LEADERBOARD_TYPE_HOST,
+        )
+
+        question_responses = []
+        skipped_teams = []
+        for entry in team_data:
+            team_id = entry.get("team_id")
+            # keep track of answers that cannot be converted to an int, but don't create a response
+            try:
+                answer = int(entry.get("answer"))
+            except:
+                skipped_teams.append(team_id)
+                continue
+
+            question_response, _ = TiebreakerResponse.objects.update_or_create(
+                game_question=question,
+                event=event,
+                team_id=team_id,
+                defaults={"recorded_answer": answer},
+            )
+            question_responses.append(question_response)
+            print(question_response.grade)
+
+        # grade is abs(actual_answer = resp.answer)
+        sorted_resps = sorted(
+            question_responses,
+            key=lambda resp: resp.grade,
+        )
+        sorted_teams = [resp.team.id for resp in sorted_resps] + skipped_teams
+
         # set lb rank (and rank) on each entry based on index + for_rank
+        entries_to_update = leaderboard_entries.filter(team_id__in=sorted_teams)
+        for lb_entry in entries_to_update:
+            lb_entry.tiebreaker_rank = tied_for_rank + sorted_teams.index(
+                lb_entry.team.id
+            )
+        LeaderboardEntry.objects.bulk_update(
+            entries_to_update, fields=["tiebreaker_rank"]
+        )
+        ranked_entries = LeaderboardProcessor().rank_host_leaderboard(
+            leaderboard_entries
+        )
         # host socket message w/ updated lb entries (might need a new msg_type to handle selective updates)
+        message = {
+            "msg_type": "leaderboard_update",
+            "message": {
+                "host_leaderboard_entries": ranked_entries,
+                "synced": False,
+            },
+        }
+
+        SendHostMessage(joincode=joincode, message=message)
         # send some data back the client
 
         return Response({"success": True})

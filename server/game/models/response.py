@@ -3,8 +3,6 @@ from django.db import models
 
 from fuzzywuzzy import fuzz
 
-from game.models.utils import queryset_to_json
-
 FUZZ_MATCH_RATIO = 85
 
 LEADERBOARD_TYPE_HOST = 0
@@ -202,12 +200,8 @@ class LeaderboardEntry(models.Model):
         }
 
 
-# TODO: link to a GameQuestion, or Question? (Remove TieBreakerQuestion)
 class TiebreakerResponse(models.Model):
-    tiebreaker_question = models.ForeignKey(
-        "TiebreakerQuestion", on_delete=models.CASCADE
-    )
-    leaderboard_entry = models.ForeignKey(LeaderboardEntry, on_delete=models.CASCADE)
+    game_question = models.ForeignKey("GameQuestion", on_delete=models.CASCADE)
     recorded_answer = models.IntegerField()
     team = models.ForeignKey(
         "Team", related_name="tiebreaker_responses", on_delete=models.CASCADE
@@ -219,7 +213,9 @@ class TiebreakerResponse(models.Model):
     # delta between the actual answer and a recored answer
     @property
     def grade(self):
-        return int(self.tiebreaker_question.answer) - self.recorded_answer
+        return abs(
+            int(self.game_question.question.display_answer.text) - self.recorded_answer
+        )
 
     def __str__(self):
         return f"Tiebreaker Response for {self.team} at {self.event}"
