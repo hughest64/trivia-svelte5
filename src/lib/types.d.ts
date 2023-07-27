@@ -145,7 +145,8 @@ export interface Response {
     key: string;
 }
 
-export interface TiebreakerResponse extends Pick<Response, ['id', 'recorded_answer', 'round_number']> {
+// export interface TiebreakerResponse extends Partial<Response, ['id', 'recorded_answer', 'round_number']> {
+export interface TiebreakerResponse extends Response {
     game_question_id: number;
     team_id: number;
     grade: number;

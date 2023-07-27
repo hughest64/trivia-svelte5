@@ -618,4 +618,6 @@ class TiebreakerView(APIView):
         SendHostMessage(joincode=joincode, message=message)
 
         # TODO send some data back the client (like rank data so the host knows immediately)
+        # actually, sending back the serialzed responses is probably good so we can update the page store
+        # then, the grade (or rank?) could be used on the front end to display updated info to the host
         return Response({"success": True})

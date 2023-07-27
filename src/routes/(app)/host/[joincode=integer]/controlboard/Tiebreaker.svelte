@@ -5,13 +5,19 @@
     import type { LeaderboardEntry } from '$lib/types';
     import { enhance } from '$app/forms';
 
+    const currentEventData = getStore('currentEventData');
+    $: currentRound = $currentEventData.round_number;
+    $: console.log('current round:', currentRound);
     const leaderboardEntries = getStore('leaderboard');
     const hostEntries = $leaderboardEntries?.host_leaderboard_entries || [];
 
-    const responses = $page.data.tiebreaker_responses || [];
-    $: console.log(responses);
     const questions = $page.data.tiebreaker_questions || [];
     const selectedQuestion = questions[0];
+
+    const responses = $page.data.tiebreaker_responses || [];
+    $: responsesForSelectedQuestion = responses.filter((resp) => resp.game_question_id === selectedQuestion.id) || [];
+    $: console.log(responsesForSelectedQuestion);
+
     let answerShown = false;
     $: answerButtonTxt = answerShown ? 'Hide Answer' : 'Show Answer';
 
@@ -21,7 +27,9 @@
         '3': 'rd'
     };
 
+    // TODO: move to utils
     const groupEntries = (entries: LeaderboardEntry[]) => {
+        // the key is the tied_for_rank, value is an array of lb entries with the same tied_for_rank
         const groupedEntries: Record<number, LeaderboardEntry[]> = {};
         const seen = new Set();
         for (const entry of entries) {
@@ -70,6 +78,10 @@
                 <input type="hidden" name="question_id" value={selectedQuestion.id} />
                 <ul>
                     {#each group as entry}
+                        {@const answer =
+                            responsesForSelectedQuestion.find((resp) => {
+                                return resp.team_id === entry.team_id && resp.round_number === currentRound;
+                            })?.recorded_answer || ''}
                         <li class="input-container">
                             <h3>{entry.team_name}</h3>
                             <input
@@ -77,6 +89,7 @@
                                 class="tiebreaker-answer"
                                 type="text"
                                 placeholder="Enter Answer"
+                                value={answer}
                             />
                         </li>
                     {/each}
