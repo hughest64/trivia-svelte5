@@ -7,7 +7,7 @@
 
     const currentEventData = getStore('currentEventData');
     $: currentRound = $currentEventData.round_number;
-    $: console.log('current round:', currentRound);
+
     const leaderboardEntries = getStore('leaderboard');
     const hostEntries = $leaderboardEntries?.host_leaderboard_entries || [];
 
