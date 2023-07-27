@@ -76,12 +76,14 @@
                 <h3 class="spacer">For {forRank}{placeMap[forRank] || 'th'} Place</h3>
                 <input type="hidden" name="tied_for_rank" value={forRank} />
                 <input type="hidden" name="question_id" value={selectedQuestion.id} />
+                <!-- TODO using current round may be problematic as once you advance you'll never see the responses -->
                 <ul>
                     {#each group as entry}
                         {@const answer =
                             responsesForSelectedQuestion.find((resp) => {
                                 return resp.team_id === entry.team_id && resp.round_number === currentRound;
                             })?.recorded_answer || ''}
+
                         <li class="input-container">
                             <h3>{entry.team_name}</h3>
                             <input
