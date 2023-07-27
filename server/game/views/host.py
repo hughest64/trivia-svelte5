@@ -542,8 +542,14 @@ class TiebreakerView(APIView):
         questions = GameQuestion.objects.filter(
             game=event.game, question__question_type=QUESTION_TYPE_TIE_BREAKER
         )
+        responses = TiebreakerResponse.objects.filter(event=event)
         # TODO get any existing tiebreaker responses
-        return Response({"tiebreaker_questions": queryset_to_json(questions)})
+        return Response(
+            {
+                "tiebreaker_questions": queryset_to_json(questions),
+                "tiebreaker_responses": queryset_to_json(responses),
+            }
+        )
 
     @method_decorator(csrf_protect)
     def post(self, request, joincode):
@@ -563,6 +569,7 @@ class TiebreakerView(APIView):
             leaderboard_type=LEADERBOARD_TYPE_HOST,
         )
 
+        through_round = event.max_locked_round()
         question_responses = []
         skipped_teams = []
         for entry in team_data:
@@ -578,6 +585,7 @@ class TiebreakerView(APIView):
                 game_question=question,
                 event=event,
                 team_id=team_id,
+                round_number=through_round,
                 defaults={"recorded_answer": answer},
             )
             question_responses.append(question_response)
@@ -609,5 +617,5 @@ class TiebreakerView(APIView):
 
         SendHostMessage(joincode=joincode, message=message)
 
-        # TODO send some data back the client
+        # TODO send some data back the client (like rank data so the host knows immediately)
         return Response({"success": True})

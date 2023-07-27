@@ -202,6 +202,8 @@ class LeaderboardEntry(models.Model):
 
 class TiebreakerResponse(models.Model):
     game_question = models.ForeignKey("GameQuestion", on_delete=models.CASCADE)
+    # the round at which the response was created (likely the event.max_locked_round())
+    round_number = models.IntegerField()
     recorded_answer = models.IntegerField()
     team = models.ForeignKey(
         "Team", related_name="tiebreaker_responses", on_delete=models.CASCADE
@@ -219,6 +221,16 @@ class TiebreakerResponse(models.Model):
 
     def __str__(self):
         return f"Tiebreaker Response for {self.team} at {self.event}"
+
+    def to_json(self):
+        return {
+            "id": self.id,
+            "game_question_id": self.game_question.id,
+            "round_number": self.round_number,
+            "recorded_answer": self.recorded_answer,
+            "team_id": self.team.id,
+            "grade": self.grade,
+        }
 
     def save(self, *args, **kwargs):
         self.full_clean()

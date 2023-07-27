@@ -8,6 +8,8 @@
     const leaderboardEntries = getStore('leaderboard');
     const hostEntries = $leaderboardEntries?.host_leaderboard_entries || [];
 
+    const responses = $page.data.tiebreaker_responses || [];
+    $: console.log(responses);
     const questions = $page.data.tiebreaker_questions || [];
     const selectedQuestion = questions[0];
     let answerShown = false;

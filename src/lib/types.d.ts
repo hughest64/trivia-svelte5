@@ -145,6 +145,12 @@ export interface Response {
     key: string;
 }
 
+export interface TiebreakerResponse extends Pick<Response, ['id', 'recorded_answer', 'round_number']> {
+    game_question_id: number;
+    team_id: number;
+    grade: number;
+}
+
 export interface HostResponse extends Omit<Response, ['id', 'locked']> {
     response_ids: number[];
     fuzz_ratio?: number;

@@ -22,6 +22,7 @@ declare namespace App {
         rounds?: Array<import('$lib/types').GameRound>;
         questions?: Array<import('$lib/types').GameQuestion>;
         tiebreaker_questions?: Array<import('$lib/types').GameQuestion>;
+        tiebreaker_responses?: Array<import('$lib/types').TiebreakerResponse>;
         round_states?: Array<import('$lib/types').EventRound>;
         question_states?: Array<import('$lib/types').EventQuestion>;
         location_select_data?: Array<import('$lib/types').LocationSelectData>;
