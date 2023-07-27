@@ -607,17 +607,16 @@ class TiebreakerView(APIView):
             leaderboard_entries
         )
         # host socket message w/ updated lb entries (might need a new msg_type to handle selective updates)
+
         message = {
             "msg_type": "leaderboard_update",
             "message": {
                 "host_leaderboard_entries": ranked_entries,
+                "tiebreaker_responses": queryset_to_json(sorted_resps),
                 "synced": False,
             },
         }
 
         SendHostMessage(joincode=joincode, message=message)
 
-        # TODO send some data back the client (like rank data so the host knows immediately)
-        # actually, sending back the serialzed responses is probably good so we can update the page store
-        # then, the grade (or rank?) could be used on the front end to display updated info to the host
         return Response({"success": True})

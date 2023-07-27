@@ -207,6 +207,7 @@ export interface StoreTypes {
     roundStates: Writable<RoundState[]>;
     questionStates: Writable<QuestionState[]>;
     responseData: Writable<Response[]>;
+    tiebreakerResponses: Writable<TiebreakerResponse[]>;
     responseSummary: Writable<ResponseSummary>;
     hostResponseData: Writable<HostResponse[]>;
     popupData: Writable<PopupData>;

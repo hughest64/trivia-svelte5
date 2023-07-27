@@ -3,7 +3,6 @@
     import { page } from '$app/stores';
     import { getStore } from '$lib/utils';
     import type { LeaderboardEntry } from '$lib/types';
-    import { enhance } from '$app/forms';
 
     const currentEventData = getStore('currentEventData');
     $: currentRound = $currentEventData.round_number;
@@ -14,9 +13,8 @@
     const questions = $page.data.tiebreaker_questions || [];
     const selectedQuestion = questions[0];
 
-    const responses = $page.data.tiebreaker_responses || [];
-    $: responsesForSelectedQuestion = responses.filter((resp) => resp.game_question_id === selectedQuestion.id) || [];
-    $: console.log(responsesForSelectedQuestion);
+    const responses = getStore('tiebreakerResponses');
+    $: responsesForSelectedQuestion = $responses.filter((resp) => resp.game_question_id === selectedQuestion.id) || [];
 
     let answerShown = false;
     $: answerButtonTxt = answerShown ? 'Hide Answer' : 'Show Answer';
@@ -54,6 +52,9 @@
             method: target.method,
             body: data
         });
+        if (!response.ok) {
+            // TODO: error handling
+        }
     };
 </script>
 
@@ -76,12 +77,13 @@
                 <h3 class="spacer">For {forRank}{placeMap[forRank] || 'th'} Place</h3>
                 <input type="hidden" name="tied_for_rank" value={forRank} />
                 <input type="hidden" name="question_id" value={selectedQuestion.id} />
-                <!-- TODO using current round may be problematic as once you advance you'll never see the responses -->
+                <!-- TODO using current round may be problematic as once you advance you'll never see the responses
+                     && resp.round_number === currentRound-->
                 <ul>
                     {#each group as entry}
                         {@const answer =
                             responsesForSelectedQuestion.find((resp) => {
-                                return resp.team_id === entry.team_id && resp.round_number === currentRound;
+                                return resp.team_id === entry.team_id;
                             })?.recorded_answer || ''}
 
                         <li class="input-container">

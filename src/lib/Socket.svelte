@@ -45,6 +45,7 @@
     const responseSummaryStore = getStore('responseSummary');
     const selectedMegaroundStore = getStore('selectedMegaRound');
     const userStore = getStore('userData');
+    const tiebreakerResponseStore = getStore('tiebreakerResponses');
 
     const handlers: MessageHandler = {
         connected: () => console.log('connected!'),
@@ -66,13 +67,22 @@
         },
         // TODO: better typings
         leaderboard_update: (msg: Record<string, unknown>) => {
-            const { ...leaderboard } = msg;
+            const { tiebreaker_responses, ...leaderboard } = msg;
+
             leaderboardStore.update((lb) => {
                 const newLb = { ...lb };
                 Object.assign(newLb, leaderboard);
 
                 return newLb;
             });
+
+            if (tiebreaker_responses !== undefined) {
+                tiebreakerResponseStore.update((resps) => {
+                    const newResps = { ...resps };
+                    // TODO: loop incoming tbers and find index, etc
+                    return newResps;
+                });
+            }
         },
         leaderboard_update_host_entry: (msg: Record<string, LeaderboardEntry | string>) => {
             const updatedEntry = msg.entry as LeaderboardEntry;

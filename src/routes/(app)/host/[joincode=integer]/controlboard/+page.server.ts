@@ -34,5 +34,12 @@ export const actions = {
             method: 'post',
             body: JSON.stringify(body)
         });
+
+        if (!response.ok) {
+            const responseData = await response.json();
+            // TODO: error handling
+        }
+
+        return { success: true };
     }
 };
