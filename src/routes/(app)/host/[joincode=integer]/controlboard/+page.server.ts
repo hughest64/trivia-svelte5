@@ -1,6 +1,7 @@
 import { PUBLIC_API_HOST } from '$env/static/public';
+import type { PageServerLoad } from './$types.js';
 
-export const load = async ({ locals, params, url, fetch }) => {
+export const load: PageServerLoad = async ({ locals, params, fetch }) => {
     let apiData = {};
 
     const response = await fetch(`${PUBLIC_API_HOST}/host/${params.joincode}/tiebreaker`);
