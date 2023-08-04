@@ -15,7 +15,8 @@
         SocketMessage,
         HostResponse,
         HostMegaRoundInstance,
-        UserTeam
+        UserTeam,
+        TiebreakerResponse
     } from './types';
 
     const path = $page.url.pathname;
@@ -68,8 +69,6 @@
         // TODO: better typings
         leaderboard_update: (msg: Record<string, unknown>) => {
             const { tiebreaker_responses, ...leaderboard } = msg;
-            console.log('existing tb', $tiebreakerResponseStore);
-            console.log(tiebreaker_responses);
 
             leaderboardStore.update((lb) => {
                 const newLb = { ...lb };
@@ -78,13 +77,16 @@
                 return newLb;
             });
 
-            // if (tiebreaker_responses !== undefined) {
-            //     tiebreakerResponseStore.update((resps) => {
-            //         const newResps = { ...resps };
-            //         // TODO: loop incoming tbers and find index, etc
-            //         return newResps;
-            //     });
-            // }
+            if (tiebreaker_responses !== null) {
+                tiebreakerResponseStore.update((resps) => {
+                    const newResps = [...resps];
+                    for (const resp of tiebreaker_responses as TiebreakerResponse[]) {
+                        const indexToUpdate = newResps.findIndex((r) => r.id === resp.id) ?? -1;
+                        indexToUpdate > -1 ? (newResps[indexToUpdate] = resp) : newResps.push(resp);
+                    }
+                    return newResps;
+                });
+            }
         },
         leaderboard_update_host_entry: (msg: Record<string, LeaderboardEntry | string>) => {
             const updatedEntry = msg.entry as LeaderboardEntry;

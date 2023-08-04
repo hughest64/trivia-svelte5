@@ -3,8 +3,11 @@
     "teams": 3,
     "rounds_to_play": 2,
     "team_configs": {
-        "1": {"score_percentage": 100},
+        "1": {"score_percentage": 80},
         "2": {"score_percentage": 80},
         "3": {"score_percentage": 0}
+    },
+    "host_config": {
+        "lock_rounds": true
     }
 }

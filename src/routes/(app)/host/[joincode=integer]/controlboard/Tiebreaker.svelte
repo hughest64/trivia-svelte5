@@ -4,9 +4,6 @@
     import { getStore } from '$lib/utils';
     import type { LeaderboardEntry } from '$lib/types';
 
-    const currentEventData = getStore('currentEventData');
-    $: currentRound = $currentEventData.round_number;
-
     const leaderboardEntries = getStore('leaderboard');
     const hostEntries = $leaderboardEntries?.host_leaderboard_entries || [];
 
@@ -77,8 +74,6 @@
                 <h3 class="spacer">For {forRank}{placeMap[forRank] || 'th'} Place</h3>
                 <input type="hidden" name="tied_for_rank" value={forRank} />
                 <input type="hidden" name="question_id" value={selectedQuestion.id} />
-                <!-- TODO using current round may be problematic as once you advance you'll never see the responses
-                     && resp.round_number === currentRound-->
                 <ul>
                     {#each group as entry}
                         {@const answer =

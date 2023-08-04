@@ -66,7 +66,7 @@ class LeaderboardProcessor:
             [lbe.total_points + lbe.points_adjustment for lbe in leaderboard_entries],
             reverse=True,
         )
-        print(pts_vals)
+
         # track the points and rank of ties like - {pts: index}
         ties = {}
         seen = set()
@@ -74,8 +74,6 @@ class LeaderboardProcessor:
             if pts in seen and pts not in ties:
                 ties[pts] = i
             seen.add(pts)
-
-        print(ties)
 
         for lbe in leaderboard_entries:
             # combine response points and points awarded
@@ -95,7 +93,6 @@ class LeaderboardProcessor:
                 # this will auto reset tiebreakers when the next round is locked
                 and self.event.max_locked_round() <= (lbe.tiebreaker_round_number or 0)
             )
-            print(self.event.max_locked_round(), lbe.team, apply_tiebreaker_rank)
 
             if apply_tiebreaker_rank:
                 lbe.rank = lbe.tiebreaker_rank
@@ -108,8 +105,6 @@ class LeaderboardProcessor:
             if not apply_tiebreaker_rank:
                 lbe.tiebreaker_rank = None
                 lbe.tiebreaker_round_number = None
-
-            print(lbe.rank)
 
     def rank_host_leaderboard(self, entries):
         """Apply new rankings to leaderboard entries"""

@@ -233,6 +233,7 @@ class TriviaEvent(models.Model):
 
     def all_rounds_are_locked(self):
         """Compare the number on non-tiebreaker rounds against the number of locked round states"""
+        # TODO: game.game_rounds.exclude(round_number=0) as a property on the game models would be mighty handy
         num_rounds = self.game.game_rounds.exclude(round_number=0).count()
         num_locked_rounds = len([rd for rd in self.round_states.all() if rd.locked])
 
