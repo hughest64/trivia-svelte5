@@ -570,7 +570,7 @@ class TiebreakerView(APIView):
         leaderboard_entries = LeaderboardEntry.objects.filter(
             event=event,
             leaderboard_type=LEADERBOARD_TYPE_HOST,
-        )  # .select_for_update()
+        )
 
         through_round = event.max_locked_round()
         question_responses = []
@@ -620,6 +620,22 @@ class TiebreakerView(APIView):
             },
         }
 
+        ret_data = []
+        for resp in sorted_resps:
+            lbe_id, rank = [
+                (entry.get("id"), entry.get("rank"))
+                for entry in ranked_entries
+                if entry.get("team_id") == resp.team_id
+            ][0]
+            ret_data.append(
+                {
+                    "lbe_id": lbe_id,
+                    "rank": rank,
+                    "team_id": resp.team.id,
+                    "question_id": resp.game_question.id,
+                }
+            )
+
         SendHostMessage(joincode=joincode, message=message)
 
-        return Response({"success": True})
+        return Response({"update_data": ret_data})

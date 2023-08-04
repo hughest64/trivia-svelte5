@@ -36,6 +36,9 @@ export const actions = {
             body: JSON.stringify(body)
         });
 
+        const updateData = await response.json();
+        console.log(updateData);
+
         if (!response.ok) {
             const responseData = await response.json();
             // TODO: error handling

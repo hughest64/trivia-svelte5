@@ -192,6 +192,7 @@ class LeaderboardEntry(models.Model):
 
     def to_json(self):
         return {
+            "id": self.id,
             "team_id": self.team.id,
             "team_name": self.team.name,
             "team_password": self.team.password,
