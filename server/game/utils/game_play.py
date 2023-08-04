@@ -131,6 +131,7 @@ class TeamActions:
 
         question_count = len(game_questions)
         correct = round(question_count * percent_correct / 100)
+        print(f"{correct} for team {self.team}")
         incorrect = question_count - correct
         # genearate a list of random True or False values based on the above percentages
         correct_values = random.sample(
@@ -147,7 +148,9 @@ class TeamActions:
                 event=self.event,
                 game_question=q,
                 team=self.team,
-                recorded_answer=answer,
+                recorded_answer=answer
+                if answer_correct
+                else f"{q.id} wrong for team {self.team}",
                 megaround_value=megaround_values.get(str(q.question_number))
                 if q.round_number == selected_megaround
                 else None,
