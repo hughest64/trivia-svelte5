@@ -1,0 +1,10 @@
+{
+    "joincode": 1235,
+    "teams": 2,
+    "rounds_to_play": 2,
+    "team_configs": {
+        "1": {"score_percentage": 100},
+        "2": {"score_percentage": 80},
+        "3": {"score_percentage": 20}
+    }
+}
