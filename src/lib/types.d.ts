@@ -37,6 +37,7 @@ export interface UserTeam {
 }
 
 export interface LeaderboardEntry {
+    id: number;
     team_id: number;
     team_name: string;
     rank?: number;
@@ -148,6 +149,15 @@ export interface Response {
 export interface TiebreakerResponse extends Pick<Response, 'recorded_answer' | 'round_number' | 'id'> {
     game_question_id: number;
     team_id: number;
+    grade: number;
+}
+
+export interface TiebreakerRankData {
+    lbe_id: number;
+    rank: number;
+    team_id: number;
+    question_id: number;
+    // delta from the submitted answer and the actual answer
     grade: number;
 }
 

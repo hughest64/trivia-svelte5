@@ -2,7 +2,7 @@
     import { slide } from 'svelte/transition';
     import { page } from '$app/stores';
     import { getStore } from '$lib/utils';
-    import type { LeaderboardEntry } from '$lib/types';
+    import type { LeaderboardEntry, TiebreakerRankData } from '$lib/types';
 
     const leaderboardEntries = getStore('leaderboard');
     const hostEntries = $leaderboardEntries?.host_leaderboard_entries || [];
@@ -41,6 +41,8 @@
     };
     $: groupedEntries = groupEntries(hostEntries);
 
+    let tiebreakerRankData: TiebreakerRankData[] = [];
+
     const handleSubmit = async (e: Event) => {
         const target = e.target as HTMLFormElement;
         const data = new FormData(target);
@@ -72,23 +74,29 @@
         <li>
             <form action="?/submit_tiebreakers" method="post" on:submit|preventDefault={handleSubmit}>
                 <h3 class="spacer">For {forRank}{placeMap[forRank] || 'th'} Place</h3>
+
                 <input type="hidden" name="tied_for_rank" value={forRank} />
                 <input type="hidden" name="question_id" value={selectedQuestion.id} />
                 <ul>
                     {#each group as entry}
-                        {@const answer =
-                            responsesForSelectedQuestion.find((resp) => {
-                                return resp.team_id === entry.team_id;
-                            })?.recorded_answer || ''}
+                        {@const answer = responsesForSelectedQuestion.find((resp) => {
+                            return resp.team_id === entry.team_id;
+                        })}
 
                         <li class="input-container">
-                            <h3>{entry.team_name}</h3>
+                            <span class="spacer rank-data">
+                                <h3>{entry.team_name}</h3>
+                                {#if answer}
+                                    <!-- TODO: how to handle adding the new rank? (current rank + index, maybe?) -->
+                                    <p>Grade {answer?.grade}</p>
+                                {/if}
+                            </span>
                             <input
                                 name="team.{entry.team_id}"
                                 class="tiebreaker-answer"
                                 type="text"
                                 placeholder="Enter Answer"
-                                value={answer}
+                                value={answer?.recorded_answer || ''}
                             />
                         </li>
                     {/each}
@@ -110,5 +118,15 @@
     }
     .spacer {
         margin: 0.75rem 0;
+    }
+    .rank-data {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        p {
+            margin: 0;
+        }
     }
 </style>

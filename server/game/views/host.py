@@ -620,22 +620,6 @@ class TiebreakerView(APIView):
             },
         }
 
-        ret_data = []
-        for resp in sorted_resps:
-            lbe_id, rank = [
-                (entry.get("id"), entry.get("rank"))
-                for entry in ranked_entries
-                if entry.get("team_id") == resp.team_id
-            ][0]
-            ret_data.append(
-                {
-                    "lbe_id": lbe_id,
-                    "rank": rank,
-                    "team_id": resp.team.id,
-                    "question_id": resp.game_question.id,
-                }
-            )
-
         SendHostMessage(joincode=joincode, message=message)
 
-        return Response({"update_data": ret_data})
+        return Response({"success": True})
