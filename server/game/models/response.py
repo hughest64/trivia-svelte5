@@ -65,6 +65,7 @@ class QuestionResponse(models.Model):
             "recorded_answer": self.recorded_answer,
         }
 
+    # TODO: compare lower case and stripped spaces from both the answer and response
     def grade(self):
         """run fuzzy fuzzy using the recorded answer against all accepted answers for the question"""
         if self.locked:
@@ -144,6 +145,9 @@ class LeaderboardEntry(models.Model):
 
     # 2 or more teams rank before setting tiebreakers
     tied_for_rank = models.IntegerField(blank=True, null=True)
+
+    # the round in which the tiebreaker was determined
+    tiebreaker_round_number = models.IntegerField(blank=True, null=True)
 
     total_points = models.FloatField(default=0)
     selected_megaround = models.IntegerField(blank=True, null=True)

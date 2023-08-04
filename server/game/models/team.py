@@ -16,7 +16,7 @@ class Team(models.Model):
         super().__init__(*args, **kwargs)
 
     created_at = models.DateTimeField(auto_now_add=True)
-    # TODO: unique?
+    # TODO: unique? - definitely limit to 60
     name = models.CharField(max_length=200)
     password = models.CharField(max_length=200, unique=True, db_index=True)
     members = models.ManyToManyField("user.User", related_name="teams")

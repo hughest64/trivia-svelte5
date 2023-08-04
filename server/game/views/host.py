@@ -424,8 +424,9 @@ class UpdateAdjustmentPointsView(APIView):
         adjustment_reason = data.as_int("adjustment_reason")
         team_id = data.as_int("team_id")
 
+        event = get_event_or_404(joincode=joincode)
         entries = LeaderboardEntry.objects.filter(
-            event__joincode=joincode, leaderboard_type=LEADERBOARD_TYPE_HOST
+            event=event, leaderboard_type=LEADERBOARD_TYPE_HOST
         )
 
         try:
@@ -443,7 +444,9 @@ class UpdateAdjustmentPointsView(APIView):
             lbe.points_adjustment += points
             lbe.total_points += points
             lbe.save()
-            leaderboard_data = LeaderboardProcessor().rank_host_leaderboard(entries)
+            leaderboard_data = LeaderboardProcessor(event=event).rank_host_leaderboard(
+                entries
+            )
 
         lbe.leaderboard.synced = False
         lbe.leaderboard.save()
@@ -567,7 +570,7 @@ class TiebreakerView(APIView):
         leaderboard_entries = LeaderboardEntry.objects.filter(
             event=event,
             leaderboard_type=LEADERBOARD_TYPE_HOST,
-        )
+        )  # .select_for_update()
 
         through_round = event.max_locked_round()
         question_responses = []
@@ -585,8 +588,7 @@ class TiebreakerView(APIView):
                 game_question=question,
                 event=event,
                 team_id=team_id,
-                round_number=through_round,
-                defaults={"recorded_answer": answer},
+                defaults={"recorded_answer": answer, "round_number": through_round},
             )
             question_responses.append(question_response)
 
@@ -600,10 +602,11 @@ class TiebreakerView(APIView):
             lb_entry.tiebreaker_rank = tied_for_rank + sorted_teams.index(
                 lb_entry.team.id
             )
+            lb_entry.tiebreaker_round_number = through_round
         LeaderboardEntry.objects.bulk_update(
-            entries_to_update, fields=["tiebreaker_rank"]
+            entries_to_update, fields=["tiebreaker_rank", "tiebreaker_round_number"]
         )
-        ranked_entries = LeaderboardProcessor().rank_host_leaderboard(
+        ranked_entries = LeaderboardProcessor(event=event).rank_host_leaderboard(
             leaderboard_entries
         )
         # host socket message w/ updated lb entries (might need a new msg_type to handle selective updates)

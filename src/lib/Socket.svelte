@@ -68,6 +68,8 @@
         // TODO: better typings
         leaderboard_update: (msg: Record<string, unknown>) => {
             const { tiebreaker_responses, ...leaderboard } = msg;
+            console.log('existing tb', $tiebreakerResponseStore);
+            console.log(tiebreaker_responses);
 
             leaderboardStore.update((lb) => {
                 const newLb = { ...lb };
@@ -76,13 +78,13 @@
                 return newLb;
             });
 
-            if (tiebreaker_responses !== undefined) {
-                tiebreakerResponseStore.update((resps) => {
-                    const newResps = { ...resps };
-                    // TODO: loop incoming tbers and find index, etc
-                    return newResps;
-                });
-            }
+            // if (tiebreaker_responses !== undefined) {
+            //     tiebreakerResponseStore.update((resps) => {
+            //         const newResps = { ...resps };
+            //         // TODO: loop incoming tbers and find index, etc
+            //         return newResps;
+            //     });
+            // }
         },
         leaderboard_update_host_entry: (msg: Record<string, LeaderboardEntry | string>) => {
             const updatedEntry = msg.entry as LeaderboardEntry;

@@ -227,6 +227,10 @@ class TriviaEvent(models.Model):
     def current_question_key(self):
         return f"{self.current_round_number}.{self.current_question_number}"
 
+    @property
+    def round_count(self):
+        return self.game.game_rounds.count()
+
     def all_rounds_are_locked(self):
         """Compare the number on non-tiebreaker rounds against the number of locked round states"""
         num_rounds = self.game.game_rounds.exclude(round_number=0).count()
