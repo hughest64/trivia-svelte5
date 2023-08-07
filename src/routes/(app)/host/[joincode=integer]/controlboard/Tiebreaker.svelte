@@ -84,7 +84,7 @@
                         <li class="input-container">
                             <span class="spacer rank-data">
                                 <h3>{entry.team_name}</h3>
-                                {#if answer && (Number(answer?.round_number) || 0) <= (entry?.tiebreaker_round_number || 0)}
+                                {#if answer && Number(answer.round_number) <= (entry?.tiebreaker_round_number || 0)}
                                     <p>Grade {answer?.grade} New Rank {entry.rank}</p>
                                 {/if}
                             </span>
