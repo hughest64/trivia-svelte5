@@ -198,6 +198,7 @@ class LeaderboardEntry(models.Model):
             "team_password": self.team.password,
             "rank": self.rank or "-",
             "tied_for_rank": self.tied_for_rank,
+            "tiebreaker_round_number": self.tiebreaker_round_number,
             "total_points": self.total_points,
             "megaround": self.selected_megaround,
             "points_adjustment_value": self.points_adjustment,

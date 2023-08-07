@@ -77,7 +77,7 @@
                 return newLb;
             });
 
-            if (tiebreaker_responses !== null) {
+            if (tiebreaker_responses) {
                 tiebreakerResponseStore.update((resps) => {
                     const newResps = [...resps];
                     for (const resp of tiebreaker_responses as TiebreakerResponse[]) {

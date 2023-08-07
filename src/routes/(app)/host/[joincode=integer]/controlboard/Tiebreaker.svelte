@@ -2,10 +2,10 @@
     import { slide } from 'svelte/transition';
     import { page } from '$app/stores';
     import { getStore } from '$lib/utils';
-    import type { LeaderboardEntry, TiebreakerRankData } from '$lib/types';
+    import type { LeaderboardEntry } from '$lib/types';
 
     const leaderboardEntries = getStore('leaderboard');
-    const hostEntries = $leaderboardEntries?.host_leaderboard_entries || [];
+    $: hostEntries = $leaderboardEntries?.host_leaderboard_entries || [];
 
     const questions = $page.data.tiebreaker_questions || [];
     const selectedQuestion = questions[0];
@@ -40,8 +40,6 @@
         return groupedEntries;
     };
     $: groupedEntries = groupEntries(hostEntries);
-
-    let tiebreakerRankData: TiebreakerRankData[] = [];
 
     const handleSubmit = async (e: Event) => {
         const target = e.target as HTMLFormElement;
@@ -86,9 +84,8 @@
                         <li class="input-container">
                             <span class="spacer rank-data">
                                 <h3>{entry.team_name}</h3>
-                                {#if answer}
-                                    <!-- TODO: how to handle adding the new rank? (current rank + index, maybe?) -->
-                                    <p>Grade {answer?.grade}</p>
+                                {#if answer && (Number(answer?.round_number) || 0) <= (entry?.tiebreaker_round_number || 0)}
+                                    <p>Grade {answer?.grade} New Rank {entry.rank}</p>
                                 {/if}
                             </span>
                             <input

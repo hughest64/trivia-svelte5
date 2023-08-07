@@ -96,7 +96,6 @@ class LeaderboardProcessor:
 
             if apply_tiebreaker_rank:
                 lbe.rank = lbe.tiebreaker_rank
-                lbe.tied_for_rank = None
 
             else:
                 lbe.rank = pts_vals.index(pts_with_adj) + 1

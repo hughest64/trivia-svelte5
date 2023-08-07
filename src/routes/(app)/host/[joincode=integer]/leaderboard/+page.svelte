@@ -20,14 +20,10 @@
 
     const showTiebreakerButton = (entry: LeaderboardEntry, index: number) => {
         const hostEntries = $leaderboard?.host_leaderboard_entries || [];
-        const previousTiedForRank = hostEntries[index - 1]?.tied_for_rank;
-        const nextTiedForRank = hostEntries[index + 1]?.tied_for_rank;
+        const previousTiedForRank = hostEntries[index - 1]?.rank;
+        const nextTiedForRank = hostEntries[index + 1]?.rank;
 
-        return (
-            entry.tied_for_rank &&
-            entry.tied_for_rank !== nextTiedForRank &&
-            entry.tied_for_rank === previousTiedForRank
-        );
+        return entry.rank && entry.rank !== nextTiedForRank && entry.rank === previousTiedForRank;
     };
 </script>
 
