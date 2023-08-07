@@ -105,9 +105,23 @@ class LeaderboardProcessor:
                 lbe.tiebreaker_rank = None
                 lbe.tiebreaker_round_number = None
 
-    def rank_host_leaderboard(self, entries):
+    def _unsync_leadboards(self, through_round):
+        self._check_order()
+
+        return Leaderboard.objects.update_or_create(
+            event=self.event,
+            defaults={
+                "host_through_round": through_round,
+                "synced": False,
+            },
+        )
+
+    def rank_host_leaderboard(self, entries, through_round):
         """Apply new rankings to leaderboard entries"""
         self.processing = True
+
+        # the leaderboards are no longer synced
+        lb, _ = self._unsync_leadboards(through_round)
 
         # with transaction.atomic():
         self._set_leaderboard_rank(entries)
@@ -130,13 +144,9 @@ class LeaderboardProcessor:
         try:
             with transaction.atomic():
                 apply_megaround = self.event.all_rounds_are_locked()
-                lb, _ = Leaderboard.objects.update_or_create(
-                    event=self.event,
-                    defaults={
-                        "host_through_round": through_round,
-                        "synced": False,
-                    },
-                )
+                # the leaderboards are no longer synced
+                lb, _ = self._unsync_leadboards(through_round)
+
                 entries = LeaderboardEntry.objects.filter(
                     event=self.event, leaderboard_type=LEADERBOARD_TYPE_HOST
                 )

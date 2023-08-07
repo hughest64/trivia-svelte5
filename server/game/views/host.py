@@ -445,7 +445,7 @@ class UpdateAdjustmentPointsView(APIView):
             lbe.total_points += points
             lbe.save()
             leaderboard_data = LeaderboardProcessor(event=event).rank_host_leaderboard(
-                entries
+                entries, event.max_locked_round()
             )
 
         lbe.leaderboard.synced = False
@@ -607,7 +607,7 @@ class TiebreakerView(APIView):
             entries_to_update, fields=["tiebreaker_rank", "tiebreaker_round_number"]
         )
         ranked_entries = LeaderboardProcessor(event=event).rank_host_leaderboard(
-            leaderboard_entries
+            leaderboard_entries, through_round
         )
         # host socket message w/ updated lb entries (might need a new msg_type to handle selective updates)
 
