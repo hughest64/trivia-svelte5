@@ -2,7 +2,6 @@
     import { page } from '$app/stores';
     import { slide } from 'svelte/transition';
     import { swipeQuestion } from '$lib/swipe';
-    import { KDE_FULL_SESSION } from '$env/static/private';
 
     const tbquestions = $page.data.tiebreaker_questions || [];
     export let selectedQuestion = tbquestions[0];
