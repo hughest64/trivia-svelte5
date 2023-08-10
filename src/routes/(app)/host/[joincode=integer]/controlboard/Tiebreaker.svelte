@@ -1,22 +1,17 @@
 <script lang="ts">
-    import { slide } from 'svelte/transition';
-    import { page } from '$app/stores';
+    import TieBreakerQuestion from './TieBreakerQuestion.svelte';
     import { deserialize } from '$app/forms';
     import { getStore } from '$lib/utils';
-    import type { LeaderboardEntry } from '$lib/types';
+    import type { LeaderboardEntry, GameQuestion } from '$lib/types';
     import type { ActionResult } from '@sveltejs/kit';
 
     const leaderboardEntries = getStore('leaderboard');
     $: hostEntries = $leaderboardEntries?.host_leaderboard_entries || [];
 
-    const questions = $page.data.tiebreaker_questions || [];
-    const selectedQuestion = questions[0];
+    let selectedQuestion: GameQuestion;
 
     const responses = getStore('tiebreakerResponses');
-    $: responsesForSelectedQuestion = $responses.filter((resp) => resp.game_question_id === selectedQuestion.id) || [];
-
-    let answerShown = false;
-    $: answerButtonTxt = answerShown ? 'Hide Answer' : 'Show Answer';
+    $: responsesForSelectedQuestion = $responses.filter((resp) => resp.game_question_id === selectedQuestion?.id) || [];
 
     const placeMap: Record<string, string> = {
         '1': 'st',
@@ -59,17 +54,7 @@
     };
 </script>
 
-<!-- TODO: needs to be selectable (slider?) -->
-<div class="tiebreaker-question-container flex-column">
-    <p>{selectedQuestion.question_text}</p>
-    <!-- TODO: add questions notes in here somewhere -->
-    <button class="button button-secondary" on:click={() => (answerShown = !answerShown)}>
-        {answerButtonTxt}
-    </button>
-    {#if answerShown}
-        <p transition:slide>{selectedQuestion.display_answer}</p>
-    {/if}
-</div>
+<TieBreakerQuestion bind:selectedQuestion />
 
 <ul class="tiebreaker-list">
     {#each Object.entries(groupedEntries) as [forRank, group]}
@@ -78,7 +63,7 @@
                 <h3 class="spacer">For {forRank}{placeMap[forRank] || 'th'} Place</h3>
 
                 <input type="hidden" name="tied_for_rank" value={forRank} />
-                <input type="hidden" name="question_id" value={selectedQuestion.id} />
+                <input type="hidden" name="question_id" value={selectedQuestion?.id} />
                 <ul>
                     {#each group as entry}
                         {@const answer = responsesForSelectedQuestion.find((resp) => {
@@ -111,9 +96,6 @@
 </ul>
 
 <style lang="scss">
-    .tiebreaker-question-container {
-        max-width: calc(100% - 2rem);
-    }
     .tiebreaker-list {
         width: calc(100% - 2rem);
         max-width: var(--max-element-width);
