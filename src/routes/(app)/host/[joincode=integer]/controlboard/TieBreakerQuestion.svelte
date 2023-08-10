@@ -2,6 +2,7 @@
     import { page } from '$app/stores';
     import { slide } from 'svelte/transition';
     import { swipeQuestion } from '$lib/swipe';
+    import { KDE_FULL_SESSION } from '$env/static/private';
 
     const tbquestions = $page.data.tiebreaker_questions || [];
     export let selectedQuestion = tbquestions[0];
@@ -29,26 +30,24 @@
 
 <svelte:window on:keyup={handleQuestionSelect} />
 
-{#each tbquestions as question}
-    {#if question.id === selectedQuestion.id}
-        <!-- TODO: probably change to swipe -->
-        <div
-            transition:slide
-            class="tiebreaker-question-container flex-column"
-            use:swipeQuestion
-            on:swipe={handleQuestionSelect}
-        >
-            <p>{selectedQuestion.question_text}</p>
-            <!-- TODO: add questions notes in here somewhere -->
-            <button class="button button-secondary" on:click={() => (answerShown = !answerShown)}>
-                {answerButtonTxt}
-            </button>
-            {#if answerShown}
-                <p transition:slide>{selectedQuestion.display_answer}</p>
-            {/if}
-        </div>
-    {/if}
-{/each}
+<!-- TODO: probably change to swipe -->
+{#key selectedQuestion.id}
+    <div
+        transition:slide
+        class="tiebreaker-question-container flex-column"
+        use:swipeQuestion
+        on:swipe={handleQuestionSelect}
+    >
+        <p>{selectedQuestion.question_text}</p>
+        <!-- TODO: add questions notes in here somewhere -->
+        <button class="button button-secondary" on:click={() => (answerShown = !answerShown)}>
+            {answerButtonTxt}
+        </button>
+        {#if answerShown}
+            <p transition:slide>{selectedQuestion.display_answer}</p>
+        {/if}
+    </div>
+{/key}
 
 <style lang="scss">
     .tiebreaker-question-container {
