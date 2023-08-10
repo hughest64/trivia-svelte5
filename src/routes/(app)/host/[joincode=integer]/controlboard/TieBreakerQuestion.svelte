@@ -11,7 +11,6 @@
     $: answerButtonTxt = answerShown ? 'Hide Answer' : 'Show Answer';
 
     const handleQuestionSelect = async (event: MouseEvent | CustomEvent | KeyboardEvent) => {
-        const target = <HTMLElement>event.target;
         const eventDirection = event.detail?.direction;
         const keyCode = (event as KeyboardEvent).code;
 
