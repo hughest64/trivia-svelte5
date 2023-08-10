@@ -1,8 +1,10 @@
 <script lang="ts">
     import { slide } from 'svelte/transition';
     import { page } from '$app/stores';
+    import { deserialize } from '$app/forms';
     import { getStore } from '$lib/utils';
     import type { LeaderboardEntry } from '$lib/types';
+    import type { ActionResult } from '@sveltejs/kit';
 
     const leaderboardEntries = getStore('leaderboard');
     $: hostEntries = $leaderboardEntries?.host_leaderboard_entries || [];
@@ -49,8 +51,10 @@
             method: target.method,
             body: data
         });
-        if (!response.ok) {
-            // TODO: error handling
+        const result: ActionResult = deserialize(await response.text());
+
+        if (result.type !== 'success') {
+            // TODO: handle error
         }
     };
 </script>
@@ -80,12 +84,14 @@
                         {@const answer = responsesForSelectedQuestion.find((resp) => {
                             return resp.team_id === entry.team_id;
                         })}
+                        {@const inputText = answer?.recorded_answer === 'NaN' ? '-' : answer?.recorded_answer ?? ''}
+                        {@const gradeValue = answer?.grade === 'NaN' ? '-' : answer?.grade || ''}
 
                         <li class="input-container">
                             <span class="spacer rank-data">
                                 <h3>{entry.team_name}</h3>
                                 {#if answer && Number(answer.round_number) <= (entry?.tiebreaker_round_number || 0)}
-                                    <p>Grade {answer?.grade} New Rank {entry.rank}</p>
+                                    <p>Grade {gradeValue} New Rank {entry.rank}</p>
                                 {/if}
                             </span>
                             <input
@@ -93,7 +99,7 @@
                                 class="tiebreaker-answer"
                                 type="text"
                                 placeholder="Enter Answer"
-                                value={answer?.recorded_answer || ''}
+                                value={inputText}
                             />
                         </li>
                     {/each}

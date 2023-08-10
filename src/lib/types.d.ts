@@ -150,7 +150,7 @@ export interface Response {
 export interface TiebreakerResponse extends Pick<Response, 'recorded_answer' | 'round_number' | 'id'> {
     game_question_id: number;
     team_id: number;
-    grade: number;
+    grade: number | string;
 }
 
 export interface HostResponse extends Omit<Response, ['id', 'locked']> {

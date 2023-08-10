@@ -574,15 +574,12 @@ class TiebreakerView(APIView):
 
         through_round = event.max_locked_round()
         question_responses = []
-        skipped_teams = []
         for entry in team_data:
             team_id = entry.get("team_id")
-            # keep track of answers that cannot be converted to an int, but don't create a response
             try:
                 answer = int(entry.get("answer"))
             except:
-                skipped_teams.append(team_id)
-                continue
+                answer = None
 
             question_response, _ = TiebreakerResponse.objects.update_or_create(
                 game_question=question,
@@ -594,7 +591,7 @@ class TiebreakerView(APIView):
 
         # grade is abs(actual_answer - resp.answer)
         sorted_resps = sorted(question_responses, key=lambda resp: resp.grade)
-        sorted_teams = [resp.team.id for resp in sorted_resps] + skipped_teams
+        sorted_teams = [resp.team.id for resp in sorted_resps]
 
         # set lb rank (and rank) on each entry based on index + for_rank
         entries_to_update = leaderboard_entries.filter(team_id__in=sorted_teams)

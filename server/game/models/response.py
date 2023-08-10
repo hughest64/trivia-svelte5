@@ -210,7 +210,7 @@ class TiebreakerResponse(models.Model):
     game_question = models.ForeignKey("GameQuestion", on_delete=models.CASCADE)
     # the round at which the response was created (likely the event.max_locked_round())
     round_number = models.IntegerField()
-    recorded_answer = models.IntegerField()
+    recorded_answer = models.IntegerField(blank=True, null=True)
     team = models.ForeignKey(
         "Team", related_name="tiebreaker_responses", on_delete=models.CASCADE
     )
@@ -221,8 +221,14 @@ class TiebreakerResponse(models.Model):
     # delta between the actual answer and a recored answer
     @property
     def grade(self):
-        return abs(
-            int(self.game_question.question.display_answer.text) - self.recorded_answer
+        if self.recorded_answer is None:
+            return "NaN"
+
+        return str(
+            abs(
+                int(self.game_question.question.display_answer.text)
+                - self.recorded_answer
+            )
         )
 
     def __str__(self):
@@ -233,7 +239,9 @@ class TiebreakerResponse(models.Model):
             "id": self.id,
             "game_question_id": self.game_question.id,
             "round_number": self.round_number,
-            "recorded_answer": self.recorded_answer,
+            "recorded_answer": self.recorded_answer
+            if self.recorded_answer is not None
+            else "NaN",
             "team_id": self.team.id,
             "grade": self.grade,
         }
