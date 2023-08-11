@@ -3,7 +3,7 @@ import { createSelectorPromises } from './utils.js';
 
 // TODO: don't use game 1234 and add an API call to make sure an event exists (use a 9900 series joincode)
 
-const footerLinks = ['Quiz', 'Leaderboard', 'Chat', 'Megaround', 'Scoring', 'Menu'];
+const footerLinks = ['Quiz', 'Leaderboard', 'Chat', 'Controls', 'Megaround', 'Scoring', 'Menu'];
 
 test('no nav on the login page', async ({ page }) => {
     await page.goto('/user/login');
@@ -33,10 +33,10 @@ test('game join page only displays the menu link', async ({ p1 }) => {
     await Promise.all(linkPromises);
 });
 
-test('player game page displays all links except scoring', async ({ p1 }) => {
+test('player game page displays all links except scoring and controls', async ({ p1 }) => {
     await p1.page.goto('/game/1234');
     await expect(p1.page).toHaveURL('/game/1234');
-    const visibleLinks = footerLinks.filter((link) => link !== 'Scoring');
+    const visibleLinks = footerLinks.filter((link) => !['Scoring', 'Controls'].includes(link));
     const linkPromises = createSelectorPromises(p1.page, visibleLinks, footerLinks);
 
     await Promise.all(linkPromises);
@@ -82,7 +82,7 @@ test('only the menu is visible host the event setup', async ({ host }) => {
 test('All links are visible on the host game page', async ({ host }) => {
     await host.page.goto('/host/1234');
     await expect(host.page).toHaveURL('/host/1234');
-    const visibleLinks = footerLinks.filter((link) => link !== 'Megaround');
+    const visibleLinks = footerLinks.filter((link) => !['Megaround', 'Chat'].includes(link));
     const linkPromises = createSelectorPromises(host.page, visibleLinks, footerLinks);
 
     await Promise.all(linkPromises);
@@ -94,8 +94,8 @@ test('Host links navigate to the correct page', async ({ host }) => {
     await host.page.locator('p:has-text("Leaderboard")').click();
     await expect(host.page).toHaveURL('/host/1234/leaderboard');
     // chat
-    await host.page.locator('p:has-text("Chat")').click();
-    await expect(host.page).toHaveURL('/host/1234/chat');
+    await host.page.locator('p:has-text("Controls")').click();
+    await expect(host.page).toHaveURL('/host/1234/controlboard');
     // scoring
     await host.page.locator('p:has-text("Scoring")').click();
     await expect(host.page.locator('h1', { hasText: 'Scoring' })).toBeVisible();
