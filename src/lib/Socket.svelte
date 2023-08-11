@@ -15,7 +15,8 @@
         SocketMessage,
         HostResponse,
         HostMegaRoundInstance,
-        UserTeam
+        UserTeam,
+        TiebreakerResponse
     } from './types';
 
     const path = $page.url.pathname;
@@ -45,6 +46,7 @@
     const responseSummaryStore = getStore('responseSummary');
     const selectedMegaroundStore = getStore('selectedMegaRound');
     const userStore = getStore('userData');
+    const tiebreakerResponseStore = getStore('tiebreakerResponses');
 
     const handlers: MessageHandler = {
         connected: () => console.log('connected!'),
@@ -66,13 +68,25 @@
         },
         // TODO: better typings
         leaderboard_update: (msg: Record<string, unknown>) => {
-            const { ...leaderboard } = msg;
+            const { tiebreaker_responses, ...leaderboard } = msg;
+
             leaderboardStore.update((lb) => {
                 const newLb = { ...lb };
                 Object.assign(newLb, leaderboard);
 
                 return newLb;
             });
+
+            if (tiebreaker_responses) {
+                tiebreakerResponseStore.update((resps) => {
+                    const newResps = [...resps];
+                    for (const resp of tiebreaker_responses as TiebreakerResponse[]) {
+                        const indexToUpdate = newResps.findIndex((r) => r.id === resp.id) ?? -1;
+                        indexToUpdate > -1 ? (newResps[indexToUpdate] = resp) : newResps.push(resp);
+                    }
+                    return newResps;
+                });
+            }
         },
         leaderboard_update_host_entry: (msg: Record<string, LeaderboardEntry | string>) => {
             const updatedEntry = msg.entry as LeaderboardEntry;

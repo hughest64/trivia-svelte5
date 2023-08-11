@@ -6,6 +6,7 @@ from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 
+from rest_framework.exceptions import NotFound
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -27,12 +28,14 @@ from game.models import (
     EventRoundState,
     EventQuestionState,
     TriviaEvent,
+    TiebreakerResponse,
     QuestionResponse,
     Leaderboard,
     LeaderboardEntry,
     LEADERBOARD_TYPE_PUBLIC,
     LEADERBOARD_TYPE_HOST,
     PTS_ADJUSTMENT_OPTIONS_LIST,
+    QUESTION_TYPE_TIE_BREAKER,
 )
 from game.models.utils import queryset_to_json
 from game.processors import LeaderboardProcessor
@@ -421,8 +424,9 @@ class UpdateAdjustmentPointsView(APIView):
         adjustment_reason = data.as_int("adjustment_reason")
         team_id = data.as_int("team_id")
 
+        event = get_event_or_404(joincode=joincode)
         entries = LeaderboardEntry.objects.filter(
-            event__joincode=joincode, leaderboard_type=LEADERBOARD_TYPE_HOST
+            event=event, leaderboard_type=LEADERBOARD_TYPE_HOST
         )
 
         try:
@@ -440,7 +444,9 @@ class UpdateAdjustmentPointsView(APIView):
             lbe.points_adjustment += points
             lbe.total_points += points
             lbe.save()
-            leaderboard_data = LeaderboardProcessor().rank_host_leaderboard(entries)
+            leaderboard_data = LeaderboardProcessor(event=event).rank_host_leaderboard(
+                entries, event.max_locked_round()
+            )
 
         lbe.leaderboard.synced = False
         lbe.leaderboard.save()
@@ -526,5 +532,91 @@ class FinishGameview(APIView):
         event.save()
 
         SendEventMessage(joincode, {"msg_type": "finish_game_popup", "message": ""})
+
+        return Response({"success": True})
+
+
+class TiebreakerView(APIView):
+    authentication_classes = [JwtAuthentication]
+    permission_classes = [IsAdminUser]
+
+    def get(self, request, joincode):
+        event = get_event_or_404(joincode=joincode)
+        questions = GameQuestion.objects.filter(
+            game=event.game, question__question_type=QUESTION_TYPE_TIE_BREAKER
+        )
+        responses = TiebreakerResponse.objects.filter(event=event)
+        # TODO get any existing tiebreaker responses
+        return Response(
+            {
+                "tiebreaker_questions": queryset_to_json(questions),
+                "tiebreaker_responses": queryset_to_json(responses),
+            }
+        )
+
+    @method_decorator(csrf_protect)
+    def post(self, request, joincode):
+        data = DataCleaner(request.data)
+        tied_for_rank = data.as_int("tied_for_rank")
+        question_id = data.as_int("question_id")
+        team_data = request.data.get("team_data", [])
+
+        try:
+            question = GameQuestion.objects.get(id=question_id)
+        except GameQuestion.DoesNotExist:
+            raise NotFound(f"could not find Game Question with id {question_id}")
+
+        event = get_event_or_404(joincode=joincode)
+        leaderboard_entries = LeaderboardEntry.objects.filter(
+            event=event,
+            leaderboard_type=LEADERBOARD_TYPE_HOST,
+        )
+
+        through_round = event.max_locked_round()
+        question_responses = []
+        for entry in team_data:
+            team_id = entry.get("team_id")
+            try:
+                answer = int(entry.get("answer"))
+            except:
+                answer = None
+
+            question_response, _ = TiebreakerResponse.objects.update_or_create(
+                game_question=question,
+                event=event,
+                team_id=team_id,
+                defaults={"recorded_answer": answer, "round_number": through_round},
+            )
+            question_responses.append(question_response)
+
+        # grade is abs(actual_answer - resp.answer)
+        sorted_resps = sorted(question_responses, key=lambda resp: resp.grade)
+        sorted_teams = [resp.team.id for resp in sorted_resps]
+
+        # set lb rank (and rank) on each entry based on index + for_rank
+        entries_to_update = leaderboard_entries.filter(team_id__in=sorted_teams)
+        for lb_entry in entries_to_update:
+            lb_entry.tiebreaker_rank = tied_for_rank + sorted_teams.index(
+                lb_entry.team.id
+            )
+            lb_entry.tiebreaker_round_number = through_round
+        LeaderboardEntry.objects.bulk_update(
+            entries_to_update, fields=["tiebreaker_rank", "tiebreaker_round_number"]
+        )
+        ranked_entries = LeaderboardProcessor(event=event).rank_host_leaderboard(
+            leaderboard_entries, through_round
+        )
+        # host socket message w/ updated lb entries (might need a new msg_type to handle selective updates)
+
+        message = {
+            "msg_type": "leaderboard_update",
+            "message": {
+                "host_leaderboard_entries": ranked_entries,
+                "tiebreaker_responses": queryset_to_json(sorted_resps),
+                "synced": False,
+            },
+        }
+
+        SendHostMessage(joincode=joincode, message=message)
 
         return Response({"success": True})

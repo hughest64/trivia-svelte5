@@ -240,7 +240,7 @@ class AirtableData:
                 missing_cols.append((i, label))
                 df.insert(i, label, col_value)
 
-        logger.info("added the following columns to the dataframe:", missing_cols)
+        logger.info(f"added the following columns to the dataframe: {missing_cols}")
         return df
 
     @classmethod

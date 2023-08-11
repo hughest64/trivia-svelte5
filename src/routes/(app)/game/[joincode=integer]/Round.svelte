@@ -4,7 +4,7 @@
     import { fly } from 'svelte/transition';
     import { sineInOut } from 'svelte/easing';
     import { page } from '$app/stores';
-    import { swipeQuestion } from './swipe';
+    import { swipeQuestion } from '$lib/swipe';
     import { getStore, getQuestionKeys, setEventCookie, splitQuestionKey } from '$lib/utils';
     import type { GameRound } from '$lib/types';
 
@@ -17,7 +17,7 @@
     const currentEventData = getStore('currentEventData');
     $: questionKeys = getQuestionKeys($questions || [], activeRound);
 
-    let swipeDirection = 'right'; // or 'left'
+    let swipeDirection: 'left' | 'right' = 'right';
     $: swipeXValue = swipeDirection === 'right' ? 1000 : -4000;
     const inSwipeDuration = 600;
     $: outSwipeDuration = swipeDirection === 'right' ? 100 : 350;
@@ -74,6 +74,7 @@
             </button>
         {/each}
     </div>
+
     <div class="question-row">
         {#key $activeEventData.activeQuestionKey}
             <div

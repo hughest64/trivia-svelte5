@@ -77,5 +77,6 @@ class LeaderboardSetup(TestCase):
     #     """test points adjustment (pts and resons) as well as rerank capabilities through the new view"""
     #     return
 
-    # this is probably worthy of a separate class as there are many scenarios
     # def test_tiebreakers(self):
+    #   use the game_runner to set things up
+    #   post 3 resps (one blank) and ensure the ranker runs properly

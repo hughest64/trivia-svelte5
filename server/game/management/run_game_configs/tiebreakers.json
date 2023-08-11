@@ -1,0 +1,17 @@
+{
+    "joincode": 1235,
+    "teams": 7,
+    "rounds_to_play": 4,
+    "team_configs": {
+        "1": {"score_percentage": 80},
+        "2": {"score_percentage": 80},
+        "3": {"score_percentage": 45},
+        "4": {"score_percentage": 45},
+        "5": {"score_percentage": 10},
+        "6": {"score_percentage": 45},
+        "7": {"score_percentage": 100}
+    },
+    "host_config": {
+        "lock_rounds": true
+    }
+}

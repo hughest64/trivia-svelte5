@@ -37,9 +37,12 @@ export interface UserTeam {
 }
 
 export interface LeaderboardEntry {
+    id: number;
     team_id: number;
     team_name: string;
     rank?: number;
+    tied_for_rank?: number;
+    tiebreaker_round_number?: number;
     team_password?: string;
     megaround?: number;
     total_points: number;
@@ -144,6 +147,12 @@ export interface Response {
     key: string;
 }
 
+export interface TiebreakerResponse extends Pick<Response, 'recorded_answer' | 'round_number' | 'id'> {
+    game_question_id: number;
+    team_id: number;
+    grade: number | string;
+}
+
 export interface HostResponse extends Omit<Response, ['id', 'locked']> {
     response_ids: number[];
     fuzz_ratio?: number;
@@ -200,6 +209,7 @@ export interface StoreTypes {
     roundStates: Writable<RoundState[]>;
     questionStates: Writable<QuestionState[]>;
     responseData: Writable<Response[]>;
+    tiebreakerResponses: Writable<TiebreakerResponse[]>;
     responseSummary: Writable<ResponseSummary>;
     hostResponseData: Writable<HostResponse[]>;
     popupData: Writable<PopupData>;

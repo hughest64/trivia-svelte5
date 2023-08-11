@@ -35,14 +35,14 @@
                     <p>Leaderboard</p>
                 </a>
             </li>
+        {/if}
+        {#if routeId === 'game' && isEventRoute}
             <li class:active={setActive('chat')}>
                 <a data-sveltekit-preload-code="tap" href={`/${routeId}/${joinCode}/chat`}>
                     <ChatIcon cls="svg" />
                     <p>Chat</p>
                 </a>
             </li>
-        {/if}
-        {#if routeId === 'game' && isEventRoute}
             <li class:active={setActive('megaround')}>
                 <a data-sveltekit-preload-code="tap" href={`/game/${joinCode}/megaround`}>
                     <MegaroundIcon cls="svg" />
@@ -50,6 +50,12 @@
                 </a>
             </li>
         {:else if routeId === 'host' && isEventRoute}
+            <li class:active={setActive('controlboard')}>
+                <a data-sveltekit-preload-code="tap" href={`/${routeId}/${joinCode}/controlboard`}>
+                    <ChatIcon cls="svg" />
+                    <p>Controls</p>
+                </a>
+            </li>
             <li class:active={setActive('score')}>
                 <a data-sveltekit-preload-code="tap" data-sveltekit-reload href={`/host/${joinCode}/score`}>
                     <ScoringIcon cls="svg" />

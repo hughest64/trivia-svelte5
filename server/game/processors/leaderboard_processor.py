@@ -60,36 +60,80 @@ class LeaderboardProcessor:
 
         lbe.total_points = points + lbe.points_adjustment
 
-    # TODO: the tiebreaker bit needs work (do we reset it for example?)
     def _set_leaderboard_rank(self, leaderboard_entries):
         self._check_order()
         pts_vals = sorted(
-            [lbe.total_points for lbe in leaderboard_entries],
+            [lbe.total_points + lbe.points_adjustment for lbe in leaderboard_entries],
             reverse=True,
         )
-        tb_index = 0
+
+        # track the points and rank of ties like - {pts: index}
+        ties = {}
+        seen = set()
+        for i, pts in enumerate(pts_vals):
+            if pts in seen and pts not in ties:
+                ties[pts] = i
+            seen.add(pts)
+
         for lbe in leaderboard_entries:
+            # combine response points and points awarded
+            pts_with_adj = lbe.total_points + lbe.points_adjustment
+
             # don't assign rank for 0 points
-            if lbe.total_points == 0:
+            if pts_with_adj <= 0:
                 lbe.rank = None
+                lbe.tied_for_rank = None
+                lbe.tiebreaker_round_number = None
+                lbe.tiebreaker_rank = None
                 continue
-            rank = pts_vals.index(lbe.total_points) + 1
-            if lbe.tiebreaker_rank is not None:
-                rank += tb_index
-                tb_index += 1
+
+            apply_tiebreaker_rank = (
+                lbe.tiebreaker_rank is not None
+                and lbe.tiebreaker_round_number is not None
+                # this will auto reset tiebreakers when the next round is locked
+                and self.event.max_locked_round() <= (lbe.tiebreaker_round_number or 0)
+            )
+
+            if apply_tiebreaker_rank:
+                lbe.rank = lbe.tiebreaker_rank
+
             else:
-                tb_index = 0
-            lbe.rank = rank
+                lbe.rank = pts_vals.index(pts_with_adj) + 1
+                lbe.tied_for_rank = ties.get(pts_with_adj)
 
-    def handle_tiebreaker(self):
-        return
+            if not apply_tiebreaker_rank:
+                lbe.tiebreaker_rank = None
+                lbe.tiebreaker_round_number = None
 
-    def rank_host_leaderboard(self, entries):
+    def _unsync_leadboards(self, through_round):
+        self._check_order()
+
+        return Leaderboard.objects.update_or_create(
+            event=self.event,
+            defaults={
+                "host_through_round": through_round,
+                "synced": False,
+            },
+        )
+
+    def rank_host_leaderboard(self, entries, through_round):
         """Apply new rankings to leaderboard entries"""
         self.processing = True
 
+        # the leaderboards are no longer synced
+        lb, _ = self._unsync_leadboards(through_round)
+
+        # with transaction.atomic():
         self._set_leaderboard_rank(entries)
-        LeaderboardEntry.objects.bulk_update(entries, fields=["rank"])
+        LeaderboardEntry.objects.bulk_update(
+            entries,
+            fields=[
+                "rank",
+                "tied_for_rank",
+                "tiebreaker_round_number",
+                "tiebreaker_rank",
+            ],
+        )
 
         self.processing = False
         return queryset_to_json(entries.order_by("rank", "pk"))
@@ -100,13 +144,9 @@ class LeaderboardProcessor:
         try:
             with transaction.atomic():
                 apply_megaround = self.event.all_rounds_are_locked()
-                lb, _ = Leaderboard.objects.update_or_create(
-                    event=self.event,
-                    defaults={
-                        "host_through_round": through_round,
-                        "synced": False,
-                    },
-                )
+                # the leaderboards are no longer synced
+                lb, _ = self._unsync_leadboards(through_round)
+
                 entries = LeaderboardEntry.objects.filter(
                     event=self.event, leaderboard_type=LEADERBOARD_TYPE_HOST
                 )
@@ -118,7 +158,15 @@ class LeaderboardProcessor:
                 self._set_leaderboard_rank(entries)
                 LeaderboardEntry.objects.bulk_update(
                     entries,
-                    ["total_points", "rank", "leaderboard", "megaround_applied"],
+                    [
+                        "total_points",
+                        "rank",
+                        "tied_for_rank",
+                        "tiebreaker_round_number",
+                        "tiebreaker_rank",
+                        "leaderboard",
+                        "megaround_applied",
+                    ],
                 )
 
             logger.info(

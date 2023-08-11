@@ -1,8 +1,10 @@
 <script lang="ts">
     import { enhance } from '$app/forms';
+    import { page } from '$app/stores';
     import { getStore } from '$lib/utils';
     import Entry from '$lib/leaderboards/Entry.svelte';
     import RoundSelector from '../RoundSelector.svelte';
+    import type { LeaderboardEntry } from '$lib/types';
 
     const leaderboard = getStore('leaderboard');
     const rounds = getStore('rounds');
@@ -15,6 +17,14 @@
     $: gameComplete = completedRounds.length > 0 && $rounds.length === completedRounds.length;
 
     let lbView: 'public' | 'host' = 'host';
+
+    const showTiebreakerButton = (entry: LeaderboardEntry, index: number) => {
+        const hostEntries = $leaderboard?.host_leaderboard_entries || [];
+        const previousTiedForRank = hostEntries[index - 1]?.rank;
+        const nextTiedForRank = hostEntries[index + 1]?.rank;
+
+        return entry.rank && entry.rank !== nextTiedForRank && entry.rank === previousTiedForRank;
+    };
 </script>
 
 <div class="host-container flex-column">
@@ -67,8 +77,16 @@
         <h4>Host Leaderboard</h4>
 
         <ul id="host-leaderboard-view" class="leaderboard-rankings">
-            {#each $leaderboard.host_leaderboard_entries || [] as entry}
+            {#each $leaderboard.host_leaderboard_entries || [] as entry, index}
                 <Entry {entry} {lbView} />
+
+                {#if showTiebreakerButton(entry, index)}
+                    <div class="resolve-tiebreaker">
+                        <a href={`/host/${$page.params.joincode}/controlboard`} class=" button button-primary">
+                            Resolve Tie
+                        </a>
+                    </div>
+                {/if}
             {/each}
         </ul>
     {/if}
@@ -85,5 +103,9 @@
     }
     form {
         width: 100vw;
+    }
+    .resolve-tiebreaker {
+        display: flex;
+        justify-content: center;
     }
 </style>

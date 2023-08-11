@@ -3,8 +3,6 @@ from django.db import models
 
 from fuzzywuzzy import fuzz
 
-from game.models.utils import queryset_to_json
-
 FUZZ_MATCH_RATIO = 85
 
 LEADERBOARD_TYPE_HOST = 0
@@ -67,6 +65,7 @@ class QuestionResponse(models.Model):
             "recorded_answer": self.recorded_answer,
         }
 
+    # TODO: compare lower case and stripped spaces from both the answer and response
     def grade(self):
         """run fuzzy fuzzy using the recorded answer against all accepted answers for the question"""
         if self.locked:
@@ -140,7 +139,16 @@ class LeaderboardEntry(models.Model):
     )
     team = models.ForeignKey("Team", related_name="teams", on_delete=models.CASCADE)
     rank = models.IntegerField(blank=True, null=True)
+
+    # a team's rank after settling tiebreakers
     tiebreaker_rank = models.IntegerField(blank=True, null=True)
+
+    # 2 or more teams rank before setting tiebreakers
+    tied_for_rank = models.IntegerField(blank=True, null=True)
+
+    # the round in which the tiebreaker was determined
+    tiebreaker_round_number = models.IntegerField(blank=True, null=True)
+
     total_points = models.FloatField(default=0)
     selected_megaround = models.IntegerField(blank=True, null=True)
     megaround_applied = models.BooleanField(default=False)
@@ -184,10 +192,13 @@ class LeaderboardEntry(models.Model):
 
     def to_json(self):
         return {
+            "id": self.id,
             "team_id": self.team.id,
             "team_name": self.team.name,
             "team_password": self.team.password,
             "rank": self.rank or "-",
+            "tied_for_rank": self.tied_for_rank,
+            "tiebreaker_round_number": self.tiebreaker_round_number,
             "total_points": self.total_points,
             "megaround": self.selected_megaround,
             "points_adjustment_value": self.points_adjustment,
@@ -195,36 +206,46 @@ class LeaderboardEntry(models.Model):
         }
 
 
-"""
-host creates a tiebraker instance and response objects for each team. teams answer
-the tiebreaker then the host resolves the tiebreaker. updating the leaderboard is a 
-separate action
-"""
+class TiebreakerResponse(models.Model):
+    game_question = models.ForeignKey("GameQuestion", on_delete=models.CASCADE)
+    # the round at which the response was created (likely the event.max_locked_round())
+    round_number = models.IntegerField()
+    recorded_answer = models.IntegerField(blank=True, null=True)
+    team = models.ForeignKey(
+        "Team", related_name="tiebreaker_responses", on_delete=models.CASCADE
+    )
+    event = models.ForeignKey(
+        "TriviaEvent", related_name="tiebreaker_responses", on_delete=models.CASCADE
+    )
 
+    # delta between the actual answer and a recored answer
+    @property
+    def grade(self):
+        if self.recorded_answer is None:
+            return "NaN"
 
-# class TiebreakerInstance(models.Model):
-#     event = models.ForeignKey(
-#         "TriviaEvent", related_name="tiebreaker_instances", on_delete=models.CASCADE
-#     )
-#     round_number = models.IntegerField()
-#     resolved = models.BooleanField(default=False)
+        return str(
+            abs(
+                int(self.game_question.question.display_answer.text)
+                - self.recorded_answer
+            )
+        )
 
-#     def resolve_tiebreaker(self):
-#         resps = self.tiebreaker_responses.all()
-#         # set tiebreaker_rank on leaderboard entries based on closeness to the right answer
-#         # (assuming all questions are numeric)
-#         self.resolved = True
-#         self.save()
+    def __str__(self):
+        return f"Tiebreaker Response for {self.team} at {self.event}"
 
+    def to_json(self):
+        return {
+            "id": self.id,
+            "game_question_id": self.game_question.id,
+            "round_number": self.round_number,
+            "recorded_answer": self.recorded_answer
+            if self.recorded_answer is not None
+            else "NaN",
+            "team_id": self.team.id,
+            "grade": self.grade,
+        }
 
-# class TiebreakerResponse(models.Model):
-#     tiebreaker_instance = models.ForeignKey(
-#         TiebreakerInstance,
-#         related_name="tiebreaker_responses",
-#         on_delete=models.CASCADE,
-#     )
-#     # chosen from the tiebreaker_instance
-#     question = models.ForeignKey("Question", on_delete=models.CASCADE)
-#     leaderboard_entry = models.ForeignKey(LeaderboardEntry, on_delete=models.CASCADE)
-#     recorded_answer = models.TextField(default="")
-#     tiebreaker_rank = models.IntegerField(blank=True, null=True)
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
