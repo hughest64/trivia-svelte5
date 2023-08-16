@@ -21,8 +21,9 @@
 
     const rounds = getStore('rounds');
     const roundStates = getStore('roundStates');
-    const teamResponseStore = getStore('responseData');
+    $: isSecondHalf = Math.max(...$roundStates.map((rs) => (rs.scored ? rs.round_number : 0)));
 
+    const teamResponseStore = getStore('responseData');
     $: responses = (expandable && $teamResponseStore) || [];
     $: groupedResps = respsByround(responses, $rounds, $roundStates);
 
@@ -72,9 +73,8 @@
                 <button class="team-name-btn" on:click={handleExpand}>
                     <h3>{teamName}</h3>
 
-                    <!-- TODO: add condition for is second half-->
                     <!-- TODO: add summary text for players -->
-                    {#if (isPlayerTeamEntry || !isPlayerEndpoint) && !entry.megaround}
+                    {#if (isPlayerTeamEntry || !isPlayerEndpoint) && isSecondHalf && !entry.megaround}
                         <span class="megaround-alert">!Mega Round</span>
                     {/if}
                 </button>
