@@ -16,9 +16,9 @@ class Team(models.Model):
         super().__init__(*args, **kwargs)
 
     created_at = models.DateTimeField(auto_now_add=True)
-    # TODO: unique? - definitely limit to 60
-    name = models.CharField(max_length=200)
-    password = models.CharField(max_length=200, unique=True, db_index=True)
+    # TODO: unique?
+    name = models.CharField(max_length=60)
+    password = models.CharField(max_length=120, unique=True, db_index=True)
     members = models.ManyToManyField("user.User", related_name="teams")
 
     def to_json(self):
