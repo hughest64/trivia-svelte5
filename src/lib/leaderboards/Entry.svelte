@@ -71,7 +71,7 @@
         <div class="team-name grow" class:team-name-wide={collapsed}>
             {#if !expanded}
                 <button class="team-name-btn" on:click={handleExpand}>
-                    <h3>{teamName}</h3>
+                    <h3 class="team-name-display">{teamName}</h3>
                     {#if (isPlayerTeamEntry || !isPlayerEndpoint) && isSecondHalf && !entry.megaround}
                         <span class="megaround-alert">!Mega Round</span>
                     {/if}
