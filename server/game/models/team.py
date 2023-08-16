@@ -16,7 +16,6 @@ class Team(models.Model):
         super().__init__(*args, **kwargs)
 
     created_at = models.DateTimeField(auto_now_add=True)
-    # TODO: unique?
     name = models.CharField(max_length=60)
     password = models.CharField(max_length=120, unique=True, db_index=True)
     members = models.ManyToManyField("user.User", related_name="teams")

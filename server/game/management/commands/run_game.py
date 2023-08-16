@@ -17,7 +17,7 @@ python manage.py play_game -g --game 4567 # looks up a game and creates an event
 -D --delete (capital) would delete all data from the event down, BUT NOT THE GAME DATA!
 -r --rounds the number of rounds to play
 
-TODO: we need options for all of these things
+we need options for all of these things
 - host locks
 - host socres? (future add on)
 - host reveals
@@ -71,7 +71,6 @@ class Command(BaseCommand):
             type=int,
             help="the number of teams added to the event",
         )
-        # TODO: possibly add start and stop round args and/or remove this one
         parser.add_argument(
             "-r",
             "--rounds",
@@ -177,14 +176,12 @@ class Command(BaseCommand):
                 #             team.answer_questions_from_config(r, team_rd)
 
                 #         else:
-                #             # TODO: eliminate or raise
-                #             pass
-                #             # team.answer_questions(rd_num=r, points_awarded=2.5)
+                #             team.answer_questions(rd_num=r, points_awarded=2.5)
 
             if rounds_to_play is not None and host_config.get("lock_rounds"):
                 [host.lock(r) for r in range(1, rounds_to_play + 1)]
 
-            # TODO: handle there scenarios or remove them
+            # TODO: handle these scenarios
             # host.score(r)
             # host.reveal_answers(r)
             # host.update_leaderboard()
