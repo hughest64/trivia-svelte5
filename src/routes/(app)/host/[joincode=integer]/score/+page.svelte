@@ -5,6 +5,7 @@
     import ResponseGroup from './ResponseGroup.svelte';
 
     const rounds = getStore('rounds');
+    const roundStates = getStore('roundStates');
     const allQuestions = getStore('questions');
     const roundNumbers = $rounds.map((rd) => rd.round_number) || [];
     const joincode = $page.params.joincode;
@@ -14,6 +15,7 @@
     const responses = getStore('hostResponseData');
 
     $: roundNumber = $activeEventData.activeRoundNumber;
+    $: activeRoundIsLocked = $roundStates.find((rs) => rs.round_number === roundNumber)?.locked;
     $: roundQuestions = $allQuestions.filter((q) => q.round_number === roundNumber);
     $: roundQuestionNumbers = roundQuestions?.map((q) => q.question_number) || [];
 
@@ -91,44 +93,47 @@
     <RoundSelector />
 </div>
 
-<!-- TODO: better handling of this, it gets weird if a question doesn't have any responses, but the next question does -->
-<!-- {#if scoringResponses.length > 0} -->
-<div class="host-question-panel">
-    <h2>Round {scoringQuestion?.round_number} Question {scoringQuestion?.question_number}</h2>
-    <p>{scoringQuestion?.question_text}</p>
-</div>
+{#if activeRoundIsLocked}
+    <div class="host-question-panel">
+        <h2>Round {scoringQuestion?.round_number} Question {scoringQuestion?.question_number}</h2>
+        <p>{scoringQuestion?.question_text}</p>
+    </div>
 
-<h4 class="answer">Answer: {scoringQuestion?.display_answer}</h4>
+    <h4 class="answer">Answer: {scoringQuestion?.display_answer}</h4>
 
-<div class="button-container">
-    <button class="button button-secondary" disabled={isFirstQuestion} on:click={goBack}>Previous</button>
-    {#if !isLastQuestion}
-        <button class="button button-secondary" on:click={advance}>Next</button>
-    {:else}
-        <!-- TODO: query param that will set active event data to the min of unscored rounds -->
-        <!-- (see notes in Footer.svelte, I think an after navigate will handle it) -->
-        <a href="/host/{joincode}" class="button button-primary">Go Read Answers Aloud</a>
-    {/if}
-</div>
+    <div class="button-container">
+        <button class="button button-secondary" disabled={isFirstQuestion} on:click={goBack}>Previous</button>
+        {#if !isLastQuestion}
+            <button class="button button-secondary" on:click={advance}>Next</button>
+        {:else}
+            <!-- TODO: query param that will set active event data to the min of unscored rounds -->
+            <!-- (see notes in Footer.svelte, I think an after navigate will handle it) -->
+            <a href="/host/{joincode}" class="button button-primary">Go Read Answers Aloud</a>
+        {/if}
+    </div>
 
-<ul id="response-groups">
-    {#each scoringResponses as response}
-        <ResponseGroup {response} />
-    {/each}
-</ul>
+    <ul id="response-groups">
+        {#if scoringResponses.length > 0}
+            {#each scoringResponses as response}
+                <ResponseGroup {response} />
+            {/each}
+        {:else}
+            <h4>There are no responses to this question</h4>
+        {/if}
+    </ul>
 
-<div class="button-container">
-    <button class="button button-secondary" disabled={isFirstQuestion} on:click={goBack}>Previous</button>
-    {#if !isLastQuestion}
-        <button class="button button-secondary" on:click={advance}>Next</button>
-    {:else}
-        <a href="/host/{joincode}" class="button button-primary">Go Read Answers Aloud</a>
-    {/if}
-</div>
+    <div class="button-container">
+        <button class="button button-secondary" disabled={isFirstQuestion} on:click={goBack}>Previous</button>
+        {#if !isLastQuestion}
+            <button class="button button-secondary" on:click={advance}>Next</button>
+        {:else}
+            <a href="/host/{joincode}" class="button button-primary">Go Read Answers Aloud</a>
+        {/if}
+    </div>
+{:else}
+    <h2>Round {roundNumber} is not locked</h2>
+{/if}
 
-<!-- {:else}
-    <h2>All Caught Up!</h2>
-{/if} -->
 <style lang="scss">
     .button-container {
         width: 40em;
