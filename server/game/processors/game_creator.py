@@ -263,8 +263,7 @@ class TriviaGameCreator:
                 display_answer=display_answer,
                 question_url=row.question_url,
                 answer_notes=row.answer_notes,
-                # TODO: add this field to the model
-                # question_notes=row.question_notes,
+                question_notes=row.question_notes,
             )
             question.accepted_answers.set(accepted_answers)
 

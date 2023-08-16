@@ -38,12 +38,15 @@
         on:swipe={handleQuestionSelect}
     >
         <p>{selectedQuestion.question_text}</p>
-        <!-- TODO: add questions notes in here somewhere -->
+        {#if selectedQuestion.question_notes}<p><strong>Notes:</strong> {selectedQuestion.question_notes}</p>{/if}
         <button class="button button-secondary" on:click={() => (answerShown = !answerShown)}>
             {answerButtonTxt}
         </button>
         {#if answerShown}
-            <p transition:slide>{selectedQuestion.display_answer}</p>
+            <div transition:slide class="flex-column">
+                <p>{selectedQuestion.display_answer}</p>
+                {#if selectedQuestion.answer_notes}<p><strong>Notes:</strong> {selectedQuestion.answer_notes}</p>{/if}
+            </div>
         {/if}
     </div>
 {/key}

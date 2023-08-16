@@ -49,6 +49,7 @@ class Question(models.Model):
         "QuestionAnswer", related_name="accepted_answers", blank=True
     )
     answer_notes = models.CharField(max_length=255, blank=True, null=True)
+    question_notes = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
         qt = self.question_text

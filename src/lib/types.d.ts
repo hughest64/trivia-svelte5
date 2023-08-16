@@ -86,6 +86,7 @@ export interface GameQuestion {
     id: string | number;
     question_type: string;
     question_text: string;
+    question_notes: string;
     question_url: string;
     display_answer: string;
     answer_notes: string;
