@@ -146,7 +146,6 @@ class ValidateDataView(APIView):
     authentication_classes = [OpsAuthentication]
 
     def post(self, request):
-        # TODO: data cleaner
         joincode = request.data.get("joincode")
         event = get_event_or_404(joincode)
 

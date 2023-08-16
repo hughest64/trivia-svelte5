@@ -6,7 +6,6 @@ from game.models import *
 from user.models import User
 
 
-# TODO: write some tests
 class QuestionResponseViewTestCase(TestCase):
     fixtures = ["initial.json"]
 

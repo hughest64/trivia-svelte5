@@ -118,7 +118,6 @@ class AirtableImportTestCase(TestCase):
 
     def test_process_airtable_data(self):
         # fetch data but do not split into multiple frames
-        # TODO: used fixed dates which will likely always have data (last week?)
         importer = AirtableData()
         at_data = importer.get_airtable_data(split=False)
         if len(at_data) == 0:
@@ -133,24 +132,6 @@ class AirtableImportTestCase(TestCase):
             if not importer.private_event and col["label"] in PE_COLUMNS:
                 continue
             self.assertTrue(col["label"] in at_data.columns)
-
-    # TODO: this test isn't really useful as is, maybe upate to test for failure?
-    # i.e force another game title into the data and assert that an error is raised
-    def test_game_dataframes(self):
-        importer = AirtableData()
-        at_data = importer.get_airtable_data(split=False)
-        if len(at_data) == 0:
-            print(f"No data found for dates {importer.get_validated_lookup_dates()}")
-            # use the fallback spreadsheet
-            at_data = importer.process_airtable_data(self.test_data)
-
-        frames = importer.create_date_frames(at_data)
-
-        self.assertIsInstance(frames, list)
-
-        # TODO: _game_name is no longer a method of the AirtableData class
-        # unique_games = set(map(importer._game_name, at_data["date_used"], at_data["block_code"]))
-        # self.assertEqual(len(unique_games), len(frames))
 
     # TODO:
     # - test the private event parameter to the AirtableData class
@@ -249,7 +230,7 @@ class GameCreatorTestCase(TestCase):
     # TODO: open this back up after private event implementation
     # def test_private_event_game_creation(self):
     #     """Test that the private event and trivia event ojbects are also created for private events"""
-    #     # TODO: this test (and other pe tests) will likely fail on the standard event server as the pe tables don't exist there
+    #     # this test (and other pe tests) will likely fail on the standard event server as the pe tables don't exist there
     #     if not settings.PRIVATE_EVENT:
     #         print("skipping private event test")
     #         return
@@ -301,55 +282,6 @@ class GameCreatorTestCase(TestCase):
         self.assertEqual(len(sg.game_rounds.filter(round_number=8)), 1)
         self.assertEqual(len(nsg.game_rounds.filter(round_number=8)), 1)
 
-    def test_round_reuse(self):
-        """Test that round question data may be reused in a different game with a different round number"""
-        # TODO: leaving for now, but I don't think this test is valid any longer as rounds are game specific and
-        # don't contain any question data, remove it once that is validated
-        return
-        # borrow round 3 from the first game and use it as round 5 in the second game
-        f1 = self.standard_frames[0]
-        new_rd = pd.DataFrame(f1[f1.round_number == 3])
-        new_rd.round_number = 5
-        f2 = self.standard_frames[1]
-        f3 = f2[f2.round_number != 5]
-        joined_f3 = pd.concat([f3, new_rd]).sort_values(
-            ["round_number", "question_number"]
-        )
-
-        # validate the df rework
-        self.assertEqual(len(joined_f3[joined_f3.round_number == 5]), 5)
-        self.assertEqual(len(joined_f3[joined_f3.round_number == 3]), 5)
-
-        gf = TriviaGameFactory(f1, joined_f3, private_event=False)
-        gf.process()
-        stats = gf.get_statistics()
-        # each frame has a sound and and no sound game
-        self.assertEqual(stats["games_created"], 4)
-        # TODO: FAIL 36 != 20
-        # each frame should create 10 rounds
-        # self.assertEqual(stats["rounds_created"], 20)
-
-        f1_title = f1.iloc[0].game_title
-        f1_game = Game.objects.get(title=f1_title + " - Sound")
-        f1_rd3 = GameRound.objects.get(game=f1_game, round_number=3)
-
-        f3_title = f3.iloc[0].game_title
-        f3_game = Game.objects.get(title=f3_title + " - Sound")
-        f3_rd5 = GameRound.objects.get(game=f3_game, round_number=5)
-        # round titles are the same between games
-        self.assertEqual(f1_rd3.title, f3_rd5.title)
-        # question text is the same between games
-        for f1q in f1_rd3.questions.all():
-            f3q = f3_rd5.questions.filter(
-                question_number=f1q.question_number, question_text=f1q.question_text
-            )
-            # text and question number should match in the duplicated round
-            self.assertEqual(f3q.count(), 1)
-
-        # the game with the duplication has the correct rounds
-        self.assertEqual(f3_game.rounds.filter(round_number=3).count(), 1)
-        self.assertEqual(f3_game.rounds.filter(round_number=5).count(), 1)
-
     def test_missing_and_duplicate_data(self):
         """Test that the validator properly reports missing and duplicate data"""
         game_frame = self.standard_frames[0]
@@ -397,10 +329,3 @@ class GameCreatorTestCase(TestCase):
         # gc = TriviaGameCreator(frame, private_event=False)
         # gc.update_or_create()
         # self.assertEqual(GameQuestion.objects.filter(question_number=0).count(), 3)
-
-    # TODO: (nice to haves)
-    # - test the create helper?
-    # -- test return value (no validation data) when there is no data vs when there is data (has validation data)
-    # - test the management command?
-    # - test the airtable view?
-    # -- auth, query params, etc
