@@ -217,11 +217,18 @@
             if ($page.url.pathname.startsWith('/host')) {
                 hostResponseStore.update((resps) => {
                     const newResps = [...resps];
-                    // TODO: it seems likely that relying in the first index to match is not a good idea!
-                    const respsToUpdate =
-                        newResps.find((resp) => resp.response_ids[0] === response_ids[0]) || ({} as HostResponse);
-                    respsToUpdate.points_awarded = Number(points_awarded);
-                    respsToUpdate.funny = resolveBool(funny);
+                    // all ids should match, but sort the the id array for a bit of insurance
+                    const respsToUpdate = newResps.find((resp) => {
+                        const exisitngIds = resp.response_ids.sort();
+                        const incomingIds = response_ids.sort();
+
+                        return exisitngIds[0] === incomingIds[0];
+                    });
+
+                    if (respsToUpdate) {
+                        respsToUpdate.points_awarded = Number(points_awarded);
+                        respsToUpdate.funny = resolveBool(funny);
+                    }
                     return newResps;
                 });
                 if (leaderboard_data) {
