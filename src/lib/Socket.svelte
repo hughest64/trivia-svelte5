@@ -324,7 +324,6 @@
 
             // no active_team_id
             if (msgType === 'unauthorized') {
-                // TODO: error message to user?
                 goto(`/team?next=${location.pathname}`, { invalidateAll: true });
 
                 // anonymous user in the socket connection
