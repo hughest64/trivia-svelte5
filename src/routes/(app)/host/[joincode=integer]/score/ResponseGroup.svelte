@@ -51,7 +51,6 @@
     };
 </script>
 
-<!-- TODO: this submission set up is very un-kit and should probably be changed to align with other form submissions -->
 <li class="scoring-response">
     <button type="submit" class="funny-button" class:updating on:click={() => updateResponse('funny')}>
         <svelte:component this={funnyIcon} />

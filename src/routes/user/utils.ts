@@ -67,7 +67,6 @@ export const githubAuthToken = async (code: string, secret: string) => {
     });
 
     if (!authResp.ok) {
-        // TODO: perhaps a code here to help us debug where the issue occred?
         throw error(400, { message: 'Cannot authenticate with GitHub' });
     }
 

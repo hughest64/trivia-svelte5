@@ -45,12 +45,12 @@
             return;
         }
 
-        // TODO: we probably want a loading state here
         const resp = await fetch(`${$page.url.pathname}/responses/${entry.team_id}`);
-        // TODO: handle !resp.ok
         if (resp.ok) {
             responses = (await resp.json())?.responses || [];
             fetched = true;
+        } else {
+            // TODO: handle error state
         }
 
         expanded = !expanded;
@@ -72,8 +72,6 @@
             {#if !expanded}
                 <button class="team-name-btn" on:click={handleExpand}>
                     <h3>{teamName}</h3>
-
-                    <!-- TODO: add summary text for players -->
                     {#if (isPlayerTeamEntry || !isPlayerEndpoint) && isSecondHalf && !entry.megaround}
                         <span class="megaround-alert">!Mega Round</span>
                     {/if}

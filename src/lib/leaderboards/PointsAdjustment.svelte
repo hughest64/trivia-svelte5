@@ -63,7 +63,6 @@
     <p class="error" style:align-self="center">{error}</p>
 {/if}
 
-<!-- TODO: if adjustmentPoints !== 0 -->
 <div class="points-adjustment-container adjustment-reason">
     <p class="grow">Reason:</p>
     <select

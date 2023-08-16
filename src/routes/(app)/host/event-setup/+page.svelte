@@ -7,7 +7,6 @@
     const locationSelectData = $page.data?.location_select_data || [];
     const gameBlocks = ($page.data?.game_block_data || []).sort();
 
-    // TODO: default based on a user setting?
     let selectedBlock = gameBlocks[0];
 
     let useSound = locationSelectData[0].use_sound;
