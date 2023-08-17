@@ -78,7 +78,7 @@
                 </button>
             {:else}
                 <form
-                    action="?/updateteamname"
+                    action="/host/{$page.params.joincode}/leaderboard?/updateteamname"
                     method="post"
                     use:enhance={() =>
                         ({ result }) => {
