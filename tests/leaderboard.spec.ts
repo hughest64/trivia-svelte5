@@ -149,6 +149,71 @@ test('round headers on the leaderboard navigate back to the game', async ({ p1 }
     await expect(rd1).toHaveClass(/active/);
 });
 
+test('points adjustment', async ({ p1, host }) => {
+    await p1.joinGame(joincode);
+    // lock round 1
+    const r = await apicontext.post(`/ops/rlock/${joincode}/`, {
+        headers: await host.getAuthHeader(),
+        data: JSON.stringify({ round_number: 1, locked: true, type: 'round_lock' })
+    });
+    expect(r.status()).toBe(200);
+
+    await p1.page.goto(leaderboardUrl);
+    const playerlb = p1.page.locator('ul#player-leaderboard-view').locator('li.leaderboard-entry-container');
+    const entry = playerlb.nth(0);
+    // should have 0 pts initially
+    await checkLbEntry(entry, { name: /hello world/i, rank: '-', points: '0' });
+
+    await host.page.goto(`${hostUrl}/leaderboard`);
+    const hostLbEntry = host.page.locator('button.team-name-btn', {
+        has: host.page.locator('h3', { hasText: /hello world/i })
+    });
+    await expect(hostLbEntry).toBeVisible();
+    await hostLbEntry.click();
+
+    const teamNameBtn = host.page.locator('button.edit-teamname');
+    await expect(teamNameBtn).toBeVisible();
+    await teamNameBtn.click();
+
+    // go up .5
+    const plusBtn = host.page.locator('button#plus-btn');
+    await expect(plusBtn).toBeVisible();
+    plusBtn.click();
+
+    // expect total to be + .5
+    const ptTotal = host.page.locator('h3.points-display').first();
+    await expect(ptTotal).toHaveText(/\.5/);
+
+    // find reason
+    await host.page.locator('select[name="adjustment_reason"]').selectOption('2');
+    // set reason
+    // do an api call to check for the reason
+    const response = await apicontext.post('ops/validate/', {
+        headers: await host.getAuthHeader(),
+        data: {
+            type: 'validate_pts_adj_reason',
+            joincode,
+            team_name: 'hello world',
+            reason_id: 2
+        }
+    });
+    expect(response.status()).toBe(200);
+
+    // reveal answers, update public lb
+    const revealBtn = host.page.locator('button#reveal-button');
+    await expect(revealBtn).toBeVisible();
+    await revealBtn.click();
+
+    const syncBtn = host.page.locator('button#sync-button');
+    await expect(syncBtn).toBeVisible();
+    await syncBtn.click();
+
+    // p1 should see the new pt total
+    const updatedPlayerlb = p1.page.locator('ul#player-leaderboard-view').locator('li.leaderboard-entry-container');
+    const updatedentry = updatedPlayerlb.nth(0);
+    await checkLbEntry(updatedentry, { name: /hello world/i, rank: '1', points: /\.5/ });
+});
+
 test('a team can change their name', async ({ p1, host }) => {
     await p1.joinGame(joincode);
     await p1.page.goto(leaderboardUrl);
@@ -184,9 +249,6 @@ test('a team can change their name', async ({ p1, host }) => {
 /**
  * TODO:
  * factor in megaround scores at the end of the game
- * additional tests:
- * - adjustment points (check host then player before/after update)
- * - adustment reason
  *
  * test unlocking a round and allowing a player to update a response
  * - should re-autograde properly (but I was getting a 400 from the api)

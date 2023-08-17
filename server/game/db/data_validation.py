@@ -1,4 +1,4 @@
-from rest_framework.exceptions import APIException
+from rest_framework.exceptions import APIException, ValidationError
 from rest_framework.response import Response
 from rest_framework.status import HTTP_400_BAD_REQUEST
 
@@ -25,6 +25,7 @@ class ValidateData:
             "megaround_lock": cls.megaround_lock,
             "player_limit": cls.player_limit,
             "validate_reveal_all": cls.validate_reveal_all,
+            "validate_pts_adj_reason": cls.validate_pts_adj_reason,
         }
 
         return method_dct[key]
@@ -86,5 +87,24 @@ class ValidateData:
             raise TestFailed(
                 f"only {locked_questions} of {total_questions} for {rd_number} are locked"
             )
+
+        return Response({"sucess": True})
+
+    @classmethod
+    def validate_pts_adj_reason(cls, request, event):
+        reason_id = request.data.get("reason_id")
+        team_name = request.data.get("team_name")
+        try:
+            lbe = LeaderboardEntry.objects.get(
+                event=event,
+                team__name=team_name,
+                leaderboard_type=LEADERBOARD_TYPE_HOST,
+            )
+        except LeaderboardEntry.DoesNotExist:
+            raise ValidationError(f"A leaderboard entry for {team_name} was not found")
+
+        validation_id = lbe.points_adjustment_reason
+        if validation_id != int(reason_id):
+            raise ValidationError(f"{reason_id} != f{validation_id}")
 
         return Response({"sucess": True})
