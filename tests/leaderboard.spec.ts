@@ -27,6 +27,18 @@ test.beforeEach(async ({ host }) => {
     expect(response.status()).toBe(200);
 });
 
+test.afterEach(async ({ host }) => {
+    // reset the team name for name change test
+    const response = await apicontext.post('ops/reset-teamname/', {
+        headers: await host.getAuthHeader(),
+        data: {
+            current_names: ['goodbye world'],
+            new_names: ['hello world']
+        }
+    });
+    expect(response.status()).toBe(200);
+});
+
 test.afterAll(async () => {
     apicontext.dispose();
 });
@@ -168,9 +180,6 @@ test('a team can change their name', async ({ p1, host }) => {
         has: host.page.locator('h3', { hasText: /goodbye world/i })
     });
     await expect(hostLbEntry).toBeVisible();
-
-    // host changes it back
-    // expect p1 to see the change
 });
 /**
  * TODO:

@@ -4,7 +4,7 @@ from django.conf import settings
 from django.core import management
 from django.utils import timezone
 
-from rest_framework.exceptions import AuthenticationFailed, NotFound
+from rest_framework.exceptions import AuthenticationFailed, NotFound, ValidationError
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework.status import HTTP_400_BAD_REQUEST
@@ -191,3 +191,24 @@ class ResetLinkView(APIView):
         reset_link = mailer.get_reset_link()
 
         return Response({"link": reset_link})
+
+
+class ResetTeamNameView(APIView):
+    authentication_classes = [OpsAuthentication]
+
+    def post(self, request):
+        data = DataCleaner(request.data)
+        current_names = data.as_string_array("current_names")
+        new_names = data.as_string_array("new_names")
+
+        teams = Team.objects.filter(name__in=current_names)
+        if len(teams) > 0 and len(teams) != len(new_names):
+            raise ValidationError(
+                "The number of found teams does not match the number of new names"
+            )
+
+        for i, team in enumerate(teams):
+            team.name = new_names[i]
+        Team.objects.bulk_update(teams, fields=["name"])
+
+        return Response({"success": True})
