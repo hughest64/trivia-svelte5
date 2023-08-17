@@ -2,15 +2,6 @@ import { test, expect } from './authConfigs.js';
 import { createApiContext, checkLbEntry } from './utils.js';
 import type { APIRequestContext } from '@playwright/test';
 
-/**
- * TODO:
- * factor in megaround scores at the end of the game
- * additional tests:
- * - name changing (inlcuding player lb)
- * - adjustment points (check host then player before/after update)
- * - adustment reason
- */
-
 const joincode = '9900';
 const eventUrl = `/game/${joincode}`;
 const hostUrl = `/host/${joincode}`;
@@ -23,8 +14,11 @@ const game_data = {
     joincode
 };
 
-test.beforeAll(async ({ host }) => {
+test.beforeAll(async () => {
     apicontext = await createApiContext();
+});
+
+test.beforeEach(async ({ host }) => {
     // set up the event
     const response = await apicontext.post('ops/run-game/', {
         headers: await host.getAuthHeader(),
@@ -143,7 +137,49 @@ test('round headers on the leaderboard navigate back to the game', async ({ p1 }
     await expect(rd1).toHaveClass(/active/);
 });
 
-// TODO:
-// test unlocking a round and allowing a player to update a response
-// - should re-autograde properly (but I was getting a 400 from the api)
-// - make sure respones for a round are unlocking when the round is unlocked
+test('a team can change their name', async ({ p1, host }) => {
+    await p1.joinGame(joincode);
+    await p1.page.goto(leaderboardUrl);
+    await expect(p1.page).toHaveURL(leaderboardUrl);
+
+    await host.page.goto(`${hostUrl}/leaderboard`);
+
+    // find the hello world entry and click to expand it
+    const lbEntry = p1.page.locator('button.team-name-btn', {
+        has: p1.page.locator('h3', { hasText: /hello world/i })
+    });
+    await expect(lbEntry).toBeVisible();
+    await lbEntry.click();
+
+    // click the pencil icon
+    const teamNameBtn = p1.page.locator('button.edit-teamname');
+    await expect(teamNameBtn).toBeVisible();
+    await teamNameBtn.click();
+
+    const teamNameInput = p1.page.locator('input[name="team_name"]');
+    await expect(teamNameInput).toBeVisible();
+    await teamNameInput.fill('goodbye world');
+    const submitBtn = p1.page.locator('button.edit-teamname');
+    await expect(submitBtn).toBeVisible();
+    await submitBtn.click();
+
+    // expect host to see the change
+    const hostLbEntry = host.page.locator('button.team-name-btn', {
+        has: host.page.locator('h3', { hasText: /goodbye world/i })
+    });
+    await expect(hostLbEntry).toBeVisible();
+
+    // host changes it back
+    // expect p1 to see the change
+});
+/**
+ * TODO:
+ * factor in megaround scores at the end of the game
+ * additional tests:
+ * - adjustment points (check host then player before/after update)
+ * - adustment reason
+ *
+ * test unlocking a round and allowing a player to update a response
+ * - should re-autograde properly (but I was getting a 400 from the api)
+ * - make sure respones for a round are unlocking when the round is unlocked
+ */
