@@ -1,7 +1,14 @@
 import type { PlaywrightTestConfig } from '@playwright/test';
 
+/**
+ * To test after code changes have been made to source use `npm run test:build` to test
+ * which will build the project to the build_test directory with the proper variables.
+ *
+ * Subsequent test runs (if there are no code changes) can use `npm run test` which
+ * eliminates the build step and saves time.
+ */
+// npm run build:test &&\
 const testcmd = `
-    npm run build:test &&\
     ORIGIN='http://127.0.0.1:4173'\
     HOST='127.0.0.1'\
     PORT=4173\
