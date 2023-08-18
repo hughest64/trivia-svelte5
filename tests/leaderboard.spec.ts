@@ -184,9 +184,9 @@ test('points adjustment', async ({ p1, host }) => {
     const ptTotal = host.page.locator('h3.points-display').first();
     await expect(ptTotal).toHaveText(/\.5/);
 
-    // find reason
+    // set a reason and validate
     await host.page.locator('select[name="adjustment_reason"]').selectOption('2');
-    // set reason
+
     // do an api call to check for the reason
     const response = await apicontext.post('ops/validate/', {
         headers: await host.getAuthHeader(),
