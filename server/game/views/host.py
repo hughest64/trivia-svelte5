@@ -175,15 +175,11 @@ class QuestionRevealView(APIView):
 
     @method_decorator(csrf_protect)
     def post(self, request, joincode):
-        # TODO: we don't need this try except
-        try:
-            data = DataCleaner(request.data)
-            round_number = data.as_int("round_number")
-            question_numbers = data.as_int_array("question_numbers", deserialize=True)
-            reveal = data.as_bool("reveal")
-            update = data.as_bool("update")
-        except DataValidationError as e:
-            return Response(e.response)
+        data = DataCleaner(request.data)
+        round_number = data.as_int("round_number")
+        question_numbers = data.as_int_array("question_numbers", deserialize=True)
+        reveal = data.as_bool("reveal")
+        update = data.as_bool("update")
 
         # notify the event group but don't update the db
         if not update:
@@ -378,7 +374,6 @@ class ScoreRoundView(APIView):
         points_awarded = data.as_float("points_awarded")
         update_type = data.as_string("update_type")
 
-        # TODO: should we use transaction.atomic and/or select_for_update here?
         resps = QuestionResponse.objects.filter(id__in=id_list)
         resps.update(points_awarded=points_awarded, funny=funny)
 
@@ -525,8 +520,6 @@ class FinishGameview(APIView):
 
     @method_decorator(csrf_protect)
     def post(self, request, joincode):
-        # TODO: one option for backfilling responses is to do it here when the host finishes the game
-        # another option is to use the completed field in an automated celery task that runs daily
         event = get_event_or_404(joincode=joincode)
         event.event_complete = True
         event.save()

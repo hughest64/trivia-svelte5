@@ -8,12 +8,6 @@
     import PointsAdjustment from './PointsAdjustment.svelte';
     import type { LeaderboardEntry } from '$lib/types';
 
-    // TODO:
-    // - I think a "pop over" would be best for things like renaming/banning teams
-    // as things look pretty bad on mobile right now
-    //
-    // - warning text for tiebreakers
-
     export let entry: LeaderboardEntry;
     export let lbView: 'public' | 'host' = 'public';
 
@@ -27,8 +21,9 @@
 
     const rounds = getStore('rounds');
     const roundStates = getStore('roundStates');
-    const teamResponseStore = getStore('responseData');
+    $: isSecondHalf = Math.max(...$roundStates.map((rs) => (rs.scored ? rs.round_number : 0)));
 
+    const teamResponseStore = getStore('responseData');
     $: responses = (expandable && $teamResponseStore) || [];
     $: groupedResps = respsByround(responses, $rounds, $roundStates);
 
@@ -50,12 +45,12 @@
             return;
         }
 
-        // TODO: we probably want a loading state here
         const resp = await fetch(`${$page.url.pathname}/responses/${entry.team_id}`);
-        // TODO: handle !resp.ok
         if (resp.ok) {
             responses = (await resp.json())?.responses || [];
             fetched = true;
+        } else {
+            // TODO: handle error state
         }
 
         expanded = !expanded;
@@ -73,20 +68,17 @@
             <h3 class="rank-display">{entry.rank}</h3>
         </button>
 
-        <div class="team-name">
+        <div class="team-name grow" class:team-name-wide={collapsed}>
             {#if !expanded}
-                <button on:click={handleExpand}>
+                <button class="team-name-btn" on:click={handleExpand}>
                     <h3 class="team-name-display">{teamName}</h3>
-
-                    <!-- TODO: add condition for is second half-->
-                    <!-- TODO: add summary text for players -->
-                    {#if (isPlayerTeamEntry || !isPlayerEndpoint) && !entry.megaround}
+                    {#if (isPlayerTeamEntry || !isPlayerEndpoint) && isSecondHalf && !entry.megaround}
                         <span class="megaround-alert">!Mega Round</span>
                     {/if}
                 </button>
             {:else}
                 <form
-                    action="?/updateteamname"
+                    action="/host/{$page.params.joincode}/leaderboard?/updateteamname"
                     method="post"
                     use:enhance={() =>
                         ({ result }) => {
@@ -103,11 +95,12 @@
                         <button class="edit-teamname" on:click={() => (nameEditable = !nameEditable)}>
                             <EditTeamName />
                         </button>
+                        <button class="grow filler-btn" on:click={handleExpand}>-</button>
                     {/if}
                 </form>
             {/if}
         </div>
-        <button class="grow filler-btn" on:click={handleExpand}>-</button>
+
         <button class="points" on:click={handleExpand}>
             <h3 class="points-display">{entry.total_points}</h3>
         </button>
@@ -206,6 +199,9 @@
                 position: relative;
                 text-align: left;
             }
+            .team-name-btn {
+                width: 100%;
+            }
         }
         .edit-teamname {
             margin: 0;
@@ -226,6 +222,7 @@
         }
         .filler-btn {
             color: var(--color-tertiary);
+            flex-grow: 1;
         }
         .points {
             padding: 1rem;

@@ -33,24 +33,26 @@ class TeamActions:
         if team_name is None:
             team_name = f"run_game_team_{i}"
 
-        if players is None:
-            players = [f"run_game_user_{i}"]
-
         self.team, _ = Team.objects.get_or_create(
             name=team_name, defaults={"password": f"12345_{i}"}
         )
-        for player in players:
-            user, created = User.objects.get_or_create(
-                username=player,
-                defaults={"active_team": self.team, "password": 12345},
-            )
-            if created:
-                user.set_password("12345")
-                user.save()
 
-            self.players.append(user)
+        if not self.team.members.all().exists() and players is None:
+            players = [f"run_game_user_{i}"]
 
-        self.team.members.set(self.players)
+        if players is not None:
+            for player in players:
+                user, created = User.objects.get_or_create(
+                    username=player,
+                    defaults={"active_team": self.team, "password": 12345},
+                )
+                if created:
+                    user.set_password("12345")
+                    user.save()
+
+                self.players.append(user)
+
+            self.team.members.add(*self.players)
 
     def add_team_to_event(self, i=None):
         LeaderboardEntry.objects.get_or_create(

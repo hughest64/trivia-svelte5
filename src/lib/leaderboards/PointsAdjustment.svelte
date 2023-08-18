@@ -54,16 +54,15 @@
 
 <div class="points-adjustment-container">
     <p class="grow">Points Adjustment</p>
-    <button class="plus-minus" on:click={() => handleSetAdjustmentPoints('down')}>-</button>
+    <button class="plus-minus" id="minus-btn" on:click={() => handleSetAdjustmentPoints('down')}>-</button>
     <p>{adjustmentPoints}</p>
-    <button class="plus-minus last" on:click={() => handleSetAdjustmentPoints('up')}>+</button>
+    <button class="plus-minus last" id="plus-btn" on:click={() => handleSetAdjustmentPoints('up')}>+</button>
 </div>
 
 {#if error}
     <p class="error" style:align-self="center">{error}</p>
 {/if}
 
-<!-- TODO: if adjustmentPoints !== 0 -->
 <div class="points-adjustment-container adjustment-reason">
     <p class="grow">Reason:</p>
     <select

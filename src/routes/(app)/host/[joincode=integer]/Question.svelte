@@ -74,11 +74,14 @@
         <p>Sound Link Missing</p>
     {/if}
 
-    {#if question.answer_notes}<p>{question.answer_notes}</p>{/if}
+    {#if question.question_notes}<p><strong>Notes:</strong> {question.question_notes}</p>{/if}
 
     <button class="button button-tertiary" on:click={() => (answerDisplayed = !answerDisplayed)}>
         Click To {answerDisplayed ? 'Hide' : 'Reveal'} Answer
     </button>
 
-    {#if answerDisplayed}<h4>{question.display_answer}</h4>{/if}
+    {#if answerDisplayed}
+        <h4>{question.display_answer}</h4>
+        {#if question.answer_notes}<p><strong>Notes:</strong> {question.answer_notes}</p>{/if}
+    {/if}
 </div>

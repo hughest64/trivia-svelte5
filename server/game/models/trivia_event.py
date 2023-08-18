@@ -49,6 +49,7 @@ class Question(models.Model):
         "QuestionAnswer", related_name="accepted_answers", blank=True
     )
     answer_notes = models.CharField(max_length=255, blank=True, null=True)
+    question_notes = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
         qt = self.question_text
@@ -165,8 +166,7 @@ class Game(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     block_code = models.CharField(max_length=150, default="")
     title = models.CharField(max_length=200)
-    # TODO: I don't think this field is actually used or even exists in Airtable
-    description = models.TextField(blank=True, null=True)
+
     date_used = models.DateField(default=timezone.now)
     active_through = models.DateField(default=get_end_of_week, null=True, blank=True)
     use_sound = models.BooleanField(default=True)
@@ -233,25 +233,24 @@ class TriviaEvent(models.Model):
 
     def all_rounds_are_locked(self):
         """Compare the number on non-tiebreaker rounds against the number of locked round states"""
-        # TODO: game.game_rounds.exclude(round_number=0) as a property on the game models would be mighty handy
         num_rounds = self.game.game_rounds.exclude(round_number=0).count()
         num_locked_rounds = len([rd for rd in self.round_states.all() if rd.locked])
 
         return num_rounds > 0 and num_rounds == num_locked_rounds
 
-    # TODO: it's probably better to check the len of round states here as we need to evaluate
-    # a property on the object
     def max_scored_round(self):
         round_states = self.round_states.filter(scored=True).order_by("round_number")
-        if not round_states.exists():
+        num_states = len(round_states)
+        if num_states == 0:
             return None
-        return round_states.last().round_number
+        return round_states[num_states - 1].round_number
 
     def max_locked_round(self):
         round_states = self.round_states.filter(locked=True).order_by("round_number")
-        if not round_states.exists():
+        num_states = len(round_states)
+        if num_states == 0:
             return None
-        return round_states.last().round_number
+        return round_states[num_states - 1].round_number
 
     def __str__(self):
         return f"{self.game.title} on {self.date} - {self.joincode}"

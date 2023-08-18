@@ -1,5 +1,5 @@
 import { error } from '@sveltejs/kit';
-import { PUBLIC_API_HOST } from '$env/static/public';
+import { env } from '$env/dynamic/public';
 import { PRIVATE_GOOGLE_CLIENT_SECRET } from '$env/static/private';
 import * as cookie from 'cookie';
 import { redirect } from '@sveltejs/kit';
@@ -12,7 +12,7 @@ export const GET = (async ({ cookies, fetch, url }) => {
 
     const authData = await googleAuthToken(code, PRIVATE_GOOGLE_CLIENT_SECRET);
     const csrftoken = cookies.get('csrftoken') || '';
-    const apiResp = await fetch(`${PUBLIC_API_HOST}/user/google-auth`, {
+    const apiResp = await fetch(`${env.PUBLIC_API_HOST}/user/google-auth`, {
         method: 'post',
         headers: {
             'content-type': 'application/json',

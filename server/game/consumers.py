@@ -2,6 +2,8 @@ import logging
 
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 
+from django.contrib.auth.models import AnonymousUser
+
 from user.authentication import get_user
 
 from game.utils.socket_classes import (
@@ -47,8 +49,7 @@ class SocketConsumer(AsyncJsonWebsocketConsumer):
         unauthorized (equvalant to http 403) messasge when accessing a game
         connection without an active team id set.
         """
-        # TODO: should the fallback be AnonymousUser? (probably)
-        user = self.scope.get("user", {})
+        user = self.scope.get("user", AnonymousUser())
 
         if user.is_anonymous:
             await self.send_json(self.unauthenticated_msg)
@@ -96,8 +97,6 @@ class SocketConsumer(AsyncJsonWebsocketConsumer):
                 )
 
     async def receive_json(self, content):
-        # print("content received")
-        # print(content)
         if content.get("type") == "authenticate":
             await self.authenticate(content)
 
@@ -125,7 +124,6 @@ class SocketConsumer(AsyncJsonWebsocketConsumer):
     #####################
 
     async def team_update(self, data):
-        # data["type"] = data.pop("msg_type", "")
         await self.send_json(data)
 
     ######################
@@ -133,5 +131,4 @@ class SocketConsumer(AsyncJsonWebsocketConsumer):
     ######################
 
     async def event_update(self, data):
-        # data["type"] = data.pop("msg_type", "")
         await self.send_json(data)

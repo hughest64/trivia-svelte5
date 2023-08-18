@@ -1,4 +1,4 @@
-from rest_framework.exceptions import APIException
+from rest_framework.exceptions import APIException, ValidationError, NotFound
 from rest_framework.response import Response
 from rest_framework.status import HTTP_400_BAD_REQUEST
 
@@ -8,6 +8,7 @@ from game.models import (
     GameQuestion,
     LeaderboardEntry,
     LEADERBOARD_TYPE_HOST,
+    QUESTION_TYPE_TIE_BREAKER,
 )
 
 
@@ -25,6 +26,8 @@ class ValidateData:
             "megaround_lock": cls.megaround_lock,
             "player_limit": cls.player_limit,
             "validate_reveal_all": cls.validate_reveal_all,
+            "validate_pts_adj_reason": cls.validate_pts_adj_reason,
+            "get_tb_answer": cls.get_tb_answer,
         }
 
         return method_dct[key]
@@ -88,3 +91,36 @@ class ValidateData:
             )
 
         return Response({"sucess": True})
+
+    @classmethod
+    def validate_pts_adj_reason(cls, request, event):
+        reason_id = request.data.get("reason_id")
+        team_name = request.data.get("team_name")
+        try:
+            lbe = LeaderboardEntry.objects.get(
+                event=event,
+                team__name=team_name,
+                leaderboard_type=LEADERBOARD_TYPE_HOST,
+            )
+        except LeaderboardEntry.DoesNotExist:
+            raise ValidationError(f"A leaderboard entry for {team_name} was not found")
+
+        validation_id = lbe.points_adjustment_reason
+        if validation_id != int(reason_id):
+            raise ValidationError(f"{reason_id} != f{validation_id}")
+
+        return Response({"sucess": True})
+
+    @classmethod
+    def get_tb_answer(cls, request, event):
+        tb_index = request.data.get("index")
+        try:
+            questions = event.game.game_questions.filter(
+                question__question_type=QUESTION_TYPE_TIE_BREAKER
+            )
+            answer = questions[tb_index].question.display_answer.text
+        except Exception as e:
+            print(e)
+            raise NotFound("could not locat the requested trivia question")
+
+        return Response({"answer": answer})

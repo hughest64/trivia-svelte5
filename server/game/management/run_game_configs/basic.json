@@ -1,0 +1,9 @@
+{
+    "joincode": 1236,
+    "teams": 2,
+    "rounds_to_play": 0,
+    "team_configs": {
+        "1": {"name": "hello world"},
+        "2": {"name": "for all the marbles"}
+    }
+}

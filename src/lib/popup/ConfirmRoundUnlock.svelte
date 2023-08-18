@@ -6,7 +6,6 @@
     const popupData = getStore('popupData');
     const roundNumber = $popupData.data?.roundNumber;
 
-    // TODO: this should be imported form a reusable place, or have a default on the Popup container
     const resetPopup = () => ($popupData = { is_displayed: false, popup_type: '' });
     const unlock = async () => {
         const data = new FormData();
@@ -17,7 +16,7 @@
         if (response.ok) {
             resetPopup();
         } else {
-            console.log('TODO: handle the error');
+            // TODO: handle the error
         }
     };
 </script>

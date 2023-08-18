@@ -37,7 +37,7 @@ class TriviaEventCreator:
                 game=self.game,
                 location=self.location if self.location else None,
                 joincode=self.joincode,
-                # TODO: hard coding a one player limit for now, could be expaned
+                # hard coding a one player limit for now, could be expaned
                 # if we want to allow more player per team, but still limit
                 player_limit=self.player_limit,
                 # date=date.today(),
@@ -48,7 +48,6 @@ class TriviaEventCreator:
 
     def create_event_states(self):
         """Create round states for the event"""
-        # TODO: error handling?
         for round in self.game.game_rounds.exclude(round_number=0):
             EventRoundState.objects.get_or_create(
                 event=self.event, round_number=round.round_number

@@ -2,15 +2,6 @@ import { test, expect } from './authConfigs.js';
 import { createApiContext, checkLbEntry } from './utils.js';
 import type { APIRequestContext } from '@playwright/test';
 
-/**
- * TODO:
- * factor in megaround scores at the end of the game
- * additional tests:
- * - name changing (inlcuding player lb)
- * - adjustment points (check host then player before/after update)
- * - adustment reason
- */
-
 const joincode = '9900';
 const eventUrl = `/game/${joincode}`;
 const hostUrl = `/host/${joincode}`;
@@ -23,12 +14,27 @@ const game_data = {
     joincode
 };
 
-test.beforeAll(async ({ host }) => {
+test.beforeAll(async () => {
     apicontext = await createApiContext();
+});
+
+test.beforeEach(async ({ host }) => {
     // set up the event
     const response = await apicontext.post('ops/run-game/', {
         headers: await host.getAuthHeader(),
         data: { game_data: JSON.stringify(game_data) }
+    });
+    expect(response.status()).toBe(200);
+});
+
+test.afterEach(async ({ host }) => {
+    // reset the team name for name change test
+    const response = await apicontext.post('ops/reset-teamname/', {
+        headers: await host.getAuthHeader(),
+        data: {
+            current_names: ['goodbye world'],
+            new_names: ['hello world']
+        }
     });
     expect(response.status()).toBe(200);
 });
@@ -143,7 +149,108 @@ test('round headers on the leaderboard navigate back to the game', async ({ p1 }
     await expect(rd1).toHaveClass(/active/);
 });
 
-// TODO:
-// test unlocking a round and allowing a player to update a response
-// - should re-autograde properly (but I was getting a 400 from the api)
-// - make sure respones for a round are unlocking when the round is unlocked
+test('points adjustment', async ({ p1, host }) => {
+    await p1.joinGame(joincode);
+    // lock round 1
+    const r = await apicontext.post(`/ops/rlock/${joincode}/`, {
+        headers: await host.getAuthHeader(),
+        data: JSON.stringify({ round_number: 1, locked: true, type: 'round_lock' })
+    });
+    expect(r.status()).toBe(200);
+
+    await p1.page.goto(leaderboardUrl);
+    const playerlb = p1.page.locator('ul#player-leaderboard-view').locator('li.leaderboard-entry-container');
+    const entry = playerlb.nth(0);
+    // should have 0 pts initially
+    await checkLbEntry(entry, { name: /hello world/i, rank: '-', points: '0' });
+
+    await host.page.goto(`${hostUrl}/leaderboard`);
+    const hostLbEntry = host.page.locator('button.team-name-btn', {
+        has: host.page.locator('h3', { hasText: /hello world/i })
+    });
+    await expect(hostLbEntry).toBeVisible();
+    await hostLbEntry.click();
+
+    const teamNameBtn = host.page.locator('button.edit-teamname');
+    await expect(teamNameBtn).toBeVisible();
+    await teamNameBtn.click();
+
+    // go up .5
+    const plusBtn = host.page.locator('button#plus-btn');
+    await expect(plusBtn).toBeVisible();
+    plusBtn.click();
+
+    // expect total to be + .5
+    const ptTotal = host.page.locator('h3.points-display').first();
+    await expect(ptTotal).toHaveText(/\.5/);
+
+    // set a reason and validate
+    await host.page.locator('select[name="adjustment_reason"]').selectOption('2');
+
+    // do an api call to check for the reason
+    const response = await apicontext.post('ops/validate/', {
+        headers: await host.getAuthHeader(),
+        data: {
+            type: 'validate_pts_adj_reason',
+            joincode,
+            team_name: 'hello world',
+            reason_id: 2
+        }
+    });
+    expect(response.status()).toBe(200);
+
+    // reveal answers, update public lb
+    const revealBtn = host.page.locator('button#reveal-button');
+    await expect(revealBtn).toBeVisible();
+    await revealBtn.click();
+
+    const syncBtn = host.page.locator('button#sync-button');
+    await expect(syncBtn).toBeVisible();
+    await syncBtn.click();
+
+    // p1 should see the new pt total
+    const updatedPlayerlb = p1.page.locator('ul#player-leaderboard-view').locator('li.leaderboard-entry-container');
+    const updatedentry = updatedPlayerlb.nth(0);
+    await checkLbEntry(updatedentry, { name: /hello world/i, rank: '1', points: /\.5/ });
+});
+
+test('a team can change their name', async ({ p1, host }) => {
+    await p1.joinGame(joincode);
+    await p1.page.goto(leaderboardUrl);
+    await expect(p1.page).toHaveURL(leaderboardUrl);
+
+    await host.page.goto(`${hostUrl}/leaderboard`);
+
+    // find the hello world entry and click to expand it
+    const lbEntry = p1.page.locator('button.team-name-btn', {
+        has: p1.page.locator('h3', { hasText: /hello world/i })
+    });
+    await expect(lbEntry).toBeVisible();
+    await lbEntry.click();
+
+    // click the pencil icon
+    const teamNameBtn = p1.page.locator('button.edit-teamname');
+    await expect(teamNameBtn).toBeVisible();
+    await teamNameBtn.click();
+
+    const teamNameInput = p1.page.locator('input[name="team_name"]');
+    await expect(teamNameInput).toBeVisible();
+    await teamNameInput.fill('goodbye world');
+    const submitBtn = p1.page.locator('button.edit-teamname');
+    await expect(submitBtn).toBeVisible();
+    await submitBtn.click();
+
+    // expect host to see the change
+    const hostLbEntry = host.page.locator('button.team-name-btn', {
+        has: host.page.locator('h3', { hasText: /goodbye world/i })
+    });
+    await expect(hostLbEntry).toBeVisible();
+});
+/**
+ * TODO:
+ * factor in megaround scores at the end of the game
+ *
+ * test unlocking a round and allowing a player to update a response
+ * - should re-autograde properly (but I was getting a 400 from the api)
+ * - make sure respones for a round are unlocking when the round is unlocked
+ */

@@ -13,4 +13,5 @@ urlpatterns = [
     path("validate/", ops.ValidateDataView.as_view(), name="validate"),
     path("create-user/", ops.CreateUserView.as_view(), name="create-user"),
     path("reset-link/", ops.ResetLinkView.as_view(), name="reset_link"),
+    path("reset-teamname/", ops.ResetTeamNameView.as_view(), name="reset-teamname"),
 ]

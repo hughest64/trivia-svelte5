@@ -31,8 +31,8 @@ COLUMN_LABEL_MAP = {
     "alternate_answers": {"label": "answers", "default_value": str},
     # "Era" # - this not currently handled by the script or database
     "round_type": {"label": "question_type", "default_value": str},
-    # TODO: Do we actually need this for triva events?
-    "Slideshow": {"label": "slideshow", "default_value": str},
+    # not currently handled by the trivia app
+    # "Slideshow": {"label": "slideshow", "default_value": str},
     "Image URL": {"label": "image_url", "default_value": str},
     "Sound URL": {"label": "sound_url", "default_value": str},
     "airtable_id": {"label": "airtable_id", "default_value": str},

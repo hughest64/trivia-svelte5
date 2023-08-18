@@ -69,13 +69,27 @@
         // TODO: better typings
         leaderboard_update: (msg: Record<string, unknown>) => {
             const { tiebreaker_responses, ...leaderboard } = msg;
+            const { round_states, ...leaderboardData } = leaderboard;
+            console.log(round_states);
 
             leaderboardStore.update((lb) => {
                 const newLb = { ...lb };
-                Object.assign(newLb, leaderboard);
+                Object.assign(newLb, leaderboardData);
 
                 return newLb;
             });
+
+            if (round_states) {
+                roundStates.update((states) => {
+                    const newStates = [...states];
+                    (round_states as RoundState[]).forEach((rs) => {
+                        const indexToUpdate = newStates.findIndex((s) => s.round_number === rs.round_number);
+                        if (indexToUpdate > -1) newStates[indexToUpdate] = rs;
+                    });
+
+                    return newStates;
+                });
+            }
 
             if (tiebreaker_responses) {
                 tiebreakerResponseStore.update((resps) => {
@@ -217,11 +231,18 @@
             if ($page.url.pathname.startsWith('/host')) {
                 hostResponseStore.update((resps) => {
                     const newResps = [...resps];
-                    // TODO: it seems likely that relying in the first index to match is not a good idea!
-                    const respsToUpdate =
-                        newResps.find((resp) => resp.response_ids[0] === response_ids[0]) || ({} as HostResponse);
-                    respsToUpdate.points_awarded = Number(points_awarded);
-                    respsToUpdate.funny = resolveBool(funny);
+                    // all ids should match, but sort the the id array for a bit of insurance
+                    const respsToUpdate = newResps.find((resp) => {
+                        const exisitngIds = resp.response_ids.sort();
+                        const incomingIds = response_ids.sort();
+
+                        return exisitngIds[0] === incomingIds[0];
+                    });
+
+                    if (respsToUpdate) {
+                        respsToUpdate.points_awarded = Number(points_awarded);
+                        respsToUpdate.funny = resolveBool(funny);
+                    }
                     return newResps;
                 });
                 if (leaderboard_data) {
@@ -317,7 +338,6 @@
 
             // no active_team_id
             if (msgType === 'unauthorized') {
-                // TODO: error message to user?
                 goto(`/team?next=${location.pathname}`, { invalidateAll: true });
 
                 // anonymous user in the socket connection

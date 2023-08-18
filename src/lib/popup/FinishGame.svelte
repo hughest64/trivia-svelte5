@@ -7,7 +7,6 @@
     const winners = $popupData.data?.winners;
     const winnerText = winners.length > 1 ? 'And the Winners are...' : 'And the Winner is...';
 
-    // TODO: this should be imported form a reusable place, or have a default on the Popup container
     const resetPopup = () => ($popupData = { is_displayed: false, popup_type: '' });
 </script>
 

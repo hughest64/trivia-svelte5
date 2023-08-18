@@ -37,7 +37,6 @@ class QuestionResponse(models.Model):
     recorded_answer = models.TextField(default="", blank=True)
     fuzz_ratio = models.IntegerField(default=0)
     points_awarded = models.FloatField(default=0)
-    # TODO: we should use min/max validators here, i.e 1-5 AND they should be unique
     megaround_value = models.IntegerField(
         blank=True, null=True, validators=[MinValueValidator(1), MaxValueValidator(5)]
     )
@@ -65,16 +64,25 @@ class QuestionResponse(models.Model):
             "recorded_answer": self.recorded_answer,
         }
 
-    # TODO: compare lower case and stripped spaces from both the answer and response
+    @staticmethod
+    def normalize_string(string):
+        if not isinstance(string, str):
+            raise ValueError("Only strings can be normalized")
+
+        return string.replace(" ", "").lower()
+
     def grade(self):
         """run fuzzy fuzzy using the recorded answer against all accepted answers for the question"""
         if self.locked:
             return
         question = self.game_question.question
-        answers = {a.text for a in question.accepted_answers.all()}
+        answers = {
+            self.normalize_string(a.text) for a in question.accepted_answers.all()
+        }
         answers.add(question.display_answer.text)
+        recored_answer_norm = self.normalize_string(self.recorded_answer)
         for answer in answers:
-            self.fuzz_ratio = fuzz.token_set_ratio(answer, self.recorded_answer)
+            self.fuzz_ratio = fuzz.token_set_ratio(answer, recored_answer_norm)
             if self.fuzz_ratio >= FUZZ_MATCH_RATIO:
                 self.points_awarded = 1
                 break
@@ -104,9 +112,11 @@ class QuestionResponse(models.Model):
         super().save(*args, **kwargs)
 
 
-# for now, this only contains references to the round through which leaderboard entries
-# of a given type are scored, but it could also contain aggregated data about an event
 class Leaderboard(models.Model):
+    """
+    contains references to the round through which leaderboard entries of a given type are scored
+    """
+
     created_at = models.DateTimeField(auto_now_add=True)
     event = models.OneToOneField(
         "TriviaEvent", related_name="leaderboards", on_delete=models.CASCADE

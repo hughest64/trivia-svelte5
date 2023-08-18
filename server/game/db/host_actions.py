@@ -1,3 +1,9 @@
+# game.host_actions.py
+"""
+This file is intended to be a layer between DRF views and actual db manipulation.
+It allows access to the actual view functionality without needing to access the view.
+Though not implemented, it has a lot of potential to help with testing, etc.
+"""
 from datetime import timedelta
 import json
 from typing import List

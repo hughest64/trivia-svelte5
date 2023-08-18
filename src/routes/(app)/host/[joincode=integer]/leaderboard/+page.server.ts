@@ -1,7 +1,6 @@
 import { env } from '$env/dynamic/public';
 import { fail } from '@sveltejs/kit';
 import type { Action } from './$types';
-import { PUBLIC_API_HOST } from '$env/static/public';
 
 const updateleaderboard: Action = async ({ fetch, params }) => {
     const publicApiHost = env.PUBLIC_API_HOST;
@@ -47,7 +46,7 @@ const finishgame: Action = async ({ fetch, params }) => {
 const updateteamname: Action = async ({ request, fetch, params }) => {
     const data = Object.fromEntries(await request.formData());
 
-    const response = await fetch(`${PUBLIC_API_HOST}/team/updateteamname`, {
+    const response = await fetch(`${env.PUBLIC_API_HOST}/team/updateteamname`, {
         method: 'post',
         body: JSON.stringify({ ...data, joincode: params.joincode })
     });
@@ -62,7 +61,7 @@ const updateteamname: Action = async ({ request, fetch, params }) => {
 const updatepointsadjustment: Action = async ({ request, fetch, params }) => {
     const data = Object.fromEntries(await request.formData());
 
-    const response = await fetch(`${PUBLIC_API_HOST}/host/${params.joincode}/pointsadjustment`, {
+    const response = await fetch(`${env.PUBLIC_API_HOST}/host/${params.joincode}/pointsadjustment`, {
         method: 'post',
         body: JSON.stringify(data)
     });
