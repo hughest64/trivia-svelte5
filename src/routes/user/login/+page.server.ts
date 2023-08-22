@@ -1,12 +1,12 @@
 import * as cookie from 'cookie';
 import { fail, redirect } from '@sveltejs/kit';
-import { env } from '$env/dynamic/public';
+import { PUBLIC_API_HOST } from '$env/static/public';
 import { getJwtPayload } from '$lib/utils';
 import type { Action, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ cookies, fetch, locals }) => {
     if (locals.validtoken) throw redirect(302, '/team');
-    const apiHost = env.PUBLIC_API_HOST;
+    const apiHost = PUBLIC_API_HOST;
 
     try {
         // get a csrf token from the api
@@ -26,7 +26,7 @@ export const load: PageServerLoad = async ({ cookies, fetch, locals }) => {
             sameSite: 'lax'
         });
     } catch (e) {
-        console.error('cound not connect to', apiHost);
+        console.error('could not connect to', apiHost);
         return { loaderror: 'Error: Could Not Connect to the Server' };
     }
 };
@@ -41,7 +41,7 @@ const login: Action = async ({ cookies, fetch, request, url }) => {
     }
     const csrftoken = cookies.get('csrftoken') || '';
 
-    const apiHost = env.PUBLIC_API_HOST;
+    const apiHost = PUBLIC_API_HOST;
     const response = await fetch(`${apiHost}/user/login/`, {
         method: 'POST',
         headers: {

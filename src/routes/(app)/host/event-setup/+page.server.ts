@@ -1,5 +1,5 @@
 import { fail, redirect } from '@sveltejs/kit';
-import { env } from '$env/dynamic/public';
+import { PUBLIC_API_HOST } from '$env/static/public';
 import { handleHostAuth } from '$lib/utils';
 import type { Action, PageServerLoad } from './$types';
 
@@ -10,7 +10,7 @@ export const load: PageServerLoad = async (loadEvent) => {
 const fetchEventData: Action = async ({ fetch, request }) => {
     const data = Object.fromEntries(await request.formData());
 
-    const apiHost = env.PUBLIC_API_HOST;
+    const apiHost = PUBLIC_API_HOST;
     const response = await fetch(`${apiHost}/host/event-setup/`, {
         method: 'POST',
         body: JSON.stringify(data)

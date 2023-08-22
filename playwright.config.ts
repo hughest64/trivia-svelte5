@@ -8,11 +8,12 @@ import type { PlaywrightTestConfig } from '@playwright/test';
  * eliminates the build step and saves time.
  */
 // npm run build:test &&\
+// node -r dotenv/config build_test dotenv_config_path=./.env.test
 const testcmd = `
     ORIGIN='http://127.0.0.1:4173'\
     HOST='127.0.0.1'\
     PORT=4173\
-    node -r dotenv/config build_test dotenv_config_path=./.env.test
+    node build_test
 `;
 
 const djangoservercmd = `

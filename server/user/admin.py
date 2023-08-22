@@ -7,7 +7,14 @@ class TriviaUserAdmin(UserAdmin):
     fieldsets = (
         (
             "User Info",
-            {"fields": ("active_team", "auto_reveal_questions", "home_location")},
+            {
+                "fields": (
+                    "screen_name",
+                    "active_team",
+                    "auto_reveal_questions",
+                    "home_location",
+                )
+            },
         ),
     ) + UserAdmin.fieldsets
 

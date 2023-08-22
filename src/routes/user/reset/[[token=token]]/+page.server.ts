@@ -1,4 +1,4 @@
-import { env } from '$env/dynamic/public';
+import { PUBLIC_API_HOST } from '$env/static/public';
 import { error, fail, redirect } from '@sveltejs/kit';
 import * as cookie from 'cookie';
 import { getJwtPayload } from '$lib/utils';
@@ -19,7 +19,7 @@ export const load: PageServerLoad = async ({ cookies, fetch, params, url }) => {
     const csrftoken = cookies.get('csrftoken') || '';
 
     // request a long-lived token for auto-login
-    const resp = await fetch(`${env.PUBLIC_API_HOST}/user/refresh`, {
+    const resp = await fetch(`${PUBLIC_API_HOST}/user/refresh`, {
         method: 'POST',
         headers: {
             accept: 'application/json',
@@ -62,7 +62,7 @@ export const actions: Actions = {
         // get the token from the url param or the cookie of an already logged in user
         const token = params.token || cookies.get('jwt') || '';
 
-        const resp = await fetch(`${env.PUBLIC_API_HOST}/user/reset`, {
+        const resp = await fetch(`${PUBLIC_API_HOST}/user/reset`, {
             method: 'post',
             headers: { accept: 'application/json', 'content-type': 'application/json' },
             body: JSON.stringify({ pass1, pass2, token })

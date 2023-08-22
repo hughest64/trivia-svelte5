@@ -1,10 +1,10 @@
 import { fail } from '@sveltejs/kit';
-import { env } from '$env/dynamic/public';
+import { PUBLIC_API_HOST } from '$env/static/public';
 import type { Action } from './$types';
 
 const submitresponse: Action = async ({ fetch, request, params }) => {
     const data = Object.fromEntries((await request.formData()).entries());
-    const apiHost = env.PUBLIC_API_HOST;
+    const apiHost = PUBLIC_API_HOST;
     const apiEndpoint = `${apiHost}/game/${params.joincode}/response`;
 
     const response = await fetch(apiEndpoint, {
@@ -20,7 +20,7 @@ const submitresponse: Action = async ({ fetch, request, params }) => {
 };
 
 const joinevent: Action = async ({ fetch, params }) => {
-    const apiHost = env.PUBLIC_API_HOST;
+    const apiHost = PUBLIC_API_HOST;
     const response = await fetch(`${apiHost}/game/join`, {
         method: 'post',
         body: JSON.stringify({

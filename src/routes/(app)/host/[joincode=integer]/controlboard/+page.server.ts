@@ -1,10 +1,10 @@
-import { env } from '$env/dynamic/public';
+import { PUBLIC_API_HOST } from '$env/static/public';
 import type { Actions, PageServerLoad } from './$types.js';
 
 export const load: PageServerLoad = async ({ locals, params, fetch }) => {
     let apiData = {};
 
-    const response = await fetch(`${env.PUBLIC_API_HOST}/host/${params.joincode}/tiebreaker`);
+    const response = await fetch(`${PUBLIC_API_HOST}/host/${params.joincode}/tiebreaker`);
     if (response.ok) {
         apiData = await response.json();
     } else {
@@ -31,7 +31,7 @@ export const actions: Actions = {
             body.team_data.push({ team_id, answer });
         }
 
-        const response = await fetch(`${env.PUBLIC_API_HOST}/host/${params.joincode}/tiebreaker`, {
+        const response = await fetch(`${PUBLIC_API_HOST}/host/${params.joincode}/tiebreaker`, {
             method: 'post',
             body: JSON.stringify(body)
         });

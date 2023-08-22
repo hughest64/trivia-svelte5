@@ -1,5 +1,5 @@
 import { fail, redirect } from '@sveltejs/kit';
-import { env } from '$env/dynamic/public';
+import { PUBLIC_API_HOST } from '$env/static/public';
 import { handlePlayerAuth, sortUserTeams } from '$lib/utils';
 import type { Action, PageServerLoad } from './$types';
 
@@ -19,7 +19,7 @@ export const load: PageServerLoad = async (loadEvent) => {
 
 const selectTeam: Action = async ({ fetch, request, url }) => {
     const { selectedteam, currentteam } = Object.fromEntries((await request.formData()).entries());
-    const apiHost = env.PUBLIC_API_HOST;
+    const apiHost = PUBLIC_API_HOST;
     if (selectedteam !== currentteam) {
         const response = await fetch(`${apiHost}/team/select`, {
             method: 'POST',
@@ -41,7 +41,7 @@ const selectTeam: Action = async ({ fetch, request, url }) => {
 const createTeam: Action = async ({ fetch, request, url }) => {
     const data = Object.fromEntries((await request.formData()).entries());
 
-    const apiHost = env.PUBLIC_API_HOST;
+    const apiHost = PUBLIC_API_HOST;
     const response = await fetch(`${apiHost}/team/create`, {
         method: 'POST',
         body: JSON.stringify(data)
@@ -59,7 +59,7 @@ const createTeam: Action = async ({ fetch, request, url }) => {
 const joinTeam: Action = async ({ fetch, request, url }) => {
     const data = Object.fromEntries((await request.formData()).entries());
 
-    const apiHost = env.PUBLIC_API_HOST;
+    const apiHost = PUBLIC_API_HOST;
     const response = await fetch(`${apiHost}/team/join`, {
         method: 'POST',
         body: JSON.stringify(data)
