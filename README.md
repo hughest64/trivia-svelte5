@@ -26,6 +26,13 @@ PUBLIC_API_HOST='http://127.0.0.1:8000'
 PUBLIC_WEBSOCKET_HOST='ws://127.0.0.1:8000'
 PUBLIC_COOKIE_MAX_AGE=18000 # 5 hours
 PUBLIC_QUESTION_REVEAL_TIMEOUT=5000 # ms
+# oauth settings
+PUBLIC_GOOGLE_CLIENT_ID=
+PRIVATE_GOOGLE_CLIENT_SECRET=
+PUBLIC_GOOGLE_CALLBACK_URL=
+PUBLIC_GITHUB_CLIENT_ID=
+PRIVATE_GITHUB_CLIENT_SECRET=
+PUBLIC_GITHUB_CALLBACK_URL=
 ```
 
 `.env.test`
@@ -34,6 +41,8 @@ PUBLIC_QUESTION_REVEAL_TIMEOUT=5000 # ms
 PUBLIC_API_HOST='http://127.0.0.1:7000'
 PUBLIC_WEBSOCKET_HOST='ws://127.0.0.1:7000'
 PUBLIC_QUESTION_REVEAL_TIMEOUT=1000
+# oauth
+PUBLIC_OAUTH_CALLBACK_URL="http://127.0.0.1:4173/user/google-auth"
 ```
 
 `.env.django`
@@ -45,6 +54,12 @@ SECRET_KEY="some long random string"
 AIRTABLE_API_TOKEN="get this value from last pass"
 # This may not be used in the end game but default to False for now, TBD
 PRIVATE_EVENT=
+
+# email
+MAILGUN_API_KEY=
+MAILGUN_USER=
+MAILGUN_PASSWORD=
+EMAIL_REDIRECT_HOST="http://localhost:5173"
 ```
 
 ## Project Setup
@@ -133,5 +148,5 @@ See the [testing readme](/tests/README.md) for information on creating Playwrigh
 3. if necessary `pipenv run python manage.py migrate` and/or `pipenv run python manage.py collectstatic`
 4. run tests, `npm run test` and `pipenv run python manage.py test`
 5. if all tests pass, `npm run build` and restart the service(s):
-    - `sudo sytemctl restart tmdemo`
+    - `sudo sytemctl restart tmtrivia`
     - `sudo sytemctl restart tmapi`
