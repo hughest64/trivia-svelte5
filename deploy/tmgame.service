@@ -6,16 +6,17 @@ Description=TM SvelteKit
 [Service]
 Type=simple
 Group=cotn
-User=triviamafia
+User=todd
 
-# match the proxy_pass host in the nginx config (default port is already 3000)
+# match the proxy_pass host in the nginx config
 Environment="HOST=127.0.0.1"
+Environment="PORT=3050"
 
 # match the server_name in the ngnix config
-Environment="ORIGIN=https://play.triviamafia.com"
+Environment="ORIGIN=https://tmstaging.codeofthenorth.com"
 
-WorkingDirectory=/opt/cotn/triviamafia/app
-ExecStart=/home/triviamafia/.nvm/versions/node/v16.18.1/bin/node build
+WorkingDirectory=/opt/tm-trivia
+ExecStart=/home/todd/.nvm/versions/node/v16.18.1/bin/node build
 # ExecStart=/home/triviamafia/.nvm/versions/node/v16.18.1/bin/node -r dotenv/config build
 Restart=always
 RestartSec=10
