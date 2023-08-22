@@ -26,6 +26,7 @@ class CustomUserManager(UserManager):
 
 
 class User(AbstractUser):
+    screen_name = models.CharField(max_length=100, blank=True)
     active_team = models.ForeignKey(
         "game.Team", blank=True, null=True, on_delete=models.SET_NULL
     )
@@ -45,6 +46,7 @@ class User(AbstractUser):
         return {
             "id": self.pk,
             "username": self.username,
+            "screen_name": self.screen_name if self.screen_name is not None else "",
             "email": self.email,
             "is_staff": self.is_staff,
             "active_team_id": active_team_id,
