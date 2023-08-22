@@ -40,5 +40,5 @@ export const GET = (async ({ cookies, fetch, url }) => {
     const next = cookies.get('next') || (jwtData?.staff_user ? '/host/choice' : '/team');
     cookies.delete('next', { path: '/' });
 
-    throw redirect(302, '/team');
+    throw redirect(302, next);
 }) satisfies RequestHandler;
