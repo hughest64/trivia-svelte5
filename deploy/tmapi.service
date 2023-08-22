@@ -13,8 +13,8 @@ User=todd
 # use the production settings module
 Environment="DJANGO_SETTINGS_MODULE=server.settings_prod"
 
-WorkingDirectory=/opt/cotn/triviamafia/app
-ExecStart=/home/todd/.local/share/virtualenvs/tmdemo-Nf3jiFfx/bin/gunicorn -w 4 -k uvicorn.workers.UvicornWorker -b unix:/opt/tm-trivia/tmp/tmdemo.sock server.asgi:application
+WorkingDirectory=/opt/tm-trivia
+ExecStart=/home/todd/.local/share/virtualenvs/tm-trivia-OAypQb65/bin/gunicorn -w 4 -k uvicorn.workers.UvicornWorker -b unix:/opt/tm-trivia/tmp/tmdemo.sock server.asgi:application
 
 Restart=always
 RestartSec=10
