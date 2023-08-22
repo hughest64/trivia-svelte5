@@ -1,6 +1,6 @@
 import * as cookie from 'cookie';
 import { fail, redirect } from '@sveltejs/kit';
-import { env } from '$env/dynamic/public';
+import { PUBLIC_API_HOST } from '$env/static/public';
 import { getJwtPayload } from '$lib/utils';
 import type { Actions } from './$types';
 
@@ -33,7 +33,7 @@ export const actions: Actions = {
 
         const csrftoken = cookies.get('csrftoken') || '';
 
-        const apiHost = env.PUBLIC_API_HOST;
+        const apiHost = PUBLIC_API_HOST;
         const response = await fetch(`${apiHost}/user/create`, {
             method: 'post',
             headers: {

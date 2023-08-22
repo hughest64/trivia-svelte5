@@ -1,6 +1,6 @@
 import { fail, redirect } from '@sveltejs/kit';
 import { handlePlayerAuth } from '$lib/utils';
-import { env } from '$env/dynamic/public';
+import { PUBLIC_API_HOST } from '$env/static/public';
 import type { Action, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async (loadEvent) => {
@@ -14,7 +14,7 @@ const joinevent: Action = async ({ fetch, request }) => {
     if (!joincode) {
         return { errors: { message: 'Please Enter a Join Code' } };
     }
-    const apiHost = env.PUBLIC_API_HOST;
+    const apiHost = PUBLIC_API_HOST;
     const response = await fetch(`${apiHost}/game/join`, {
         method: 'post',
         body: JSON.stringify({ joincode: joincode })

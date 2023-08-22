@@ -1,6 +1,6 @@
 import * as cookie from 'cookie';
 import { error, redirect } from '@sveltejs/kit';
-import { env } from '$env/dynamic/public';
+import { PUBLIC_API_HOST, PUBLIC_COOKIE_MAX_AGE } from '$env/static/public';
 import { getContext, setContext } from 'svelte';
 import jwt_decode from 'jwt-decode';
 import type { Cookies } from '@sveltejs/kit';
@@ -98,7 +98,7 @@ export const setEventCookie = (data: ActiveEventData, joincode: string) => {
         const cook = cookie.serialize(`event-${joincode}`, JSON.stringify(data), {
             path: '/',
             httpOnly: false,
-            maxAge: Number(env.PUBLIC_COOKIE_MAX_AGE) || 3600,
+            maxAge: Number(PUBLIC_COOKIE_MAX_AGE) || 3600,
             sameSite: 'lax'
         });
 
@@ -162,7 +162,7 @@ export const handlePlayerAuth = async ({
     if (!locals.validtoken) throw redirect(302, `/user/logout?next=${url.pathname}`);
 
     const apiEndpoint = apiMap.get(endPoint || '') || endPoint;
-    const apiHost = env.PUBLIC_API_HOST;
+    const apiHost = PUBLIC_API_HOST;
     const response = await fetch(`${apiHost}${apiEndpoint}/`);
 
     let data = {};
@@ -196,7 +196,7 @@ export const handleHostAuth = async ({ locals, fetch, url, endPoint }: CustomLoa
     if (!locals.validtoken) throw redirect(302, `/user/logout?next=${url.pathname}`);
     if (!locals.staffuser) throw redirect(302, '/team');
 
-    const apiHost = env.PUBLIC_API_HOST;
+    const apiHost = PUBLIC_API_HOST;
     const response = await fetch(`${apiHost}${apiEndpoint}/`);
 
     let data = {};

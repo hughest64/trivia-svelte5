@@ -1,5 +1,5 @@
 import { getJwtPayload } from '$lib/utils';
-import { env } from '$env/dynamic/public';
+import { PUBLIC_WEBSOCKET_HOST, PUBLIC_QUESTION_REVEAL_TIMEOUT } from '$env/static/public';
 import type { Handle, HandleFetch } from '@sveltejs/kit';
 
 export const handle: Handle = async ({ event, resolve }) => {
@@ -27,8 +27,8 @@ export const handle: Handle = async ({ event, resolve }) => {
         event.locals.activeQuestionNumber = activeQuestionNumber || '';
         event.locals.activeQuestionKey = activeQuestionKey || '';
     }
-    event.locals.websocketHost = env.PUBLIC_WEBSOCKET_HOST;
-    event.locals.updateDelay = Number(env.PUBLIC_QUESTION_REVEAL_TIMEOUT);
+    event.locals.websocketHost = PUBLIC_WEBSOCKET_HOST;
+    event.locals.updateDelay = Number(PUBLIC_QUESTION_REVEAL_TIMEOUT);
 
     const response = await resolve(event);
     return response;

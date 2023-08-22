@@ -1,10 +1,10 @@
 import * as cookie from 'cookie';
 import { fail, redirect } from '@sveltejs/kit';
-import { env } from '$env/dynamic/public';
+import { PUBLIC_API_HOST } from '$env/static/public';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ cookies, fetch, locals, url }) => {
-    const apiHost = env.PUBLIC_API_HOST;
+    const apiHost = PUBLIC_API_HOST;
     const secureCookie = url.protocol === 'https:';
 
     if (locals.validtoken) throw redirect(302, '/team');
@@ -27,7 +27,7 @@ export const load: PageServerLoad = async ({ cookies, fetch, locals, url }) => {
             sameSite: 'lax'
         });
     } catch (e) {
-        console.error('cound not connect to', apiHost);
+        console.error('could not connect to', apiHost);
         return { loaderror: 'Error: Could Not Connect to the Server' };
     }
 };

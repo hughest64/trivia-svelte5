@@ -1,5 +1,5 @@
 import { PRIVATE_GITHUB_CLIENT_SECRET } from '$env/static/private';
-import { env } from '$env/dynamic/public';
+import { PUBLIC_API_HOST } from '$env/static/public';
 import { getJwtPayload } from '$lib/utils';
 import { githubAuthToken } from '../utils';
 import { error, redirect } from '@sveltejs/kit';
@@ -11,7 +11,7 @@ export const GET = (async ({ cookies, fetch, url }) => {
 
     const authData = await githubAuthToken(code, PRIVATE_GITHUB_CLIENT_SECRET);
     const csrftoken = cookies.get('csrftoken') || '';
-    const apiResp = await fetch(`${env.PUBLIC_API_HOST}/user/github-auth`, {
+    const apiResp = await fetch(`${PUBLIC_API_HOST}/user/github-auth`, {
         method: 'post',
         headers: {
             'content-type': 'application/json',

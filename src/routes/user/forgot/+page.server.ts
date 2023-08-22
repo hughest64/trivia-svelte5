@@ -1,4 +1,4 @@
-import { env } from '$env/dynamic/public';
+import { PUBLIC_API_HOST } from '$env/static/public';
 import { fail, redirect } from '@sveltejs/kit';
 import * as cookie from 'cookie';
 import type { Actions, PageServerLoad } from './$types';
@@ -14,7 +14,7 @@ export const actions: Actions = {
         let csrftoken = cookies.get('csrftoken') || '';
         // if a user came here directly (not via the forgot link) then we won't have a csrf token, let's get one
         if (!csrftoken) {
-            const csrfResp = await fetch(`${env.PUBLIC_API_HOST}/user/login`);
+            const csrfResp = await fetch(`${PUBLIC_API_HOST}/user/login`);
             const csrfCookie = cookie.parse(csrfResp.headers.get('set-cookie') || '');
             csrftoken = csrfCookie?.csrftoken || '';
             cookies.set('csrftoken', csrftoken, {
@@ -27,7 +27,7 @@ export const actions: Actions = {
 
         const username = (await request.formData()).get('username');
 
-        const resp = await fetch(`${env.PUBLIC_API_HOST}/user/forgot`, {
+        const resp = await fetch(`${PUBLIC_API_HOST}/user/forgot`, {
             method: 'POST',
             headers: {
                 accept: 'application/json',
