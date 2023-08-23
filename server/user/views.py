@@ -1,4 +1,5 @@
 from django.core.exceptions import ValidationError
+from django.conf import settings
 from django.utils.crypto import get_random_string
 from django.db.models import Q
 from django.utils.decorators import method_decorator
@@ -126,7 +127,7 @@ class GoogleAuthView(APIView):
             raise AuthenticationFailed("could not authenticate with google")
 
         auth_response = requests.get(
-            "https://www.googleapis.com/oauth2/v2/userinfo",
+            settings.GOOGLE_AUTH_ENDPOINT,
             headers={
                 "Authorization": access_token,
                 "content-type": "application/json",
@@ -158,7 +159,7 @@ class GithubAuthView(APIView):
             raise AuthenticationFailed("could not authenticate with google")
 
         auth_response = requests.get(
-            "https://api.github.com/user",
+            settings.GITHUB_AUTH_ENDPOINT,
             headers={
                 "Authorization": access_token,
                 "content-type": "application/json",
