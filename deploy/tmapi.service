@@ -14,7 +14,7 @@ User=todd
 Environment="DJANGO_SETTINGS_MODULE=server.settings_prod"
 
 WorkingDirectory=/opt/tm-trivia
-ExecStart=/home/todd/.local/share/virtualenvs/tm-trivia-OAypQb65/bin/gunicorn -w 4 -k uvicorn.workers.UvicornWorker -b unix:/opt/tm-trivia/tmp/tmdemo.sock server.asgi:application
+ExecStart=/home/todd/.local/share/virtualenvs/tm-trivia-OAypQb65/bin/gunicorn -w 4 -k uvicorn.workers.UvicornWorker -b unix:/opt/tm-trivia/tmp/tm-trivia-api.sock server.asgi:application
 
 Restart=always
 RestartSec=10
