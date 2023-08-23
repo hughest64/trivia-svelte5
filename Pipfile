@@ -17,6 +17,7 @@ psycopg2 = "*"
 channels-redis = "<=3.4.1"
 gunicorn = "*"
 uvicorn = {extras = ["standard"], version = "*"}
+"backports.weakref" = "*"
 
 [dev-packages]
 black = "*"
