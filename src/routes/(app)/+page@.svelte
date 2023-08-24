@@ -14,7 +14,8 @@
 <main>
     {#if showContent}
         <div transition:scale|local={{ duration: 1500 }} class="logo-container">
-            <img src="TM2021-Flat-Stacked-WhiteBackground.svg" alt="Trivia Mafia" />
+            <!-- <img src="TM2021-Flat-Stacked-WhiteBackground.svg" alt="Trivia Mafia" /> -->
+            <img src="TMLogo-2023_TM-Stacked-RedBlack.svg" alt="Trivia Mafia" />
         </div>
 
         <div transition:fly|local={{ y: 500, duration: 1500 }} class="form-container flex-column">
