@@ -23,3 +23,6 @@ server/server/settings_prod.py
 utility.ipynb
 
 playwright/.auth
+
+# database port data
+server/game/port_data/
