@@ -3,6 +3,7 @@ import os
 
 from django.core.management.base import BaseCommand, CommandParser
 from django.db import transaction
+from django.utils.crypto import get_random_string
 
 from game.models import *
 from user.models import *
@@ -69,12 +70,14 @@ class Xfer:
 
                     user, created = User.objects.update_or_create(
                         username=u.get("username"),
-                        password=u.get("password"),
-                        screen_name=u.get("screen_name"),
-                        email=u.get("email"),
-                        is_staff=u.get("is_staff"),
-                        is_superuser=u.get("is_superuser"),
-                        defaults={"home_location": user_home_loc},
+                        email=u.get("email", ""),
+                        defaults={
+                            "home_location": user_home_loc,
+                            "password": u.get("password", get_random_string(12)),
+                            "screen_name": u.get("screen_name", ""),
+                            "is_staff": u.get("is_staff", False),
+                            "is_superuser": u.get("is_superuser", False),
+                        },
                     )
                     users_created += int(created)
 
