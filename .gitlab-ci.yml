@@ -2,7 +2,7 @@ stages:
   - setup
 
 variables:
-  PYTHON_PATH: "/home/todd/.local/share/virtualenvs/tm-trivia-OAypQb65/bin/python"
+  PYTHON_PATH: "/home/gitlab-runner/.local/share/virtualenvs/tm-trivia-OAypQb65/bin/python"
   NVM_PATH: "/home/gitlab-runner/.nvm/versions/node/v16.20.1/bin"
 
 setup-job:
