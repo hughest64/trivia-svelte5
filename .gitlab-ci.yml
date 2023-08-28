@@ -3,7 +3,7 @@ stages:
 
 variables:
   PYTHON_PATH: "/home/todd/.local/share/virtualenvs/tm-trivia-OAypQb65/bin"
-  NVM_PATH: ".nvm/versions/node/v16.20.1/bin"
+  NVM_PATH: "/home/gitlab-runner/.nvm/versions/node/v16.20.1/bin"
 
 setup-job:
   stage: setup
@@ -13,10 +13,3 @@ setup-job:
     - git fetch origin main && git pull origin main
     - $NVM_PATH/npm i && $NVM_PATH/npm run build
     - pipenv install
-    # - cd server
-    # - $PYTHON_PATH/python manage.py collectstatic --no-input
-    # - $PYTHON_PATH/python manage.py migrate
-
-    # TODO decide how to handel sudo
-    # - sudo systemctl restart tm-trivia.service
-    # - sudo systemctl restart tm-trivia-api.service
