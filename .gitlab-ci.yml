@@ -1,17 +1,21 @@
 stages:
   - setup
 
+variables:
+  PYTHON_PATH: "/home/todd/.local/share/virtualenvs/tm-trivia-OAypQb65/bin/"
+  NVM_PATH: ".nvm/versions/node/v16.20.0/bin/python/"
+
 setup-job:
   stage: setup
   # environment: production
   script:
     - cd /opt/tm-trivia
     - git fetch origin main && git pull origin main
-    - npm i && npm run build
+    - $NVM_PATH/npm i && $NVM_PATH/npm run build
     - pipenv install
-    - cd server
-    - pipenv run python manage.py collectstatic --no-input
-    - pipenv run python manage.py migrate
+    # - cd server
+    # - $PYTHON_PATH/ python manage.py collectstatic --no-input
+    # - $PYTHON_PATH/python manage.py migrate
 
     # TODO decide how to handel sudo
     # - sudo systemctl restart tm-trivia.service
