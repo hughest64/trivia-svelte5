@@ -2,8 +2,8 @@ stages:
   - setup
 
 variables:
-  PYTHON_PATH: "/home/todd/.local/share/virtualenvs/tm-trivia-OAypQb65/bin/"
-  NVM_PATH: ".nvm/versions/node/v16.20.1/bin/"
+  PYTHON_PATH: "/home/todd/.local/share/virtualenvs/tm-trivia-OAypQb65/bin"
+  NVM_PATH: ".nvm/versions/node/v16.20.1/bin"
 
 setup-job:
   stage: setup
@@ -14,7 +14,7 @@ setup-job:
     - $NVM_PATH/npm i && $NVM_PATH/npm run build
     - pipenv install
     # - cd server
-    # - $PYTHON_PATH/ python manage.py collectstatic --no-input
+    # - $PYTHON_PATH/python manage.py collectstatic --no-input
     # - $PYTHON_PATH/python manage.py migrate
 
     # TODO decide how to handel sudo
