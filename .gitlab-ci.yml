@@ -10,8 +10,13 @@ setup-job:
   # environment: production
   script:
     - cd /opt/tm-trivia
+    # pull the updated repo
     - fetch origin main && git pull origin main
+    # update and build SvelteKit
     - $NVM_PATH/npm i && $NVM_PATH/npm run build
-    - pipenv install
+    # update and build Django
+    - pipenv pipenv install
     - cd server
     - $PYTHON_PATH manage.py collectstatic --no-input
+    - $PYTHON_PATH manage.py migrate
+    # restart services
