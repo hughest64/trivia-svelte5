@@ -1,0 +1,9 @@
+stages:
+  - setup
+
+setup-job:
+  stage: setup
+  # environment: production
+  script:
+    - cd /opt/tm-trivia
+    - ls 
