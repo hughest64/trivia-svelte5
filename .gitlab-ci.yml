@@ -15,7 +15,7 @@ setup-job:
     # update and build SvelteKit
     - $NVM_PATH/npm i && $NVM_PATH/npm run build
     # update and build Django
-    - pipenv pipenv install
+    - pipenv install
     - cd server
     - $PYTHON_PATH manage.py collectstatic --no-input
     - $PYTHON_PATH manage.py migrate
