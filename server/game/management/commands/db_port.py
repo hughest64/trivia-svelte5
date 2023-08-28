@@ -8,9 +8,34 @@ from django.utils.crypto import get_random_string
 from game.models import *
 from user.models import *
 
+import pandas as pd
+import psycopg2
+
 
 class Xfer:
     fp = None
+
+    loc_string = """
+        SELECT name, address, active FROM game_location
+        WHERE game_location.active = True
+    """
+
+    def get_from_db(self):
+        conn = psycopg2.connect(
+            "dbname=tm_transfer user=triviamafia password=supergoodpassword"
+        )
+        cur = conn.cursor()
+
+        cur.execute(self.loc_string)
+        records = cur.fetchall()
+        labels = ("name", "address", "active")
+        df = pd.DataFrame(records, columns=labels)
+        j = df.to_json(orient="records", indent=4)
+
+        with open("game/port_data/game_locs.json", "w") as f:
+            f.write(j)
+
+        cur.close()
 
     def load_locations(self):
         with open(f"{self.fp}/locs.json", "r") as f:
@@ -116,17 +141,24 @@ class Command(Xfer, BaseCommand):
         parser.add_argument(
             "-p",
             "--path",
-            required=True,
+            required=False,
             type=str,
             help="file path for fetching source data",
+        )
+        parser.add_argument(
+            "-d",
+            "--database",
+            action="store_true",
+            help="pull data directly with sql queries",
         )
 
     def handle(self, *args, **options):
         self.fp = options.get("path")
 
-        if not os.path.exists(os.path.dirname(self.fp)):
-            self.stderr.write(f"{self.fp} is not a valid file path")
-            return
+        if self.fp:
+            if not os.path.exists(os.path.dirname(self.fp)):
+                self.stderr.write(f"{self.fp} is not a valid file path")
+                return
 
         if options.get("locations"):
             self.load_locations()
@@ -136,5 +168,8 @@ class Command(Xfer, BaseCommand):
 
         if options.get("users"):
             self.load_users()
+
+        if options.get("database"):
+            self.get_from_db()
 
         print("Finished loading data, Have a nice day!")
