@@ -6,4 +6,4 @@ setup-job:
   # environment: production
   script:
     - cd /opt/tm-trivia
-    - sudo -u todd git fetch origin main && git pull origin main
+    - git fetch origin main && git pull origin main
