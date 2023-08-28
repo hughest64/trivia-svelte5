@@ -2,7 +2,7 @@ stages:
   - setup
 
 variables:
-  PYTHON_PATH: "/home/todd/.local/share/virtualenvs/tm-trivia-OAypQb65/bin"
+  PYTHON_PATH: "/home/todd/.local/share/virtualenvs/tm-trivia-OAypQb65/bin/python"
   NVM_PATH: "/home/gitlab-runner/.nvm/versions/node/v16.20.1/bin"
 
 setup-job:
@@ -10,6 +10,8 @@ setup-job:
   # environment: production
   script:
     - cd /opt/tm-trivia
-    - git fetch origin main && git pull origin main
+    - fetch origin main && git pull origin main
     - $NVM_PATH/npm i && $NVM_PATH/npm run build
     - pipenv install
+    - cd server
+    - $PYTHON_PATH manage.py collectstatic --no-input
