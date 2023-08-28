@@ -6,4 +6,4 @@ setup-job:
   # environment: production
   script:
     - cd /opt/tm-trivia
-    - ls 
+    - git fetch
