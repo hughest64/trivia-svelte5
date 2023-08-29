@@ -6,7 +6,7 @@ Description=TM SvelteKit
 [Service]
 Type=simple
 Group=cotn
-User=todd
+User=gitlab-runner
 
 # match the proxy_pass host in the nginx config
 Environment="HOST=127.0.0.1"
@@ -16,7 +16,7 @@ Environment="PORT=3050"
 Environment="ORIGIN=https://tmstaging.codeofthenorth.com"
 
 WorkingDirectory=/opt/tm-trivia
-ExecStart=/home/todd/.nvm/versions/node/v16.18.1/bin/node build
+ExecStart=/home/gitlab-runner/.nvm/versions/node/v16.18.1/bin/node build
 # ExecStart=/home/triviamafia/.nvm/versions/node/v16.18.1/bin/node -r dotenv/config build
 Restart=always
 RestartSec=10
