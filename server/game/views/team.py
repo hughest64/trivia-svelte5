@@ -1,5 +1,6 @@
 from channels.layers import get_channel_layer
 
+from django.core.exceptions import ValidationError
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 
@@ -9,7 +10,7 @@ from rest_framework.views import APIView
 from game.models import Team
 from game.utils.socket_classes import SendEventMessage
 from game.views.validation.exceptions import TeamNotFound
-from game.views.validation.data_cleaner import DataCleaner
+from game.views.validation.data_cleaner import DataCleaner, DataValidationError
 
 from user.authentication import JwtAuthentication
 from user.models import User
@@ -36,9 +37,16 @@ class TeamCreateView(APIView):
         user: User = request.user
         data = DataCleaner(request.data)
         team_name = data.as_string("team_name")
+        try:
+            team = Team.objects.create(name=team_name, create_password=True)
+            team.members.add(request.user)
+        except ValidationError as e:
+            if hasattr(e, "error_dict") and "name" in e.error_dict:
+                err = "That team name is too long. Please choose a shorter name."
+            else:
+                err = "An error occured in creating the team, please try again."
+            raise DataValidationError(err)
 
-        team = Team.objects.create(name=team_name, create_password=True)
-        team.members.add(request.user)
         user.active_team = team
         user.save()
 
