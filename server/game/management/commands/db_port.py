@@ -14,20 +14,26 @@ import psycopg2
 
 class Xfer:
     fp = None
+    cur = None
 
-    loc_string = """
-        SELECT name, address, active FROM game_location
-        WHERE game_location.active = True
-    """
+    def create_db_connection(self):
+        if self.cur is None:
+            conn = psycopg2.connect(
+                "dbname=tm_transfer user=triviamafia password=supergoodpassword"
+            )
+            self.cur = conn.cursor()
 
-    def get_from_db(self):
-        conn = psycopg2.connect(
-            "dbname=tm_transfer user=triviamafia password=supergoodpassword"
-        )
-        cur = conn.cursor()
+    def close_db_connection(self):
+        if self.cur is not None:
+            self.cur.close()
 
-        cur.execute(self.loc_string)
-        records = cur.fetchall()
+    def get_locs_from_db(self, close=False):
+        loc_string = """
+            SELECT name, address, active FROM game_location
+            WHERE game_location.active = True
+        """
+        self.cur.execute(loc_string)
+        records = self.cur.fetchall()
         labels = ("name", "address", "active")
         df = pd.DataFrame(records, columns=labels)
         j = df.to_json(orient="records", indent=4)
@@ -35,7 +41,28 @@ class Xfer:
         with open("game/port_data/game_locs.json", "w") as f:
             f.write(j)
 
-        cur.close()
+        if close:
+            self.cur.close()
+
+    def get_teams_from_db(self):
+        team_string = """
+            SELECT t.id, t.team_name FROM game_team t
+
+            RIGHT JOIN game_triviauser_teams tut
+            ON tut.id = t.id
+
+            RIGHT JOIN game_triviauser tu
+            ON tu.id = tut.triviauser_id
+
+            WHERE tu.is_anonymous_user = False
+            AND t.team_name IS NOT NULL
+        """
+        self.cur.execute(team_string)
+        records = self.cur.fetchall()
+        print(len(records), "total results")
+        just_ids = set([t[0] for t in records])
+
+        print(len(just_ids), "unique results")
 
     def load_locations(self):
         with open(f"{self.fp}/locs.json", "r") as f:
@@ -170,6 +197,11 @@ class Command(Xfer, BaseCommand):
             self.load_users()
 
         if options.get("database"):
-            self.get_from_db()
+            self.create_db_connection()
+
+            # self.get_locs_from_db()
+            self.get_teams_from_db()
+
+            self.close_db_connection()
 
         print("Finished loading data, Have a nice day!")
