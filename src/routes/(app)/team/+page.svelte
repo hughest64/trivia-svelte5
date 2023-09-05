@@ -31,6 +31,7 @@
 
     {#key hidecreateteam}
         <form transition:slide|local class:hidecreateteam action={'?/createTeam' + qp} method="POST" use:enhance>
+            {#if form?.error}<p class="error">{form?.error}</p>{/if}
             <h3>Enter Your Team Name</h3>
             <div class="input-container">
                 <input type="text" name="team_name" required />

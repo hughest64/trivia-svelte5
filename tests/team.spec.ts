@@ -28,7 +28,14 @@ test('correct handling of team creation', async ({ p1 }) => {
     await p1.page.locator('button', { hasText: /create a new team/i }).click();
     // fill in team nam and submit
     // using .first() here as somehow we are resolving two elements, maybe it' picking up the label?
-    await p1.page.locator('input[name="team_name"]').first().fill(TEST_TEAM_NAME);
+    const nameInput = p1.page.locator('input[name="team_name"]').first();
+
+    // can't use a name longer than 100 characters
+    await nameInput.fill('a'.repeat(101));
+    await p1.page.locator('button#team-create-submit').click();
+    await expect(p1.page.locator('p.error', { hasText: /too long/i })).toBeVisible();
+
+    await nameInput.fill(TEST_TEAM_NAME);
     await p1.page.locator('button#team-create-submit').click();
     // expect to be on game/join w/ a message about the team name (fow now anyway)
     await expect(p1.page).toHaveURL('/game/join');
@@ -44,4 +51,4 @@ test('join team via code', async ({ p1 }) => {
     await expect(p1.page.locator('p', { hasText: /hello world/i })).toBeVisible();
 });
 
-// TODO: we need a test for selecting an exiting team (implement after the drop down is updated)
+// TODO: we need a test for selecting an existing team (implement after the drop down is updated)
