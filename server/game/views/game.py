@@ -10,6 +10,7 @@ from rest_framework.views import APIView
 from user.authentication import JwtAuthentication
 
 from game.models import (
+    ChatMessage,
     GameQuestion,
     LeaderboardEntry,
     TriviaEvent,
@@ -70,6 +71,7 @@ class EventView(APIView):
         )
 
         # TODO: chats (last 50 for the players active team on this event)
+        chats = ChatMessage.objects.filter(team=user.active_team, event=event)[:50]
 
         return Response(
             {
@@ -83,6 +85,7 @@ class EventView(APIView):
                     "through_round": through_round,
                 },
                 "player_joined": player_joined,
+                "chat_messages": queryset_to_json(chats),
             }
         )
 

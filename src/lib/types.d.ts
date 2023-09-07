@@ -36,6 +36,14 @@ export interface UserTeam {
     members?: string[];
 }
 
+export interface ChatMessage {
+    id: number;
+    username: string;
+    team: string;
+    chat_message: string;
+    time: string;
+}
+
 export interface LeaderboardEntry {
     id: number;
     team_id: number;
@@ -218,6 +226,7 @@ export interface StoreTypes {
     playerJoined: Writable<PlayerJoined>;
     megaroundValues: MegaRoundValueStore;
     selectedMegaRound: Writable<number | undefined>;
+    chatMessages: Writable<ChatMessage[]>;
 }
 
 export type MessageHandler = Record<string, (message: any) => unknown>;

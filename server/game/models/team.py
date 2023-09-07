@@ -81,13 +81,16 @@ class ChatMessage(models.Model):
             return f"{local_time:%I:%M:%S %P}"
         return local_time
 
+    class Meta:
+        ordering = ["-event", "team", "pk"]
+
     def __str__(self):
         return f"{self.user} - {self.chat_message[:10]}"
 
     def to_json(self):
         return {
             "id": self.id,
-            "user": self.user.screen_name or self.user.username,
+            "username": self.user.screen_name or self.user.username,
             "team": self.team.name,
             "chat_message": self.chat_message,
             "time": self.local_created_at(),

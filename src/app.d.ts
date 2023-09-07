@@ -18,6 +18,7 @@ declare global {
         interface PageData {
             loaderror?: string;
             user_data?: types.UserData;
+            chat_messages?: Array<types.ChatMessage>;
             event_data?: types.EventData;
             current_event_data?: types.CurrentEventData;
             rounds?: Array<types.GameRound>;
