@@ -63,8 +63,7 @@ class Team(models.Model):
 
 
 class ChatMessage(models.Model):
-    created_at = models.DateTimeField(auto_now_add=True)
-    time = models.TimeField()
+    created_at = models.DateTimeField(default=timezone.now)
     user = models.ForeignKey(
         "user.User", related_name="chats", on_delete=models.CASCADE
     )
@@ -73,6 +72,14 @@ class ChatMessage(models.Model):
         "TriviaEvent", blank=True, null=True, on_delete=models.CASCADE
     )
     chat_message = models.TextField(max_length=255)
+
+    def local_created_at(self, as_string=True):
+        """return the created_at field in local time"""
+        local_time = timezone.localtime(self.created_at)
+
+        if as_string:
+            return f"{local_time:%I:%M:%S %P}"
+        return local_time
 
     def __str__(self):
         return f"{self.user} - {self.chat_message[:10]}"
@@ -83,7 +90,7 @@ class ChatMessage(models.Model):
             "user": self.user.screen_name or self.user.username,
             "team": self.team.name,
             "chat_message": self.chat_message,
-            "time": f"{self.time: '%I:%M:%S %P'}",
+            "time": self.local_created_at(),
         }
 
     def save(self, *args, **kwargs):
@@ -96,6 +103,6 @@ class ChatMessage(models.Model):
                 num_existing_chats[:1].delete()
 
             # add the time
-            self.time = timezone.now()
+            self.time = timezone.localtime()
 
         super().save(*args, **kwargs)
