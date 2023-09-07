@@ -1,1 +1,1 @@
-<h1>Game - Chat</h1>
+<h1>Team Chat</h1>

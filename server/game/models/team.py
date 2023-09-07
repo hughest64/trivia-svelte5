@@ -8,6 +8,8 @@ from game.views.validation.exceptions import TeamPasswordError
 
 MAX_CREATE_JOINCODE_ATTEMPTS = 30
 
+TEAM_CHAT_STORAGE_LIMIT = 200
+
 
 class Team(models.Model):
     def __init__(self, *args, create_password=False, **kwargs):
@@ -55,5 +57,41 @@ class Team(models.Model):
             self.generate_password(0, *args, **kwargs)
         else:
             self.full_clean()
+
+        super().save(*args, **kwargs)
+
+
+class ChatMessage(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    time = models.CharField(max_length=20, default="")
+    user = models.ForeignKey(
+        "user.User", related_name="chats", on_delete=models.CASCADE
+    )
+    team = models.ForeignKey(Team, related_name="chats", on_delete=models.CASCADE)
+    event = models.ForeignKey(
+        "TriviaEvent", blank=True, null=True, on_delete=models.CASCADE
+    )
+    chat_message = models.TextField(max_length=255)
+
+    def __str__(self):
+        return f"{self.user} - {self.chat_message[:10]}"
+
+    def to_json(self):
+        return {
+            "id": self.id,
+            "user": self.user.screen_name or self.user.username,
+            "team": self.team.name,
+            "chat_message": self.chat_message,
+            "time": f"{self.time: '%I:%M:%S %P'}",
+        }
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+
+        # limit chat storage per team
+        if not self.pk:
+            num_existing_chats = ChatMessage.objects.filter(team=self.team).count()
+            if num_existing_chats >= TEAM_CHAT_STORAGE_LIMIT:
+                num_existing_chats[:1].delete()
 
         super().save(*args, **kwargs)
