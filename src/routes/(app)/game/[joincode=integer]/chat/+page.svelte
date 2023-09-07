@@ -1,31 +1,20 @@
 <script lang="ts">
+    import { get } from 'svelte/store';
     import { getStore } from '$lib/utils';
     import type { ChatMessage } from '$lib/types';
 
     const user = getStore('userData');
-    const chats = getStore('chatMessages');
-    // TODO: temp for dev
-    const member_chat: ChatMessage = {
-        id: 75,
-        username: 'Team Member',
-        userid: 9999,
-        chat_message: 'An example for a different user',
-        team: 'todd rules',
-        time: '4:00:00 PM'
-    };
-    $: chats.update((chats) => {
-        const newchats = chats.filter((c) => c.id !== 75);
-        newchats.splice(2, 0, member_chat);
-        return newchats;
-    });
+    const chatMessages = getStore('chatMessages');
 </script>
 
 <h1 class="page-header">Team Chat</h1>
 
 <ul class="chat-container">
-    {#each $chats as chat (chat.id)}
+    {#each $chatMessages as chat (chat.id)}
         <li class="chat-message {chat.userid === $user.id ? 'user-chat' : 'member-chat'}">
-            <p>{chat.chat_message}</p>
+            {#each chat.chat_message.split('\n') as msg}
+                <p>{msg}</p>
+            {/each}
             <small>{chat.username} {chat.time}</small>
         </li>
     {/each}
