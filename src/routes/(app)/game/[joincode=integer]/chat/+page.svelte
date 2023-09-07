@@ -20,7 +20,7 @@
     });
 </script>
 
-<h1>Team Chat</h1>
+<h1 class="page-header">Team Chat</h1>
 
 <ul class="chat-container">
     {#each $chats as chat (chat.id)}
@@ -31,14 +31,36 @@
     {/each}
 </ul>
 
-<!-- TODO: form for chat submission -->
+<div class="chat-form">
+    <form action="">
+        <div class="input-container">
+            <input type="text" name="chat_messasge" id="chat_message" required />
+            <label for="chat_message">Chat with your Team</label>
+        </div>
+    </form>
+</div>
 
 <style lang="scss">
+    .page-header {
+        position: fixed;
+        top: 0rem;
+        margin: 0;
+        padding: 1rem;
+        width: 100%;
+        text-align: center;
+        background-color: var(--color-tertiary);
+        z-index: 1;
+    }
     .chat-container {
+        position: relative;
         width: 60%;
         display: flex;
+        margin: 0;
+        padding: 5rem 1.5rem 8rem;
+        // padding-bottom: 8rem;
         flex-direction: column;
         row-gap: 1rem;
+        overflow-x: auto;
     }
     .chat-message {
         border: 2px solid var(--color-secondary);
@@ -93,6 +115,23 @@
             border-width: 2px 0 0 2px;
             border-top-right-radius: 0;
             transform: skew(45deg);
+        }
+    }
+    .chat-form {
+        position: fixed;
+        bottom: var(--footer-height);
+        width: calc(100% - 2rem);
+        display: flex;
+        justify-content: center;
+        background-color: var(--color-tertiary);
+        form {
+            width: var(--max-element-width);
+        }
+    }
+
+    @media (max-width: 1000px) {
+        .chat-container {
+            width: 100%;
         }
     }
 </style>
