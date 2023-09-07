@@ -3,6 +3,7 @@ import random
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.utils import timezone
 
 from game.views.validation.exceptions import TeamPasswordError
 
@@ -63,7 +64,7 @@ class Team(models.Model):
 
 class ChatMessage(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
-    time = models.CharField(max_length=20, default="")
+    time = models.TimeField()
     user = models.ForeignKey(
         "user.User", related_name="chats", on_delete=models.CASCADE
     )
@@ -88,10 +89,13 @@ class ChatMessage(models.Model):
     def save(self, *args, **kwargs):
         self.full_clean()
 
-        # limit chat storage per team
         if not self.pk:
+            # limit chat storage per team
             num_existing_chats = ChatMessage.objects.filter(team=self.team).count()
             if num_existing_chats >= TEAM_CHAT_STORAGE_LIMIT:
                 num_existing_chats[:1].delete()
+
+            # add the time
+            self.time = timezone.now()
 
         super().save(*args, **kwargs)
