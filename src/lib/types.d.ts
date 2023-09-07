@@ -39,6 +39,7 @@ export interface UserTeam {
 export interface ChatMessage {
     id: number;
     username: string;
+    userid: number;
     team: string;
     chat_message: string;
     time: string;

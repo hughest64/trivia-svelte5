@@ -78,7 +78,7 @@ class ChatMessage(models.Model):
         local_time = timezone.localtime(self.created_at)
 
         if as_string:
-            return f"{local_time:%I:%M:%S %P}"
+            return f"{local_time:%I:%M:%S %p}"
         return local_time
 
     class Meta:
@@ -91,6 +91,7 @@ class ChatMessage(models.Model):
         return {
             "id": self.id,
             "username": self.user.screen_name or self.user.username,
+            "userid": self.user.id,
             "team": self.team.name,
             "chat_message": self.chat_message,
             "time": self.local_created_at(),
