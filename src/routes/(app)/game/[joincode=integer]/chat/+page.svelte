@@ -1,14 +1,25 @@
 <script lang="ts">
+    import { afterUpdate } from 'svelte';
+    import { page } from '$app/stores';
+    import { browser } from '$app/environment';
     import { enhance } from '$app/forms';
     import { getStore } from '$lib/utils';
 
+    $: form = $page.form;
+
     const user = getStore('userData');
     const chatMessages = getStore('chatMessages');
+
+    const scrollToBottom = () => {
+        if (!browser) return;
+        window.scroll({ top: document.body.scrollHeight, behavior: 'smooth' });
+    };
+    afterUpdate(scrollToBottom);
 </script>
 
 <h1 class="page-header">Team Chat</h1>
 
-<ul class="chat-container">
+<ul class="chat-container" id="chat-container">
     {#each $chatMessages as chat (chat.id)}
         <li class="chat-message {chat.userid === $user.id ? 'user-chat' : 'member-chat'}">
             {#each chat.chat_message.split('\n') as msg}
@@ -21,6 +32,7 @@
 
 <div class="chat-form">
     <form action="" method="post" use:enhance>
+        {#if form?.error}<p class="error">{form?.error}</p>{/if}
         <div class="input-container">
             <input type="text" name="chat_message" id="chat_message" required />
             <label for="chat_message">Chat with your Team</label>
@@ -44,8 +56,8 @@
         width: 60%;
         display: flex;
         margin: 0;
-        padding: 5rem 1.5rem 8rem;
-        // padding-bottom: 8rem;
+        padding: 5rem 1.5rem 0;
+        margin-bottom: 8rem;
         flex-direction: column;
         row-gap: 1rem;
         overflow-x: auto;
@@ -57,7 +69,7 @@
         position: relative;
 
         p {
-            margin: 0.25rem 0 0.25rem;
+            margin: 0.3rem 0;
         }
 
         small {

@@ -13,8 +13,7 @@ export const actions: Actions = {
 
         if (!response.ok) {
             const respData = await response.json();
-            console.log(respData);
-            return fail(400, respData.detail);
+            return fail(response.status, { error: respData.detail });
         }
 
         return { success: true };

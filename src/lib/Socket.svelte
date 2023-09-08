@@ -316,7 +316,6 @@
             });
         },
         chat_message: (msg: ChatMessage) => {
-            console.log(msg);
             chatStore.update((chats) => {
                 const newChats = [...chats];
                 const lastChat = chats[chats.length - 1];
