@@ -1,7 +1,7 @@
 from django.urls import path, re_path
 from django.shortcuts import redirect
 
-from .views import game, host, team, airtable
+from .views import common, game, host, team, airtable
 
 app_name = "game"
 
@@ -62,6 +62,12 @@ urlpatterns = [
         r"^host/(?P<joincode>\d+)[/\w]*/?$",
         host.EventHostView.as_view(),
         name="host_view",
+    ),
+    # commont endpoints
+    re_path(
+        r"^(?P<chat_type>(game|host))/(?P<joincode>\d+)[/\w]*/chat/create/?$",
+        common.ChatCreateView.as_view(),
+        name="chat_create",
     ),
     # player endpoints
     re_path(r"^game/join/?$", game.EventJoinView.as_view(), name="event_join"),

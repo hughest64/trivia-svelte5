@@ -12,6 +12,7 @@
         Response,
         ResponseSummary,
         RoundState,
+        ChatMessage,
         SocketMessage,
         HostResponse,
         HostMegaRoundInstance,
@@ -47,6 +48,7 @@
     const selectedMegaroundStore = getStore('selectedMegaRound');
     const userStore = getStore('userData');
     const tiebreakerResponseStore = getStore('tiebreakerResponses');
+    const chatStore = getStore('chatMessages');
 
     const handlers: MessageHandler = {
         connected: () => console.log('connected!'),
@@ -311,6 +313,20 @@
                 }
 
                 return newUser;
+            });
+        },
+        chat_message: (msg: ChatMessage) => {
+            console.log(msg);
+            chatStore.update((chats) => {
+                const newChats = [...chats];
+                const lastChat = chats[chats.length - 1];
+                if (lastChat?.userid === msg.userid) {
+                    lastChat.chat_message += '\n' + msg.chat_message;
+                } else {
+                    newChats.push(msg);
+                }
+
+                return newChats;
             });
         }
     };

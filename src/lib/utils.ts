@@ -147,17 +147,6 @@ export const groupChats = (chats: ChatMessage[]) => {
     if (!chats || chats.length === 0) return [];
     if (chats.length === 1) return chats;
 
-    // TODO: purely temp!
-    const member_chat: ChatMessage = {
-        id: Math.random(),
-        username: 'Team Member',
-        userid: 9999,
-        chat_message: 'An example for a different user',
-        team: 'todd rules',
-        time: '4:00:00 PM'
-    };
-    chats = [chats[0], chats[1], member_chat, chats[2], chats[3]];
-
     const groupedChats: ChatMessage[] = [{ ...chats[0] }];
     for (let i = 1; i < chats.length; i++) {
         const chat = chats[i];
