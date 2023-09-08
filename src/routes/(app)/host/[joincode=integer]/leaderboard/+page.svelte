@@ -82,7 +82,10 @@
 
                 {#if showTiebreakerButton(entry, index)}
                     <div class="resolve-tiebreaker">
-                        <a href={`/host/${$page.params.joincode}/controlboard`} class=" button button-primary">
+                        <a
+                            href={`/host/${$page.params.joincode}/controlboard?tiebreaker=t`}
+                            class=" button button-primary"
+                        >
                             Resolve Tie
                         </a>
                     </div>
