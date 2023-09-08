@@ -157,6 +157,7 @@ export const groupChats = (chats: ChatMessage[]) => {
         } else {
             const lastGroupedChat = groupedChats[groupedChats.length - 1];
             lastGroupedChat.chat_message += '\n' + chat.chat_message;
+            lastGroupedChat.time = chat.time;
         }
     }
     return groupedChats;

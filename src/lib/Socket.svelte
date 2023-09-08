@@ -321,6 +321,7 @@
                 const lastChat = chats[chats.length - 1];
                 if (lastChat?.userid === msg.userid) {
                     lastChat.chat_message += '\n' + msg.chat_message;
+                    lastChat.time = msg.time;
                 } else {
                     newChats.push(msg);
                 }
