@@ -1,7 +1,5 @@
 <script lang="ts">
-    import { get } from 'svelte/store';
     import { getStore } from '$lib/utils';
-    import type { ChatMessage } from '$lib/types';
 
     const user = getStore('userData');
     const chatMessages = getStore('chatMessages');
