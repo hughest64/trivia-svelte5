@@ -86,7 +86,7 @@ class ChatMessage(models.Model):
         return local_time
 
     class Meta:
-        ordering = ["-event", "team", "pk"]
+        ordering = ["-event", "created_at", "pk"]
 
     def __str__(self):
         return f"{self.user} - {self.chat_message[:10]}"

@@ -152,7 +152,11 @@ export const groupChats = (chats: ChatMessage[], hostPage: boolean) => {
         const chat = chats[i];
         const prevChat = chats[i - 1];
 
-        if (chat.userid !== prevChat?.userid || chat.is_host_message) {
+        if (!prevChat.is_host_message && chat.is_host_message) {
+            groupedChats.push({ ...chat });
+        } else if (chat.userid !== prevChat?.userid) {
+            groupedChats.push({ ...chat });
+        } else if (prevChat.is_host_message && !chat.is_host_message) {
             groupedChats.push({ ...chat });
         } else {
             const lastGroupedChat = groupedChats[groupedChats.length - 1];
