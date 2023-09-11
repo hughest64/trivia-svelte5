@@ -143,16 +143,16 @@ export const respsByround = (resps: Response[], rounds: GameRound[], roundStates
     return Object.values(roundResps);
 };
 
-export const groupChats = (chats: ChatMessage[]) => {
+export const groupChats = (chats: ChatMessage[], hostPage: boolean) => {
     if (!chats || chats.length === 0) return [];
-    if (chats.length === 1) return chats;
+    if (chats.length === 1 || hostPage) return chats;
 
     const groupedChats: ChatMessage[] = [{ ...chats[0] }];
     for (let i = 1; i < chats.length; i++) {
         const chat = chats[i];
         const prevChat = chats[i - 1];
 
-        if (chat.userid !== prevChat?.userid) {
+        if (chat.userid !== prevChat?.userid || chat.is_host_message) {
             groupedChats.push({ ...chat });
         } else {
             const lastGroupedChat = groupedChats[groupedChats.length - 1];

@@ -21,7 +21,7 @@
 
 <ul class="chat-container" id="chat-container">
     {#each $chatMessages as chat (chat.id)}
-        <li class="chat-message {chat.userid === $user.id ? 'user-chat' : 'member-chat'}">
+        <li class="chat-message {chat.userid === $user.id && !chat.is_host_message ? 'user-chat' : 'member-chat'}">
             {#each chat.chat_message.split('\n') as msg}
                 <p>{msg}</p>
             {/each}

@@ -10,6 +10,7 @@ from game.views.validation.exceptions import TeamPasswordError
 MAX_CREATE_JOINCODE_ATTEMPTS = 30
 
 TEAM_CHAT_STORAGE_LIMIT = 200
+HOST_CHATS_PER_EVENT_limit = 50
 
 
 class Team(models.Model):
@@ -67,11 +68,14 @@ class ChatMessage(models.Model):
     user = models.ForeignKey(
         "user.User", related_name="chats", on_delete=models.CASCADE
     )
-    team = models.ForeignKey(Team, related_name="chats", on_delete=models.CASCADE)
+    team = models.ForeignKey(
+        Team, related_name="chats", blank=True, null=True, on_delete=models.CASCADE
+    )
     event = models.ForeignKey(
         "TriviaEvent", blank=True, null=True, on_delete=models.CASCADE
     )
     chat_message = models.TextField(max_length=255)
+    is_host_message = models.BooleanField(default=False)
 
     def local_created_at(self, as_string=True):
         """return the created_at field in local time"""
@@ -88,14 +92,29 @@ class ChatMessage(models.Model):
         return f"{self.user} - {self.chat_message[:10]}"
 
     def to_json(self):
+        if self.is_host_message:
+            username = "Host"
+        elif self.user.screen_name is not None:
+            username = self.user.screen_name
+        else:
+            username = self.user.username
+
         return {
             "id": self.id,
-            "username": self.user.screen_name or self.user.username,
+            "username": username,
             "userid": self.user.id,
-            "team": self.team.name,
+            "team": self.team.name if self.team is not None else "",
+            "is_host_message": self.is_host_message,
             "chat_message": self.chat_message,
             "time": self.local_created_at(),
         }
+
+    def clean(self, *args, **kwargs):
+        if not self.is_host_message and self.team is None:
+            raise ValueError(
+                "is_host_message must be set to True when a team is not provided"
+            )
+        super().clean(*args, **kwargs)
 
     def save(self, *args, **kwargs):
         self.full_clean()
@@ -104,7 +123,13 @@ class ChatMessage(models.Model):
             # limit chat storage per team
             num_existing_chats = ChatMessage.objects.filter(team=self.team).count()
             if num_existing_chats >= TEAM_CHAT_STORAGE_LIMIT:
-                num_existing_chats[:1].delete()
+                num_existing_chats[0].delete()
+
+            num_host_event_chats = ChatMessage.objects.filter(
+                is_host_message=True, event=self.event
+            ).count()
+            if num_host_event_chats >= HOST_CHATS_PER_EVENT_limit:
+                num_host_event_chats[0].delete()
 
             # add the time
             self.time = timezone.localtime()

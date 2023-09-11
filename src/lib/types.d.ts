@@ -41,6 +41,7 @@ export interface ChatMessage {
     username: string;
     userid: number;
     team: string;
+    is_host_message?: boolean;
     chat_message: string;
     time: string;
 }

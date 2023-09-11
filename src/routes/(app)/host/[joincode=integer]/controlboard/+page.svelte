@@ -2,10 +2,9 @@
     import { slide } from 'svelte/transition';
     import { page } from '$app/stores';
     import Tiebreaker from './Tiebreaker.svelte';
+    import Messaging from './Messaging.svelte';
 
     const params = $page.url.searchParams;
-    $: console.log(Object.fromEntries(params));
-
     let { tiebreaker, messaging } = Object.fromEntries(params);
 
     let hideTiebreaker = !tiebreaker;
@@ -38,7 +37,7 @@
 </button>
 {#if !hideMessaging}
     <div class="flex-column" transition:slide>
-        <h1>Host messaging here</h1>
+        <Messaging />
     </div>
 {/if}
 

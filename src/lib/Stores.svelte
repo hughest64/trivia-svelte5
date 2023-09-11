@@ -5,6 +5,8 @@
     import { getMegaroundValues, megaRoundValueStore } from './megaroundValueStore';
     import type { UserData, EventData, LeaderboardEntry } from './types';
 
+    $: isHostPage = $page.url.pathname.startsWith('/host');
+
     $: data = $page.data;
 
     const userData = createStore('userData', writable(data?.user_data || ({} as UserData)));
@@ -15,7 +17,8 @@
     $: createStore('questions', readable($page.data.questions || []));
     $: createStore('popupData', writable({ is_displayed: false, popup_type: '' }));
     $: createStore('tiebreakerResponses', writable($page.data.tiebreaker_responses || []));
-    $: createStore('chatMessages', writable(groupChats($page.data.chat_messages || [])));
+    // group chats for the player side but not the host (which should contain only host messages)
+    $: createStore('chatMessages', writable(groupChats($page.data.chat_messages || [], isHostPage)));
 
     // is the player stored as a participant for the event?
     const playerJoined = createStore('playerJoined', writable(false));
