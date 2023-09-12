@@ -617,3 +617,26 @@ class TiebreakerView(APIView):
         SendHostMessage(joincode=joincode, message=message)
 
         return Response({"success": True})
+
+
+class MegaroundReminderView(APIView):
+    authentication_classes = [JwtAuthentication]
+    parser_classes = [IsAdminUser]
+
+    def get(self, request, joincode):
+        event = get_event_or_404(joincode=joincode)
+        entries = LeaderboardEntry.objects.filter(
+            event=event,
+            leaderboard_type=LEADERBOARD_TYPE_HOST,
+            selected_megaround__isnull=True,
+        )
+        team_ids = [e.team.id for e in entries]
+
+        SendEventMessage(
+            joincode=joincode,
+            message={
+                "msg_type": "megaround_reminder",
+                "message": {"team_ids": team_ids},
+            },
+        )
+        return Response({"success": True})

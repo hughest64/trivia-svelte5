@@ -343,6 +343,15 @@
 
                 return newChats;
             });
+        },
+        megaround_reminder: (msg: Record<string, Array<number | null | undefined>>) => {
+            console.log($userStore.active_team_id, msg);
+            if (isHostEndpoint || !msg.team_ids.includes($userStore.active_team_id)) return;
+            console.log('sending popup');
+            popupStore.set({
+                is_displayed: true,
+                popup_type: 'megaround_reminder'
+            });
         }
     };
 

@@ -63,7 +63,12 @@ urlpatterns = [
         host.EventHostView.as_view(),
         name="host_view",
     ),
-    # commont endpoints
+    re_path(
+        r"^host/(?P<joincode>\d+)/megaround-reminder/?$",
+        host.MegaroundReminderView.as_view(),
+        name="megaround_reminder",
+    ),
+    # common endpoints
     re_path(
         r"^(?P<chat_type>(game|host))/(?P<joincode>\d+)[/\w]*/chat/create/?$",
         common.ChatCreateView.as_view(),

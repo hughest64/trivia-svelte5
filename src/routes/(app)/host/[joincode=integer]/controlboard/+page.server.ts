@@ -58,5 +58,15 @@ export const actions: Actions = {
         }
 
         return { success: true };
+    },
+    megaround_reminder: async ({ fetch, params }) => {
+        const response = await fetch(`${PUBLIC_API_HOST}/host/${params.joincode}/megaround-reminder`);
+        console.log(response);
+
+        if (!response.ok) {
+            const respData = await response.json();
+            return fail(response.status, { error: respData.detail });
+        }
+        return { success: true };
     }
 };

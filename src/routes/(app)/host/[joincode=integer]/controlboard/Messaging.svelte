@@ -8,7 +8,9 @@
     const messages = getStore('chatMessages');
 </script>
 
-<!-- <h1>Message Players</h1> -->
+<form action="?/megaround_reminder" method="post" use:enhance>
+    <button type="submit" class="button-tertiary button"> Send Megaround Warning </button>
+</form>
 
 <div class="chat-form">
     <form action="?/send_chat" method="post" use:enhance>
