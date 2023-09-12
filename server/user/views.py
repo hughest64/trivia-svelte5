@@ -1,5 +1,6 @@
 from django.core.exceptions import ValidationError
 from django.conf import settings
+from django.db.utils import IntegrityError
 from django.utils.crypto import get_random_string
 from django.db.models import Q
 from django.utils.decorators import method_decorator
@@ -58,8 +59,8 @@ class CreateView(APIView):
                 user = User.objects.create_user(
                     username=username, email=email, password=pass1
                 )
-            except ValidationError as e:
-                return Response({"detail": e}, status=HTTP_400_BAD_REQUEST)
+            except (ValidationError, IntegrityError) as e:
+                return Response({"detail": str(e)}, status=HTTP_400_BAD_REQUEST)
 
         # log them in
         token = create_token(user)

@@ -70,11 +70,10 @@ class EventView(APIView):
             team=user.active_team, event=event
         )
 
-        # TODO: chats (last 50 for the players active team on this event)
-        all_chats = ChatMessage.objects.filter(
+        # TODO: I dislike the reverse shenannigans, but it works
+        chats = ChatMessage.objects.filter(
             Q(team=user.active_team) | Q(is_host_message=True), Q(event=event)
-        )
-        chats = all_chats[(len(all_chats) - 50) :]
+        ).reverse()[:50]
 
         return Response(
             {
@@ -88,7 +87,7 @@ class EventView(APIView):
                     "through_round": through_round,
                 },
                 "player_joined": player_joined,
-                "chat_messages": queryset_to_json(chats),
+                "chat_messages": reversed(queryset_to_json(chats)),
             }
         )
 

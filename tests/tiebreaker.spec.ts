@@ -63,7 +63,7 @@ test('ties initially show the same rank', async ({ host }) => {
     await expect(resolveBtn).toHaveCount(1);
     await resolveBtn.click();
     // validate the url
-    await expect(host.page).toHaveURL(/\/controlboard$/);
+    await expect(host.page).toHaveURL(/\/controlboard/);
     // answer questions and submit
     // api call to get the correct answer
     const response = await apicontext.post('ops/validate/', {

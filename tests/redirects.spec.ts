@@ -17,8 +17,8 @@ test('non staff user accessing /host/1234 redirects to team', async ({ p1 }) => 
     await expect(p1.page).toHaveURL(/team/i);
 });
 
-test('non staff user accessing /host/1234/chat redirects to team', async ({ p1 }) => {
-    await p1.page.goto('/host/1234/chat');
+test('non staff user accessing /host/1234/controlboard redirects to team', async ({ p1 }) => {
+    await p1.page.goto('/host/1234/controlboard');
     await expect(p1.page).toHaveURL(/team/i);
 });
 
