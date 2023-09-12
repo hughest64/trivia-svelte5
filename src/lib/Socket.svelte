@@ -318,7 +318,6 @@
         },
         chat_message: (msg: ChatMessage) => {
             // add to host messages
-            console.log(isHostEndpoint);
 
             if (msg.is_host_message && isHostEndpoint) {
                 chatStore.update((chats) => [...chats, msg]);
@@ -326,7 +325,6 @@
             }
             // exit if not a message for the users active team
             if ((!msg.is_host_message && msg.team_id !== $userStore.active_team_id) || isHostEndpoint) return;
-            console.log('adding');
 
             chatStore.update((chats) => {
                 const newChats = [...chats];
