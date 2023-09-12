@@ -94,16 +94,15 @@ class ChatMessage(models.Model):
     def to_json(self):
         if self.is_host_message:
             username = "Host"
-        elif self.user.screen_name is not None:
-            username = self.user.screen_name
         else:
-            username = self.user.username
+            username = self.user.screen_name or self.user.username
 
         return {
             "id": self.id,
             "username": username,
             "userid": self.user.id,
             "team": self.team.name if self.team is not None else "",
+            "team_id": self.team.id if self.team is not None else "",
             "is_host_message": self.is_host_message,
             "chat_message": self.chat_message,
             "time": self.local_created_at(),

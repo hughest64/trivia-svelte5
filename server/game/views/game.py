@@ -1,4 +1,4 @@
-from django.db.models import Q
+from django.db.models import Count, Q
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 from django.core.exceptions import ValidationError
@@ -71,9 +71,10 @@ class EventView(APIView):
         )
 
         # TODO: chats (last 50 for the players active team on this event)
-        chats = ChatMessage.objects.filter(
+        all_chats = ChatMessage.objects.filter(
             Q(team=user.active_team) | Q(is_host_message=True), Q(event=event)
-        )[:50]
+        )
+        chats = all_chats[(len(all_chats) - 50) :]
 
         return Response(
             {

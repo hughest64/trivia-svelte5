@@ -6,13 +6,12 @@
     const form = $page.form;
 
     const messages = getStore('chatMessages');
-    $: console.log($messages);
 </script>
 
-<h1>Message Players</h1>
+<!-- <h1>Message Players</h1> -->
 
 <div class="chat-form">
-    <form action="" method="post" use:enhance>
+    <form action="?/send_chat" method="post" use:enhance>
         {#if form?.error}<p class="error">{form?.error}</p>{/if}
         <div class="input-container">
             <input type="text" name="chat_message" id="chat_message" required />
@@ -21,10 +20,19 @@
     </form>
 </div>
 
+<ul>
+    {#each $messages as msg (msg.id)}
+        <li>{msg.chat_message}</li>
+    {/each}
+</ul>
+
 <style lang="scss">
     .chat-form {
         form {
             width: var(--max-element-width);
         }
+    }
+    ul {
+        list-style: inside;
     }
 </style>

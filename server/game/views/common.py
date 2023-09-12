@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 from game.views.validation.data_cleaner import get_event_or_404, DataCleaner
 from user.authentication import JwtAuthentication
 
-from game.utils.socket_classes import SendTeamMessage
+from game.utils.socket_classes import SendEventMessage
 
 from game.models import (
     LeaderboardEntry,
@@ -37,23 +37,21 @@ class ChatCreateView(APIView):
     authentication_classes = [JwtAuthentication]
 
     def post(self, request, chat_type, joincode):
-        # TODO: temp until host messaging is in place
-        if chat_type != "game":
-            return Response(
-                {"detail": "host messaging is not implemented"},
-                status=HTTP_400_BAD_REQUEST,
-            )
         event = get_event_or_404(joincode=joincode)
         data = DataCleaner(request.data)
         chat_message = data.as_string("chat_message")
+        is_host_message = data.as_bool("host_message")
         user = request.user
-        user_team = user.active_team
+        user_team = user.active_team if not is_host_message else None
 
         msg = ChatMessage.objects.create(
-            user=user, team=user_team, event=event, chat_message=chat_message
+            user=user,
+            team=user_team,
+            event=event,
+            chat_message=chat_message,
+            is_host_message=is_host_message,
         )
-        SendTeamMessage(
-            team_id=user_team.id,
+        SendEventMessage(
             joincode=joincode,
             message={"msg_type": "chat_message", "message": msg.to_json()},
         )

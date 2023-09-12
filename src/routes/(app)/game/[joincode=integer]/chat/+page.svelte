@@ -1,5 +1,6 @@
 <script lang="ts">
     import { afterUpdate } from 'svelte';
+    import { afterNavigate } from '$app/navigation';
     import { page } from '$app/stores';
     import { browser } from '$app/environment';
     import { enhance } from '$app/forms';
@@ -15,6 +16,7 @@
         window.scroll({ top: document.body.scrollHeight, behavior: 'smooth' });
     };
     afterUpdate(scrollToBottom);
+    afterNavigate(scrollToBottom);
 </script>
 
 <h1 class="page-header">Team Chat</h1>
