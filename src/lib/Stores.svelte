@@ -1,9 +1,11 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { readable, writable } from 'svelte/store';
-    import { createStore } from '$lib/utils';
+    import { createStore, groupChats } from '$lib/utils';
     import { getMegaroundValues, megaRoundValueStore } from './megaroundValueStore';
     import type { UserData, EventData, LeaderboardEntry } from './types';
+
+    $: isHostPage = $page.url.pathname.startsWith('/host');
 
     $: data = $page.data;
 
@@ -15,6 +17,8 @@
     $: createStore('questions', readable($page.data.questions || []));
     $: createStore('popupData', writable({ is_displayed: false, popup_type: '' }));
     $: createStore('tiebreakerResponses', writable($page.data.tiebreaker_responses || []));
+    // group chats for the player side but not the host (which should contain only host messages)
+    $: createStore('chatMessages', writable(groupChats($page.data.chat_messages || [], isHostPage)));
 
     // is the player stored as a participant for the event?
     const playerJoined = createStore('playerJoined', writable(false));

@@ -1,4 +1,4 @@
-from django.db.models import Prefetch
+from django.db.models import Count, Q
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 from django.core.exceptions import ValidationError
@@ -10,6 +10,7 @@ from rest_framework.views import APIView
 from user.authentication import JwtAuthentication
 
 from game.models import (
+    ChatMessage,
     GameQuestion,
     LeaderboardEntry,
     TriviaEvent,
@@ -69,7 +70,10 @@ class EventView(APIView):
             team=user.active_team, event=event
         )
 
-        # TODO: chats (last 50 for the players active team on this event)
+        # TODO: I dislike the reverse shenannigans, but it works
+        chats = ChatMessage.objects.filter(
+            Q(team=user.active_team) | Q(is_host_message=True), Q(event=event)
+        ).reverse()[:50]
 
         return Response(
             {
@@ -83,6 +87,7 @@ class EventView(APIView):
                     "through_round": through_round,
                 },
                 "player_joined": player_joined,
+                "chat_messages": reversed(queryset_to_json(chats)),
             }
         )
 

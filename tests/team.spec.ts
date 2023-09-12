@@ -33,7 +33,7 @@ test('correct handling of team creation', async ({ p1 }) => {
     // can't use a name longer than 100 characters
     await nameInput.fill('a'.repeat(101));
     await p1.page.locator('button#team-create-submit').click();
-    await expect(p1.page.locator('p.error', { hasText: /too long/i })).toBeVisible();
+    await expect(p1.page.locator('p.error', { hasText: /too long/i }).first()).toBeVisible();
 
     await nameInput.fill(TEST_TEAM_NAME);
     await p1.page.locator('button#team-create-submit').click();

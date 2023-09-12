@@ -24,6 +24,7 @@ from user.authentication import JwtAuthentication
 from game.models import (
     Game,
     GameQuestion,
+    ChatMessage,
     Location,
     EventRoundState,
     EventQuestionState,
@@ -51,6 +52,8 @@ class EventHostView(APIView):
         """fetch a specific event from the joincode parsed from the url"""
         user_data = request.user.to_json()
         event = get_event_or_404(joincode=joincode)
+        chat_messages = ChatMessage.objects.filter(event=event, is_host_message=True)
+
         lb_entries = LeaderboardEntry.objects.filter(event=event)
         public_lb_entries = lb_entries.filter(leaderboard_type=LEADERBOARD_TYPE_PUBLIC)
         host_lb_entries = lb_entries.filter(leaderboard_type=LEADERBOARD_TYPE_HOST)
@@ -73,6 +76,7 @@ class EventHostView(APIView):
             {
                 **event.to_json(),
                 "user_data": user_data,
+                "chat_messages": queryset_to_json(chat_messages),
                 "points_adjustment_reasons": PTS_ADJUSTMENT_OPTIONS_LIST,
                 "leaderboard_data": {
                     "public_leaderboard_entries": queryset_to_json(public_lb_entries),
@@ -612,4 +616,27 @@ class TiebreakerView(APIView):
 
         SendHostMessage(joincode=joincode, message=message)
 
+        return Response({"success": True})
+
+
+class MegaroundReminderView(APIView):
+    authentication_classes = [JwtAuthentication]
+    parser_classes = [IsAdminUser]
+
+    def get(self, request, joincode):
+        event = get_event_or_404(joincode=joincode)
+        entries = LeaderboardEntry.objects.filter(
+            event=event,
+            leaderboard_type=LEADERBOARD_TYPE_HOST,
+            selected_megaround__isnull=True,
+        )
+        team_ids = [e.team.id for e in entries]
+
+        SendEventMessage(
+            joincode=joincode,
+            message={
+                "msg_type": "megaround_reminder",
+                "message": {"team_ids": team_ids},
+            },
+        )
         return Response({"success": True})

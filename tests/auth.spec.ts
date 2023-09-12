@@ -133,7 +133,7 @@ test('two players cannot join an event with a player limit', async ({ p3, p4 }) 
 });
 
 test.describe('user creation', async () => {
-    test.beforeEach(async ({ host }) => {
+    test.afterAll(async ({ host }) => {
         apicontext.post('ops/delete/', {
             headers: await host.getAuthHeader(),
             data: { type: 'user', usernames: ['testuser'] }

@@ -7,6 +7,7 @@ import type { Cookies } from '@sveltejs/kit';
 import type {
     ActiveEventData,
     CustomLoadEvent,
+    ChatMessage,
     GameQuestion,
     GameRound,
     JwtPayload,
@@ -140,6 +141,30 @@ export const respsByround = (resps: Response[], rounds: GameRound[], roundStates
     });
 
     return Object.values(roundResps);
+};
+
+export const groupChats = (chats: ChatMessage[], hostPage: boolean) => {
+    if (!chats || chats.length === 0) return [];
+    if (chats.length === 1 || hostPage) return chats;
+
+    const groupedChats: ChatMessage[] = [{ ...chats[0] }];
+    for (let i = 1; i < chats.length; i++) {
+        const chat = chats[i];
+        const prevChat = chats[i - 1];
+
+        if (!prevChat.is_host_message && chat.is_host_message) {
+            groupedChats.push({ ...chat });
+        } else if (chat.userid !== prevChat?.userid) {
+            groupedChats.push({ ...chat });
+        } else if (prevChat.is_host_message && !chat.is_host_message) {
+            groupedChats.push({ ...chat });
+        } else {
+            const lastGroupedChat = groupedChats[groupedChats.length - 1];
+            lastGroupedChat.chat_message += '\n' + chat.chat_message;
+            lastGroupedChat.time = chat.time;
+        }
+    }
+    return groupedChats;
 };
 
 /**

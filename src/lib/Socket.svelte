@@ -12,13 +12,13 @@
         Response,
         ResponseSummary,
         RoundState,
+        ChatMessage,
         SocketMessage,
         HostResponse,
         HostMegaRoundInstance,
         UserTeam,
         TiebreakerResponse
     } from './types';
-
     const path = $page.url.pathname;
 
     export let socketUrl = `${$page.data.websocketHost}/ws${path}/`;
@@ -47,6 +47,9 @@
     const selectedMegaroundStore = getStore('selectedMegaRound');
     const userStore = getStore('userData');
     const tiebreakerResponseStore = getStore('tiebreakerResponses');
+    const chatStore = getStore('chatMessages');
+
+    $: isHostEndpoint = $page.url.pathname.startsWith('/host');
 
     const handlers: MessageHandler = {
         connected: () => console.log('connected!'),
@@ -57,7 +60,7 @@
                 existingPubIndex === -1 && newLB.public_leaderboard_entries.push(message);
 
                 // only update the host lb entries on host routes
-                if ($page.url.pathname.startsWith('/host')) {
+                if (isHostEndpoint) {
                     const existingHostIndex = lb.host_leaderboard_entries?.findIndex(
                         (e) => e.team_id === message.team_id
                     );
@@ -228,7 +231,7 @@
             }
 
             // update host reponses if appropriate
-            if ($page.url.pathname.startsWith('/host')) {
+            if (isHostEndpoint) {
                 hostResponseStore.update((resps) => {
                     const newResps = [...resps];
                     // all ids should match, but sort the the id array for a bit of insurance
@@ -274,7 +277,7 @@
         },
         host_megaround_update: (msg: HostMegaRoundInstance) => {
             // only update host routes
-            if (!$page.url.pathname.startsWith('/host')) return;
+            if (!isHostEndpoint) return;
 
             leaderboardStore.update((lb) => {
                 const newLb = { ...lb };
@@ -311,6 +314,43 @@
                 }
 
                 return newUser;
+            });
+        },
+        chat_message: (msg: ChatMessage) => {
+            // add to host messages
+
+            if (msg.is_host_message && isHostEndpoint) {
+                chatStore.update((chats) => [...chats, msg]);
+                return;
+            }
+            // exit if not a message for the users active team
+            if ((!msg.is_host_message && msg.team_id !== $userStore.active_team_id) || isHostEndpoint) return;
+
+            chatStore.update((chats) => {
+                const newChats = [...chats];
+                const lastChat = chats[chats.length - 1];
+
+                if (!lastChat.is_host_message && msg.is_host_message) {
+                    newChats.push(msg);
+                } else if (lastChat?.userid !== msg.userid) {
+                    newChats.push(msg);
+                } else if (lastChat.is_host_message && !msg.is_host_message) {
+                    newChats.push(msg);
+                } else {
+                    lastChat.chat_message += '\n' + msg.chat_message;
+                    lastChat.time = msg.time;
+                }
+
+                return newChats;
+            });
+        },
+        megaround_reminder: (msg: Record<string, Array<number | null | undefined>>) => {
+            console.log($userStore.active_team_id, msg);
+            if (isHostEndpoint || !msg.team_ids.includes($userStore.active_team_id)) return;
+
+            popupStore.set({
+                is_displayed: true,
+                popup_type: 'megaround_reminder'
             });
         }
     };
