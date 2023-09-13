@@ -158,6 +158,10 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+# NOTE we might need to consider whether or not it's a private event
+# number of days to roll the airtable query and host game lookups
+GAME_DAYS_TO_ROLL = 1
+
 # jwt settings
 
 # token expiration in minutes

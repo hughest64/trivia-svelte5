@@ -1,6 +1,7 @@
 from datetime import timedelta
 import random
 
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.forms.models import model_to_dict
@@ -9,6 +10,8 @@ from django.utils import timezone
 from .utils import queryset_to_json
 
 from game.views.validation.exceptions import JoincodeError
+
+GAME_DAYS_TO_ROLL = settings.GAME_DAYS_TO_ROLL
 
 QUESTION_TYPE_GENERAL_KNOWLEDGE = 0
 QUESTION_TYPE_THEMED_ROUND = 1
@@ -156,10 +159,12 @@ class GameRound(models.Model):
         super().save(*args, **kwargs)
 
 
-def get_end_of_week(dt=None):
+def get_end_of_week(dt=None, roll=None):
     """return the end of the week from dt or the current local date"""
-    reference_date = dt or timezone.localdate()
-    return reference_date + timedelta(days=6 - reference_date.weekday())
+    if roll is None:
+        roll = GAME_DAYS_TO_ROLL
+    reference_date = (dt or timezone.localdate()) - timedelta(days=roll)
+    return reference_date + timedelta(days=6 + roll - reference_date.weekday())
 
 
 class Game(models.Model):

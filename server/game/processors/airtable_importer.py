@@ -49,22 +49,23 @@ PE_BASE_ID = os.environ.get("PE_BASE_ID")
 PE_COLUMNS = ["pe_name", "join_code"]
 
 
-def get_request_dates():
+def get_request_dates(roll=0):
     """Set start and end dates one day prior to Monday and one day after Sunday
     for the current week, which is necessary for airtable's date filters
-    dates are in iso format without the timestamp. i.e. "2021-07-18"
+    dates are in iso format without the timestamp. i.e. "2021-07-18".  Dates can be
+    further moved forward(positive) or backward(negative) by the roll parameter
     """
     today = pd.to_datetime(datetime.date.today())
     start_timestamp = (
         today
         if today.day_name().lower() == "monday"
         else today - pd.offsets.Week(weekday=0)
-    ) - pd.Timedelta(1, unit="days")
+    ) - pd.Timedelta(1 - roll, unit="days")
     end_timestamp = (
         today
         if today.day_name().lower() == "sunday"
         else today + pd.offsets.Week(weekday=6)
-    ) + pd.Timedelta(1, unit="days")
+    ) + pd.Timedelta(1 + roll, unit="days")
 
     start_date = start_timestamp.isoformat()
     end_date = end_timestamp.isoformat()
@@ -87,6 +88,7 @@ class AirtableData:
         table_name=None,
         start=None,
         end=None,
+        roll=0,
     ):
         # only update if explicitly passed a value
         if private_event is not None:
@@ -104,6 +106,7 @@ class AirtableData:
         self.request_url = f"{self.base_url}/{self.base_id}/{self.table_name}"
         self.start = start
         self.end = end
+        self.roll = roll
         self._validate_init()
         self._validate_lookup_dates()
 
@@ -122,19 +125,19 @@ class AirtableData:
         - when only start or end is provided a 3 day range around the provided is returned
         - when both parms are provided start returns 1 day prior and end retuns one day later
         """
-
+        print("days to roll:", self.roll)
         if self.start is None and self.end is None:
-            start_date, end_date = get_request_dates()
+            start_date, end_date = get_request_dates(self.roll)
 
         else:
             try:
                 start_date = (
                     pd.to_datetime(self.start or self.end)
-                    - pd.Timedelta(1, unit="days")
+                    - pd.Timedelta(1 - self.roll, unit="days")
                 ).isoformat()
                 end_date = (
                     pd.to_datetime(self.end or self.start)
-                    + pd.Timedelta(1, unit="days")
+                    + pd.Timedelta(1 + self.roll, unit="days")
                 ).isoformat()
             except ParserError:
                 message = "please pass dates in month/day/year or year/month/day format"
@@ -283,7 +286,7 @@ class AirtableData:
             logger.error(f"error in processing alternate answers column\n{e}")
 
         # strip whitespace from all columns, set and sort the index
-        df = df.applymap(lambda x: x.strip() if isinstance(x, str) else x).sort_values(
+        df = df.map(lambda x: x.strip() if isinstance(x, str) else x).sort_values(
             ["date_used", "round_number", "question_number"]
         )
         return df
