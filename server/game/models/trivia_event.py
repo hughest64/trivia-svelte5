@@ -195,6 +195,7 @@ class Game(models.Model):
         }
 
     def clean(self, *args, **kwargs):
+        # TODO: this may not be required since we are now setting it in the airtable importer
         # add active through date to new instances which do not already have on set
         if not self.pk and self.active_through is None:
             self.active_through = get_end_of_week(dt=self.date_used)

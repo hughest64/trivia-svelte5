@@ -16,6 +16,7 @@ COLUMN_LABEL_MAP = {
     "join_code": {"label": "join_code", "default_value": str},  # PE only
     "Block Code": {"label": "block_code", "default_value": str},
     "date_used": {"label": "date_used", "default_value": str},
+    "active_through": {"label": "active_through", "default_value": str},
     "round_number": {"label": "round_number", "default_value": str},
     "question_number": {"label": "question_number", "default_value": str},
     "round_title": {"label": "round_title", "default_value": str},
@@ -77,6 +78,7 @@ class AirtableData:
     """Import data from airtable and optionally convert to a cleaned Pandas Dataframe"""
 
     private_event = PRIVATE_EVENT
+    roll = 0
 
     def __init__(
         self,
@@ -107,6 +109,7 @@ class AirtableData:
         self.start = start
         self.end = end
         self.roll = roll
+        AirtableData.roll = roll
         self._validate_init()
         self._validate_lookup_dates()
 
@@ -264,6 +267,16 @@ class AirtableData:
         return image_url if url_type == "Image Round" else sound_url
 
     @classmethod
+    def _map_active_through(cls, active_through):
+        """convert the active through string to a data if a date was provided or fallback on the end
+        of the current week if no date was provided
+        """
+        if active_through:
+            return pd.to_datetime(active_through)
+
+        return pd.to_datetime(get_request_dates(roll=cls.roll - 1)[1])
+
+    @classmethod
     def process_airtable_data(cls, airtable_data: dict) -> pd.DataFrame:
         """convert a list of dicts (airtable records) to a dataframe and clean the data"""
         df = cls._validate_columns(pd.DataFrame(airtable_data).fillna(""))
@@ -278,6 +291,10 @@ class AirtableData:
 
         # keep date used as a datetime index
         df["date_used"] = df["date_used"].apply(pd.to_datetime)
+
+        df["active_through"] = df["active_through"].apply(cls._map_active_through)
+
+        print("first active", df.iloc[0].active_through)
 
         try:
             df["answers"] = df["answers"].apply(cls._map_answers_list)

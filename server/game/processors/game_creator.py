@@ -147,6 +147,7 @@ class TriviaGameCreator:
             defaults={
                 "block_code": first_row.block_code,
                 "date_used": first_row.date_used,
+                "active_through": first_row.active_through,
                 "use_sound": not slug == NO_SOUND_SLUG,
             },
         )
