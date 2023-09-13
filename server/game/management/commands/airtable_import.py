@@ -7,6 +7,8 @@ from django.core.management.base import BaseCommand
 from game.processors.airtable_importer import AirtableData
 from game.processors.game_creator import create_games_from_airtable_data
 
+GAME_DAYS_TO_ROLL = settings.GAME_DAYS_TO_ROLL
+
 
 class Command(BaseCommand):
     help = "Create trivia games and private events from Airtable data."
@@ -43,6 +45,13 @@ class Command(BaseCommand):
             "-e", "--end", help="The end date for the airtable query in ISO format."
         )
         parser.add_argument(
+            "-R",
+            "--roll",
+            default=GAME_DAYS_TO_ROLL,
+            type=int,
+            help="Number of days to move the requested date range. Can be positive or negative.",
+        )
+        parser.add_argument(
             "-r",
             "--raw",
             action="store_true",
@@ -74,6 +83,7 @@ class Command(BaseCommand):
 
         start = options.get("start")
         end = options.get("end")
+        roll = options.get("roll")
         commit = not options.get("nocommit")
         if not commit:
             self.stdout.write(
@@ -104,6 +114,7 @@ class Command(BaseCommand):
                 verbose=True,
                 start=start,
                 end=end,
+                roll=roll,
             )
             return json.dumps(import_data)
         except NotImplementedError as e:

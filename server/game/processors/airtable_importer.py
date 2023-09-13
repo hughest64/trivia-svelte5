@@ -16,6 +16,7 @@ COLUMN_LABEL_MAP = {
     "join_code": {"label": "join_code", "default_value": str},  # PE only
     "Block Code": {"label": "block_code", "default_value": str},
     "date_used": {"label": "date_used", "default_value": str},
+    "active_through": {"label": "active_through", "default_value": str},
     "round_number": {"label": "round_number", "default_value": str},
     "question_number": {"label": "question_number", "default_value": str},
     "round_title": {"label": "round_title", "default_value": str},
@@ -49,22 +50,23 @@ PE_BASE_ID = os.environ.get("PE_BASE_ID")
 PE_COLUMNS = ["pe_name", "join_code"]
 
 
-def get_request_dates():
+def get_request_dates(roll=0):
     """Set start and end dates one day prior to Monday and one day after Sunday
     for the current week, which is necessary for airtable's date filters
-    dates are in iso format without the timestamp. i.e. "2021-07-18"
+    dates are in iso format without the timestamp. i.e. "2021-07-18".  Dates can be
+    further moved forward(positive) or backward(negative) by the roll parameter
     """
     today = pd.to_datetime(datetime.date.today())
     start_timestamp = (
         today
         if today.day_name().lower() == "monday"
         else today - pd.offsets.Week(weekday=0)
-    ) - pd.Timedelta(1, unit="days")
+    ) - pd.Timedelta(1 - roll, unit="days")
     end_timestamp = (
         today
         if today.day_name().lower() == "sunday"
         else today + pd.offsets.Week(weekday=6)
-    ) + pd.Timedelta(1, unit="days")
+    ) + pd.Timedelta(1 + roll, unit="days")
 
     start_date = start_timestamp.isoformat()
     end_date = end_timestamp.isoformat()
@@ -76,6 +78,7 @@ class AirtableData:
     """Import data from airtable and optionally convert to a cleaned Pandas Dataframe"""
 
     private_event = PRIVATE_EVENT
+    roll = 0
 
     def __init__(
         self,
@@ -87,6 +90,7 @@ class AirtableData:
         table_name=None,
         start=None,
         end=None,
+        roll=0,
     ):
         # only update if explicitly passed a value
         if private_event is not None:
@@ -104,6 +108,8 @@ class AirtableData:
         self.request_url = f"{self.base_url}/{self.base_id}/{self.table_name}"
         self.start = start
         self.end = end
+        self.roll = roll
+        AirtableData.roll = roll
         self._validate_init()
         self._validate_lookup_dates()
 
@@ -122,19 +128,19 @@ class AirtableData:
         - when only start or end is provided a 3 day range around the provided is returned
         - when both parms are provided start returns 1 day prior and end retuns one day later
         """
-
+        print("days to roll:", self.roll)
         if self.start is None and self.end is None:
-            start_date, end_date = get_request_dates()
+            start_date, end_date = get_request_dates(self.roll)
 
         else:
             try:
                 start_date = (
                     pd.to_datetime(self.start or self.end)
-                    - pd.Timedelta(1, unit="days")
+                    - pd.Timedelta(1 - self.roll, unit="days")
                 ).isoformat()
                 end_date = (
                     pd.to_datetime(self.end or self.start)
-                    + pd.Timedelta(1, unit="days")
+                    + pd.Timedelta(1 + self.roll, unit="days")
                 ).isoformat()
             except ParserError:
                 message = "please pass dates in month/day/year or year/month/day format"
@@ -261,6 +267,16 @@ class AirtableData:
         return image_url if url_type == "Image Round" else sound_url
 
     @classmethod
+    def _map_active_through(cls, active_through):
+        """convert the active through string to a data if a date was provided or fallback on the end
+        of the current week if no date was provided
+        """
+        if active_through:
+            return pd.to_datetime(active_through)
+
+        return pd.to_datetime(get_request_dates(roll=cls.roll - 1)[1])
+
+    @classmethod
     def process_airtable_data(cls, airtable_data: dict) -> pd.DataFrame:
         """convert a list of dicts (airtable records) to a dataframe and clean the data"""
         df = cls._validate_columns(pd.DataFrame(airtable_data).fillna(""))
@@ -276,6 +292,10 @@ class AirtableData:
         # keep date used as a datetime index
         df["date_used"] = df["date_used"].apply(pd.to_datetime)
 
+        df["active_through"] = df["active_through"].apply(cls._map_active_through)
+
+        print("first active", df.iloc[0].active_through)
+
         try:
             df["answers"] = df["answers"].apply(cls._map_answers_list)
         except ValueError as e:
@@ -283,7 +303,7 @@ class AirtableData:
             logger.error(f"error in processing alternate answers column\n{e}")
 
         # strip whitespace from all columns, set and sort the index
-        df = df.applymap(lambda x: x.strip() if isinstance(x, str) else x).sort_values(
+        df = df.map(lambda x: x.strip() if isinstance(x, str) else x).sort_values(
             ["date_used", "round_number", "question_number"]
         )
         return df
