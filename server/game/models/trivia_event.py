@@ -349,6 +349,23 @@ class EventQuestionState(models.Model):
         super().save(*args, **kwargs)
 
 
+class GameQuestionNote(models.Model):
+    created_at = models.DateTimeField(default=timezone.now)
+    event = models.ForeignKey(
+        TriviaEvent, related_name="question_note", on_delete=models.CASCADE
+    )
+    team = models.ForeignKey(
+        "Team", related_name="question_note", on_delete=models.CASCADE
+    )
+    user = models.ForeignKey(
+        "user.User", related_name="question_note", on_delete=models.CASCADE
+    )
+    question = models.ForeignKey(
+        GameQuestion, related_name="question_note", on_delete=models.CASCADE
+    )
+    text = models.TextField(max_length=120)
+
+
 # round for an event extends a game round with mutable boolean fields (locked and scored)
 class EventRoundState(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
