@@ -278,7 +278,7 @@ class TriviaEvent(models.Model):
             },
             "rounds": queryset_to_json(self.game.game_rounds.exclude(round_number=0)),
             "questions": queryset_to_json(
-                self.game.game_questions.exclude(question_number=0).order_by(
+                self.game.game_questions.exclude(round_number=0).order_by(
                     "round_number", "question_number"
                 )
             ),
