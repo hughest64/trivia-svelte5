@@ -10,7 +10,7 @@ pyjwt = "*"
 channels = {extras = ["daphne"], version = "*"}
 fuzzywuzzy = "*"
 python-levenshtein = "*"
-pandas = "*"
+pandas = ">=2.1"
 requests = "*"
 django-environ = "*"
 psycopg2 = "*"
