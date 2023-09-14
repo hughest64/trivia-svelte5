@@ -34,6 +34,9 @@
     .input-container {
         width: calc(100% - 2rem);
         margin-left: 1rem;
+        input {
+            width: 100%;
+        }
     }
     small {
         font-weight: normal;

@@ -42,21 +42,6 @@
         max-width: var(--max-element-width);
         margin: 0 0 1rem;
 
-        input {
-            width: calc(100% - 2rem);
-            // align-self: center;
-            padding-left: 1rem;
-        }
-        // form {
-        //     margin: 0 auto;
-        //     width: 100%;
-        //     input {
-        //         outline: none;
-        //         border: 3px solid var(--color-secondary);
-        //         margin: 0;
-        //         padding: 1.25rem;
-        //     }
-        // }
         button.disabled {
             margin: 0 auto;
         }
