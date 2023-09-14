@@ -12,6 +12,7 @@ from user.authentication import JwtAuthentication
 from game.models import (
     ChatMessage,
     GameQuestion,
+    TeamNote,
     LeaderboardEntry,
     TriviaEvent,
     QuestionResponse,
@@ -70,6 +71,10 @@ class EventView(APIView):
             team=user.active_team, event=event
         )
 
+        game_question_notes = TeamNote.objects.filter(
+            event=event, team=user.active_team
+        )
+
         # TODO: I dislike the reverse shenannigans, but it works
         chats = ChatMessage.objects.filter(
             Q(team=user.active_team) | Q(is_host_message=True), Q(event=event)
@@ -79,6 +84,7 @@ class EventView(APIView):
             {
                 **event.to_json(),
                 "user_data": user.to_json(),
+                "game_question_notes": queryset_to_json(game_question_notes),
                 "response_data": queryset_to_json(question_responses),
                 "response_summary": response_summary,
                 "leaderboard_data": {
@@ -181,6 +187,35 @@ class ResponseView(APIView):
                 "msg_type": "team_response_update",
                 "message": question_response.to_json(),
             },
+        )
+
+        return Response({"success": True})
+
+
+class TeamNoteView(APIView):
+    authentication_classes = [JwtAuthentication]
+
+    @method_decorator(csrf_protect)
+    def post(self, request, joincode):
+        data = DataCleaner(request.data)
+        question_id = data.as_int("question_id")
+        note_text = data.as_string("note_text")
+        event = get_event_or_404(joincode=joincode)
+
+        print(question_id, note_text)
+
+        tn = TeamNote.objects.create(
+            user=request.user,
+            team=request.user.active_team,
+            event=event,
+            question_id=question_id,
+            text=note_text,
+        )
+
+        SendTeamMessage(
+            joincode=joincode,
+            team_id=request.user.active_team.id,
+            message={"msg_type": "team_note_update", "message": tn.to_json()},
         )
 
         return Response({"success": True})

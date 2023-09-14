@@ -278,7 +278,7 @@ class TriviaEvent(models.Model):
             },
             "rounds": queryset_to_json(self.game.game_rounds.exclude(round_number=0)),
             "questions": queryset_to_json(
-                self.game.game_questions.exclude(question_number=0).order_by(
+                self.game.game_questions.exclude(round_number=0).order_by(
                     "round_number", "question_number"
                 )
             ),
@@ -347,6 +347,45 @@ class EventQuestionState(models.Model):
     def save(self, *args, **kwargs):
         self.full_clean()
         super().save(*args, **kwargs)
+
+
+class TeamNote(models.Model):
+    created_at = models.DateTimeField(default=timezone.now)
+    event = models.ForeignKey(
+        TriviaEvent, related_name="question_note", on_delete=models.CASCADE
+    )
+    team = models.ForeignKey(
+        "Team", related_name="question_note", on_delete=models.CASCADE
+    )
+    user = models.ForeignKey(
+        "user.User", related_name="question_note", on_delete=models.CASCADE
+    )
+    question = models.ForeignKey(
+        GameQuestion, related_name="question_note", on_delete=models.CASCADE
+    )
+    text = models.TextField(max_length=120)
+
+    def local_created_at(self, as_string=True):
+        """return the created_at field in local time"""
+        local_time = timezone.localtime(self.created_at)
+
+        if as_string:
+            return f"{local_time:%I:%M:%S %p}"
+        return local_time
+
+    def __str__(self):
+        return f"{self.user} - {self.team} - {self.event}"
+
+    def to_json(self):
+        return {
+            "id": self.id,
+            "event_id": self.event.id,
+            "team_id": self.team.id,
+            "user": self.user.username,
+            "question_id": self.question.id,
+            "text": self.text,
+            "time": self.local_created_at(),
+        }
 
 
 # round for an event extends a game round with mutable boolean fields (locked and scored)

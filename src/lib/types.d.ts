@@ -106,6 +106,16 @@ export interface GameQuestion {
     key: string;
 }
 
+export interface TeamNote {
+    id: number;
+    event_id: number;
+    team_id: number;
+    user: string;
+    question_id: number;
+    text: string;
+    time: string;
+}
+
 export interface QuestionState {
     round_number: number;
     question_number: number;
@@ -230,6 +240,7 @@ export interface StoreTypes {
     megaroundValues: MegaRoundValueStore;
     selectedMegaRound: Writable<number | undefined>;
     chatMessages: Writable<ChatMessage[]>;
+    teamNotes: Writable<TeamNote[]>;
 }
 
 export type MessageHandler = Record<string, (message: any) => unknown>;

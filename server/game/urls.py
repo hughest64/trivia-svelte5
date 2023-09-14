@@ -82,6 +82,11 @@ urlpatterns = [
         name="response",
     ),
     re_path(
+        r"^game/(?P<joincode>\d+)/note/create/?$",
+        game.TeamNoteView.as_view(),
+        name="create_note",
+    ),
+    re_path(
         r"^game/(?P<joincode>\d+)/megaround/?$",
         game.MegaRoundView.as_view(),
         name="megaround",
