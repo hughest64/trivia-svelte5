@@ -1,5 +1,6 @@
 <script lang="ts">
     import { slide } from 'svelte/transition';
+    import { enhance } from '$app/forms';
     import { getStore } from '$lib/utils';
     import NoteIcon from '$lib/icons/NoteIcon.svelte';
 
@@ -20,13 +21,14 @@
         <small>Click to {hidden ? 'Show' : 'Hide'} Notes</small>
     </button>
     {#key hidden}
-        <form transition:slide|local={{ duration: 200 }} class:hidden on:submit|preventDefault>
+        <form transition:slide|local={{ duration: 200 }} class:hidden action="?/submitnote" method="post" use:enhance>
             {#each activeQuestionNotes as note}
                 <p class="note-text">{note.text}</p>
                 <small class="note-meta">{note.user} {note.time}</small>
             {/each}
             <div id="note-container" class="input-container">
-                <input name="note" type="text" id="note-id" required />
+                <input type="hidden" name="question_id" value={activeQuestion?.id} />
+                <input name="note_text" type="text" id="note-id" required />
                 <label for="note-id">Add a New Note</label>
             </div>
         </form>

@@ -37,4 +37,21 @@ const joinevent: Action = async ({ fetch, params }) => {
     return { playerJoined: true };
 };
 
-export const actions = { submitresponse, joinevent };
+const submitnote: Action = async ({ fetch, request, params }) => {
+    const data = Object.fromEntries(await request.formData());
+    console.log(data);
+
+    const response = await fetch(`${PUBLIC_API_HOST}/game/${params.joincode}/note/create`, {
+        method: 'post',
+        body: JSON.stringify(data)
+    });
+
+    if (!response.ok) {
+        const respData = await response.json();
+        return fail(response.status, { error: respData.detail });
+    }
+
+    return { success: true };
+};
+
+export const actions = { submitresponse, joinevent, submitnote };

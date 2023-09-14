@@ -192,6 +192,20 @@ class ResponseView(APIView):
         return Response({"success": True})
 
 
+class GameQuestionNoteView(APIView):
+    authentication_classes = [JwtAuthentication]
+
+    @method_decorator(csrf_protect)
+    def post(self, request, joincode):
+        data = DataCleaner(request.data)
+        question_id = data.as_int("question_id")
+        note_text = data.as_string("note_text")
+
+        print(question_id, note_text)
+
+        return Response({"success": True})
+
+
 class MegaRoundView(APIView):
     authentication_classes = [JwtAuthentication]
 
