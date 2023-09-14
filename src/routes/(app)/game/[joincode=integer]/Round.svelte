@@ -59,7 +59,7 @@
     };
 </script>
 
-<svelte:window on:keyup={handleQuestionSelect} />
+<!-- <svelte:window on:keyup={handleQuestionSelect} /> -->
 
 <div class="question-box flex-column">
     <div class="question-selector">

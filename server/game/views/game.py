@@ -71,7 +71,9 @@ class EventView(APIView):
             team=user.active_team, event=event
         )
 
-        # Quest
+        game_question_notes = GameQuestionNote.objects.filter(
+            event=event, team=user.active_team
+        )
 
         # TODO: I dislike the reverse shenannigans, but it works
         chats = ChatMessage.objects.filter(
@@ -82,6 +84,7 @@ class EventView(APIView):
             {
                 **event.to_json(),
                 "user_data": user.to_json(),
+                "game_question_notes": queryset_to_json(game_question_notes),
                 "response_data": queryset_to_json(question_responses),
                 "response_summary": response_summary,
                 "leaderboard_data": {

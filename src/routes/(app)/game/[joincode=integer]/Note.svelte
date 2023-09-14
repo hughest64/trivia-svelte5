@@ -6,6 +6,11 @@
     const activeEventData = getStore('activeEventData');
     const questions = getStore('questions');
     $: activeQuestion = $questions.find((q) => q.key === $activeEventData.activeQuestionKey);
+
+    const notes = getStore('gameQuestionNotes');
+    $: activeQuestionNotes = $notes?.filter((n) => n.question_id === activeQuestion?.id) || [];
+    $: console.log(activeQuestionNotes);
+
     let hidden = false;
 </script>
 
@@ -16,6 +21,10 @@
     </button>
     {#key hidden}
         <form transition:slide|local={{ duration: 200 }} class:hidden on:submit|preventDefault>
+            {#each activeQuestionNotes as note}
+                <p class="note-text">{note.text}</p>
+                <small class="note-meta">{note.user} {note.time}</small>
+            {/each}
             <div id="note-container" class="input-container">
                 <input name="note" type="text" id="note-id" required />
                 <label for="note-id">Add a New Note</label>
@@ -30,6 +39,12 @@
     }
     .button {
         padding: 0.5rem;
+    }
+    .note-text {
+        margin: 1rem 1rem 0;
+    }
+    .note-meta {
+        text-align: center;
     }
     .input-container {
         width: calc(100% - 2rem);
