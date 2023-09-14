@@ -349,7 +349,7 @@ class EventQuestionState(models.Model):
         super().save(*args, **kwargs)
 
 
-class GameQuestionNote(models.Model):
+class TeamNote(models.Model):
     created_at = models.DateTimeField(default=timezone.now)
     event = models.ForeignKey(
         TriviaEvent, related_name="question_note", on_delete=models.CASCADE

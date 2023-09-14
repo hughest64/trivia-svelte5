@@ -12,7 +12,7 @@ from user.authentication import JwtAuthentication
 from game.models import (
     ChatMessage,
     GameQuestion,
-    GameQuestionNote,
+    TeamNote,
     LeaderboardEntry,
     TriviaEvent,
     QuestionResponse,
@@ -71,7 +71,7 @@ class EventView(APIView):
             team=user.active_team, event=event
         )
 
-        game_question_notes = GameQuestionNote.objects.filter(
+        game_question_notes = TeamNote.objects.filter(
             event=event, team=user.active_team
         )
 
@@ -204,7 +204,7 @@ class TeamNoteView(APIView):
 
         print(question_id, note_text)
 
-        tn = GameQuestionNote.objects.create(
+        tn = TeamNote.objects.create(
             user=request.user,
             team=request.user.active_team,
             event=event,

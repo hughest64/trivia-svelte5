@@ -14,7 +14,7 @@
     const notes = getStore('teamNotes');
     $: activeQuestionNotes = $notes?.filter((n) => n.question_id === activeQuestion?.id) || [];
 
-    let hidden = false;
+    let hidden = true;
 </script>
 
 <div id="notes-container" class="notes-container flex-column">
