@@ -294,8 +294,6 @@ class AirtableData:
 
         df["active_through"] = df["active_through"].apply(cls._map_active_through)
 
-        print("first active", df.iloc[0].active_through)
-
         try:
             df["answers"] = df["answers"].apply(cls._map_answers_list)
         except ValueError as e:

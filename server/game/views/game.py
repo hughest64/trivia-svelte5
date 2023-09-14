@@ -12,6 +12,7 @@ from user.authentication import JwtAuthentication
 from game.models import (
     ChatMessage,
     GameQuestion,
+    GameQuestionNote,
     LeaderboardEntry,
     TriviaEvent,
     QuestionResponse,
@@ -69,6 +70,8 @@ class EventView(APIView):
         question_responses = QuestionResponse.objects.filter(
             team=user.active_team, event=event
         )
+
+        # Quest
 
         # TODO: I dislike the reverse shenannigans, but it works
         chats = ChatMessage.objects.filter(

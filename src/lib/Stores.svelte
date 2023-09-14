@@ -19,6 +19,7 @@
     $: createStore('tiebreakerResponses', writable($page.data.tiebreaker_responses || []));
     // group chats for the player side but not the host (which should contain only host messages)
     $: createStore('chatMessages', writable(groupChats($page.data.chat_messages || [], isHostPage)));
+    $: createStore('gameQuestionNotes', writable($page.data.game_question_notes || []));
 
     // is the player stored as a participant for the event?
     const playerJoined = createStore('playerJoined', writable(false));
