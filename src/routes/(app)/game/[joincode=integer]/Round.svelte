@@ -32,6 +32,7 @@
         const currentIndex = allQuestionKeys.findIndex((key) => key === nextQuestionKey);
         let nextIndex = -1;
 
+        if (keyCode !== undefined && keyCode !== 'ArrowLeft' && keyCode !== 'ArrowRight') return;
         if (eventDirection === 'right' || keyCode === 'ArrowRight') {
             nextIndex = currentIndex + 1;
             if (nextIndex < allQuestionKeys.length) {
@@ -59,7 +60,7 @@
     };
 </script>
 
-<!-- <svelte:window on:keyup={handleQuestionSelect} /> -->
+<svelte:window on:keyup={handleQuestionSelect} />
 
 <div class="question-box flex-column">
     <div class="question-selector">
