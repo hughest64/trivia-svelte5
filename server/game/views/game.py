@@ -200,8 +200,23 @@ class GameQuestionNoteView(APIView):
         data = DataCleaner(request.data)
         question_id = data.as_int("question_id")
         note_text = data.as_string("note_text")
+        event = get_event_or_404(joincode=joincode)
 
         print(question_id, note_text)
+
+        gq = GameQuestionNote.objects.create(
+            user=request.user,
+            team=request.user.active_team,
+            event=event,
+            question_id=question_id,
+            text=note_text,
+        )
+
+        SendTeamMessage(
+            joincode=joincode,
+            team_id=request.user.active_team.id,
+            message={"msg_type": "team_note_update", "message": gq.to_json()},
+        )
 
         return Response({"success": True})
 

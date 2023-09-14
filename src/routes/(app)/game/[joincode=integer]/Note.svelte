@@ -1,8 +1,11 @@
 <script lang="ts">
     import { slide } from 'svelte/transition';
+    import { page } from '$app/stores';
     import { enhance } from '$app/forms';
     import { getStore } from '$lib/utils';
     import NoteIcon from '$lib/icons/NoteIcon.svelte';
+
+    const form = $page.form;
 
     const activeEventData = getStore('activeEventData');
     const questions = getStore('questions');
@@ -10,12 +13,13 @@
 
     const notes = getStore('gameQuestionNotes');
     $: activeQuestionNotes = $notes?.filter((n) => n.question_id === activeQuestion?.id) || [];
-    $: console.log(activeQuestionNotes);
 
     let hidden = false;
 </script>
 
 <div id="notes-container" class="notes-container flex-column">
+    {#if form?.error}<p>{form.error}</p>{/if}
+
     <button class="button disabled flex-column" on:click={() => (hidden = !hidden)}>
         <NoteIcon />
         <small>Click to {hidden ? 'Show' : 'Hide'} Notes</small>

@@ -39,7 +39,6 @@ const joinevent: Action = async ({ fetch, params }) => {
 
 const submitnote: Action = async ({ fetch, request, params }) => {
     const data = Object.fromEntries(await request.formData());
-    console.log(data);
 
     const response = await fetch(`${PUBLIC_API_HOST}/game/${params.joincode}/note/create`, {
         method: 'post',
