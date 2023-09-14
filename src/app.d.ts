@@ -19,7 +19,7 @@ declare global {
             loaderror?: string;
             user_data?: types.UserData;
             chat_messages?: Array<types.ChatMessage>;
-            game_question_notes?: Array<types.GameQuestionNote>;
+            game_question_notes?: Array<types.TeamNote>;
             event_data?: types.EventData;
             current_event_data?: types.CurrentEventData;
             rounds?: Array<types.GameRound>;

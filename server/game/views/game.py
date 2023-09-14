@@ -192,7 +192,7 @@ class ResponseView(APIView):
         return Response({"success": True})
 
 
-class GameQuestionNoteView(APIView):
+class TeamNoteView(APIView):
     authentication_classes = [JwtAuthentication]
 
     @method_decorator(csrf_protect)
@@ -204,7 +204,7 @@ class GameQuestionNoteView(APIView):
 
         print(question_id, note_text)
 
-        gq = GameQuestionNote.objects.create(
+        tn = GameQuestionNote.objects.create(
             user=request.user,
             team=request.user.active_team,
             event=event,
@@ -215,7 +215,7 @@ class GameQuestionNoteView(APIView):
         SendTeamMessage(
             joincode=joincode,
             team_id=request.user.active_team.id,
-            message={"msg_type": "team_note_update", "message": gq.to_json()},
+            message={"msg_type": "team_note_update", "message": tn.to_json()},
         )
 
         return Response({"success": True})

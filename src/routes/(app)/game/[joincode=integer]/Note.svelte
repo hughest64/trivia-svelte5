@@ -11,7 +11,7 @@
     const questions = getStore('questions');
     $: activeQuestion = $questions.find((q) => q.key === $activeEventData.activeQuestionKey);
 
-    const notes = getStore('gameQuestionNotes');
+    const notes = getStore('teamNotes');
     $: activeQuestionNotes = $notes?.filter((n) => n.question_id === activeQuestion?.id) || [];
 
     let hidden = false;

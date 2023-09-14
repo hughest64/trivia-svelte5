@@ -106,7 +106,7 @@ export interface GameQuestion {
     key: string;
 }
 
-export interface GameQuestionNote {
+export interface TeamNote {
     id: number;
     event_id: number;
     team_id: number;
@@ -240,7 +240,7 @@ export interface StoreTypes {
     megaroundValues: MegaRoundValueStore;
     selectedMegaRound: Writable<number | undefined>;
     chatMessages: Writable<ChatMessage[]>;
-    gameQuestionNotes: Writable<GameQuestionNote[]>;
+    teamNotes: Writable<TeamNote[]>;
 }
 
 export type MessageHandler = Record<string, (message: any) => unknown>;

@@ -18,7 +18,7 @@
         HostMegaRoundInstance,
         UserTeam,
         TiebreakerResponse,
-        GameQuestionNote
+        TeamNote
     } from './types';
     const path = $page.url.pathname;
 
@@ -49,7 +49,7 @@
     const userStore = getStore('userData');
     const tiebreakerResponseStore = getStore('tiebreakerResponses');
     const chatStore = getStore('chatMessages');
-    const teamNoteStore = getStore('gameQuestionNotes');
+    const teamNoteStore = getStore('teamNotes');
 
     $: isHostEndpoint = $page.url.pathname.startsWith('/host');
 
@@ -131,7 +131,7 @@
                 return newResponses;
             });
         },
-        team_note_update: (message: GameQuestionNote) => {
+        team_note_update: (message: TeamNote) => {
             teamNoteStore.update((notes) => [...notes, message]);
         },
         round_update: (message: Record<string, RoundState | Response[] | ResponseSummary>) => {

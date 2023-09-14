@@ -83,7 +83,7 @@ urlpatterns = [
     ),
     re_path(
         r"^game/(?P<joincode>\d+)/note/create/?$",
-        game.GameQuestionNoteView.as_view(),
+        game.TeamNoteView.as_view(),
         name="create_note",
     ),
     re_path(
