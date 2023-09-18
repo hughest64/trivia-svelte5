@@ -1,7 +1,8 @@
 import { handlePlayerAuth, sortUserTeams } from '$lib/utils';
-import type { PageServerLoad } from './$types';
+import type { LayoutServerLoad } from './$types';
 
-export const load: PageServerLoad = async (loadEvent) => {
+export const load: LayoutServerLoad = async (loadEvent) => {
+    console.log('running team lead');
     const data = await handlePlayerAuth({ ...loadEvent, endPoint: '/user' });
     const activeTeamId = data.user_data?.active_team_id;
     const userTeams = data.user_data?.teams;

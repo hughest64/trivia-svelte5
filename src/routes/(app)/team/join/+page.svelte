@@ -5,7 +5,6 @@
 
     $: form = $page.form;
 
-    const userData = getStore('userData');
     $: next = $page.url.searchParams.get('next');
     $: qp = next ? `?next=${next}` : '';
 </script>
