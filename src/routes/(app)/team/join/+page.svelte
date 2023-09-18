@@ -20,4 +20,13 @@
         </div>
         <button class="button button-primary" type="submit" id="team-password-submit">Submit</button>
     </form>
+
+    <a class="create-link" href="create">Create a new team</a>
 </main>
+
+<style lang="scss">
+    .create-link {
+        margin: 2rem auto;
+        font-style: italic;
+    }
+</style>

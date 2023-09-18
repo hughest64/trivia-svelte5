@@ -21,4 +21,13 @@
         </div>
         <button class="button button-primary" id="team-create-submit">Submit</button>
     </form>
+
+    <a class="join-link" href="join">Join a different team (password required)</a>
 </main>
+
+<style lang="scss">
+    .join-link {
+        margin: 2rem auto;
+        font-style: italic;
+    }
+</style>
