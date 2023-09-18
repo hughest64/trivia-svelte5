@@ -6,7 +6,6 @@
     const activeTeam = $userData.teams.find((t) => t.id === $userData.active_team_id);
     const queryString = $page.url.search;
     const next = $page.url.searchParams.get('next') || 'game/join';
-    $: console.log(queryString);
 </script>
 
 <main class="short">

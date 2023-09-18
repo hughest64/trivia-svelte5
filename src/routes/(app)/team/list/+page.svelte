@@ -3,10 +3,7 @@
     import { enhance } from '$app/forms';
     import { page } from '$app/stores';
     import { getStore } from '$lib/utils';
-    // import type { ActionData } from './$types';
 
-    // TODO: handle form error (might need a bit of nesting to get it on the right form)
-    // export let form: ActionData;
     $: form = $page.form;
     let hidecreateteam = true;
     let hideteampassword = true;
@@ -42,8 +39,8 @@
     {/key}
     <h1>Or Play with an Existing Team</h1>
 
-    {#if $userData?.teams.length > 0}
-        <form action={'?/selectTeam' + qp} method="POST">
+    {#if $userData?.teams?.length > 0}
+        <form action={'?/selectTeam' + qp} method="POST" use:enhance>
             {#if form?.error}<p class="error">{form?.error}</p>{/if}
 
             <label class="select-label" for="team-select">Choose A Team</label>
