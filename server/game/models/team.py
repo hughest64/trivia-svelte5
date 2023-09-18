@@ -22,7 +22,7 @@ class Team(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     name = models.CharField(max_length=100)
     password = models.CharField(max_length=120, unique=True, db_index=True)
-    members = models.ManyToManyField("user.User", related_name="teams")
+    members = models.ManyToManyField("user.User", blank=True, related_name="teams")
 
     def to_json(self):
         return {
