@@ -1,0 +1,23 @@
+<script lang="ts">
+    import { enhance } from '$app/forms';
+    import { page } from '$app/stores';
+    import { getStore } from '$lib/utils';
+
+    $: form = $page.form;
+
+    const userData = getStore('userData');
+    $: next = $page.url.searchParams.get('next');
+    $: qp = next ? `?next=${next}` : '';
+</script>
+
+<main class="short">
+    <h1>Enter team password</h1>
+    <form action={'?/joinTeam' + qp} method="POST" use:enhance>
+        {#if form?.error}<p class="error">{form?.error}</p>{/if}
+        <div class="input-container">
+            <input type="text" name="team_password" required />
+            <label for="team_password">Team Password</label>
+        </div>
+        <button class="button button-primary" type="submit" id="team-password-submit">Submit</button>
+    </form>
+</main>

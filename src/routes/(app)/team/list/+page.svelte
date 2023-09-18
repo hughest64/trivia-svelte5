@@ -5,8 +5,6 @@
     import { getStore } from '$lib/utils';
 
     $: form = $page.form;
-    let hidecreateteam = true;
-    let hideteampassword = true;
 
     const userData = getStore('userData');
     $: next = $page.url.searchParams.get('next');
@@ -16,28 +14,7 @@
 <svelte:head><title>TriviaMafia | Team Select</title></svelte:head>
 
 <main class="short">
-    <h1>Create a New Team</h1>
-
-    <button
-        class="button button-primary"
-        class:disabled={!hidecreateteam}
-        on:click={() => (hidecreateteam = !hidecreateteam)}
-    >
-        Create a New Team
-    </button>
-
-    {#key hidecreateteam}
-        <form transition:slide|local class:hidecreateteam action={'?/createTeam' + qp} method="POST" use:enhance>
-            {#if form?.error}<p class="error">{form?.error}</p>{/if}
-            <h3>Enter Your Team Name</h3>
-            <div class="input-container">
-                <input type="text" name="team_name" required />
-                <label for="team_name">Team Name</label>
-            </div>
-            <button class="button button-tertiary" id="team-create-submit">Submit</button>
-        </form>
-    {/key}
-    <h1>Or Play with an Existing Team</h1>
+    <h1>Teams you've joined:</h1>
 
     {#if $userData?.teams?.length > 0}
         <form action={'?/selectTeam' + qp} method="POST" use:enhance>
@@ -50,34 +27,23 @@
                 {/each}
             </select>
             <input type="hidden" name="currentteam" value={$userData?.active_team_id} />
-            <button class="button button-primary" type="submit" id="team-select-submit">Choose This Team</button>
+
+            <a class="join-link" href="join">Join a different team (password required)</a>
+
+            <button class="button button-primary" type="submit" id="team-select-submit">Let's Play!</button>
         </form>
+        <h2 class="spacer">- or -</h2>
     {/if}
 
-    <button
-        class="button button-secondary"
-        class:disabled={!hideteampassword}
-        on:click={() => (hideteampassword = !hideteampassword)}
-    >
-        Enter Team Password
-    </button>
-
-    {#key hideteampassword}
-        <form transition:slide|local class:hideteampassword action={'?/joinTeam' + qp} method="POST" use:enhance>
-            <div class="input-container">
-                <input type="text" name="team_password" required />
-                <label for="team_password">Team Password</label>
-            </div>
-            <button class="button button-tertiary" type="submit" id="team-password-submit">Submit</button>
-        </form>
-    {/key}
+    <a href="create" class="button button-primary">Create a new team</a>
 </main>
 
 <style lang="scss">
-    .hidecreateteam {
-        display: none;
+    .join-link {
+        margin: 2rem auto;
+        font-style: italic;
     }
-    .hideteampassword {
-        display: none;
+    .spacer {
+        margin: 2rem auto;
     }
 </style>
