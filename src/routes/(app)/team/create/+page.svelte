@@ -10,6 +10,8 @@
     $: qp = next ? `&next=${next}` : '';
 </script>
 
+<svelte:head><title>TriviaMafia | Create Team</title></svelte:head>
+
 <main class="short">
     <h1>Welcome!</h1>
     <h2>Create a new team:</h2>

@@ -10,6 +10,8 @@
     $: qp = next ? `?next=${next}` : '';
 </script>
 
+<svelte:head><title>TriviaMafia | Join Team</title></svelte:head>
+
 <main class="short">
     <h1>Enter team password</h1>
     <form action={'?/joinTeam' + qp} method="POST" use:enhance>

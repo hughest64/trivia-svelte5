@@ -8,6 +8,8 @@
     const next = $page.url.searchParams.get('next') || 'game/join';
 </script>
 
+<svelte:head><title>TriviaMafia | Team</title></svelte:head>
+
 <main class="short">
     <h1>Welcome!</h1>
 
