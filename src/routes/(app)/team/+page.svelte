@@ -13,17 +13,21 @@
 <main class="short">
     <h1>Welcome!</h1>
 
-    <h2>You are currently playing with team:</h2>
+    {#if activeTeam}
+        <h2>You are currently playing with team:</h2>
 
-    <h3>{activeTeam?.name}</h3>
+        <h3>{activeTeam?.name}</h3>
 
-    <a class="button button-primary" href={next} data-sveltekit-reload>Looks good, let's go!</a>
-
-    <a class="team-select-link" href="/team/list{queryString}">Play with a different team</a>
+        <a class="button button-primary" href={next} data-sveltekit-reload>Looks good, let's go!</a>
+        <a class="link" href="/team/list{queryString}">Play with a different team</a>
+    {:else}
+        <h2>It looks like you haven't selected a team</h2>
+        <a class="link" href="/team/list{queryString}">Select a team</a>
+    {/if}
 </main>
 
 <style lang="scss">
-    .team-select-link {
+    .link {
         font-style: italic;
     }
     h2,
