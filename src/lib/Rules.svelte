@@ -119,7 +119,7 @@
 </main>
 
 <style lang="scss">
-    a {
+    .button {
         color: var(--color-secondary);
     }
 </style>
