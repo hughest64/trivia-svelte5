@@ -1,8 +1,5 @@
-<script>
-</script>
-
 <ul>
-    <li>Rules and FAQ</li>
+    <li><a href="/rules" on:click>Rules and FAQ</a></li>
     <li>Manage Profile</li>
     <li>Manage Team</li>
     <li>Trivia Mafia Administration</li>
