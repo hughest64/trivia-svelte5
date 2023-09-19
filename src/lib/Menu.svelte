@@ -1,8 +1,14 @@
+<script lang="ts">
+    import { dev } from '$app/environment';
+    import { PUBLIC_API_HOST } from '$env/static/public';
+    const adminLink = dev ? `${PUBLIC_API_HOST}/admin` : '/admin';
+</script>
+
 <ul>
     <li><a href="/rules" on:click>Rules and FAQ</a></li>
-    <li>Manage Profile</li>
+    <li><a href="/user/settings" on:click data-sveltekit-reload>Manage Profile</a></li>
     <li>Manage Team</li>
-    <li>Trivia Mafia Administration</li>
+    <li><a href={adminLink} rel="external">Trivia Mafia Administration</a></li>
     <li>Show Me the Tiebreakers</li>
     <li>Submit App Feedback</li>
     <li>Trivia Mafia Host Feedback</li>
