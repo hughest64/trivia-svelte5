@@ -9,6 +9,8 @@ export interface JwtPayload {
     id?: number;
     // user.is_staff
     staff_user?: boolean;
+    // user.is_guest
+    guest_user?: boolean;
     // expiration timestamp
     exp?: number;
     // created timestamp
@@ -21,6 +23,7 @@ export interface UserData {
     id: number;
     username: string;
     is_staff: boolean;
+    is_guest: boolean;
     auto_reveal_questions: boolean;
     email?: string;
     active_team_id?: number | null;

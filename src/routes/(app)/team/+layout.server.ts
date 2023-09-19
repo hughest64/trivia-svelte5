@@ -1,4 +1,3 @@
-import { redirect } from '@sveltejs/kit';
 import { handlePlayerAuth, sortUserTeams } from '$lib/utils';
 import type { LayoutServerLoad } from './$types';
 

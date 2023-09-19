@@ -62,13 +62,22 @@ const login: Action = async ({ cookies, fetch, request, url }) => {
     const secureCookie = url.protocol === 'https:';
     const responseCookies = response.headers.get('set-cookie') || '';
     const jwt = cookie.parse(responseCookies)?.jwt;
+    let guestUser = false;
     if (jwt) {
         const jwtData = getJwtPayload(jwt);
+        guestUser = !!jwtData.guest_user;
         const expires = new Date((jwtData.exp as number) * 1000);
         cookies.set('jwt', jwt, { path: '/', expires, httpOnly: true, secure: secureCookie });
     }
 
-    const next = url.searchParams.get('next') || (responseData?.user_data?.is_staff ? '/host/choice' : '/team');
+    let next = url.searchParams.get('next');
+    if (!next) {
+        if (responseData?.user_data?.is_staff) {
+            next = '/host/choice';
+        } else {
+            next = '/team';
+        }
+    }
 
     throw redirect(302, next);
 };

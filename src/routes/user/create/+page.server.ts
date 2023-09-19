@@ -53,17 +53,22 @@ export const actions: Actions = {
         const secureCookie = url.protocol === 'https:';
         const responseCookies = response.headers.get('set-cookie') || '';
         const jwt = cookie.parse(responseCookies)?.jwt;
+        let guestUser = false;
         if (jwt) {
             const jwtData = getJwtPayload(jwt);
+            guestUser = !!jwtData.guest_user;
             const expires = new Date((jwtData.exp as number) * 1000);
             cookies.set('jwt', jwt, { path: '/', expires, httpOnly: true, secure: secureCookie });
         }
 
-        // TODO: should we redirect or just send a nice message back to the page?
-        const next = url.searchParams.get('next') || '';
-        if (next) {
-            return redirect(302, next as string);
+        let next = url.searchParams.get('next');
+        if (!next) {
+            if (guestUser) {
+                next = '/team/create';
+            } else {
+                next = '/team';
+            }
         }
-        throw redirect(302, '/team');
+        throw redirect(302, next);
     }
 };

@@ -22,10 +22,16 @@ test.afterAll(async () => {
     await apicontext.dispose();
 });
 
+// test player lands on the correct page (should be /team and hellow world is the team)
+// click to paly on a dff team, expeck drop down page
+// click back then clikc creaate, expect create page
+
+// test user w/ no teams goes to /create
+
 test('correct handling of team creation', async ({ p1 }) => {
-    await p1.page.goto('/team');
+    await p1.page.goto('/team/create');
     // click create a new team
-    await p1.page.locator('button', { hasText: /create a new team/i }).click();
+    // await p1.page.locator('button', { hasText: /create a new team/i }).click();
     // fill in team nam and submit
     // using .first() here as somehow we are resolving two elements, maybe it' picking up the label?
     const nameInput = p1.page.locator('input[name="team_name"]').first();
@@ -43,12 +49,12 @@ test('correct handling of team creation', async ({ p1 }) => {
 });
 
 test('join team via code', async ({ p1 }) => {
-    await p1.page.goto('/team');
-    await p1.page.locator('button', { hasText: 'Enter Team Password' }).click();
+    await p1.page.goto('/team/join');
+    // await p1.page.locator('button', { hasText: 'Enter Team Password' }).click();
     await p1.page.locator('input[name="team_password"]').first().fill('supurb-glorify-bright');
     await p1.page.locator('button#team-password-submit').click();
     await expect(p1.page).toHaveURL('/game/join');
     await expect(p1.page.locator('p', { hasText: /hello world/i })).toBeVisible();
 });
 
-// TODO: we need a test for selecting an existing team (implement after the drop down is updated)
+// TODO: we need a test for selecting an existing team

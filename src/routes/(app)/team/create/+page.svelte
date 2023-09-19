@@ -1,7 +1,6 @@
 <script lang="ts">
     import { enhance } from '$app/forms';
     import { page } from '$app/stores';
-    import { getStore } from '$lib/utils';
 
     $: form = $page.form;
 

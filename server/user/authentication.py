@@ -24,6 +24,7 @@ def create_token(user, expires_in=None):
     payload = {
         "id": user.id,
         "staff_user": user.is_staff,
+        "guest_user": user.is_guest,
         "exp": datetime.datetime.utcnow() + datetime.timedelta(seconds=expires_in),
         "iat": datetime.datetime.utcnow(),
     }

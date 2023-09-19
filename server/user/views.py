@@ -23,15 +23,12 @@ from game.views.validation.data_cleaner import DataCleaner
 class CreateView(APIView):
     def post(self, request):
         data = DataCleaner(request.data)
-        # TODO: add as_username to DataClass and validate it's a valid Django style username
-        # i.e =- This value may contain only letters, numbers, and @/./+/-/_ characters.
-        # actually, just get rid of the damn validation, user beware
         username = data.as_string("username")
         email = data.as_string("email")
         pass1 = data.as_string("pass")
         pass2 = data.as_string("pass2")
 
-        # return an existing guest user is the jwt is valid otheriwise, create new
+        # return an existing guest user if the jwt is valid otheriwise, create new
         is_guest = data.as_bool("guest_user")
         if is_guest:
             jwt = request.COOKIES.get("jwt")

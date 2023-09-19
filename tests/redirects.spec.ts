@@ -44,8 +44,11 @@ test('logged in user is redirected to /team when trying to go to /', async ({ p1
 
 test('/team with a next query param redirects to next', async ({ p1 }) => {
     await p1.page.goto('/team?next=game/1234');
-    await p1.page.selectOption('select#team-select', { label: playerSelectedTeam });
-    await p1.page.locator('text=Choose This Team').click();
+    await expect(p1.page).toHaveURL(/\/team/i);
+
+    const goAnchor = p1.page.locator('a', { hasText: /looks good/i });
+    await expect(goAnchor).toBeVisible();
+    await goAnchor.click();
 
     await expect(p1.page).toHaveURL('/game/1234');
 });
