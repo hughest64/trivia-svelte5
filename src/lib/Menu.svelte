@@ -1,11 +1,22 @@
+<script lang="ts">
+    import { page } from '$app/stores';
+    import { dev } from '$app/environment';
+    import { PUBLIC_API_HOST } from '$env/static/public';
+
+    $: isHostEndpoint = $page.url.pathname.startsWith('/host');
+
+    const adminLink = dev ? `${PUBLIC_API_HOST}/admin` : '/admin';
+</script>
+
 <ul>
     <li><a href="/rules" on:click>Rules and FAQ</a></li>
-    <li>Manage Profile</li>
-    <li>Manage Team</li>
-    <li>Trivia Mafia Administration</li>
-    <li>Show Me the Tiebreakers</li>
+    <li><a href="/user/settings" on:click data-sveltekit-reload>Manage Profile</a></li>
+    <!-- <li>Manage Team</li> -->
+    <li><a href={adminLink} rel="external" on:click>Trivia Mafia Administration</a></li>
     <li>Submit App Feedback</li>
-    <li>Trivia Mafia Host Feedback</li>
+    {#if isHostEndpoint}
+        <li><a href="https://hosts.triviamafia.com" rel="external" target="_blank">Trivia Mafia Host Feedback</a></li>
+    {/if}
     <li><a rel="external" href="/user/logout">Logout</a></li>
     <button on:click>X</button>
 </ul>
