@@ -20,7 +20,13 @@ test.beforeAll(async ({ host }) => {
     expect(resp.status()).toBe(200);
 });
 
-test.afterAll(async () => {
+test.afterAll(async ({ host }) => {
+    apicontext = await createApiContext();
+    const resp = await apicontext.post('/ops/delete/', {
+        headers: await host.getAuthHeader(),
+        data: { type: 'user', usernames: 'guests' }
+    });
+    expect(resp.status()).toBe(200);
     await apicontext.dispose();
 });
 
@@ -32,8 +38,8 @@ test('guest login', async ({ page }) => {
     // click to log in as a guest
     await page.locator('text=Play as a Guest').click();
     // since guest is not a staff user, they should see the team select component
-    await expect(page).toHaveTitle(/team select/i);
-    expect(await page.textContent('h1')).toBe('Create a New Team');
+    await expect(page).toHaveTitle(/create team/i);
+    await expect(page.locator('h2', { hasText: /create a new team/i })).toBeVisible();
 });
 
 // TODO: can we test for query params? I think probably via regex
@@ -57,14 +63,19 @@ test('all authed pages redirect to welcome page when not logged in', async ({ pa
     await expect(page).toHaveURL(/\/?next=\/host\/1234/);
 });
 
+// p3 has a team and should just see the team confirmation page
 test('navigate to a game', async ({ p3 }) => {
     await p3.page.goto('/team');
     await expect(p3.page).toHaveTitle(/team/i);
-    const submitBtn = p3.page.locator('button#team-select-submit');
-    await expect(submitBtn).toBeVisible();
-    await submitBtn.click();
-    await expect(p3.page).toHaveURL(/\/game\/join/);
-    await expect(p3.page).toHaveTitle(/join/i);
+    // const submitBtn = p3.page.locator('button#team-select-submit');
+    // await expect(submitBtn).toBeVisible();
+    // await submitBtn.click();
+    // await expect(p3.page).toHaveURL(/\/game\/join/);
+    // await expect(p3.page).toHaveTitle(/join/i);
+    const goAnchor = p3.page.locator('a', { hasText: /looks good/i });
+    await expect(goAnchor).toBeVisible();
+    await goAnchor.click();
+
     expect(await p3.page.textContent('h1')).toBe('Enter Game Code');
     // TODO: not 1234
     await p3.page.locator('input[name="joincode"]').fill(joincode);

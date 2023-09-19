@@ -7,9 +7,10 @@ from django.utils.crypto import get_random_string
 class CustomUserManager(UserManager):
     def create_guest_user(self):
         last_id = self.last().id
-
         return super().create_user(
-            username=f"_guest_{last_id + 1}", password=get_random_string(12)
+            username=f"_guest_{last_id + 1}",
+            password=get_random_string(12),
+            is_guest=True,
         )
 
     def get_or_create_user(self, username, password, email=None, **extra_fields):
@@ -19,7 +20,10 @@ class CustomUserManager(UserManager):
         except ObjectDoesNotExist:
             created = True
             user = self.create_user(
-                username=username, password=password, email=email, **extra_fields
+                username=username,
+                password=password,
+                email=email,
+                **extra_fields,
             )
 
         return (user, created)
@@ -30,6 +34,7 @@ class User(AbstractUser):
     active_team = models.ForeignKey(
         "game.Team", blank=True, null=True, on_delete=models.SET_NULL
     )
+    is_guest = models.BooleanField(default=False)
     auto_reveal_questions = models.BooleanField(default=False)
 
     home_location = models.ForeignKey(
@@ -49,6 +54,7 @@ class User(AbstractUser):
             "screen_name": self.screen_name if self.screen_name is not None else "",
             "email": self.email,
             "is_staff": self.is_staff,
+            "is_guest": self.is_guest,
             "active_team_id": active_team_id,
             "auto_reveal_questions": self.auto_reveal_questions,
             "teams": self.teams_json(),
@@ -56,7 +62,3 @@ class User(AbstractUser):
             if self.home_location
             else None,
         }
-
-    # def save(self, *args, **kwargs):
-    #     self.full_clean()
-    #     super().save(*args, **kwargs)
