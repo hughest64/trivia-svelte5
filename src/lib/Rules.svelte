@@ -117,3 +117,9 @@
 
     <small>App created by <a href="https://codeofthenorth.com" target="_blank">Code of the North</a></small>
 </main>
+
+<style lang="scss">
+    a {
+        color: var(--color-secondary);
+    }
+</style>
