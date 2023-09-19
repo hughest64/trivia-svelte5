@@ -20,7 +20,13 @@ test.beforeAll(async ({ host }) => {
     expect(resp.status()).toBe(200);
 });
 
-test.afterAll(async () => {
+test.afterAll(async ({ host }) => {
+    apicontext = await createApiContext();
+    const resp = await apicontext.post('/ops/delete/', {
+        headers: await host.getAuthHeader(),
+        data: { type: 'user', usernames: 'guests' }
+    });
+    expect(resp.status()).toBe(200);
     await apicontext.dispose();
 });
 
