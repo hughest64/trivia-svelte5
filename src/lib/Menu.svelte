@@ -7,9 +7,8 @@
 <ul>
     <li><a href="/rules" on:click>Rules and FAQ</a></li>
     <li><a href="/user/settings" on:click data-sveltekit-reload>Manage Profile</a></li>
-    <li>Manage Team</li>
-    <li><a href={adminLink} rel="external">Trivia Mafia Administration</a></li>
-    <li>Show Me the Tiebreakers</li>
+    <!-- <li>Manage Team</li> -->
+    <li><a href={adminLink} rel="external" on:click>Trivia Mafia Administration</a></li>
     <li>Submit App Feedback</li>
     <li>Trivia Mafia Host Feedback</li>
     <li><a rel="external" href="/user/logout">Logout</a></li>
