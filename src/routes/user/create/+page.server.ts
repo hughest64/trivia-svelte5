@@ -54,16 +54,19 @@ export const actions: Actions = {
         const responseCookies = response.headers.get('set-cookie') || '';
         const jwt = cookie.parse(responseCookies)?.jwt;
         let guestUser = false;
+        let userCreated = true;
         if (jwt) {
             const jwtData = getJwtPayload(jwt);
             guestUser = !!jwtData.guest_user;
+            userCreated = !!jwtData.user_created;
             const expires = new Date((jwtData.exp as number) * 1000);
             cookies.set('jwt', jwt, { path: '/', expires, httpOnly: true, secure: secureCookie });
         }
 
         let next = url.searchParams.get('next');
         if (!next) {
-            if (guestUser) {
+            // direct newly created guest users to the team creation page
+            if (guestUser && userCreated) {
                 next = '/team/create';
             } else {
                 next = '/team';

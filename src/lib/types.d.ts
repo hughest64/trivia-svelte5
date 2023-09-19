@@ -11,6 +11,8 @@ export interface JwtPayload {
     staff_user?: boolean;
     // user.is_guest
     guest_user?: boolean;
+    // is this a newly created user?
+    user_created?: boolean;
     // expiration timestamp
     exp?: number;
     // created timestamp

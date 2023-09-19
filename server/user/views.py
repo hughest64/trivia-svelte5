@@ -28,6 +28,8 @@ class CreateView(APIView):
         pass1 = data.as_string("pass")
         pass2 = data.as_string("pass2")
 
+        user_created = True
+
         # return an existing guest user if the jwt is valid otheriwise, create new
         is_guest = data.as_bool("guest_user")
         if is_guest:
@@ -35,6 +37,8 @@ class CreateView(APIView):
             user = decode_token(jwt)
             if user.is_anonymous:
                 user = User.objects.create_guest_user()
+            else:
+                user_created = False
 
         else:
             user_query = User.objects.filter(Q(username=username) | Q(email=email))
@@ -60,7 +64,7 @@ class CreateView(APIView):
                 return Response({"detail": str(e)}, status=HTTP_400_BAD_REQUEST)
 
         # log them in
-        token = create_token(user)
+        token = create_token(user, user_created=user_created)
 
         response = Response({"user_data": user.to_json()})
         response.set_cookie(key="jwt", value=token, httponly=True)
