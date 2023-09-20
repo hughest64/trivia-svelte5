@@ -62,10 +62,8 @@ const login: Action = async ({ cookies, fetch, request, url }) => {
     const secureCookie = url.protocol === 'https:';
     const responseCookies = response.headers.get('set-cookie') || '';
     const jwt = cookie.parse(responseCookies)?.jwt;
-    let guestUser = false;
     if (jwt) {
         const jwtData = getJwtPayload(jwt);
-        guestUser = !!jwtData.guest_user;
         const expires = new Date((jwtData.exp as number) * 1000);
         cookies.set('jwt', jwt, { path: '/', expires, httpOnly: true, secure: secureCookie });
     }

@@ -97,6 +97,9 @@ class DataCleaner:
             raise ValueError("the data param is required when key is None")
         return value
 
+    def as_dict(self):
+        return self.data
+
     def as_bool(self, key=None, data=None):
         if self.data.get(key) is None and data is None:
             return False

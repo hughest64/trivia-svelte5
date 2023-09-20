@@ -1,3 +1,5 @@
+import logging
+
 from django.core.exceptions import ValidationError
 from django.conf import settings
 from django.db.utils import IntegrityError
@@ -18,6 +20,8 @@ from user.models import User
 from user.utils import Mailer
 
 from game.views.validation.data_cleaner import DataCleaner
+
+logger = logging.getLogger(__name__)
 
 
 class CreateView(APIView):
@@ -262,5 +266,41 @@ class LogoutView(APIView):
         response.delete_cookie("jwt")
         response.delete_cookie("csrftoken")
         response.data = {"message": "success"}
+
+        return response
+
+
+class UpdateUserview(APIView):
+    authentication_classes = [JwtAuthentication]
+
+    @method_decorator(csrf_protect)
+    def post(self, request):
+        user: User = request.user
+        data = DataCleaner(request.data).as_dict()
+        password = data.pop("password", None)
+        old_pass = data.pop("old_pass", None)
+
+        try:
+            user.username = data.get("username", user.username)
+            user.email = data.get("email", user.email)
+            if password:
+                if not user.check_password(old_pass):
+                    return Response(
+                        {"detail": {"password": "The current password is incorrect"}},
+                        status=HTTP_400_BAD_REQUEST,
+                    )
+                user.set_password(password)
+
+            user.save()
+        except Exception as e:
+            logger.error(str(e))
+            return Response(
+                {"detail": {"update": "Could not update. The error has been logged."}}
+            )
+
+        token = create_token(user)
+
+        response = Response({"user_data": user.to_json()})
+        response.set_cookie(key="jwt", value=token, httponly=True)
 
         return response
