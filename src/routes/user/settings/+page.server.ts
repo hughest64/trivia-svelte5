@@ -17,10 +17,14 @@ export const actions: Actions = {
     default: async ({ request, fetch, cookies, url }) => {
         // no need to send the password confirmation to the api, so pull it out
         const { password2, ...data } = Object.fromEntries(await request.formData());
+        data.update_type = data.username ? 'username' : 'email';
 
         // validate passwords if applicable
-        if (data.password && data.password !== password2) {
-            return fail(400, { error: { password: 'Passwords do not match!' } });
+        if (data.password) {
+            data.update_type = 'password';
+            if (data.password !== password2) {
+                return fail(400, { error: { password: 'Passwords do not match!' } });
+            }
         }
 
         const response = await fetch(`${PUBLIC_API_HOST}/user/update`, {

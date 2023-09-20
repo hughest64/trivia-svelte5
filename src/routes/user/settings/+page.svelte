@@ -53,7 +53,11 @@
 </button>
 {#if displayMap.username}
     <form transition:slide action="" method="post" use:enhance>
-        {#if form?.error?.update}<p class="error">{form.error?.update}</p>{/if}
+        {#if form?.error?.username}<p class="error">{form.error?.username}</p>{/if}
+        <div class="input-container">
+            <input type="password" name="old_pass" id="old-pass-username" required />
+            <label for="old-pass-username">Current Password</label>
+        </div>
         <div class="input-container">
             <input type="text" name="username" id="username_id" required />
             <label for="username_id">Username</label>
@@ -86,9 +90,13 @@
 <button class="button button-primary" on:click={() => setDisplayed('email')}>Update Email</button>
 {#if displayMap.email}
     <form transition:slide class="input-container" action="" method="post" use:enhance>
-        {#if form?.error?.update}<p class="error">{form.error?.update}</p>{/if}
+        {#if form?.error?.email}<p class="error">{form.error?.email}</p>{/if}
         <div class="input-container">
-            <input type="text" name="email" id="email_id" required />
+            <input type="password" name="old_pass" id="old-pass-email" required />
+            <label for="old-pass-email">Current Password</label>
+        </div>
+        <div class="input-container">
+            <input type="email" name="email" id="email_id" required />
             <label for="email_id">Email</label>
         </div>
         <button class="button button-tertiary" type="submit">Submit Email</button>

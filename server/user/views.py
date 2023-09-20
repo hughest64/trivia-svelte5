@@ -273,29 +273,46 @@ class LogoutView(APIView):
 class UpdateUserview(APIView):
     authentication_classes = [JwtAuthentication]
 
+    @staticmethod
+    def error_response(update_type, msg=None):
+        if msg is None:
+            msg = f"That {update_type} is taken"
+
+        return Response({"detail": {update_type: msg}}, status=HTTP_400_BAD_REQUEST)
+
     @method_decorator(csrf_protect)
     def post(self, request):
         user: User = request.user
-        data = DataCleaner(request.data).as_dict()
-        password = data.pop("password", None)
-        old_pass = data.pop("old_pass", None)
+        data = DataCleaner(request.data)
+        update_type = data.as_string("update_type")
+        username = data.as_string("username")
+        email = data.as_string("email")
+        password = data.as_string("password")
+        old_pass = data.as_string("old_pass")
+
+        if not user.check_password(old_pass):
+            return self.error_response(update_type, "The current password is incorrect")
+
+        if username:
+            exists = User.objects.filter(username=username).exists()
+            if exists:
+                return self.error_response(update_type)
+        if email:
+            exists = User.objects.filter(email=email).exists()
+            if exists:
+                return self.error_response(update_type)
 
         try:
-            user.username = data.get("username", user.username)
-            user.email = data.get("email", user.email)
-            if password:
-                if not user.check_password(old_pass):
-                    return Response(
-                        {"detail": {"password": "The current password is incorrect"}},
-                        status=HTTP_400_BAD_REQUEST,
-                    )
+            user.username = username or user.username
+            user.email = email or user.email
+            if update_type == password:
                 user.set_password(password)
 
             user.save()
         except Exception as e:
             logger.error(str(e))
             return Response(
-                {"detail": {"update": "Could not update. The error has been logged."}}
+                {"detail": {update_type: str(e)}}, status=HTTP_400_BAD_REQUEST
             )
 
         token = create_token(user)
