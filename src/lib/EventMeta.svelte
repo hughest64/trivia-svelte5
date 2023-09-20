@@ -2,13 +2,15 @@
     import { page } from '$app/stores';
     import { getStore } from './utils';
 
+    $: url = $page.url;
     const userData = getStore('userData');
     $: activeTeam = $userData.teams.find((t) => t.id === $userData.active_team_id);
 
     let copiedMsg = '';
     const handleCopyLink = () => {
-        console.log('copying');
-        navigator.clipboard.writeText('testing');
+        console.log(url);
+        const link = `${url.origin}/team/join?password=${activeTeam?.password || ''}`;
+        navigator.clipboard.writeText(link);
         copiedMsg = 'Copied to clipboard!';
     };
 </script>
