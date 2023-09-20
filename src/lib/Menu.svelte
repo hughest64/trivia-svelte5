@@ -17,7 +17,9 @@
     <li><a href="/rules" on:click>Rules and FAQ</a></li>
     <li><a href="/user/settings" on:click data-sveltekit-reload>Manage Profile</a></li>
     <!-- <li>Manage Team</li> -->
-    <li><a href={adminLink} rel="external" on:click>Trivia Mafia Administration</a></li>
+    {#if isHost}
+        <li><a href={adminLink} rel="external" on:click>Trivia Mafia Administration</a></li>
+    {/if}
     <li><a href={feedbackLink} target="_blank" on:click>Submit App Feedback</a></li>
     {#if isHost}
         <li>
