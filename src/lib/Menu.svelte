@@ -1,8 +1,9 @@
 <script lang="ts">
-    import { page } from '$app/stores';
     import { dev } from '$app/environment';
     import { PUBLIC_API_HOST } from '$env/static/public';
     import { getStore } from './utils';
+    import EventMeta from './EventMeta.svelte';
+    import { linear } from 'svelte/easing';
 
     const userData = getStore('userData');
     $: userEmail = $userData.email;
@@ -14,6 +15,7 @@
 </script>
 
 <ul>
+    <li><EventMeta /></li>
     <li><a href="/rules" on:click>Rules and FAQ</a></li>
     <li><a href="/user/settings" on:click data-sveltekit-reload>Manage Profile</a></li>
     <!-- <li>Manage Team</li> -->
