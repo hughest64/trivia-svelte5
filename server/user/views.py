@@ -293,14 +293,11 @@ class UpdateUserview(APIView):
         if not user.check_password(old_pass):
             return self.error_response(update_type, "The current password is incorrect")
 
-        if username:
-            exists = User.objects.filter(username=username).exists()
-            if exists:
-                return self.error_response(update_type)
-        if email:
-            exists = User.objects.filter(email=email).exists()
-            if exists:
-                return self.error_response(update_type)
+        if username and User.objects.filter(username=username).exists():
+            return self.error_response(update_type)
+
+        if email and User.objects.filter(email=email).exists():
+            return self.error_response(update_type)
 
         try:
             user.username = username or user.username
