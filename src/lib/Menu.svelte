@@ -1,8 +1,9 @@
 <script lang="ts">
-    import { page } from '$app/stores';
     import { dev } from '$app/environment';
     import { PUBLIC_API_HOST } from '$env/static/public';
     import { getStore } from './utils';
+    import EventMeta from './EventMeta.svelte';
+    import { linear } from 'svelte/easing';
 
     const userData = getStore('userData');
     $: userEmail = $userData.email;
@@ -14,10 +15,13 @@
 </script>
 
 <ul>
+    <li><EventMeta /></li>
     <li><a href="/rules" on:click>Rules and FAQ</a></li>
     <li><a href="/user/settings" on:click data-sveltekit-reload>Manage Profile</a></li>
     <!-- <li>Manage Team</li> -->
-    <li><a href={adminLink} rel="external" on:click>Trivia Mafia Administration</a></li>
+    {#if isHost}
+        <li><a href={adminLink} rel="external" on:click>Trivia Mafia Administration</a></li>
+    {/if}
     <li><a href={feedbackLink} target="_blank" on:click>Submit App Feedback</a></li>
     {#if isHost}
         <li>
