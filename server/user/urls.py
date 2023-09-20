@@ -11,6 +11,7 @@ urlpatterns = [
     re_path(r"forgot/?$", views.ForgotPasswordView.as_view(), name="forgot"),
     re_path(r"login/?$", views.LoginView.as_view(), name="login"),
     re_path(r"logout/?$", views.LogoutView.as_view(), name="logout"),
+    re_path(r"update/?$", views.UpdateUserview.as_view(), name="update"),
     re_path(r"google-auth/?$", views.GoogleAuthView.as_view(), name="google_auth"),
     re_path(r"github-auth/?$", views.GithubAuthView.as_view(), name="github_auth"),
 ]

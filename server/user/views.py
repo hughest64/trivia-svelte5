@@ -1,3 +1,5 @@
+import logging
+
 from django.core.exceptions import ValidationError
 from django.conf import settings
 from django.db.utils import IntegrityError
@@ -18,6 +20,8 @@ from user.models import User
 from user.utils import Mailer
 
 from game.views.validation.data_cleaner import DataCleaner
+
+logger = logging.getLogger(__name__)
 
 
 class CreateView(APIView):
@@ -262,5 +266,55 @@ class LogoutView(APIView):
         response.delete_cookie("jwt")
         response.delete_cookie("csrftoken")
         response.data = {"message": "success"}
+
+        return response
+
+
+class UpdateUserview(APIView):
+    authentication_classes = [JwtAuthentication]
+
+    @staticmethod
+    def error_response(update_type, msg=None):
+        if msg is None:
+            msg = f"That {update_type} is taken"
+
+        return Response({"detail": {update_type: msg}}, status=HTTP_400_BAD_REQUEST)
+
+    @method_decorator(csrf_protect)
+    def post(self, request):
+        user: User = request.user
+        data = DataCleaner(request.data)
+        update_type = data.as_string("update_type")
+        username = data.as_string("username")
+        email = data.as_string("email")
+        password = data.as_string("password")
+        old_pass = data.as_string("old_pass")
+
+        if not user.check_password(old_pass):
+            return self.error_response(update_type, "The current password is incorrect")
+
+        if username and User.objects.filter(username=username).exists():
+            return self.error_response(update_type)
+
+        if email and User.objects.filter(email=email).exists():
+            return self.error_response(update_type)
+
+        try:
+            user.username = username or user.username
+            user.email = email or user.email
+            if update_type == password:
+                user.set_password(password)
+
+            user.save()
+        except Exception as e:
+            logger.error(str(e))
+            return Response(
+                {"detail": {update_type: str(e)}}, status=HTTP_400_BAD_REQUEST
+            )
+
+        token = create_token(user)
+
+        response = Response({"user_data": user.to_json()})
+        response.set_cookie(key="jwt", value=token, httponly=True)
 
         return response

@@ -2,8 +2,13 @@
     import { page } from '$app/stores';
     import { dev } from '$app/environment';
     import { PUBLIC_API_HOST } from '$env/static/public';
+    import { getStore } from './utils';
 
-    $: isHostEndpoint = $page.url.pathname.startsWith('/host');
+    const userData = getStore('userData');
+    $: userEmail = $userData.email;
+
+    $: isHost = $userData.is_staff;
+    const feedbackLink = `https://docs.google.com/forms/d/e/1FAIpQLSeT5FX2OGycY0yDqjiwj8ItAFi8CE64GatBiO-lsYAz1hLguA/viewform?usp=pp_url&entry.1807181492=${userEmail}`;
 
     const adminLink = dev ? `${PUBLIC_API_HOST}/admin` : '/admin';
 </script>
@@ -13,9 +18,13 @@
     <li><a href="/user/settings" on:click data-sveltekit-reload>Manage Profile</a></li>
     <!-- <li>Manage Team</li> -->
     <li><a href={adminLink} rel="external" on:click>Trivia Mafia Administration</a></li>
-    <li>Submit App Feedback</li>
-    {#if isHostEndpoint}
-        <li><a href="https://hosts.triviamafia.com" rel="external" target="_blank">Trivia Mafia Host Feedback</a></li>
+    <li><a href={feedbackLink} target="_blank" on:click>Submit App Feedback</a></li>
+    {#if isHost}
+        <li>
+            <a href="https://hosts.triviamafia.com" rel="external" target="_blank" on:click>
+                Trivia Mafia Host Feedback
+            </a>
+        </li>
     {/if}
     <li><a rel="external" href="/user/logout">Logout</a></li>
     <button on:click>X</button>
