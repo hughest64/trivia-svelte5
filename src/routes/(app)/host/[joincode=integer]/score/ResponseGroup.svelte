@@ -18,7 +18,7 @@
         '0.5': HalfCredit,
         '1': Correct
     };
-    $: funnyIcon = response.funny ? Funny : NotFunny;
+    $: funnyIcon = response.funny ? Funny : undefined; //NotFunny;
 
     const setScore = () => {
         const score = response.points_awarded;
@@ -54,7 +54,7 @@
 <li class="scoring-response">
     <button type="submit" class="funny-button" class:updating on:click={() => updateResponse('funny')}>
         <svelte:component this={funnyIcon} />
-        <p>{response.funny ? 'Funny' : 'Not Funny'}</p>
+        <p>{response.funny ? 'Funny' : 'Mark Funny'}</p>
     </button>
     <div class="scoring-details" class:updating>
         <p>{response.recorded_answer}</p>
