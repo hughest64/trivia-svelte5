@@ -279,8 +279,8 @@ button {
     flex-direction: row;
     justify-content: center;
     gap: 0.5rem;
-    width: 100%;
-    max-width: var((--max-element-width));
+    width: var(--max-element-width);
+    max-width: calc(100% - 0.5rem);
     margin: 1rem 0;
     button {
         width: 3rem;
