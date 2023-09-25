@@ -75,7 +75,6 @@
         leaderboard_update: (msg: Record<string, unknown>) => {
             const { tiebreaker_responses, ...leaderboard } = msg;
             const { round_states, ...leaderboardData } = leaderboard;
-            console.log(round_states);
 
             leaderboardStore.update((lb) => {
                 const newLb = { ...lb };
@@ -350,7 +349,6 @@
             });
         },
         megaround_reminder: (msg: Record<string, Array<number | null | undefined>>) => {
-            console.log($userStore.active_team_id, msg);
             if (isHostEndpoint || !msg.team_ids.includes($userStore.active_team_id)) return;
 
             popupStore.set({
