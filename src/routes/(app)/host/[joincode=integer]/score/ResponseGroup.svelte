@@ -50,7 +50,7 @@
 <li class="scoring-response">
     <button type="submit" class="funny-button" on:click={() => updateResponse('funny')}>
         <svelte:component this={funnyIcon} />
-        <p>{response.funny ? 'Funny' : ''}</p>
+        <p>{response.funny ? 'Funny' : 'Not Funny'}</p>
     </button>
     <div class="scoring-details">
         <p>{response.recorded_answer}</p>
