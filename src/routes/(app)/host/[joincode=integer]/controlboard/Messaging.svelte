@@ -29,6 +29,9 @@
 </ul>
 
 <style lang="scss">
+    form {
+        max-width: calc(100vw - 2rem);
+    }
     .chat-form {
         form {
             width: var(--max-element-width);
