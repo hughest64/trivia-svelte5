@@ -1,6 +1,6 @@
 <script lang="ts">
     import Question from './Question.svelte';
-    import Note from './Note.svelte';
+    // import Note from './Note.svelte';
     import { fly } from 'svelte/transition';
     import { sineInOut } from 'svelte/easing';
     import { page } from '$app/stores';
@@ -91,7 +91,7 @@
                 on:swipe={handleQuestionSelect}
             >
                 <Question />
-                <Note />
+                <!-- <Note /> -->
             </div>
         {/key}
     </div>
