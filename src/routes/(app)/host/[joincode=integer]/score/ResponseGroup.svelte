@@ -11,14 +11,12 @@
     export let response: HostResponse;
     const activeEventData = getStore('activeEventData');
 
-    let updating = false;
-
     const answerValueMap: Record<string, ComponentType> = {
         '0': Wrong,
         '0.5': HalfCredit,
         '1': Correct
     };
-    $: funnyIcon = response.funny ? Funny : undefined; //NotFunny;
+    $: funnyIcon = response.funny ? Funny : NotFunny;
 
     const setScore = () => {
         const score = response.points_awarded;
@@ -28,7 +26,6 @@
     };
 
     const updateResponse = async (updateType: string) => {
-        updating = true;
         const data = new FormData();
         const funny = (response.funny = updateType === 'funny' ? !response.funny : response.funny);
         const points = updateType === 'points' ? setScore() : response.points_awarded;
@@ -47,16 +44,15 @@
         if (!updateResponse.ok) {
             // revert
         }
-        updating = false;
     };
 </script>
 
 <li class="scoring-response">
-    <button type="submit" class="funny-button" class:updating on:click={() => updateResponse('funny')}>
+    <button type="submit" class="funny-button" on:click={() => updateResponse('funny')}>
         <svelte:component this={funnyIcon} />
-        <p>{response.funny ? 'Funny' : 'Mark Funny'}</p>
+        <p>{response.funny ? 'Funny' : 'Not Funny'}</p>
     </button>
-    <div class="scoring-details" class:updating>
+    <div class="scoring-details">
         <p>{response.recorded_answer}</p>
         <button type="submit" class="score-icon" on:click={() => updateResponse('points')}>
             <svelte:component this={answerValueMap[String(response.points_awarded)]} />
