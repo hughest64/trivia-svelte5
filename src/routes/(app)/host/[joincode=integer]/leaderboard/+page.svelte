@@ -105,7 +105,7 @@
         width: 100%;
     }
     form {
-        width: 100vw;
+        width: calc(100vw - 2rem);
     }
     .resolve-tiebreaker {
         display: flex;
