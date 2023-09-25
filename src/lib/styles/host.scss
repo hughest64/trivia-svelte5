@@ -102,10 +102,11 @@
     .funny-button {
         border: none;
         background-color: var(--color-alt-white);
-        margin: 0.5em;
+        margin-right: 1em;
         border-radius: 0.5em;
-        width: 8em;
-        height: 8em;
+        height: 100%;
+        width: 7.25rem;
+        height: 7.25rem;
         p {
             color: var(--color-secondary);
         }
