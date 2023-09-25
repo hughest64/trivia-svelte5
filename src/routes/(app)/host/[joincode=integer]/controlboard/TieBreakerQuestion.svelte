@@ -30,7 +30,7 @@
 <svelte:window on:keyup={handleQuestionSelect} />
 
 <!-- TODO: probably change to swipe -->
-{#key selectedQuestion.id}
+{#if tbquestions.length}
     <div
         transition:slide
         class="tiebreaker-question-container flex-column"
@@ -49,7 +49,9 @@
             </div>
         {/if}
     </div>
-{/key}
+{:else}
+    <p>There are no Tiebreaker questions for this event</p>
+{/if}
 
 <style lang="scss">
     .tiebreaker-question-container {
