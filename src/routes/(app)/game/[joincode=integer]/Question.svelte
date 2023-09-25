@@ -22,6 +22,7 @@
     $: hasImage = activeQuestion?.question_type.toLocaleLowerCase().startsWith('image');
     let displayLightbox = false;
 
+    $: disabled = activeRoundState?.locked || !$playerJoined;
     let responseText = '';
     $: notsubmitted = responseText && responseText !== activeResponse?.recorded_answer;
     const syncInputText = (e: Event) => {
@@ -67,7 +68,7 @@
 <form on:submit|preventDefault={handleSubmitResponse}>
     <div id="response-container" class="input-container" class:notsubmitted>
         <input
-            disabled={activeRoundState?.locked || !$playerJoined}
+            {disabled}
             required
             name="response_text"
             type="text"
@@ -78,18 +79,12 @@
             value={activeResponse?.recorded_answer || ''}
             on:input={syncInputText}
         />
-        <label for="response_text">Enter Answer</label>
+        <label for="response_text">{disabled ? '' : 'Enter Answer'}</label>
     </div>
 
     {#if form?.error}<p>{form.error}</p>{/if}
 
-    <button
-        class:disabled={activeRoundState?.locked || !$playerJoined}
-        class="button button-primary"
-        disabled={activeRoundState?.locked || !$playerJoined}
-    >
-        Submit
-    </button>
+    <button class:disabled class="button button-primary" {disabled}> Submit </button>
 </form>
 
 <style lang="scss">
