@@ -205,7 +205,8 @@ test.describe('user creation', async () => {
         await emailField.fill('testuser@no.no');
         await submitButton.click();
 
-        await expect(page).toHaveURL('/team');
+        // should land on /team/create since a new user has no teams
+        await expect(page).toHaveURL('/team/create');
     });
 });
 

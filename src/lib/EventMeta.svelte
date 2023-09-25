@@ -8,7 +8,6 @@
 
     let copiedMsg = '';
     const handleCopyLink = () => {
-        console.log(url);
         const link = `${url.origin}/team/join?password=${activeTeam?.password || ''}`;
         navigator.clipboard.writeText(link);
         copiedMsg = 'Copied to clipboard!';

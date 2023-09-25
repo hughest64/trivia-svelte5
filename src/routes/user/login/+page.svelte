@@ -22,7 +22,7 @@
 {#if loaderror}
     <h3>{loaderror}</h3>
 {:else}
-    <a href={githubAuthUrl()} class="button button-primary" on:click={setNextEndPoint}>login with Github</a>
+    <!-- <a href={githubAuthUrl()} class="button button-primary" on:click={setNextEndPoint}>login with Github</a> -->
     <a href={googleAuthUrl()} class="button button-primary" on:click={setNextEndPoint}>login with Google</a>
 
     <h2>-or-</h2>
