@@ -37,6 +37,10 @@
         }
     });
     const clearStorage = () => sessionStorage.removeItem('previous_round');
+
+    const handleAutoReveal = () => {
+        console.log('handle auto reveal');
+    };
 </script>
 
 <svelte:head><title>Trivia Mafa | User Settings</title></svelte:head>
@@ -44,6 +48,17 @@
 <h1>{username}</h1>
 
 <h2>Manage your profile</h2>
+
+<form action="" on:submit|preventDefault>
+    <div class="switch-container">
+        <label for="player_limit" class="switch">
+            <input type="hidden" name="auto_reveal" id="auto-reveal" />
+            <button id="auto-reveal" class="slider" on:click|preventDefault />
+        </label>
+        <p>Auto Reveal Questions</p>
+    </div>
+    <small>Check this box to auto navigate to the current question when revealed</small>
+</form>
 
 {#if successMsg}
     <p>{successMsg}</p>
@@ -106,6 +121,13 @@
 <a href={prevRoute} class="button button-tertiary" on:click={clearStorage} data-sveltekit-reload>Go Back</a>
 
 <style lang="scss">
+    .switch-container {
+        justify-content: space-between;
+        margin: 0;
+        label {
+            margin: 0;
+        }
+    }
     .disabled {
         color: var(--color-secondary);
         background-color: var(--color-disabled);
