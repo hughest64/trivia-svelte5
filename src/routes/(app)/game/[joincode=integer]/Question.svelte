@@ -84,10 +84,13 @@
 
     {#if form?.error}<p>{form.error}</p>{/if}
 
-    <button class:disabled class="button button-primary" {disabled}> Submit </button>
+    <button class:disabled class="button button-primary response-btn" {disabled}> Submit </button>
 </form>
 
 <style lang="scss">
+    .response-btn {
+        margin-top: 0;
+    }
     .question-text {
         padding: 0 0.5rem;
     }
