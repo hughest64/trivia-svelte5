@@ -7,8 +7,6 @@ export const load: PageServerLoad = async ({ cookies, fetch, locals, url }) => {
     const apiHost = PUBLIC_API_HOST;
     const secureCookie = url.protocol === 'https:';
 
-    console.log(locals.staffuser);
-
     if (locals.validtoken) throw redirect(302, locals.staffuser ? '/host/choice' : '/team');
 
     try {
