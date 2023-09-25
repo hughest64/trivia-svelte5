@@ -270,6 +270,20 @@ class LogoutView(APIView):
         return response
 
 
+class SetAutoRevealView(APIView):
+    authentication_classes = [JwtAuthentication]
+
+    @method_decorator(csrf_protect)
+    def post(self, request):
+        data = DataCleaner(request.data)
+        auto_reveal_value = data.as_bool("auto_reveal")
+
+        request.user.auto_reveal_questions = auto_reveal_value
+        request.user.save()
+
+        return Response({"success": True})
+
+
 class UpdateUserview(APIView):
     authentication_classes = [JwtAuthentication]
 

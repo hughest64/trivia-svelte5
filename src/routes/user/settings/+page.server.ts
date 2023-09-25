@@ -14,7 +14,20 @@ export const load: PageServerLoad = async ({ fetch }) => {
 };
 
 export const actions: Actions = {
-    default: async ({ request, fetch, cookies, url }) => {
+    auto_reveal_update: async ({ request, fetch, url }) => {
+        const data = Object.fromEntries(await request.formData());
+        const response = await fetch(`${PUBLIC_API_HOST}/user/set-auto-reveal`, {
+            method: 'post',
+            body: JSON.stringify(data)
+        });
+        if (!response.ok) {
+            const respData = await response.json();
+            return fail(response.status, { error: respData.detail });
+        }
+
+        return { success: true };
+    },
+    user_update: async ({ request, fetch, cookies, url }) => {
         // no need to send the password confirmation to the api, so pull it out
         const { password2, ...data } = Object.fromEntries(await request.formData());
         data.update_type = data.username ? 'username' : 'email';
