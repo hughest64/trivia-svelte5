@@ -1,6 +1,6 @@
 <script lang="ts">
     import { browser } from '$app/environment';
-    import { enhance } from '$app/forms';
+    import { deserialize, enhance } from '$app/forms';
     import { slide } from 'svelte/transition';
     import { page } from '$app/stores';
     import { afterNavigate } from '$app/navigation';
@@ -11,6 +11,29 @@
 
     const userData = $page.data.user_data;
     let username = userData?.username;
+
+    let autoRevealValue = !!userData?.auto_reveal_questions;
+
+    let formError = '';
+    const handleAutoReveal = async (e: Event) => {
+        formError = '';
+        const target = e.target as HTMLFormElement;
+
+        autoRevealValue = !autoRevealValue;
+        const formData = new FormData();
+        formData.set('auto_reveal', String(autoRevealValue));
+
+        const response = await fetch(target.action, {
+            method: 'post',
+            body: formData
+        });
+        const result = deserialize(await response.text());
+        if (result.type === 'failure') {
+            formError = result.data?.error as string;
+            autoRevealValue = !autoRevealValue;
+        }
+    };
+
     const displayMap: Record<string, boolean> = {
         username: false,
         password: false,
@@ -37,10 +60,6 @@
         }
     });
     const clearStorage = () => sessionStorage.removeItem('previous_round');
-
-    const handleAutoReveal = () => {
-        console.log('handle auto reveal');
-    };
 </script>
 
 <svelte:head><title>Trivia Mafa | User Settings</title></svelte:head>
@@ -49,15 +68,21 @@
 
 <h2>Manage your profile</h2>
 
-<form action="" on:submit|preventDefault>
+<form
+    action="?/auto_reveal_update"
+    on:submit|preventDefault
+    class="auto-reveal"
+    on:submit|preventDefault={handleAutoReveal}
+>
+    {#if formError} <p class="error">{formError}</p>{/if}
     <div class="switch-container">
         <label for="player_limit" class="switch">
-            <input type="hidden" name="auto_reveal" id="auto-reveal" />
-            <button id="auto-reveal" class="slider" on:click|preventDefault />
+            <input type="hidden" name="auto_reveal" id="auto-reveal" bind:value={autoRevealValue} />
+            <button id="auto-reveal" type="submit" class="slider" class:revealed={autoRevealValue} />
         </label>
         <p>Auto Reveal Questions</p>
     </div>
-    <small>Check this box to auto navigate to the current question when revealed</small>
+    <small>Select this option to auto navigate to the current question when revealed by the host</small>
 </form>
 
 {#if successMsg}
@@ -67,7 +92,7 @@
     Update Username
 </button>
 {#if displayMap.username}
-    <form transition:slide action="" method="post" use:enhance>
+    <form transition:slide action="?/user_update" method="post" use:enhance>
         {#if form?.error?.username}<p class="error">{form.error?.username}</p>{/if}
         <div class="input-container">
             <input type="password" name="old_pass" id="old-pass-username" required />
@@ -84,7 +109,7 @@
 <button class="button button-primary" on:click={() => setDisplayed('password')}>Update Password</button>
 
 {#if displayMap.password}
-    <form transition:slide action="" method="post" use:enhance>
+    <form transition:slide action="?/user_update" method="post" use:enhance>
         {#if form?.error?.password}<p class="error">{form.error?.password}</p>{/if}
         <div class="input-container">
             <input type="password" name="old_pass" id="old-pass" required />
@@ -104,7 +129,7 @@
 
 <button class="button button-primary" on:click={() => setDisplayed('email')}>Update Email</button>
 {#if displayMap.email}
-    <form transition:slide class="input-container" action="" method="post" use:enhance>
+    <form transition:slide class="input-container" action="?/user_update" method="post" use:enhance>
         {#if form?.error?.email}<p class="error">{form.error?.email}</p>{/if}
         <div class="input-container">
             <input type="password" name="old_pass" id="old-pass-email" required />
