@@ -1,5 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
+    import { beforeNavigate } from '$app/navigation';
     import { slide } from 'svelte/transition';
     import { deserialize } from '$app/forms';
     import { getStore } from '$lib/utils';
