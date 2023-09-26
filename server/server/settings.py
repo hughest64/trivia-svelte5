@@ -165,7 +165,7 @@ GAME_DAYS_TO_ROLL = 1
 # jwt settings
 
 # token expiration in minutes
-JWT_TOKEN_TTL = 24 * 60 * 60  # 24 hrs in seconds
+JWT_TOKEN_TTL = 12 * 60 * 60  # 12 hrs in seconds
 
 # use an env variable for prod
 JWT_TOKEN_SECRET = SECRET_KEY

@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { beforeNavigate } from '$app/navigation';
+    import { afterNavigate, beforeNavigate, invalidateAll, goto } from '$app/navigation';
     import { slide } from 'svelte/transition';
     import { deserialize } from '$app/forms';
     import { getStore } from '$lib/utils';
@@ -19,7 +19,7 @@
     };
 
     let membersDisplayed = false;
-    let teamNameDisplayed = true;
+    let teamNameDisplayed = false;
 
     let formError = '';
     let successMsg = '';
@@ -48,6 +48,11 @@
             $userData = result.data!.user_data as UserData;
         }
     };
+
+    // hijack navigation in case of the back button being pressed which does weird things
+    beforeNavigate(({ to }) => {
+        if (to?.url) window.location.assign(to.url);
+    });
 </script>
 
 <svelte:head><title>Trivia Mafia | Manage Team</title></svelte:head>
@@ -99,6 +104,7 @@
         <!-- TODO: link to team select or create -->
         <h1>You don't have a team selected</h1>
     {/if}
+    <button class="button button-tertiary" on:click={() => window.history.back()}>Go Back</button>
 </main>
 
 <style lang="scss">
