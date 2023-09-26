@@ -34,5 +34,9 @@ export const actions: Actions = {
         }
 
         return { success: true };
+    },
+    'update-password': async ({ request, fetch }) => {
+        const data = Object.fromEntries(await request.formData());
+        console.log(data);
     }
 };

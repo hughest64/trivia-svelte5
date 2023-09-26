@@ -21,6 +21,7 @@
 
     let membersDisplayed = false;
     let teamNameDisplayed = false;
+    let passwordDisplayed = true;
 
     $: form = $page.form;
 
@@ -142,6 +143,19 @@
                         required
                     />
                     <label for="team-name">Team Name</label>
+                </div>
+                <button class="button button-tertiary">Update</button>
+            </form>
+        {/if}
+
+        <button class="button button-primary" on:click={() => (passwordDisplayed = !passwordDisplayed)}>
+            Update Team Password
+        </button>
+        {#if passwordDisplayed}
+            <form transition:slide action="?/update-password" method="post" use:enhance>
+                <div class="input-container">
+                    <input type="text" name="team_password" id="team-password" required />
+                    <label for="team-password">Team Password</label>
                 </div>
                 <button class="button button-tertiary">Update</button>
             </form>
