@@ -3,14 +3,14 @@
     import { browser } from '$app/environment';
     import { afterNavigate, beforeNavigate } from '$app/navigation';
     import { slide } from 'svelte/transition';
-    import { deserialize } from '$app/forms';
+    import { deserialize, enhance } from '$app/forms';
     import { getStore } from '$lib/utils';
-    import type { UserData } from '$lib/types';
+    import type { UserData, UserTeam } from '$lib/types';
 
     const joincode = $page.url.searchParams.get('joincode') || '0';
 
     const userData = getStore('userData');
-    $: activeTeam = $userData.teams.find((t) => t.id === $userData.active_team_id);
+    $: activeTeam = $userData.teams.find((t) => t.id === $userData.active_team_id) as UserTeam;
     $: currentName = activeTeam?.name || '';
     $: notsubmitted = currentName && currentName !== activeTeam?.name;
 
@@ -21,6 +21,8 @@
 
     let membersDisplayed = false;
     let teamNameDisplayed = false;
+
+    $: form = $page.form;
 
     let formError = '';
     let successMsg = '';
@@ -50,6 +52,7 @@
         }
     };
 
+    const clearStorage = () => sessionStorage.removeItem('previous_route');
     let prevRoute = (browser && sessionStorage.getItem('previous_route')) || '/team';
     afterNavigate(({ from, to }) => {
         const fromPath = from?.url.pathname as string;
@@ -59,7 +62,6 @@
             sessionStorage.setItem('previous_route', fromPath);
         }
     });
-    const clearStorage = () => sessionStorage.removeItem('previous_route');
 
     // hijack navigation in case of the back button being pressed which does weird things
     beforeNavigate(({ to }) => {
@@ -82,6 +84,37 @@
         >
             Team Members
         </button>
+
+        {#if membersDisplayed && activeTeam?.members?.length}
+            <form
+                transition:slide
+                action="?/remove-team-members&team_id={$userData.active_team_id}"
+                method="post"
+                use:enhance
+            >
+                {#if form?.error}<p class="error">{form.error}</p>{/if}
+                <ul class="member-container">
+                    <li class="member">
+                        <strong>Member Name</strong>
+                        <strong>Remove</strong>
+                    </li>
+                    {#each activeTeam.members as member}
+                        {#if member !== $userData.username}
+                            <li class="member">
+                                <label for="team-member-{member}">{member}</label>
+                                <input type="checkbox" name={member} id="team-member-{member}" />
+                            </li>
+                            <!-- {:else}
+                            <li class="member">
+                                <div>{member}</div>
+                                <div>It's You!</div>
+                            </li> -->
+                        {/if}
+                    {/each}
+                </ul>
+                <button class="button button-tertiary">Remove Team Members</button>
+            </form>
+        {/if}
 
         <button
             class="button button-primary"
@@ -121,6 +154,16 @@
 </main>
 
 <style lang="scss">
+    .member-container {
+        width: var(--max-element-width);
+        max-width: calc(100vw - 2rem);
+    }
+    .member {
+        display: flex;
+        justify-content: space-between;
+        font-size: 1.25rem;
+        padding: 0.5rem 0;
+    }
     .notsubmitted {
         input {
             border-color: var(--color-primary);

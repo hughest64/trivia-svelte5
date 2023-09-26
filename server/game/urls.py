@@ -102,6 +102,11 @@ urlpatterns = [
         team.TeamUpdateName.as_view(),
         name="teamname_update",
     ),
+    re_path(
+        r"^team/remove-team-members/?$",
+        team.RemoveTeamMembersView.as_view(),
+        name="remove_members",
+    ),
     re_path(r"^team/?$", team.TeamView.as_view(), name="team"),
     re_path(r"^airtable-import/?$", airtable.airtable_import, name="airtable_import"),
 ]

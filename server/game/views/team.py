@@ -121,3 +121,27 @@ class TeamUpdateName(APIView):
             )
 
         return Response({"user_data": request.user.to_json()})
+
+
+class RemoveTeamMembersView(APIView):
+    authentication_classes = [JwtAuthentication]
+
+    @method_decorator(csrf_protect)
+    def post(self, request):
+        data = DataCleaner(request.data)
+        members = data.as_string_array("usernames")
+        team_id = data.as_int("team_id")
+
+        try:
+            team = Team.objects.get(id=team_id)
+        except Team.DoesNotExist:
+            raise TeamNotFound
+
+        members_to_keep = [
+            m.id for m in team.members.all() if m.username not in members
+        ]
+        team.members.set(members_to_keep)
+
+        # do we need a socket message?
+
+        return Response({"success": True})

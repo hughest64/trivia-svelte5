@@ -18,5 +18,21 @@ export const actions: Actions = {
         }
 
         return respData;
+    },
+    'remove-team-members': async ({ request, fetch, url }) => {
+        const data = Object.keys(Object.fromEntries(await request.formData()));
+        const team_id = url.searchParams.get('team_id');
+        const payload = { usernames: data, team_id };
+
+        const response = await fetch(`${PUBLIC_API_HOST}/team/remove-team-members`, {
+            method: 'post',
+            body: JSON.stringify(payload)
+        });
+        const respdata = await response.json();
+        if (!response.ok) {
+            return fail(response.status, { error: respdata.detail });
+        }
+
+        return { success: true };
     }
 };
