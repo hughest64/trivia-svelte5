@@ -104,7 +104,6 @@ class TeamUpdateName(APIView):
         data = DataCleaner(request.data)
         team_id = data.as_int("team_id")
         team_name = data.as_string("team_name")
-        print(team_name)
         joincode = data.as_int("joincode")
 
         try:

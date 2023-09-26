@@ -5,6 +5,9 @@
     import { getStore } from './utils';
     import EventMeta from './EventMeta.svelte';
 
+    const joincode = $page.params.joincode;
+    $: manageTeamLink = joincode ? `/team/manage?joincode=${joincode}` : '/team/manage';
+
     const userData = getStore('userData');
     $: userEmail = $userData.email;
 
@@ -19,8 +22,8 @@
     <li><EventMeta /></li>
     <li><a href="/rules" on:click>Rules and FAQ</a></li>
     <li><a href="/user/settings" on:click data-sveltekit-reload>Manage Profile</a></li>
-    {#if isGameEndpoint}
-        <li><a href="/team/manage" on:click>Manage Team</a></li>
+    {#if isGameEndpoint && joincode}
+        <li><a href={manageTeamLink} on:click>Manage Team</a></li>
     {/if}
     {#if isHost}
         <li><a href={adminLink} rel="external" on:click>Trivia Mafia Administration</a></li>
