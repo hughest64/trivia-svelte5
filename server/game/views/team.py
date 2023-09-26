@@ -104,6 +104,7 @@ class TeamUpdateName(APIView):
         data = DataCleaner(request.data)
         team_id = data.as_int("team_id")
         team_name = data.as_string("team_name")
+        print(team_name)
         joincode = data.as_int("joincode")
 
         try:
@@ -114,9 +115,10 @@ class TeamUpdateName(APIView):
         team.name = team_name
         team.save()
 
-        SendEventMessage(
-            joincode=joincode,
-            message={"msg_type": "teamname_update", "message": team.to_json()},
-        )
+        if joincode:
+            SendEventMessage(
+                joincode=joincode,
+                message={"msg_type": "teamname_update", "message": team.to_json()},
+            )
 
-        return Response({"success": True})
+        return Response({"user_data": request.user.to_json()})

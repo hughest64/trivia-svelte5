@@ -153,10 +153,6 @@
             margin: 0;
         }
     }
-    .disabled {
-        color: var(--color-secondary);
-        background-color: var(--color-disabled);
-    }
     form {
         width: var(--max-element-width);
         max-width: calc(100% - 0.25rem);
