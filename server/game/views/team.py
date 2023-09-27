@@ -103,7 +103,7 @@ class TeamUpdateName(APIView):
     @method_decorator(csrf_protect)
     def post(self, request):
         data = DataCleaner(request.data)
-        team_id = data.as_int("team_id")
+        team_id = data.as_int("team_id", request.user.active_team.id)
         team_name = data.as_string("team_name")
         joincode = data.as_int("joincode")
 
@@ -121,9 +121,10 @@ class TeamUpdateName(APIView):
                 message={"msg_type": "teamname_update", "message": team.to_json()},
             )
 
-        return Response({"user_data": request.user.to_json()})
+        return Response({"detail": "The team name has been updated"})
 
 
+# TODO: we should return a socket message to the event, need the joincode
 class UpdateTeamPasswordView(APIView):
     authentication_classes = [JwtAuthentication]
 

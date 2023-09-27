@@ -14,10 +14,10 @@ export const actions: Actions = {
         });
         const respData = await response.json();
         if (!response.ok) {
-            return fail(response.status, { error: respData.detail });
+            return fail(response.status, { error: { teamname: respData.detail } });
         }
 
-        return respData;
+        return { success: { teamname: respData.detail } };
     },
     'remove-team-members': async ({ request, fetch, url }) => {
         const data = Object.keys(Object.fromEntries(await request.formData()));
@@ -30,10 +30,10 @@ export const actions: Actions = {
         });
         const respdata = await response.json();
         if (!response.ok) {
-            return fail(response.status, { error: respdata.detail });
+            return fail(response.status, { error: { teampassword: respdata.detail } });
         }
 
-        return { success: true };
+        return { success: { teampassword: respdata.detail } };
     },
     'update-password': async ({ request, fetch }) => {
         const data = Object.fromEntries(await request.formData());

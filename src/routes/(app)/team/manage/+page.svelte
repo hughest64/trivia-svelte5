@@ -5,7 +5,7 @@
     import { slide } from 'svelte/transition';
     import { deserialize, enhance, applyAction } from '$app/forms';
     import { getStore } from '$lib/utils';
-    import type { UserData, UserTeam } from '$lib/types';
+    import type { UserTeam } from '$lib/types';
 
     const joincode = $page.url.searchParams.get('joincode') || '0';
 
@@ -29,38 +29,10 @@
     };
 
     let membersDisplayed = false;
-    let teamNameDisplayed = false;
-    let passwordDisplayed = true;
+    let teamNameDisplayed = true;
+    let passwordDisplayed = false;
 
     $: form = $page.form;
-
-    let formError = '';
-    let successMsg = '';
-    const handleTeamNameUpdate = async (e: Event) => {
-        if (!nameNotSubmitted) return;
-        formError = '';
-        successMsg = '';
-
-        const target = e.target as HTMLFormElement;
-        const data = new FormData();
-        data.append('team_name', currentName);
-        data.append('team_id', String(activeTeam?.id));
-
-        const response = await fetch(target.action, {
-            method: 'post',
-            body: data
-        });
-        const result = deserialize(await response.text());
-        if (result.type === 'failure') {
-            formError = result.data?.error as string;
-            (document.getElementById('team-name') as HTMLInputElement).value = activeTeam?.name!;
-            nameNotSubmitted = false;
-        }
-        if (result.type === 'success') {
-            successMsg = 'Your team name has been updated!';
-            $userData = result.data!.user_data as UserData;
-        }
-    };
 
     const clearStorage = () => sessionStorage.removeItem('previous_route');
     let prevRoute = (browser && sessionStorage.getItem('previous_route')) || '/team';
@@ -84,7 +56,7 @@
 
 <main class="short">
     {#if activeTeam}
-        <h1>{activeTeam?.name}</h1>
+        <h1>{activeTeam.name}</h1>
         <h3>Manage Your Team</h3>
 
         <button
@@ -138,10 +110,22 @@
             <form
                 transition:slide
                 action="?/updatename&joincode={joincode}"
-                on:submit|preventDefault={handleTeamNameUpdate}
+                method="post"
+                use:enhance={() =>
+                    ({ result }) => {
+                        if (result.type === 'success') {
+                            userData.update((u) => {
+                                const newData = { ...u };
+                                const teamToUpdate = u.teams?.find((t) => t.id === $userData.active_team_id);
+                                if (teamToUpdate) teamToUpdate.name = currentName;
+                                return newData;
+                            });
+                        }
+                        applyAction(result);
+                    }}
             >
-                {#if formError}<p class="error">{formError}</p>{/if}
-                {#if successMsg}<p>{successMsg}</p>{/if}
+                {#if form?.error?.teamname}<p class="error">{form.error.teamname}</p>{/if}
+                {#if form?.success?.teamname}<p>{form?.success?.teamname}</p>{/if}
                 <div class="input-container" class:notsubmitted={nameNotSubmitted}>
                     <input
                         type="text"
@@ -161,7 +145,15 @@
             Update Team Password
         </button>
         {#if passwordDisplayed}
-            <form transition:slide action="?/update-password" method="post">
+            <form
+                transition:slide
+                action="?/update-password"
+                method="post"
+                use:enhance={() =>
+                    ({ result }) => {
+                        applyAction(result);
+                    }}
+            >
                 {#if form?.error?.password}<p class="error">{form.error.password}</p>{/if}
                 {#if form?.success?.password}<p>{form.success.password}</p>{/if}
                 <div class="input-container" class:notsubmitted={passwordNotSubmitted}>
@@ -169,7 +161,7 @@
                         type="text"
                         name="team_password"
                         id="team-password"
-                        value={currentPassword}
+                        value={activeTeam?.password || ''}
                         on:input={syncInputText}
                         required
                     />
