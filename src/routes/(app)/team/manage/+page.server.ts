@@ -35,8 +35,10 @@ export const actions: Actions = {
 
         return { success: { teampassword: respdata.detail } };
     },
-    'update-password': async ({ request, fetch }) => {
+    'update-password': async ({ request, fetch, url }) => {
         const data = Object.fromEntries(await request.formData());
+        const joincode = url.searchParams.get('joincode');
+        Object.assign(data, { joincode });
 
         const response = await fetch(`${PUBLIC_API_HOST}/team/update-password`, {
             method: 'post',

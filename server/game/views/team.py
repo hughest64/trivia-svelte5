@@ -132,6 +132,7 @@ class UpdateTeamPasswordView(APIView):
     def post(self, request):
         data = DataCleaner(request.data)
         team_password = data.as_string("team_password")
+        joincode = data.as_int("joincode")
         user = request.user
 
         try:
@@ -151,6 +152,12 @@ class UpdateTeamPasswordView(APIView):
 
         team.password = team_password
         team.save()
+
+        if joincode:
+            SendEventMessage(
+                joincode=joincode,
+                message={"msg_type": "teampassword_update", "message": team.to_json()},
+            )
 
         return Response({"detail": "Your password has been updated"})
 

@@ -29,7 +29,7 @@
     };
 
     let membersDisplayed = false;
-    let teamNameDisplayed = true;
+    let teamNameDisplayed = false;
     let passwordDisplayed = false;
 
     $: form = $page.form;
@@ -147,7 +147,7 @@
         {#if passwordDisplayed}
             <form
                 transition:slide
-                action="?/update-password"
+                action="?/update-password&joincode={joincode}"
                 method="post"
                 use:enhance={() =>
                     ({ result }) => {
