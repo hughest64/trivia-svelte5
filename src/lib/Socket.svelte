@@ -105,6 +105,14 @@
                     return newResps;
                 });
             }
+
+            if (!isHostEndpoint) {
+                // show a popup for everyone
+                popupStore.set({
+                    is_displayed: true,
+                    popup_type: 'leaderboard_update'
+                });
+            }
         },
         leaderboard_update_host_entry: (msg: Record<string, LeaderboardEntry | string>) => {
             const updatedEntry = msg.entry as LeaderboardEntry;

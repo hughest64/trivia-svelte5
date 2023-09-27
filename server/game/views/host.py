@@ -621,7 +621,7 @@ class TiebreakerView(APIView):
 
 class MegaroundReminderView(APIView):
     authentication_classes = [JwtAuthentication]
-    parser_classes = [IsAdminUser]
+    permission_classes = [IsAdminUser]
 
     def get(self, request, joincode):
         event = get_event_or_404(joincode=joincode)
