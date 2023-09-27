@@ -76,6 +76,7 @@
             autocorrect="off"
             autocomplete="off"
             spellcheck="false"
+            data-type="response-input"
             value={activeResponse?.recorded_answer || ''}
             on:input={syncInputText}
         />

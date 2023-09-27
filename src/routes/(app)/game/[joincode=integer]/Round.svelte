@@ -25,6 +25,9 @@
     const allQuestionKeys: string[] = $questions.map((q) => q.key);
     const handleQuestionSelect = async (event: MouseEvent | CustomEvent | KeyboardEvent) => {
         const target = <HTMLElement>event.target;
+        // allow arrow navigation within the actual text input
+        if (target.dataset.type === 'response-input') return;
+
         const eventDirection = event.detail?.direction;
         const keyCode = (event as KeyboardEvent).code;
 
