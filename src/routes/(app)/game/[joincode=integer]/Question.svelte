@@ -24,10 +24,21 @@
 
     $: disabled = activeRoundState?.locked || !$playerJoined;
     let responseText = '';
+    $: labelText = activeResponse?.recorded_answer ? 'Click To Edit Answer' : 'Enter Answer';
+    $: submitText = activeResponse?.recorded_answer ? 'Submitted' : 'Submit';
     $: notsubmitted = responseText && responseText !== activeResponse?.recorded_answer;
     const syncInputText = (e: Event) => {
         const target = <HTMLInputElement>e.target;
         responseText = target.value;
+        if (activeResponse?.recorded_answer) {
+            if (responseText !== activeResponse.recorded_answer) {
+                labelText = 'Update Answer';
+                submitText = 'Save';
+            } else {
+                labelText = 'Click To Edit Answer';
+                submitText = 'Submitted';
+            }
+        }
     };
 
     const handleSubmitResponse = async () => {
@@ -80,12 +91,12 @@
             value={activeResponse?.recorded_answer || ''}
             on:input={syncInputText}
         />
-        <label for="response_text">{disabled ? '' : 'Enter Answer'}</label>
+        <label for="response_text">{disabled ? '' : labelText}</label>
     </div>
 
     {#if form?.error}<p>{form.error}</p>{/if}
 
-    <button class:disabled class="button button-primary response-btn" {disabled}> Submit </button>
+    <button class:disabled class="button button-primary response-btn" {disabled}> {submitText} </button>
 </form>
 
 <style lang="scss">
