@@ -3,7 +3,7 @@
     import { browser } from '$app/environment';
     import { afterNavigate, beforeNavigate } from '$app/navigation';
     import { slide } from 'svelte/transition';
-    import { deserialize, enhance } from '$app/forms';
+    import { deserialize, enhance, applyAction } from '$app/forms';
     import { getStore } from '$lib/utils';
     import type { UserData, UserTeam } from '$lib/types';
 
@@ -11,12 +11,21 @@
 
     const userData = getStore('userData');
     $: activeTeam = $userData.teams.find((t) => t.id === $userData.active_team_id) as UserTeam;
+
     $: currentName = activeTeam?.name || '';
-    $: notsubmitted = currentName && currentName !== activeTeam?.name;
+    $: nameNotSubmitted = currentName && currentName !== activeTeam?.name;
+
+    $: currentPassword = activeTeam?.password || '';
+    $: passwordNotSubmitted = currentPassword && currentPassword !== activeTeam?.password;
 
     const syncInputText = (e: Event) => {
         const target = <HTMLInputElement>e.target;
-        currentName = target.value;
+        const inputName = target.name;
+        if (inputName === 'team_name') {
+            currentName = target.value;
+        } else if (inputName === 'team_password') {
+            currentPassword = target.value;
+        }
     };
 
     let membersDisplayed = false;
@@ -28,7 +37,7 @@
     let formError = '';
     let successMsg = '';
     const handleTeamNameUpdate = async (e: Event) => {
-        if (!notsubmitted) return;
+        if (!nameNotSubmitted) return;
         formError = '';
         successMsg = '';
 
@@ -45,7 +54,7 @@
         if (result.type === 'failure') {
             formError = result.data?.error as string;
             (document.getElementById('team-name') as HTMLInputElement).value = activeTeam?.name!;
-            notsubmitted = false;
+            nameNotSubmitted = false;
         }
         if (result.type === 'success') {
             successMsg = 'Your team name has been updated!';
@@ -133,7 +142,7 @@
             >
                 {#if formError}<p class="error">{formError}</p>{/if}
                 {#if successMsg}<p>{successMsg}</p>{/if}
-                <div class="input-container" class:notsubmitted>
+                <div class="input-container" class:notsubmitted={nameNotSubmitted}>
                     <input
                         type="text"
                         name="team_name"
@@ -152,9 +161,18 @@
             Update Team Password
         </button>
         {#if passwordDisplayed}
-            <form transition:slide action="?/update-password" method="post" use:enhance>
-                <div class="input-container">
-                    <input type="text" name="team_password" id="team-password" required />
+            <form transition:slide action="?/update-password" method="post">
+                {#if form?.error?.password}<p class="error">{form.error.password}</p>{/if}
+                {#if form?.success?.password}<p>{form.success.password}</p>{/if}
+                <div class="input-container" class:notsubmitted={passwordNotSubmitted}>
+                    <input
+                        type="text"
+                        name="team_password"
+                        id="team-password"
+                        value={currentPassword}
+                        on:input={syncInputText}
+                        required
+                    />
                     <label for="team-password">Team Password</label>
                 </div>
                 <button class="button button-tertiary">Update</button>

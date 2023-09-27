@@ -37,6 +37,17 @@ export const actions: Actions = {
     },
     'update-password': async ({ request, fetch }) => {
         const data = Object.fromEntries(await request.formData());
-        console.log(data);
+
+        const response = await fetch(`${PUBLIC_API_HOST}/team/update-password`, {
+            method: 'post',
+            body: JSON.stringify(data)
+        });
+
+        const respData = await response.json();
+        if (!response.ok) {
+            return fail(response.status, { error: { password: respData.detail } });
+        }
+
+        return { success: { password: respData.detail } };
     }
 };

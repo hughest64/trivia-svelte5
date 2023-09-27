@@ -6,6 +6,7 @@ from django.views.decorators.csrf import csrf_protect
 
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.status import HTTP_400_BAD_REQUEST
 
 from game.models import Team
 from game.utils.socket_classes import SendEventMessage
@@ -121,6 +122,36 @@ class TeamUpdateName(APIView):
             )
 
         return Response({"user_data": request.user.to_json()})
+
+
+class UpdateTeamPasswordView(APIView):
+    authentication_classes = [JwtAuthentication]
+
+    @method_decorator(csrf_protect)
+    def post(self, request):
+        data = DataCleaner(request.data)
+        team_password = data.as_string("team_password")
+        user = request.user
+
+        try:
+            team = Team.objects.get(id=user.active_team.id)
+        except Team.DoesNotExist:
+            raise TeamNotFound
+
+        if team_password == team.password:
+            return Response(
+                {"detail": "The new password is the same as the old password"}
+            )
+
+        if Team.objects.exclude(id=team.id).filter(password=team_password).exists():
+            return Response(
+                {"detail": "You cannot use that password"}, status=HTTP_400_BAD_REQUEST
+            )
+
+        team.password = team_password
+        team.save()
+
+        return Response({"detail": "Your password has been updated"})
 
 
 class RemoveTeamMembersView(APIView):

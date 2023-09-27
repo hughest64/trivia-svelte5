@@ -103,6 +103,11 @@ urlpatterns = [
         name="teamname_update",
     ),
     re_path(
+        r"^team/update-password/?$",
+        team.UpdateTeamPasswordView.as_view(),
+        name="password_update",
+    ),
+    re_path(
         r"^team/remove-team-members/?$",
         team.RemoveTeamMembersView.as_view(),
         name="remove_members",
