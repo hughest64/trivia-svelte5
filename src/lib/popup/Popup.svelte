@@ -4,6 +4,7 @@
     import ConfirmRoundUnlock from './ConfirmRoundUnlock.svelte';
     import FinishGame from './FinishGame.svelte';
     import MegaroundReminder from './MegaroundReminder.svelte';
+    import LeaderboardUpdate from './LeaderboardUpdate.svelte';
     import { getStore } from '$lib/utils';
     import type { ComponentType } from 'svelte';
 
@@ -13,7 +14,8 @@
         question_reveal: QuestionReveal,
         round_unlock: ConfirmRoundUnlock,
         finish_game: FinishGame,
-        megaround_reminder: MegaroundReminder
+        megaround_reminder: MegaroundReminder,
+        leaderboard_update: LeaderboardUpdate
     };
 </script>
 
