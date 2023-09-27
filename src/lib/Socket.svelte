@@ -320,6 +320,34 @@
                 return newUser;
             });
         },
+        teampassword_update: (msg: UserTeam) => {
+            leaderboardStore.update((lb) => {
+                const newLb = { ...lb };
+                const { public_leaderboard_entries, host_leaderboard_entries } = newLb;
+                const pubTeamIndex = public_leaderboard_entries.findIndex((entry) => Number(entry.team_id) === msg.id);
+                if (pubTeamIndex > -1) {
+                    public_leaderboard_entries[pubTeamIndex].team_name = msg.name;
+                }
+
+                const hostTeamIndex = host_leaderboard_entries?.findIndex((entry) => Number(entry.team_id) === msg.id);
+                if (hostTeamIndex !== undefined && hostTeamIndex > -1) {
+                    const entryToUpdate = (host_leaderboard_entries || [])[hostTeamIndex];
+                    entryToUpdate.team_password = msg.password;
+                }
+
+                return newLb;
+            });
+            userStore.update((user) => {
+                const newUser = { ...user };
+                const { teams } = newUser;
+                const teamIndex = teams.findIndex((team) => team.id === msg.id);
+                if (teamIndex > -1) {
+                    teams[teamIndex].password = msg.password;
+                }
+
+                return newUser;
+            });
+        },
         chat_message: (msg: ChatMessage) => {
             // add to host messages
 

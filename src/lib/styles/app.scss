@@ -358,6 +358,11 @@ button {
     }
 }
 
+.disabled {
+    color: var(--color-secondary);
+    background-color: var(--color-disabled);
+}
+
 .flex-column {
     display: flex;
     flex-direction: column;

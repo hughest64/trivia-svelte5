@@ -49,17 +49,17 @@
     };
     $: successMsg && updateUsername();
 
-    let prevRoute = (browser && sessionStorage.getItem('previous_round')) || '/team';
+    let prevRoute = (browser && sessionStorage.getItem('previous_route')) || '/team';
 
     afterNavigate(({ from, to }) => {
         const fromPath = from?.url.pathname as string;
         const toPath = to?.url.pathname as string;
         if (fromPath && fromPath !== toPath) {
             prevRoute = fromPath;
-            sessionStorage.setItem('previous_round', fromPath);
+            sessionStorage.setItem('previous_route', fromPath);
         }
     });
-    const clearStorage = () => sessionStorage.removeItem('previous_round');
+    const clearStorage = () => sessionStorage.removeItem('previous_route');
 </script>
 
 <svelte:head><title>Trivia Mafa | User Settings</title></svelte:head>
@@ -152,10 +152,6 @@
         label {
             margin: 0;
         }
-    }
-    .disabled {
-        color: var(--color-secondary);
-        background-color: var(--color-disabled);
     }
     form {
         width: var(--max-element-width);
