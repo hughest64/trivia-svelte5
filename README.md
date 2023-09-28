@@ -4,13 +4,13 @@ The Trivia Mafia app built with SveletKit and Django
 
 ## System Dependencies
 
-`redis-server`, `postgresql`, `pipenv` (python pip install), `node 16`
+`redis-server`, `postgresql`, `pyenv`, `pipenv` (python pip install), `node 18.18.0`
 
 ## Installation
 
 ### SvelteKit
 
-Make sure you have `node >=16` then `npm i` to install the dependencies
+Make sure you have `node >=18.18` then `npm i` to install the dependencies
 
 ### Python
 

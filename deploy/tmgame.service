@@ -16,8 +16,8 @@ Environment="PORT=3050"
 Environment="ORIGIN=https://tmstaging.codeofthenorth.com"
 
 WorkingDirectory=/opt/tm-trivia
-ExecStart=/home/gitlab-runner/.nvm/versions/node/v16.18.1/bin/node build
-# ExecStart=/home/triviamafia/.nvm/versions/node/v16.18.1/bin/node -r dotenv/config build
+ExecStart=/home/gitlab-runner/.nvm/versions/node/v18.18.0/bin/node build
+# ExecStart=/home/triviamafia/.nvm/versions/node/v18.18.0/bin/node -r dotenv/config build
 Restart=always
 RestartSec=10
 
