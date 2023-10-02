@@ -33,7 +33,6 @@ const joinevent: Action = async ({ fetch, params }) => {
         return fail(responseData.status, { error: responseData.detail });
     }
 
-    // throw redirect(303, `/game/${params.joincode}`);
     return { playerJoined: true };
 };
 
