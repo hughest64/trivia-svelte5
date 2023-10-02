@@ -60,7 +60,7 @@ class Mailer:
                 "title_link": SITE_LINK,
                 "subheading": subheading,
                 "cta_text": self.team.password,
-                "cta_link": SITE_LINK,
+                "cta_link": f"{SITE_LINK}/team/join?password={self.team.password}",
                 "hero_image_link": SITE_LINK,
                 "hero_image_alt": "Play Trivia With Us Tonight",
                 "footer_text": f"Copyright {date.today():%Y}, Trivia Mafia",
