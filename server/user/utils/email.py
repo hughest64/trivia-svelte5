@@ -5,6 +5,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.template.loader import render_to_string
 
+from game.models import Team
 from user.models import User
 from user.authentication import create_token
 
@@ -16,12 +17,55 @@ SITE_LINK = settings.EMAIL_REDIRECT_HOST
 class Mailer:
     template = "email/notify.html"
     password_reset_text = "email/password_reset_email.txt"
+    team_welcome_text = "email/team_welcome_email.txt"
 
-    def __init__(self, user: User):
+    def __init__(self, user: User, team: Team = None):
         self.user = user
+        self.team = team
         self.reset_token = None
         # cannot be added to the init, but can be set manually after initilization
         self.expires_in = 600  # in seconds
+
+    def send_team_welcome(self):
+        if not self.user.email:
+            logger.warning(f"no email registered for {self.user}")
+            return
+
+        subject = f"Trivia Mafia welcomes you to Team {self.team.name}"
+
+        send_mail(
+            subject,
+            render_to_string(
+                self.team_welcome_text,
+                {
+                    "username": self.user.username,
+                    "team_name": self.team.name,
+                    "password": self.team.password,
+                },
+            ),
+            settings.DEFAULT_FROM_EMAIL,
+            [self.user.email],
+            html_message=self.configure_team_welome_email(subject),
+        )
+
+    def configure_team_welome_email(self, subject):
+        subheading = f"Bring your friends, {self.user.username}! Forward them this email and use the button below to join, or tell them your three-word join code:"
+
+        return render_to_string(
+            self.template,
+            {
+                "email_aria_label": subject,
+                "header_link": SITE_LINK,
+                "title": f"Team {self.team.name} is ready to play!",
+                "title_link": SITE_LINK,
+                "subheading": subheading,
+                "cta_text": self.team.password,
+                "cta_link": SITE_LINK,
+                "hero_image_link": SITE_LINK,
+                "hero_image_alt": "Play Trivia With Us Tonight",
+                "footer_text": f"Copyright {date.today():%Y}, Trivia Mafia",
+            },
+        )
 
     def send_password_reset(self):
         if not self.user.email:

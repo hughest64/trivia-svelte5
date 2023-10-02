@@ -15,6 +15,7 @@ from game.views.validation.data_cleaner import DataCleaner, DataValidationError
 
 from user.authentication import JwtAuthentication
 from user.models import User
+from user.utils import Mailer
 
 channel_layer = get_channel_layer()
 
@@ -50,6 +51,8 @@ class TeamCreateView(APIView):
 
         user.active_team = team
         user.save()
+
+        Mailer(user, team).send_team_welcome()
 
         return Response({"user_data": user.to_json()})
 
