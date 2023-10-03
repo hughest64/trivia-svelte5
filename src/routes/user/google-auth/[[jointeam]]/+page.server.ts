@@ -4,13 +4,13 @@ import { PUBLIC_API_HOST } from '$env/static/public';
 import * as cookie from 'cookie';
 import { redirect } from '@sveltejs/kit';
 import { getJwtPayload } from '$lib/utils';
-import { googleAuthToken } from '../utils';
-import type { RequestHandler } from './$types';
+import { googleAuthToken } from '../../utils';
+import type { PageServerLoad } from './$types';
 
-export const GET = (async ({ cookies, fetch, url }) => {
+export const load = (async ({ cookies, fetch, url, params }) => {
     const code = url.searchParams.get('code') || '';
 
-    const authData = await googleAuthToken(code, PRIVATE_GOOGLE_CLIENT_SECRET);
+    const authData = await googleAuthToken(code, PRIVATE_GOOGLE_CLIENT_SECRET, !!params.jointeam);
     const csrftoken = cookies.get('csrftoken') || '';
     const apiResp = await fetch(`${PUBLIC_API_HOST}/user/google-auth`, {
         method: 'post',
@@ -42,4 +42,4 @@ export const GET = (async ({ cookies, fetch, url }) => {
     cookies.delete('next', { path: '/' });
 
     throw redirect(302, next);
-}) satisfies RequestHandler;
+}) satisfies PageServerLoad;

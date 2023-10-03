@@ -1,18 +1,11 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { googleAuthUrl, githubAuthUrl } from '../utils';
-    import * as cookie from 'cookie';
+    import { googleAuthUrl } from '../utils';
 
     $: form = $page.form;
     $: loaderror = $page.data.loaderror;
 
-    const setNextEndPoint = () => {
-        const nextParam = $page.url.searchParams.get('next');
-        if (!nextParam) return;
-
-        const nextCookie = cookie.serialize('next', nextParam, { path: '/', httpOnly: false, sameSite: true });
-        document.cookie = nextCookie;
-    };
+    const teamPassword = $page.url.searchParams.get('password');
 </script>
 
 <svelte:head><title>Trivia Mafia | Login</title></svelte:head>
@@ -22,8 +15,7 @@
 {#if loaderror}
     <h3>{loaderror}</h3>
 {:else}
-    <!-- <a href={githubAuthUrl()} class="button button-primary" on:click={setNextEndPoint}>login with Github</a> -->
-    <a href={googleAuthUrl()} class="button button-primary" on:click={setNextEndPoint}>login with Google</a>
+    <a href={googleAuthUrl(!!teamPassword)} class="button button-primary">login with Google</a>
 
     <h2>-or-</h2>
 
