@@ -38,7 +38,14 @@ export const load = (async ({ cookies, fetch, url, params }) => {
     const expires = new Date((jwtData.exp as number) * 1000);
     cookies.set('jwt', jwt, { path: '/', expires, httpOnly: true, secure: secureCookie });
 
-    const next = cookies.get('next') || (jwtData?.staff_user ? '/host/choice' : '/team');
+    let next = '';
+    if (params.jointeam) {
+        next = '/team/join';
+    } else if (jwtData?.staff_user) {
+        next = '/host/choice';
+    } else {
+        next = '/team';
+    }
 
     throw redirect(302, next);
 }) satisfies PageServerLoad;
