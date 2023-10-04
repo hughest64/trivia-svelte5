@@ -61,15 +61,21 @@ export const actions: Actions = {
             cookies.set('jwt', jwt, { path: '/', expires, httpOnly: true, secure: secureCookie });
         }
 
+        let teampassword = url.searchParams.get('password');
         let next = url.searchParams.get('next');
+        url.searchParams.delete('next');
+
         if (!next) {
+            if (teampassword) {
+                next = '/team/join';
+            }
             // direct newly created users to the team creation page
-            if (userCreated) {
+            else if (userCreated) {
                 next = '/team/create';
             } else {
                 next = '/team';
             }
         }
-        throw redirect(302, next);
+        throw redirect(302, next + url.search);
     }
 };

@@ -22,7 +22,7 @@
                 <h3>{loaderror}</h3>
             {:else}
                 <a class="button button-primary" href={`/user/login${$page.url.search}`}> Login/Create Account </a>
-                <form action="/user/create" method="POST">
+                <form action="/user/create{$page.url.search}" method="POST">
                     <input type="hidden" name="guest_user" value="true" />
                     <button class="button button-tertiary" type="submit">Play As a Guest</button>
                 </form>
