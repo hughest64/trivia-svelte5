@@ -126,7 +126,8 @@ def get_or_create_oauth_user(name, email):
 
 
 class GoogleAuthView(APIView):
-    @method_decorator(csrf_protect)
+    # NOTE: do not require csrf here as we cannot reliably get the correct csrf token after the google call
+    # @method_decorator(csrf_protect)
     def post(self, request):
         access_token = request.META.get("HTTP_AUTHORIZATION")
         if access_token is None:

@@ -11,14 +11,11 @@ export const load = (async ({ cookies, fetch, url, params }) => {
     const code = url.searchParams.get('code') || '';
 
     const authData = await googleAuthToken(code, PRIVATE_GOOGLE_CLIENT_SECRET, !!params.jointeam);
-    const csrftoken = cookies.get('csrftoken') || '';
     const apiResp = await fetch(`${PUBLIC_API_HOST}/user/google-auth`, {
         method: 'post',
         headers: {
             'content-type': 'application/json',
-            Authorization: `Bearer ${authData.access_token}`,
-            Cookie: `csrftoken=${csrftoken}`,
-            'X-CSRFToken': csrftoken
+            Authorization: `Bearer ${authData.access_token}`
         }
     });
 
