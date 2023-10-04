@@ -39,7 +39,6 @@ export const load = (async ({ cookies, fetch, url, params }) => {
     cookies.set('jwt', jwt, { path: '/', expires, httpOnly: true, secure: secureCookie });
 
     const next = cookies.get('next') || (jwtData?.staff_user ? '/host/choice' : '/team');
-    cookies.delete('next', { path: '/' });
 
     throw redirect(302, next);
 }) satisfies PageServerLoad;
