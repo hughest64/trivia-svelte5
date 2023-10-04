@@ -37,7 +37,7 @@
 
     <h1>Sign Up</h1>
 
-    <a class="button button-tertiary signup-link" href="/user/create">Create Account</a>
+    <a class="button button-tertiary signup-link" href="/user/create{$page.url.search}">Create Account</a>
 {/if}
 
 <style lang="scss">
