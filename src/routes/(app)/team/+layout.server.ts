@@ -10,7 +10,7 @@ export const load: LayoutServerLoad = async (loadEvent) => {
     // if a user lands on /team but does not belong to any teams, send them to /team/create
     const toPath = new URL(loadEvent.request.url).pathname;
     if (!userTeams?.length && toPath === '/team') {
-        throw redirect(302, '/team/create');
+        throw redirect(302, `/team/create${loadEvent.url.search}`);
     }
 
     // put the user's active team at the front

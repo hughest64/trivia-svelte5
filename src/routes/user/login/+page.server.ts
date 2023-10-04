@@ -4,8 +4,8 @@ import { PUBLIC_API_HOST } from '$env/static/public';
 import { getJwtPayload } from '$lib/utils';
 import type { Action, PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ cookies, fetch, locals }) => {
-    if (locals.validtoken) throw redirect(302, '/team');
+export const load: PageServerLoad = async ({ cookies, fetch, locals, url }) => {
+    if (locals.validtoken) throw redirect(302, '/team' + decodeURIComponent(url.search));
     const apiHost = PUBLIC_API_HOST;
 
     try {
@@ -69,6 +69,7 @@ const login: Action = async ({ cookies, fetch, request, url }) => {
     }
 
     let next = url.searchParams.get('next');
+    url.searchParams.delete('next');
     if (!next) {
         if (responseData?.user_data?.is_staff) {
             next = '/host/choice';
@@ -77,7 +78,7 @@ const login: Action = async ({ cookies, fetch, request, url }) => {
         }
     }
 
-    throw redirect(302, next);
+    throw redirect(302, next + decodeURIComponent(url.search));
 };
 
 export const actions = {

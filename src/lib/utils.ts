@@ -184,7 +184,12 @@ export const handlePlayerAuth = async ({
     url,
     endPoint
 }: CustomLoadEvent): Promise<App.PageData> => {
-    if (!locals.validtoken) throw redirect(302, `/user/logout?next=${url.pathname}`);
+    const searchParams = url.searchParams;
+    if (!locals.validtoken) {
+        searchParams.set('next', url.pathname);
+
+        throw redirect(302, `/user/logout${decodeURIComponent(url.search)}`);
+    }
 
     const apiEndpoint = apiMap.get(endPoint || '') || endPoint;
     const apiHost = PUBLIC_API_HOST;
@@ -196,7 +201,9 @@ export const handlePlayerAuth = async ({
 
     // not authorized, redirect to log out to ensure cookies get deleted
     if (response.status === 401) {
-        throw redirect(302, `/user/logout?next=${url.pathname}`);
+        searchParams.set('next', url.pathname);
+
+        throw redirect(302, `/user/logout${decodeURIComponent(url.search)}`);
     }
     // forbidden, redirect to a safe page
     if (response.status === 403) {
@@ -204,7 +211,7 @@ export const handlePlayerAuth = async ({
         if (apiData?.reason === 'player_limit_exceeded') {
             throw error(403, { message: apiData.detail, code: apiData.reason });
         }
-        throw redirect(302, '/team');
+        throw redirect(302, `/team${decodeURIComponent(url.search)}`);
     }
     // TODO: expand to handle other pages (/team, etc)
     // resolve the error page
@@ -218,8 +225,13 @@ export const handlePlayerAuth = async ({
 export const handleHostAuth = async ({ locals, fetch, url, endPoint }: CustomLoadEvent): Promise<App.PageData> => {
     const apiEndpoint = apiMap.get(endPoint || '') || endPoint;
 
-    if (!locals.validtoken) throw redirect(302, `/user/logout?next=${url.pathname}`);
-    if (!locals.staffuser) throw redirect(302, '/team');
+    const searchParams = url.searchParams;
+
+    if (!locals.validtoken) {
+        searchParams.set('next', url.pathname);
+        throw redirect(302, `/user/logout${decodeURIComponent(url.search)}`);
+    }
+    if (!locals.staffuser) throw redirect(302, `/team${decodeURIComponent(url.search)}`);
 
     const apiHost = PUBLIC_API_HOST;
     const response = await fetch(`${apiHost}${apiEndpoint}/`);
@@ -232,7 +244,8 @@ export const handleHostAuth = async ({ locals, fetch, url, endPoint }: CustomLoa
 
     // not authorized, redirect to log out to ensure cookies get deleted
     if (response.status === 401) {
-        throw redirect(302, `/user/logout?next=${url.pathname}`);
+        searchParams.set('next', url.pathname);
+        throw redirect(302, `/user/logout${decodeURIComponent(url.search)}`);
     }
 
     // forbidden, redirect to a safe page

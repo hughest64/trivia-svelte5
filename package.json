@@ -2,7 +2,7 @@
     "name": "tm-svelte",
     "version": "0.0.1",
     "scripts": {
-        "dev": "vite dev",
+        "dev": "vite dev --host 127.0.0.1",
         "build": "vite build",
         "build:test": "MODE=test vite build --mode test",
         "preview": "vite preview",
