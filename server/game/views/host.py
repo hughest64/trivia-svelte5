@@ -161,7 +161,9 @@ class QuestionRevealView(APIView):
     def update_event_data(
         round_number: int, question_numbers: List[int], event: TriviaEvent
     ):
-        """update the current attributes of a trivia event when the game play advances"""
+        """update the current attributes of a trivia event when the game play advances
+        set_current_question is being used instead of this currently
+        """
         event_data = {"event_updated": False}
         if (round_number > event.current_round_number) or (
             round_number == event.current_round_number
@@ -176,6 +178,46 @@ class QuestionRevealView(APIView):
                 "round_number": event.current_round_number,
             }
         return event_data
+
+    @staticmethod
+    def set_current_question(
+        event: TriviaEvent, updated_state: EventQuestionState, commit: bool
+    ):
+        current_key = event.current_question_key
+
+        displayed_states = event.question_states.filter(
+            question_displayed=True
+        ).order_by("round_number", "question_number")
+        displayed_state_keys = [s.key for s in displayed_states]
+
+        question_keys = [
+            q.key
+            for q in event.game.game_questions.exclude(round_number=0)
+            if q.key <= updated_state.key
+        ]
+        print(question_keys)
+
+        if len(displayed_states) > 1:
+            updated_current = updated_state
+            for i, q in enumerate(question_keys):
+                if q not in displayed_state_keys and i > 0:
+                    updated_key = question_keys[i - 1]
+
+                    updated_current = [
+                        ds for ds in displayed_states if ds.key == updated_key
+                    ][0]
+                    break
+
+            if commit:
+                event.current_question_number = updated_current.question_number
+                event.current_round_number = updated_current.round_number
+                event.save()
+
+        return {
+            "event_updated": current_key < event.current_question_key,
+            "question_number": event.current_question_number,
+            "round_number": event.current_round_number,
+        }
 
     @method_decorator(csrf_protect)
     def post(self, request, joincode):
@@ -199,6 +241,7 @@ class QuestionRevealView(APIView):
                 },
             )
         else:
+            print("in event update section")
             event = get_event_or_404(joincode)
             updated_states = []
             for num in question_numbers:
@@ -208,10 +251,11 @@ class QuestionRevealView(APIView):
                     question_number=num,
                     defaults={"question_displayed": reveal},
                 )
-                updated_states.append(question_state.to_json())
+                updated_states.append(question_state)
 
-            current_event_data = self.update_event_data(
-                round_number, question_numbers, event
+            # only update players on reveal, no going back
+            current_event_data = self.set_current_question(
+                event, updated_states[0], commit=reveal
             )
 
             SendEventMessage(
@@ -219,7 +263,7 @@ class QuestionRevealView(APIView):
                 {
                     "msg_type": "question_state_update",
                     "message": {
-                        "question_states": updated_states,
+                        "question_states": queryset_to_json(updated_states),
                         **current_event_data,
                     },
                 },
