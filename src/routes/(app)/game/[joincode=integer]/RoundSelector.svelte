@@ -21,6 +21,16 @@
         setEventCookie($activeEventData, joincode);
         $page.url.pathname.endsWith('leaderboard') && goto(`/game/${joincode}`);
     };
+
+    const handleGotoQuestion = () => {
+        $activeEventData = {
+            activeQuestionNumber: $currentEventData.question_number,
+            activeRoundNumber: $currentEventData.round_number,
+            activeQuestionKey: $currentEventData.question_key
+        };
+
+        setEventCookie($activeEventData, joincode);
+    };
 </script>
 
 <div class="round-selector">
@@ -35,3 +45,13 @@
         </button>
     {/each}
 </div>
+
+<button class="current-question-link" on:click={handleGotoQuestion}>
+    go to current question {$currentEventData.question_key}
+</button>
+
+<style lang="scss">
+    .current-question-link {
+        text-decoration: underline;
+    }
+</style>
