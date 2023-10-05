@@ -180,7 +180,9 @@ class QuestionRevealView(APIView):
         return event_data
 
     @staticmethod
-    def set_current_question(event: TriviaEvent, updated_state: EventQuestionState):
+    def set_current_question(
+        event: TriviaEvent, updated_state: EventQuestionState, commit: bool
+    ):
         current_key = event.current_question_key
 
         displayed_states = event.question_states.filter(
@@ -206,9 +208,10 @@ class QuestionRevealView(APIView):
                     ][0]
                     break
 
-            event.current_question_number = updated_current.question_number
-            event.current_round_number = updated_current.round_number
-            event.save()
+            if commit:
+                event.current_question_number = updated_current.question_number
+                event.current_round_number = updated_current.round_number
+                event.save()
 
         return {
             "event_updated": current_key < event.current_question_key,
@@ -238,6 +241,7 @@ class QuestionRevealView(APIView):
                 },
             )
         else:
+            print("in event update section")
             event = get_event_or_404(joincode)
             updated_states = []
             for num in question_numbers:
@@ -249,7 +253,10 @@ class QuestionRevealView(APIView):
                 )
                 updated_states.append(question_state)
 
-            current_event_data = self.set_current_question(event, updated_states[0])
+            # only update players on reveal, no going back
+            current_event_data = self.set_current_question(
+                event, updated_states[0], commit=reveal
+            )
 
             SendEventMessage(
                 joincode,
