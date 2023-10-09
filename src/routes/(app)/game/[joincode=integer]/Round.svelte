@@ -69,13 +69,12 @@
     <div class="question-selector">
         {#each questionKeys as key}
             <button
-                class="button-white"
+                class="button-secondary"
                 class:current={key === $currentEventData.question_key}
+                class:active={key === $activeEventData.activeQuestionKey}
                 id={key}
                 on:click={handleQuestionSelect}
-            >
-                {splitQuestionKey(key).question}
-            </button>
+            />
         {/each}
     </div>
 
