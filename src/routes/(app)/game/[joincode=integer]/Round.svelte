@@ -76,6 +76,9 @@
     $: unresponded = (key: string) => {
         if ($currentEventData.round_number <= $activeEventData.activeRoundNumber) return '';
 
+        // this would apply to the curreent question - 1
+        if ($currentEventData.question_key <= key) return '';
+
         const response = $responses.find((r) => r.key === key);
         if (response) return '';
 
