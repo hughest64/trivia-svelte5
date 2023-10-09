@@ -49,13 +49,5 @@
             background-repeat: no-repeat;
             background-size: 35% 35%;
         }
-        &.unresponded {
-            &::after {
-                position: absolute;
-                content: '!';
-                top: 0;
-                right: 0.15rem;
-            }
-        }
     }
 </style>
