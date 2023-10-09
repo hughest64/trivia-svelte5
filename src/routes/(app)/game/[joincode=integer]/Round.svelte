@@ -15,6 +15,9 @@
 
     const activeEventData = getStore('activeEventData');
     const currentEventData = getStore('currentEventData');
+    const responses = getStore('responseData');
+    const roundStates = getStore('roundStates');
+    $: roundIsLocked = $roundStates.find((rs) => rs.round_number === $activeEventData.activeRoundNumber && rs.locked);
     $: questionKeys = getQuestionKeys($questions || [], activeRound);
 
     let swipeDirection: 'left' | 'right' = 'right';
@@ -61,6 +64,23 @@
 
         setEventCookie($activeEventData, joincode);
     };
+
+    const setQuestionOffset = (distance: number, key: string) => {
+        const { question } = splitQuestionKey(key);
+
+        return (
+            Math.min(Math.abs($activeEventData.activeQuestionNumber - Number(question)), 3) === Math.min(distance, 3)
+        );
+    };
+
+    const unresponded = (key: string) => {
+        if ($currentEventData.round_number <= $activeEventData.activeRoundNumber) return '';
+
+        const response = $responses.find((r) => r.key === key);
+        if (response) return '';
+
+        return '!';
+    };
 </script>
 
 <svelte:window on:keyup={handleQuestionSelect} />
@@ -72,9 +92,12 @@
                 class="button-secondary"
                 class:current={key === $currentEventData.question_key}
                 class:active={key === $activeEventData.activeQuestionKey}
+                class:question_offset_1={setQuestionOffset(1, key)}
+                class:question_offset_2={setQuestionOffset(2, key)}
+                class:question_offset_3={setQuestionOffset(3, key)}
                 id={key}
-                on:click={handleQuestionSelect}
-            />
+                on:click={handleQuestionSelect}>{roundIsLocked ? '' : unresponded(key)}</button
+            >
         {/each}
     </div>
 
