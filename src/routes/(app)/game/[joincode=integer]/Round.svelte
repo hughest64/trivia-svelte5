@@ -73,7 +73,7 @@
         );
     };
 
-    const unresponded = (key: string) => {
+    $: unresponded = (key: string) => {
         if ($currentEventData.round_number <= $activeEventData.activeRoundNumber) return '';
 
         const response = $responses.find((r) => r.key === key);
