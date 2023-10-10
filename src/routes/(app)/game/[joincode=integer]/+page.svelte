@@ -19,7 +19,6 @@
 
 {#if !$playerJoined}
     <h3 out:slide|local class="not-joined-warning">
-        You are currently in view mode.
         <form action="?/joinevent" method="post">
             <button class="submit" type="submit"><h3>Click here</h3></button>to join the game!
         </form>
