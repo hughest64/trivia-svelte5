@@ -1,6 +1,5 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import Lightbox from '$lib/Lightbox.svelte';
     import { getStore } from '$lib/utils';
     import { deserialize } from '$app/forms';
     import type { GameQuestion } from '$lib/types';
@@ -14,7 +13,6 @@
     $: questionRevealed = $questionStates.find((qs) => qs.key === question.key)?.question_displayed;
     $: hasImage = question.question_type.toLocaleLowerCase().startsWith('image');
     $: hasSoundLink = question.question_type.toLocaleLowerCase().startsWith('sound');
-    let displayLightbox = false;
 
     // TODO: default should be set based on whether or not answers are revealed for all
     let answerDisplayed = false;

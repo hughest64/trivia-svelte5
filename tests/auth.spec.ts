@@ -138,9 +138,11 @@ test('two players cannot join an event with a player limit', async ({ p3, p4 }) 
     // click back
     await p4.page.goBack();
     // click select a different team
-    await p4.page.locator('a', { hasText: /different team/i }).click();
+    const differentTeam = p4.page.locator('a', { hasText: /different team/i });
+    await expect(differentTeam).toBeVisible();
+    await differentTeam.click();
     // should b on /team
-    await expect(p4.page).toHaveURL('/team');
+    await expect(p4.page).toHaveURL('/team/list');
 });
 
 test.describe('user creation', async () => {

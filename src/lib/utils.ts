@@ -181,6 +181,7 @@ export const handlePlayerAuth = async ({
     locals,
     // params,
     fetch,
+    isDataRequest,
     url,
     endPoint
 }: CustomLoadEvent): Promise<App.PageData> => {
@@ -191,32 +192,34 @@ export const handlePlayerAuth = async ({
         throw redirect(302, `/user/logout${decodeURIComponent(url.search)}`);
     }
 
-    const apiEndpoint = apiMap.get(endPoint || '') || endPoint;
-    const apiHost = PUBLIC_API_HOST;
-    const response = await fetch(`${apiHost}${apiEndpoint}/`);
-
     let data = {};
-    const apiData = await response.json();
-    if (response.ok) data = { ...apiData, ...locals };
+    if (!isDataRequest) {
+        const apiEndpoint = apiMap.get(endPoint || '') || endPoint;
+        const apiHost = PUBLIC_API_HOST;
+        const response = await fetch(`${apiHost}${apiEndpoint}/`);
 
-    // not authorized, redirect to log out to ensure cookies get deleted
-    if (response.status === 401) {
-        searchParams.set('next', url.pathname);
+        const apiData = await response.json();
+        if (response.ok) data = { ...apiData, ...locals };
 
-        throw redirect(302, `/user/logout${decodeURIComponent(url.search)}`);
-    }
-    // forbidden, redirect to a safe page
-    if (response.status === 403) {
-        // TODO: add a payload key to the error and send userdata through
-        if (apiData?.reason === 'player_limit_exceeded') {
-            throw error(403, { message: apiData.detail, code: apiData.reason });
+        // not authorized, redirect to log out to ensure cookies get deleted
+        if (response.status === 401) {
+            searchParams.set('next', url.pathname);
+
+            throw redirect(302, `/user/logout${decodeURIComponent(url.search)}`);
         }
-        throw redirect(302, `/team${decodeURIComponent(url.search)}`);
-    }
-    // TODO: expand to handle other pages (/team, etc)
-    // resolve the error page
-    if (response.status === 404) {
-        throw error(404, { message: apiData.detail, next: '/game/join' });
+        // forbidden, redirect to a safe page
+        if (response.status === 403) {
+            // TODO: add a payload key to the error and send userdata through
+            if (apiData?.reason === 'player_limit_exceeded') {
+                throw error(403, { message: apiData.detail, code: apiData.reason });
+            }
+            throw redirect(302, `/team${decodeURIComponent(url.search)}`);
+        }
+        // TODO: expand to handle other pages (/team, etc)
+        // resolve the error page
+        if (response.status === 404) {
+            throw error(404, { message: apiData.detail, next: '/game/join' });
+        }
     }
 
     return data;
@@ -241,7 +244,6 @@ export const handleHostAuth = async ({
 
     let data = {};
     if (!isDataRequest) {
-        console.log('hitting the api');
         const apiHost = PUBLIC_API_HOST;
         const response = await fetch(`${apiHost}${apiEndpoint}/`);
         const apiData = await response.json();

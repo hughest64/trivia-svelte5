@@ -1,9 +1,10 @@
 <script lang="ts">
-    import Lightbox from '$lib/Lightbox.svelte';
     import { page } from '$app/stores';
     import { getStore } from '$lib/utils';
     import AnswerSummary from './AnswerSummary.svelte';
     import type { GameQuestion, Response } from '$lib/types';
+
+    const joincode = $page.params.joincode;
 
     $: form = $page.form;
     const userData = getStore('userData');
@@ -20,7 +21,6 @@
     $: activeRoundState = $roundStates.find((rs) => rs.round_number === $activeEventData.activeRoundNumber);
 
     $: hasImage = activeQuestion?.question_type.toLocaleLowerCase().startsWith('image');
-    let displayLightbox = false;
 
     $: disabled = activeRoundState?.locked || !$playerJoined;
     let responseText = '';
@@ -62,12 +62,9 @@
 </p>
 
 {#if hasImage && activeQuestion?.question_url}
-    {#if displayLightbox}
-        <Lightbox source={activeQuestion?.question_url} on:click={() => (displayLightbox = false)} />
-    {/if}
-    <button class="button-image" on:click={() => (displayLightbox = true)}>
+    <a href="/game/{joincode}/img?key={activeQuestion.key}" class="button-image">
         <img src={activeQuestion?.question_url} alt="img round" />
-    </button>
+    </a>
 {:else if hasImage}
     <p>Image Missing</p>
 {/if}
