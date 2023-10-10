@@ -195,7 +195,6 @@ class QuestionRevealView(APIView):
             for q in event.game.game_questions.exclude(round_number=0)
             if q.key <= updated_state.key
         ]
-        print(question_keys)
 
         if len(displayed_states) > 1:
             updated_current = updated_state
@@ -241,7 +240,6 @@ class QuestionRevealView(APIView):
                 },
             )
         else:
-            print("in event update section")
             event = get_event_or_404(joincode)
             updated_states = []
             for num in question_numbers:
@@ -253,7 +251,6 @@ class QuestionRevealView(APIView):
                 )
                 updated_states.append(question_state)
 
-            # only update players on reveal, no going back
             current_event_data = self.set_current_question(
                 event, updated_states[0], commit=reveal
             )

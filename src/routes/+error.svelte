@@ -16,8 +16,8 @@ a component form an object (or acutal map) -->
         <h1>Sorry</h1>
         <p>The player limit for your team has been reached for this event</p>
         <div class="button-container">
-            <a class="button button-black" href="/game/join">Join a Different Game</a>
-            <a class="button button-red" href="/team">Select a Different Team</a>
+            <a class="button button-black" href="/game/join" data-sveltekit-reload>Join a Different Game</a>
+            <a class="button button-red" href="/team/list" data-sveltekit-reload>Select a Different Team</a>
         </div>
     {/if}
     {#if $page.error?.next && !$page.url.pathname.includes('host')}

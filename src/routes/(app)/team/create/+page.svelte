@@ -13,7 +13,7 @@
 <main class="short">
     <h1>Welcome!</h1>
     <h2>Create a new team:</h2>
-    <form action={'?/createTeam' + qp} method="POST" use:enhance>
+    <form action={'?/createTeam' + qp} method="POST">
         {#if form?.error}<p class="error">{form?.error}</p>{/if}
         <div class="input-container">
             <input type="text" name="team_name" required />
