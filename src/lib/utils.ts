@@ -222,7 +222,13 @@ export const handlePlayerAuth = async ({
     return data;
 };
 
-export const handleHostAuth = async ({ locals, fetch, url, endPoint }: CustomLoadEvent): Promise<App.PageData> => {
+export const handleHostAuth = async ({
+    locals,
+    fetch,
+    url,
+    endPoint,
+    isDataRequest
+}: CustomLoadEvent): Promise<App.PageData> => {
     const apiEndpoint = apiMap.get(endPoint || '') || endPoint;
 
     const searchParams = url.searchParams;
@@ -233,28 +239,29 @@ export const handleHostAuth = async ({ locals, fetch, url, endPoint }: CustomLoa
     }
     if (!locals.staffuser) throw redirect(302, `/team${decodeURIComponent(url.search)}`);
 
-    const apiHost = PUBLIC_API_HOST;
-    const response = await fetch(`${apiHost}${apiEndpoint}/`);
-
     let data = {};
-    const apiData = await response.json();
-    if (response.ok) {
-        data = { ...apiData, ...locals };
-    }
+    if (!isDataRequest) {
+        console.log('hitting the api');
+        const apiHost = PUBLIC_API_HOST;
+        const response = await fetch(`${apiHost}${apiEndpoint}/`);
+        const apiData = await response.json();
+        if (response.ok) {
+            data = { ...apiData, ...locals };
+        }
+        // not authorized, redirect to log out to ensure cookies get deleted
+        if (response.status === 401) {
+            searchParams.set('next', url.pathname);
+            throw redirect(302, `/user/logout${decodeURIComponent(url.search)}`);
+        }
 
-    // not authorized, redirect to log out to ensure cookies get deleted
-    if (response.status === 401) {
-        searchParams.set('next', url.pathname);
-        throw redirect(302, `/user/logout${decodeURIComponent(url.search)}`);
-    }
+        // forbidden, redirect to a safe page
+        if (response.status === 403) {
+            throw redirect(302, '/host/choice');
+        }
 
-    // forbidden, redirect to a safe page
-    if (response.status === 403) {
-        throw redirect(302, '/host/choice');
-    }
-
-    if (response.status === 404) {
-        throw error(404, { message: apiData.detail, next: '/host/choice' });
+        if (response.status === 404) {
+            throw error(404, { message: apiData.detail, next: '/host/choice' });
+        }
     }
 
     return data;
