@@ -46,22 +46,28 @@ class Xfer:
 
     def get_teams_from_db(self):
         team_string = """
-            SELECT t.id, t.team_name FROM game_team t
+            SELECT team.id, team.team_name, u.username, tu.active_team_id FROM game_triviauser_teams tuteam
 
-            RIGHT JOIN game_triviauser_teams tut
-            ON tut.id = t.id
+            INNER JOIN game_triviauser tu
+            ON tu.id = tuteam.triviauser_id
 
-            RIGHT JOIN game_triviauser tu
-            ON tu.id = tut.triviauser_id
+            INNER JOIN auth_user u
+            ON u.id = tu.user_id
+
+            INNER JOIN game_team team
+            ON team.id = tuteam.team_id
 
             WHERE tu.is_anonymous_user = False
-            AND t.team_name IS NOT NULL
         """
+
         self.cur.execute(team_string)
         records = self.cur.fetchall()
-        print(len(records), "total results")
-        just_ids = set([t[0] for t in records])
 
+        print(len(records), "total results")
+        print([desc[0] for desc in self.cur.description])
+        print(records[:10])
+
+        just_ids = set([t[0] for t in records])
         print(len(just_ids), "unique results")
 
     def load_locations(self):
