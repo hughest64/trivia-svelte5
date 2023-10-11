@@ -17,6 +17,7 @@
     --color-alt-black: #413f43;
     --color-current: #6fcf97;
     --color-question-container-bg: #e0e0e0;
+    --color-teammate-chat: #0097a7;
 }
 
 /* ------------------- */
@@ -198,6 +199,7 @@ form {
     position: relative;
     width: 100%;
     max-width: var(--max-element-width);
+    margin-top: 0;
     margin-bottom: 1.5rem;
     padding: 1rem 0.5rem;
     font-size: 1.2rem;
@@ -259,6 +261,7 @@ button {
 }
 .button-tertiary {
     border: 3px solid var(--color-secondary);
+    color: var(--color-secondary);
     background-color: var(--color-tertiary);
     &:active {
         box-shadow: 0px 0px 4px 4px var(--color-secondary);
@@ -277,18 +280,20 @@ button {
     flex-direction: row;
     justify-content: center;
     gap: 0.5rem;
-    width: 100%;
-    max-width: var((--max-element-width));
+    width: var(--max-element-width);
+    max-width: calc(100% - 0.5rem);
     margin: 1rem 0;
     button {
         width: 3rem;
         height: 3rem;
+        padding: 0;
         border: 2px solid var(--color-secondary);
         border-radius: 0.5rem;
         font-size: 1rem;
         font-weight: bold;
         color: var(--color-secondary);
         background-color: var(--color-tertiary);
+        text-align: center;
         cursor: pointer;
         &.active {
             color: var(--color-tertiary);
@@ -298,6 +303,64 @@ button {
             border-color: var(--color-current);
         }
     }
+}
+
+.switch-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin: 0 0.5em;
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 4em;
+        height: 2em;
+        margin: 0 0.5em;
+        .slider {
+            border: none;
+            padding: 0;
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            -webkit-transition: 0.4s;
+            transition: 0.4s;
+            border-radius: 2em;
+            background-color: #413f43;
+            &:before {
+                background-color: white;
+                position: absolute;
+                content: '';
+                height: 1.75em;
+                width: 1.75em;
+                left: 0.25em;
+                bottom: 0.35em;
+                -webkit-transition: 0.4s;
+                transition: 0.4s;
+                border-radius: 50%;
+            }
+        }
+        input:checked + .slider {
+            background-color: var(--color-current);
+        }
+        input:checked + .slider:before {
+            transform: translateX(2em);
+        }
+        .revealed {
+            background-color: var(--color-current);
+            &:before {
+                transform: translateX(2.5em);
+            }
+        }
+    }
+}
+
+.disabled {
+    color: var(--color-secondary);
+    background-color: var(--color-disabled);
 }
 
 .flex-column {
@@ -326,5 +389,15 @@ button {
     }
     h4 {
         font-size: 1.25rem;
+    }
+}
+
+@media (max-width: 400px) {
+    .round-selector {
+        gap: 0.15rem;
+        button {
+            width: 2.5rem;
+            height: 2.5rem;
+        }
     }
 }

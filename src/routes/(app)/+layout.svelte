@@ -7,16 +7,16 @@
     let displayMenu = false;
 </script>
 
-{#if displayMenu}
-    <div class="menu-slider" transition:slide={{ duration: 500 }}>
-        <div class="menu-content">
-            <Menu on:click={() => (displayMenu = false)} />
-        </div>
-        <button on:click={() => (displayMenu = false)} />
-    </div>
-{/if}
-
 <Stores>
+    {#if displayMenu}
+        <div class="menu-slider" transition:slide={{ duration: 500 }}>
+            <div class="menu-content">
+                <Menu on:click={() => (displayMenu = false)} />
+            </div>
+            <button on:click={() => (displayMenu = false)} />
+        </div>
+    {/if}
+
     <slot />
 
     <footer>

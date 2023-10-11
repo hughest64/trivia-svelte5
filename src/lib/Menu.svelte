@@ -1,14 +1,41 @@
-<script>
+<script lang="ts">
+    import { page } from '$app/stores';
+    import { dev } from '$app/environment';
+    import { PUBLIC_API_HOST } from '$env/static/public';
+    import { getStore } from './utils';
+    import EventMeta from './EventMeta.svelte';
+
+    const joincode = $page.params.joincode;
+    $: manageTeamLink = joincode ? `/team/manage?joincode=${joincode}` : '/team/manage';
+
+    const userData = getStore('userData');
+    $: userEmail = $userData.email;
+
+    $: isGameEndpoint = $page.url.pathname.startsWith('/game');
+    $: isHost = $userData.is_staff;
+    const feedbackLink = `https://docs.google.com/forms/d/e/1FAIpQLSeT5FX2OGycY0yDqjiwj8ItAFi8CE64GatBiO-lsYAz1hLguA/viewform?usp=pp_url&entry.1807181492=${userEmail}`;
+
+    const adminLink = dev ? `${PUBLIC_API_HOST}/admin` : '/admin';
 </script>
 
 <ul>
-    <li>Rules and FAQ</li>
-    <li>Manage Profile</li>
-    <li>Manage Team</li>
-    <li>Trivia Mafia Administration</li>
-    <li>Show Me the Tiebreakers</li>
-    <li>Submit App Feedback</li>
-    <li>Trivia Mafia Host Feedback</li>
+    <li><EventMeta /></li>
+    <li><a href="/rules" on:click>Rules and FAQ</a></li>
+    <li><a href="/user/settings" on:click data-sveltekit-reload>Manage Profile</a></li>
+    {#if isGameEndpoint && joincode}
+        <li><a href={manageTeamLink} on:click>Manage Team</a></li>
+    {/if}
+    {#if isHost}
+        <li><a href={adminLink} rel="external" on:click>Trivia Mafia Administration</a></li>
+    {/if}
+    <li><a href={feedbackLink} target="_blank" on:click>Submit App Feedback</a></li>
+    {#if isHost}
+        <li>
+            <a href="https://hosts.triviamafia.com" rel="external" target="_blank" on:click>
+                Trivia Mafia Host Feedback
+            </a>
+        </li>
+    {/if}
     <li><a rel="external" href="/user/logout">Logout</a></li>
     <button on:click>X</button>
 </ul>
@@ -17,13 +44,14 @@
     ul {
         display: flex;
         flex-direction: column;
+        gap: 1rem;
         height: 100%;
         margin: 1em;
         color: var(--color-tertiary);
         font-weight: bold;
     }
     li {
-        margin: 1em 0;
+        margin: 0;
         &:last-of-type {
             flex-grow: 1;
         }

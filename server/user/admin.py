@@ -11,6 +11,7 @@ class TriviaUserAdmin(UserAdmin):
                 "fields": (
                     "screen_name",
                     "active_team",
+                    "is_guest",
                     "auto_reveal_questions",
                     "home_location",
                 )

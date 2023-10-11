@@ -79,8 +79,10 @@ class QuestionResponse(models.Model):
         answers = {
             self.normalize_string(a.text) for a in question.accepted_answers.all()
         }
-        answers.add(question.display_answer.text)
+        answers.add(self.normalize_string(question.display_answer.text))
+
         recored_answer_norm = self.normalize_string(self.recorded_answer)
+
         for answer in answers:
             self.fuzz_ratio = fuzz.token_set_ratio(answer, recored_answer_norm)
             if self.fuzz_ratio >= FUZZ_MATCH_RATIO:

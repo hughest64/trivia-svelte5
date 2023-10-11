@@ -9,7 +9,6 @@ const setmegaround: Action = async ({ fetch, request, url, params }) => {
         method: 'post',
         body: JSON.stringify({ mr_values, round_number })
     });
-    console.log(await response.json());
 };
 
 export const actions = { setmegaround };

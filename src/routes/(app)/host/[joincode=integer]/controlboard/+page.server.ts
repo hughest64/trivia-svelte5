@@ -1,3 +1,4 @@
+import { fail } from '@sveltejs/kit';
 import { PUBLIC_API_HOST } from '$env/static/public';
 import type { Actions, PageServerLoad } from './$types.js';
 
@@ -40,6 +41,31 @@ export const actions: Actions = {
             // TODO: error handling
         }
 
+        return { success: true };
+    },
+
+    send_chat: async ({ fetch, request, params }) => {
+        const data = Object.fromEntries(await request.formData());
+
+        const response = await fetch(`${[PUBLIC_API_HOST]}/game/${params.joincode}/chat/create`, {
+            method: 'post',
+            body: JSON.stringify({ ...data, host_message: true })
+        });
+
+        if (!response.ok) {
+            const respData = await response.json();
+            return fail(response.status, { error: respData.detail });
+        }
+
+        return { success: true };
+    },
+    megaround_reminder: async ({ fetch, params }) => {
+        const response = await fetch(`${PUBLIC_API_HOST}/host/${params.joincode}/megaround-reminder`);
+
+        if (!response.ok) {
+            const respData = await response.json();
+            return fail(response.status, { error: respData.detail });
+        }
         return { success: true };
     }
 };

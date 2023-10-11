@@ -1,6 +1,7 @@
 from datetime import timedelta
 import random
 
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.forms.models import model_to_dict
@@ -9,6 +10,8 @@ from django.utils import timezone
 from .utils import queryset_to_json
 
 from game.views.validation.exceptions import JoincodeError
+
+GAME_DAYS_TO_ROLL = settings.GAME_DAYS_TO_ROLL
 
 QUESTION_TYPE_GENERAL_KNOWLEDGE = 0
 QUESTION_TYPE_THEMED_ROUND = 1
@@ -156,10 +159,12 @@ class GameRound(models.Model):
         super().save(*args, **kwargs)
 
 
-def get_end_of_week(dt=None):
+def get_end_of_week(dt=None, roll=None):
     """return the end of the week from dt or the current local date"""
-    reference_date = dt or timezone.localdate()
-    return reference_date + timedelta(days=6 - reference_date.weekday())
+    if roll is None:
+        roll = GAME_DAYS_TO_ROLL
+    reference_date = (dt or timezone.localdate()) - timedelta(days=roll)
+    return reference_date + timedelta(days=6 + roll - reference_date.weekday())
 
 
 class Game(models.Model):
@@ -190,6 +195,7 @@ class Game(models.Model):
         }
 
     def clean(self, *args, **kwargs):
+        # TODO: this may not be required since we are now setting it in the airtable importer
         # add active through date to new instances which do not already have on set
         if not self.pk and self.active_through is None:
             self.active_through = get_end_of_week(dt=self.date_used)
@@ -272,7 +278,7 @@ class TriviaEvent(models.Model):
             },
             "rounds": queryset_to_json(self.game.game_rounds.exclude(round_number=0)),
             "questions": queryset_to_json(
-                self.game.game_questions.exclude(question_number=0).order_by(
+                self.game.game_questions.exclude(round_number=0).order_by(
                     "round_number", "question_number"
                 )
             ),
@@ -341,6 +347,45 @@ class EventQuestionState(models.Model):
     def save(self, *args, **kwargs):
         self.full_clean()
         super().save(*args, **kwargs)
+
+
+class TeamNote(models.Model):
+    created_at = models.DateTimeField(default=timezone.now)
+    event = models.ForeignKey(
+        TriviaEvent, related_name="question_note", on_delete=models.CASCADE
+    )
+    team = models.ForeignKey(
+        "Team", related_name="question_note", on_delete=models.CASCADE
+    )
+    user = models.ForeignKey(
+        "user.User", related_name="question_note", on_delete=models.CASCADE
+    )
+    question = models.ForeignKey(
+        GameQuestion, related_name="question_note", on_delete=models.CASCADE
+    )
+    text = models.TextField(max_length=120)
+
+    def local_created_at(self, as_string=True):
+        """return the created_at field in local time"""
+        local_time = timezone.localtime(self.created_at)
+
+        if as_string:
+            return f"{local_time:%I:%M:%S %p}"
+        return local_time
+
+    def __str__(self):
+        return f"{self.user} - {self.team} - {self.event}"
+
+    def to_json(self):
+        return {
+            "id": self.id,
+            "event_id": self.event.id,
+            "team_id": self.team.id,
+            "user": self.user.username,
+            "question_id": self.question.id,
+            "text": self.text,
+            "time": self.local_created_at(),
+        }
 
 
 # round for an event extends a game round with mutable boolean fields (locked and scored)

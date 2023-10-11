@@ -1,5 +1,8 @@
+import logging
+
 from django.core.exceptions import ValidationError
 from django.conf import settings
+from django.db.utils import IntegrityError
 from django.utils.crypto import get_random_string
 from django.db.models import Q
 from django.utils.decorators import method_decorator
@@ -18,25 +21,28 @@ from user.utils import Mailer
 
 from game.views.validation.data_cleaner import DataCleaner
 
+logger = logging.getLogger(__name__)
+
 
 class CreateView(APIView):
     def post(self, request):
         data = DataCleaner(request.data)
-        # TODO: add as_username to DataClass and validate it's a valid Django style username
-        # i.e =- This value may contain only letters, numbers, and @/./+/-/_ characters.
-        # actually, just get rid of the damn validation, user beware
         username = data.as_string("username")
         email = data.as_string("email")
         pass1 = data.as_string("pass")
         pass2 = data.as_string("pass2")
 
-        # return an existing guest user is the jwt is valid otheriwise, create new
+        user_created = True
+
+        # return an existing guest user if the jwt is valid otheriwise, create new
         is_guest = data.as_bool("guest_user")
         if is_guest:
             jwt = request.COOKIES.get("jwt")
             user = decode_token(jwt)
             if user.is_anonymous:
                 user = User.objects.create_guest_user()
+            else:
+                user_created = False
 
         else:
             user_query = User.objects.filter(Q(username=username) | Q(email=email))
@@ -58,11 +64,11 @@ class CreateView(APIView):
                 user = User.objects.create_user(
                     username=username, email=email, password=pass1
                 )
-            except ValidationError as e:
-                return Response({"detail": e}, status=HTTP_400_BAD_REQUEST)
+            except (ValidationError, IntegrityError) as e:
+                return Response({"detail": str(e)}, status=HTTP_400_BAD_REQUEST)
 
         # log them in
-        token = create_token(user)
+        token = create_token(user, user_created=user_created)
 
         response = Response({"user_data": user.to_json()})
         response.set_cookie(key="jwt", value=token, httponly=True)
@@ -120,7 +126,8 @@ def get_or_create_oauth_user(name, email):
 
 
 class GoogleAuthView(APIView):
-    @method_decorator(csrf_protect)
+    # NOTE: do not require csrf here as we cannot reliably get the correct csrf token after the google call
+    # @method_decorator(csrf_protect)
     def post(self, request):
         access_token = request.META.get("HTTP_AUTHORIZATION")
         if access_token is None:
@@ -260,5 +267,69 @@ class LogoutView(APIView):
         response.delete_cookie("jwt")
         response.delete_cookie("csrftoken")
         response.data = {"message": "success"}
+
+        return response
+
+
+class SetAutoRevealView(APIView):
+    authentication_classes = [JwtAuthentication]
+
+    @method_decorator(csrf_protect)
+    def post(self, request):
+        data = DataCleaner(request.data)
+        auto_reveal_value = data.as_bool("auto_reveal")
+
+        request.user.auto_reveal_questions = auto_reveal_value
+        request.user.save()
+
+        return Response({"success": True})
+
+
+class UpdateUserview(APIView):
+    authentication_classes = [JwtAuthentication]
+
+    @staticmethod
+    def error_response(update_type, msg=None):
+        if msg is None:
+            msg = f"That {update_type} is taken"
+
+        return Response({"detail": {update_type: msg}}, status=HTTP_400_BAD_REQUEST)
+
+    @method_decorator(csrf_protect)
+    def post(self, request):
+        user: User = request.user
+        data = DataCleaner(request.data)
+        update_type = data.as_string("update_type")
+        username = data.as_string("username")
+        email = data.as_string("email")
+        password = data.as_string("password")
+        old_pass = data.as_string("old_pass")
+
+        if not user.check_password(old_pass):
+            return self.error_response(update_type, "The current password is incorrect")
+
+        if username and User.objects.filter(username=username).exists():
+            return self.error_response(update_type)
+
+        if email and User.objects.filter(email=email).exists():
+            return self.error_response(update_type)
+
+        try:
+            user.username = username or user.username
+            user.email = email or user.email
+            if update_type == password:
+                user.set_password(password)
+
+            user.save()
+        except Exception as e:
+            logger.error(str(e))
+            return Response(
+                {"detail": {update_type: str(e)}}, status=HTTP_400_BAD_REQUEST
+            )
+
+        token = create_token(user)
+
+        response = Response({"user_data": user.to_json()})
+        response.set_cookie(key="jwt", value=token, httponly=True)
 
         return response

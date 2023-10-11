@@ -1,9 +1,10 @@
 <script lang="ts">
-    import Lightbox from '$lib/Lightbox.svelte';
     import { page } from '$app/stores';
     import { getStore } from '$lib/utils';
     import AnswerSummary from './AnswerSummary.svelte';
     import type { GameQuestion, Response } from '$lib/types';
+
+    const joincode = $page.params.joincode;
 
     $: form = $page.form;
     const userData = getStore('userData');
@@ -20,13 +21,24 @@
     $: activeRoundState = $roundStates.find((rs) => rs.round_number === $activeEventData.activeRoundNumber);
 
     $: hasImage = activeQuestion?.question_type.toLocaleLowerCase().startsWith('image');
-    let displayLightbox = false;
 
+    $: disabled = activeRoundState?.locked || !$playerJoined;
     let responseText = '';
+    $: labelText = activeResponse?.recorded_answer ? 'Click To Edit Answer' : 'Enter Answer';
+    $: submitText = activeResponse?.recorded_answer ? 'Submitted' : 'Submit';
     $: notsubmitted = responseText && responseText !== activeResponse?.recorded_answer;
     const syncInputText = (e: Event) => {
         const target = <HTMLInputElement>e.target;
         responseText = target.value;
+        if (activeResponse?.recorded_answer) {
+            if (responseText !== activeResponse.recorded_answer) {
+                labelText = 'Update Answer';
+                submitText = 'Save';
+            } else {
+                labelText = 'Click To Edit Answer';
+                submitText = 'Submitted';
+            }
+        }
     };
 
     const handleSubmitResponse = async () => {
@@ -50,12 +62,9 @@
 </p>
 
 {#if hasImage && activeQuestion?.question_url}
-    {#if displayLightbox}
-        <Lightbox source={activeQuestion?.question_url} on:click={() => (displayLightbox = false)} />
-    {/if}
-    <button class="button-image" on:click={() => (displayLightbox = true)}>
+    <a href="/game/{joincode}/img?key={activeQuestion.key}" class="button-image">
         <img src={activeQuestion?.question_url} alt="img round" />
-    </button>
+    </a>
 {:else if hasImage}
     <p>Image Missing</p>
 {/if}
@@ -67,7 +76,7 @@
 <form on:submit|preventDefault={handleSubmitResponse}>
     <div id="response-container" class="input-container" class:notsubmitted>
         <input
-            disabled={activeRoundState?.locked || !$playerJoined}
+            {disabled}
             required
             name="response_text"
             type="text"
@@ -75,24 +84,22 @@
             autocorrect="off"
             autocomplete="off"
             spellcheck="false"
+            data-type="response-input"
             value={activeResponse?.recorded_answer || ''}
             on:input={syncInputText}
         />
-        <label for="response_text">Enter Answer</label>
+        <label for="response_text">{disabled ? '' : labelText}</label>
     </div>
 
     {#if form?.error}<p>{form.error}</p>{/if}
 
-    <button
-        class:disabled={activeRoundState?.locked || !$playerJoined}
-        class="button button-primary"
-        disabled={activeRoundState?.locked || !$playerJoined}
-    >
-        Submit
-    </button>
+    <button class:disabled class="button button-primary response-btn" {disabled}> {submitText} </button>
 </form>
 
 <style lang="scss">
+    .response-btn {
+        margin-top: 0;
+    }
     .question-text {
         padding: 0 0.5rem;
     }

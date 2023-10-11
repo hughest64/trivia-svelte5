@@ -11,6 +11,8 @@ variables:
 # TODO:
 # when moving to tags update the job (or crate a new one?) so that th git step checks outs the new tag
 staging-deploy-job:
+  tags:
+    - tm_staging
   stage: deploy
   script:
     - cd /opt/tm-trivia

@@ -116,7 +116,10 @@ class DeleteView(APIView):
 
             if usernames is None:
                 raise NotFound("no users were provided")
-            users = User.objects.filter(username__in=usernames)
+            if usernames == "guests":
+                users = User.objects.filter(is_guest=True)
+            else:
+                users = User.objects.filter(username__in=usernames)
             users.delete()
 
         return Response({"success": True})

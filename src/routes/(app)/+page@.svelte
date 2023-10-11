@@ -14,7 +14,6 @@
 <main>
     {#if showContent}
         <div transition:scale|local={{ duration: 1500 }} class="logo-container">
-            <!-- <img src="TM2021-Flat-Stacked-WhiteBackground.svg" alt="Trivia Mafia" /> -->
             <img src="TMLogo-2023_TM-Stacked-RedBlack.svg" alt="Trivia Mafia" />
         </div>
 
@@ -23,9 +22,9 @@
                 <h3>{loaderror}</h3>
             {:else}
                 <a class="button button-primary" href={`/user/login${$page.url.search}`}> Login/Create Account </a>
-                <form action="/user/create" method="POST">
+                <form action="/user/create{$page.url.search}" method="POST">
                     <input type="hidden" name="guest_user" value="true" />
-                    <input class="button button-tertiary" type="submit" value="Play as a Guest" />
+                    <button class="button button-tertiary" type="submit">Play As a Guest</button>
                 </form>
                 {#if form?.error}<p>{form?.error}</p>{/if}
             {/if}

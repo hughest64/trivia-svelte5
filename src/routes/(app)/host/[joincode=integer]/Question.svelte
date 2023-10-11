@@ -1,8 +1,10 @@
 <script lang="ts">
-    import Lightbox from '$lib/Lightbox.svelte';
+    import { page } from '$app/stores';
     import { getStore } from '$lib/utils';
     import { deserialize } from '$app/forms';
     import type { GameQuestion } from '$lib/types';
+
+    const joincode = $page.params.joincode;
 
     export let question: GameQuestion;
     let formError: string;
@@ -11,7 +13,6 @@
     $: questionRevealed = $questionStates.find((qs) => qs.key === question.key)?.question_displayed;
     $: hasImage = question.question_type.toLocaleLowerCase().startsWith('image');
     $: hasSoundLink = question.question_type.toLocaleLowerCase().startsWith('sound');
-    let displayLightbox = false;
 
     // TODO: default should be set based on whether or not answers are revealed for all
     let answerDisplayed = false;
@@ -55,14 +56,11 @@
 
     <p>{question.question_text}</p>
 
-    <!-- Immage Round -->
+    <!-- Image Round -->
     {#if hasImage && question?.question_url}
-        {#if displayLightbox}
-            <Lightbox source={question.question_url} on:click={() => (displayLightbox = false)} />
-        {/if}
-        <button class="button-image" on:click={() => (displayLightbox = true)}>
+        <a href="/host/{joincode}/img?key={question.key}" class="button-image">
             <img src={question?.question_url} alt="img round" />
-        </button>
+        </a>
     {:else if hasImage}
         <p>Image Missing</p>
     {/if}

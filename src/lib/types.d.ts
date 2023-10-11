@@ -9,6 +9,10 @@ export interface JwtPayload {
     id?: number;
     // user.is_staff
     staff_user?: boolean;
+    // user.is_guest
+    guest_user?: boolean;
+    // is this a newly created user?
+    user_created?: boolean;
     // expiration timestamp
     exp?: number;
     // created timestamp
@@ -21,6 +25,7 @@ export interface UserData {
     id: number;
     username: string;
     is_staff: boolean;
+    is_guest: boolean;
     auto_reveal_questions: boolean;
     email?: string;
     active_team_id?: number | null;
@@ -34,6 +39,17 @@ export interface UserTeam {
     name: string;
     password: string;
     members?: string[];
+}
+
+export interface ChatMessage {
+    id: number;
+    username: string;
+    userid: number;
+    team: string;
+    team_id: number;
+    is_host_message?: boolean;
+    chat_message: string;
+    time: string;
 }
 
 export interface LeaderboardEntry {
@@ -93,6 +109,16 @@ export interface GameQuestion {
     round_number: number;
     question_number: number;
     key: string;
+}
+
+export interface TeamNote {
+    id: number;
+    event_id: number;
+    team_id: number;
+    user: string;
+    question_id: number;
+    text: string;
+    time: string;
 }
 
 export interface QuestionState {
@@ -218,6 +244,8 @@ export interface StoreTypes {
     playerJoined: Writable<PlayerJoined>;
     megaroundValues: MegaRoundValueStore;
     selectedMegaRound: Writable<number | undefined>;
+    chatMessages: Writable<ChatMessage[]>;
+    teamNotes: Writable<TeamNote[]>;
 }
 
 export type MessageHandler = Record<string, (message: any) => unknown>;

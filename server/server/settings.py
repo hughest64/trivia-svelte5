@@ -150,6 +150,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
+
+STATICFILES_DIRS = [BASE_DIR.parent / "static"]
 STATIC_ROOT = BASE_DIR / "static"
 STATIC_URL = "static/"
 
@@ -158,10 +160,14 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+# NOTE we might need to consider whether or not it's a private event
+# number of days to roll the airtable query and host game lookups
+GAME_DAYS_TO_ROLL = 1
+
 # jwt settings
 
 # token expiration in minutes
-JWT_TOKEN_TTL = 24 * 60 * 60  # 24 hrs in seconds
+JWT_TOKEN_TTL = 12 * 60 * 60  # 12 hrs in seconds
 
 # use an env variable for prod
 JWT_TOKEN_SECRET = SECRET_KEY

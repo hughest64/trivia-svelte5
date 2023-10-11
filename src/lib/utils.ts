@@ -7,6 +7,7 @@ import type { Cookies } from '@sveltejs/kit';
 import type {
     ActiveEventData,
     CustomLoadEvent,
+    ChatMessage,
     GameQuestion,
     GameRound,
     JwtPayload,
@@ -142,6 +143,30 @@ export const respsByround = (resps: Response[], rounds: GameRound[], roundStates
     return Object.values(roundResps);
 };
 
+export const groupChats = (chats: ChatMessage[], hostPage: boolean) => {
+    if (!chats || chats.length === 0) return [];
+    if (chats.length === 1 || hostPage) return chats;
+
+    const groupedChats: ChatMessage[] = [{ ...chats[0] }];
+    for (let i = 1; i < chats.length; i++) {
+        const chat = chats[i];
+        const prevChat = chats[i - 1];
+
+        if (!prevChat.is_host_message && chat.is_host_message) {
+            groupedChats.push({ ...chat });
+        } else if (chat.userid !== prevChat?.userid) {
+            groupedChats.push({ ...chat });
+        } else if (prevChat.is_host_message && !chat.is_host_message) {
+            groupedChats.push({ ...chat });
+        } else {
+            const lastGroupedChat = groupedChats[groupedChats.length - 1];
+            lastGroupedChat.chat_message += '\n' + chat.chat_message;
+            lastGroupedChat.time = chat.time;
+        }
+    }
+    return groupedChats;
+};
+
 /**
  * Custom load functions to help keep trivia event endpoints dry. Player
  * and Host routes are handled separately as the logic differs a bit.
@@ -156,67 +181,89 @@ export const handlePlayerAuth = async ({
     locals,
     // params,
     fetch,
+    isDataRequest,
     url,
     endPoint
 }: CustomLoadEvent): Promise<App.PageData> => {
-    if (!locals.validtoken) throw redirect(302, `/user/logout?next=${url.pathname}`);
+    const searchParams = url.searchParams;
+    if (!locals.validtoken) {
+        searchParams.set('next', url.pathname);
 
-    const apiEndpoint = apiMap.get(endPoint || '') || endPoint;
-    const apiHost = PUBLIC_API_HOST;
-    const response = await fetch(`${apiHost}${apiEndpoint}/`);
+        throw redirect(302, `/user/logout${decodeURIComponent(url.search)}`);
+    }
 
     let data = {};
-    const apiData = await response.json();
-    if (response.ok) data = { ...apiData, ...locals };
+    if (!isDataRequest) {
+        const apiEndpoint = apiMap.get(endPoint || '') || endPoint;
+        const apiHost = PUBLIC_API_HOST;
+        const response = await fetch(`${apiHost}${apiEndpoint}/`);
 
-    // not authorized, redirect to log out to ensure cookies get deleted
-    if (response.status === 401) {
-        throw redirect(302, `/user/logout?next=${url.pathname}`);
-    }
-    // forbidden, redirect to a safe page
-    if (response.status === 403) {
-        // TODO: add a payload key to the error and send userdata through
-        if (apiData?.reason === 'player_limit_exceeded') {
-            throw error(403, { message: apiData.detail, code: apiData.reason });
+        const apiData = await response.json();
+        if (response.ok) data = { ...apiData, ...locals };
+
+        // not authorized, redirect to log out to ensure cookies get deleted
+        if (response.status === 401) {
+            searchParams.set('next', url.pathname);
+
+            throw redirect(302, `/user/logout${decodeURIComponent(url.search)}`);
         }
-        throw redirect(302, '/team');
-    }
-    // TODO: expand to handle other pages (/team, etc)
-    // resolve the error page
-    if (response.status === 404) {
-        throw error(404, { message: apiData.detail, next: '/game/join' });
+        // forbidden, redirect to a safe page
+        if (response.status === 403) {
+            // TODO: add a payload key to the error and send userdata through
+            if (apiData?.reason === 'player_limit_exceeded') {
+                throw error(403, { message: apiData.detail, code: apiData.reason });
+            }
+            throw redirect(302, `/team${decodeURIComponent(url.search)}`);
+        }
+        // TODO: expand to handle other pages (/team, etc)
+        // resolve the error page
+        if (response.status === 404) {
+            throw error(404, { message: apiData.detail, next: '/game/join' });
+        }
     }
 
     return data;
 };
 
-export const handleHostAuth = async ({ locals, fetch, url, endPoint }: CustomLoadEvent): Promise<App.PageData> => {
+export const handleHostAuth = async ({
+    locals,
+    fetch,
+    url,
+    endPoint,
+    isDataRequest
+}: CustomLoadEvent): Promise<App.PageData> => {
     const apiEndpoint = apiMap.get(endPoint || '') || endPoint;
 
-    if (!locals.validtoken) throw redirect(302, `/user/logout?next=${url.pathname}`);
-    if (!locals.staffuser) throw redirect(302, '/team');
+    const searchParams = url.searchParams;
 
-    const apiHost = PUBLIC_API_HOST;
-    const response = await fetch(`${apiHost}${apiEndpoint}/`);
+    if (!locals.validtoken) {
+        searchParams.set('next', url.pathname);
+        throw redirect(302, `/user/logout${decodeURIComponent(url.search)}`);
+    }
+    if (!locals.staffuser) throw redirect(302, `/team${decodeURIComponent(url.search)}`);
 
     let data = {};
-    const apiData = await response.json();
-    if (response.ok) {
-        data = { ...apiData, ...locals };
-    }
+    if (!isDataRequest) {
+        const apiHost = PUBLIC_API_HOST;
+        const response = await fetch(`${apiHost}${apiEndpoint}/`);
+        const apiData = await response.json();
+        if (response.ok) {
+            data = { ...apiData, ...locals };
+        }
+        // not authorized, redirect to log out to ensure cookies get deleted
+        if (response.status === 401) {
+            searchParams.set('next', url.pathname);
+            throw redirect(302, `/user/logout${decodeURIComponent(url.search)}`);
+        }
 
-    // not authorized, redirect to log out to ensure cookies get deleted
-    if (response.status === 401) {
-        throw redirect(302, `/user/logout?next=${url.pathname}`);
-    }
+        // forbidden, redirect to a safe page
+        if (response.status === 403) {
+            throw redirect(302, '/host/choice');
+        }
 
-    // forbidden, redirect to a safe page
-    if (response.status === 403) {
-        throw redirect(302, '/host/choice');
-    }
-
-    if (response.status === 404) {
-        throw error(404, { message: apiData.detail, next: '/host/choice' });
+        if (response.status === 404) {
+            throw error(404, { message: apiData.detail, next: '/host/choice' });
+        }
     }
 
     return data;

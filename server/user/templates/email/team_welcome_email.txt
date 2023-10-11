@@ -1,0 +1,5 @@
+Welcome to Trivia Mafia, {{ username }}!
+
+You just started up the team {{team_name}}. Invite all your friends with your team's password - {{ password }}.
+
+See you at Trivia!

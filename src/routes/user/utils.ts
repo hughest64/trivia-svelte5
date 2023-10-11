@@ -7,10 +7,13 @@ import {
 } from '$env/static/public';
 
 // use as the href of an anchor tag to start the google oauth2 process
-export const googleAuthUrl = () => {
+export const googleAuthUrl = (join: boolean) => {
+    let redirUri = PUBLIC_GOOGLE_CALLBACK_URL;
+    if (join) redirUri += '/jointeam';
+
     const googleAuthParams = new URLSearchParams({
         client_id: PUBLIC_GOOGLE_CLIENT_ID,
-        redirect_uri: PUBLIC_GOOGLE_CALLBACK_URL,
+        redirect_uri: redirUri,
         scope: 'email profile',
         response_type: 'code',
         access_type: 'offline'
@@ -22,11 +25,14 @@ export const googleAuthUrl = () => {
 
 // get an access token from google, note the google client secret must be passed in here
 // as this module is not server only and and the secret should not be imported into client code!
-export const googleAuthToken = async (code: string, secret: string) => {
+export const googleAuthToken = async (code: string, secret: string, join: boolean) => {
+    let redirUri = PUBLIC_GOOGLE_CALLBACK_URL;
+    if (join) redirUri += '/jointeam';
+
     const body = {
         client_id: PUBLIC_GOOGLE_CLIENT_ID,
         client_secret: secret,
-        redirect_uri: PUBLIC_GOOGLE_CALLBACK_URL,
+        redirect_uri: redirUri,
         grant_type: 'authorization_code',
         code
     };

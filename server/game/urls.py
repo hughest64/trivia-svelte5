@@ -1,7 +1,7 @@
 from django.urls import path, re_path
 from django.shortcuts import redirect
 
-from .views import game, host, team, airtable
+from .views import common, game, host, team, airtable
 
 app_name = "game"
 
@@ -63,12 +63,28 @@ urlpatterns = [
         host.EventHostView.as_view(),
         name="host_view",
     ),
+    re_path(
+        r"^host/(?P<joincode>\d+)/megaround-reminder/?$",
+        host.MegaroundReminderView.as_view(),
+        name="megaround_reminder",
+    ),
+    # common endpoints
+    re_path(
+        r"^(?P<chat_type>(game|host))/(?P<joincode>\d+)[/\w]*/chat/create/?$",
+        common.ChatCreateView.as_view(),
+        name="chat_create",
+    ),
     # player endpoints
     re_path(r"^game/join/?$", game.EventJoinView.as_view(), name="event_join"),
     re_path(
         r"^game/(?P<joincode>\d+)/response/?$",
         game.ResponseView.as_view(),
         name="response",
+    ),
+    re_path(
+        r"^game/(?P<joincode>\d+)/note/create/?$",
+        game.TeamNoteView.as_view(),
+        name="create_note",
     ),
     re_path(
         r"^game/(?P<joincode>\d+)/megaround/?$",
@@ -85,6 +101,16 @@ urlpatterns = [
         r"^team/updateteamname/?$",
         team.TeamUpdateName.as_view(),
         name="teamname_update",
+    ),
+    re_path(
+        r"^team/update-password/?$",
+        team.UpdateTeamPasswordView.as_view(),
+        name="password_update",
+    ),
+    re_path(
+        r"^team/remove-team-members/?$",
+        team.RemoveTeamMembersView.as_view(),
+        name="remove_members",
     ),
     re_path(r"^team/?$", team.TeamView.as_view(), name="team"),
     re_path(r"^airtable-import/?$", airtable.airtable_import, name="airtable_import"),

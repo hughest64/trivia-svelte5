@@ -24,6 +24,7 @@ from user.authentication import JwtAuthentication
 from game.models import (
     Game,
     GameQuestion,
+    ChatMessage,
     Location,
     EventRoundState,
     EventQuestionState,
@@ -51,6 +52,8 @@ class EventHostView(APIView):
         """fetch a specific event from the joincode parsed from the url"""
         user_data = request.user.to_json()
         event = get_event_or_404(joincode=joincode)
+        chat_messages = ChatMessage.objects.filter(event=event, is_host_message=True)
+
         lb_entries = LeaderboardEntry.objects.filter(event=event)
         public_lb_entries = lb_entries.filter(leaderboard_type=LEADERBOARD_TYPE_PUBLIC)
         host_lb_entries = lb_entries.filter(leaderboard_type=LEADERBOARD_TYPE_HOST)
@@ -73,6 +76,7 @@ class EventHostView(APIView):
             {
                 **event.to_json(),
                 "user_data": user_data,
+                "chat_messages": queryset_to_json(chat_messages),
                 "points_adjustment_reasons": PTS_ADJUSTMENT_OPTIONS_LIST,
                 "leaderboard_data": {
                     "public_leaderboard_entries": queryset_to_json(public_lb_entries),
@@ -157,7 +161,9 @@ class QuestionRevealView(APIView):
     def update_event_data(
         round_number: int, question_numbers: List[int], event: TriviaEvent
     ):
-        """update the current attributes of a trivia event when the game play advances"""
+        """update the current attributes of a trivia event when the game play advances
+        set_current_question is being used instead of this currently
+        """
         event_data = {"event_updated": False}
         if (round_number > event.current_round_number) or (
             round_number == event.current_round_number
@@ -172,6 +178,45 @@ class QuestionRevealView(APIView):
                 "round_number": event.current_round_number,
             }
         return event_data
+
+    @staticmethod
+    def set_current_question(
+        event: TriviaEvent, updated_state: EventQuestionState, commit: bool
+    ):
+        current_key = event.current_question_key
+
+        displayed_states = event.question_states.filter(
+            question_displayed=True
+        ).order_by("round_number", "question_number")
+        displayed_state_keys = [s.key for s in displayed_states]
+
+        question_keys = [
+            q.key
+            for q in event.game.game_questions.exclude(round_number=0)
+            if q.key <= updated_state.key
+        ]
+
+        if len(displayed_states) > 1:
+            updated_current = updated_state
+            for i, q in enumerate(question_keys):
+                if q not in displayed_state_keys and i > 0:
+                    updated_key = question_keys[i - 1]
+
+                    updated_current = [
+                        ds for ds in displayed_states if ds.key == updated_key
+                    ][0]
+                    break
+
+            if commit:
+                event.current_question_number = updated_current.question_number
+                event.current_round_number = updated_current.round_number
+                event.save()
+
+        return {
+            "event_updated": current_key < event.current_question_key,
+            "question_number": event.current_question_number,
+            "round_number": event.current_round_number,
+        }
 
     @method_decorator(csrf_protect)
     def post(self, request, joincode):
@@ -204,10 +249,10 @@ class QuestionRevealView(APIView):
                     question_number=num,
                     defaults={"question_displayed": reveal},
                 )
-                updated_states.append(question_state.to_json())
+                updated_states.append(question_state)
 
-            current_event_data = self.update_event_data(
-                round_number, question_numbers, event
+            current_event_data = self.set_current_question(
+                event, updated_states[0], commit=reveal
             )
 
             SendEventMessage(
@@ -215,7 +260,7 @@ class QuestionRevealView(APIView):
                 {
                     "msg_type": "question_state_update",
                     "message": {
-                        "question_states": updated_states,
+                        "question_states": queryset_to_json(updated_states),
                         **current_event_data,
                     },
                 },
@@ -612,4 +657,27 @@ class TiebreakerView(APIView):
 
         SendHostMessage(joincode=joincode, message=message)
 
+        return Response({"success": True})
+
+
+class MegaroundReminderView(APIView):
+    authentication_classes = [JwtAuthentication]
+    permission_classes = [IsAdminUser]
+
+    def get(self, request, joincode):
+        event = get_event_or_404(joincode=joincode)
+        entries = LeaderboardEntry.objects.filter(
+            event=event,
+            leaderboard_type=LEADERBOARD_TYPE_HOST,
+            selected_megaround__isnull=True,
+        )
+        team_ids = [e.team.id for e in entries]
+
+        SendEventMessage(
+            joincode=joincode,
+            message={
+                "msg_type": "megaround_reminder",
+                "message": {"team_ids": team_ids},
+            },
+        )
         return Response({"success": True})

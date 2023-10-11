@@ -4,21 +4,18 @@ import { PUBLIC_API_HOST } from '$env/static/public';
 import * as cookie from 'cookie';
 import { redirect } from '@sveltejs/kit';
 import { getJwtPayload } from '$lib/utils';
-import { googleAuthToken } from '../utils';
-import type { RequestHandler } from './$types';
+import { googleAuthToken } from '../../utils';
+import type { PageServerLoad } from './$types';
 
-export const GET = (async ({ cookies, fetch, url }) => {
+export const load = (async ({ cookies, fetch, url, params }) => {
     const code = url.searchParams.get('code') || '';
 
-    const authData = await googleAuthToken(code, PRIVATE_GOOGLE_CLIENT_SECRET);
-    const csrftoken = cookies.get('csrftoken') || '';
+    const authData = await googleAuthToken(code, PRIVATE_GOOGLE_CLIENT_SECRET, !!params.jointeam);
     const apiResp = await fetch(`${PUBLIC_API_HOST}/user/google-auth`, {
         method: 'post',
         headers: {
             'content-type': 'application/json',
-            Authorization: `Bearer ${authData.access_token}`,
-            Cookie: `csrftoken=${csrftoken}`,
-            'X-CSRFToken': csrftoken
+            Authorization: `Bearer ${authData.access_token}`
         }
     });
 
@@ -38,8 +35,14 @@ export const GET = (async ({ cookies, fetch, url }) => {
     const expires = new Date((jwtData.exp as number) * 1000);
     cookies.set('jwt', jwt, { path: '/', expires, httpOnly: true, secure: secureCookie });
 
-    const next = cookies.get('next') || (jwtData?.staff_user ? '/host/choice' : '/team');
-    cookies.delete('next', { path: '/' });
+    let next = '';
+    if (params.jointeam) {
+        next = '/team/join';
+    } else if (jwtData?.staff_user) {
+        next = '/host/choice';
+    } else {
+        next = '/team';
+    }
 
     throw redirect(302, next);
-}) satisfies RequestHandler;
+}) satisfies PageServerLoad;
