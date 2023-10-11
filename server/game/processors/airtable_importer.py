@@ -50,23 +50,35 @@ PE_BASE_ID = os.environ.get("PE_BASE_ID")
 PE_COLUMNS = ["pe_name", "join_code"]
 
 
-def get_request_dates(roll=0):
+def get_request_dates(roll=0, today=None):
     """Set start and end dates one day prior to Monday and one day after Sunday
     for the current week, which is necessary for airtable's date filters
-    dates are in iso format without the timestamp. i.e. "2021-07-18".  Dates can be
+    dates are in iso format without the timestamp. i.e. "2021-07-18". Dates can be
     further moved forward(positive) or backward(negative) by the roll parameter
     """
-    today = pd.to_datetime(datetime.date.today())
+    if today is None:
+        today = pd.to_datetime(datetime.date.today())
+
     start_timestamp = (
-        today
+        today - pd.Timedelta(7, unit="days")
         if today.day_name().lower() == "monday"
         else today - pd.offsets.Week(weekday=0)
     ) - pd.Timedelta(1 - roll, unit="days")
-    end_timestamp = (
-        today
-        if today.day_name().lower() == "sunday"
-        else today + pd.offsets.Week(weekday=6)
-    ) + pd.Timedelta(1 + roll, unit="days")
+
+    # end_timestamp = (
+    #     today
+    #     if today.day_name().lower() == "sunday"
+    #     else today + pd.offsets.Week(weekday=6)
+    # ) + pd.Timedelta(1 + roll, unit="days")
+
+    end_timestamp = today + pd.offsets.Week(weekday=6)
+    if today.day_name().lower() == "monday":
+        end_timestamp = today - pd.Timedelta(1, unit="days")
+
+    if today.day_name().lower() == "sunday":
+        end_timestamp = today + pd.offsets.Week(weekday=6)
+
+    end_timestamp += pd.Timedelta(1 + roll, unit="days")
 
     start_date = start_timestamp.isoformat()
     end_date = end_timestamp.isoformat()
@@ -151,6 +163,7 @@ class AirtableData:
 
         self.start = start_date
         self.end = end_date
+        print(self.start, self.end)
 
     def get_validated_lookup_dates(self):
         """convenience method which returns cleaned start and end dates as a two tuple"""
