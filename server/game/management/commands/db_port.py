@@ -15,6 +15,9 @@ import psycopg2
 class Xfer:
     fp = None
     cur = None
+    location_data = None
+    user_data = None
+    team_data = None
 
     def create_db_connection(self):
         if self.cur is None:
@@ -27,26 +30,67 @@ class Xfer:
         if self.cur is not None:
             self.cur.close()
 
-    def get_locs_from_db(self, close=False):
+    def get_locs_from_db(self):
         loc_string = """
             SELECT name, address, active FROM game_location
             WHERE game_location.active = True
         """
         self.cur.execute(loc_string)
         records = self.cur.fetchall()
-        labels = ("name", "address", "active")
-        df = pd.DataFrame(records, columns=labels)
-        j = df.to_json(orient="records", indent=4)
 
-        with open("game/port_data/game_locs.json", "w") as f:
-            f.write(j)
+        print(len(records), "total locations")
+        print("location columns", [desc[0] for desc in self.cur.description])
+        if len(records) > 0:
+            print(records[0])
 
-        if close:
-            self.cur.close()
+        self.location_data = records
+        return records
+
+    def get_users_from_db(self):
+        user_string = """
+            SELECT
+                u.id,
+                u.username,
+                u.email,
+                u.password,
+                u.is_staff,
+                u.is_superuser,
+                tu.screen_name,
+                tu.active_team_id,
+                l.name
+            FROM auth_user u
+
+            LEFT JOIN game_triviauser tu
+            ON tu.user_id = u.id
+
+            LEFT JOIN game_triviauser_home_locations hl
+            ON hl.triviauser_id = tu.id
+            LEFT JOIN game_location l
+            ON l.id = hl.location_id
+
+            WHERE tu.is_anonymous_user = False
+        """
+
+        self.cur.execute(user_string)
+        data = self.cur.fetchall()
+        print(len(data), "total users")
+        print("user columns", [desc[0] for desc in self.cur.description])
+        if len(data) > 0:
+            print(data[0])
+
+        self.user_data = data
+
+        return data
 
     def get_teams_from_db(self):
         team_string = """
-            SELECT team.id, team.team_name, u.username, tu.active_team_id FROM game_triviauser_teams tuteam
+            SELECT
+                team.id,
+                team.team_name,
+                jc.join_code,
+                u.username,
+                tu.active_team_id
+            FROM game_triviauser_teams tuteam
 
             INNER JOIN game_triviauser tu
             ON tu.id = tuteam.triviauser_id
@@ -57,32 +101,53 @@ class Xfer:
             INNER JOIN game_team team
             ON team.id = tuteam.team_id
 
+            LEFT JOIN game_joincode jc
+            ON jc.id = team.join_code_id
+
             WHERE tu.is_anonymous_user = False
         """
-
         self.cur.execute(team_string)
-        records = self.cur.fetchall()
 
-        print(len(records), "total results")
-        print([desc[0] for desc in self.cur.description])
-        print(records[:10])
+        team_dict = {}
+        for row in self.cur:
+            team_id, team_name, password, username, active_id = row
+            team_dict.setdefault(
+                team_id,
+                {
+                    "id": team_id,
+                    "team_name": team_name,
+                    "password": password,
+                    "members": set(),
+                },
+            )
+            is_active_team = team_id == active_id
+            team_dict[team_id]["members"].add((username, is_active_team))
+        print(len(team_dict.keys()), "total teams")
+        print("team columns", [desc[0] for desc in self.cur.description])
 
-        just_ids = set([t[0] for t in records])
-        print(len(just_ids), "unique results")
+        team_dict_values = list(team_dict.values())
+        if len(team_dict_values) > 0:
+            print(team_dict_values[0])
+
+        self.team_data = team_dict_values
+        return team_dict_values
 
     def load_locations(self):
-        with open(f"{self.fp}/locs.json", "r") as f:
-            loc_data = json.load(f)
+        if self.location_data is None:
+            print("there are no locations to load")
+            return
+
         locs_created = 0
         try:
             with transaction.atomic():
-                for l in loc_data:
+                for row in self.location_data:
+                    name, address, active = row
                     _, created = Location.objects.update_or_create(
-                        name=l.get("name"),
+                        name=name,
                         defaults={
-                            "address": l.get("address"),
-                            "active": l.get("active"),
-                            "use_sound": l.get("use_sound"),
+                            "address": address,
+                            "active": active,
+                            "use_sound": True,
                         },
                     )
                     locs_created += int(created)
@@ -90,24 +155,9 @@ class Xfer:
             print("could not create locations", e)
 
         else:
-            print(f"Created {locs_created} new of {len(loc_data)} locations provided")
-
-    def load_teams(self):
-        with open(f"{self.fp}/teams.json", "r") as f:
-            teams_data = json.load(f)
-        teams_created = 0
-        try:
-            with transaction.atomic():
-                for t in teams_data:
-                    _, created = Team.objects.update_or_create(
-                        name=t.get("team_name"), password=t.get("password")
-                    )
-                    teams_created += int(created)
-        except Exception as e:
-            print("could not create teams", e)
-
-        else:
-            print(f"Created {teams_created} new of {len(teams_data)} users provided")
+            print(
+                f"Created {locs_created} new of {len(self.location_data)} locations provided"
+            )
 
     def load_users(self):
         with open(f"{self.fp}/users.json", "r") as f:
@@ -156,33 +206,37 @@ class Xfer:
             if len(missing_teams) > 0:
                 print(missing_teams)
 
+    def load_teams(self):
+        with open(f"{self.fp}/teams.json", "r") as f:
+            teams_data = json.load(f)
+        teams_created = 0
+        try:
+            with transaction.atomic():
+                for t in teams_data:
+                    _, created = Team.objects.update_or_create(
+                        name=t.get("team_name"), password=t.get("password")
+                    )
+                    teams_created += int(created)
+        except Exception as e:
+            print("could not create teams", e)
+
+        else:
+            print(f"Created {teams_created} new of {len(teams_data)} users provided")
+
 
 class Command(Xfer, BaseCommand):
     def add_arguments(self, parser: CommandParser) -> None:
-        parser.add_argument(
-            "-u", "--users", action="store_true", help="load users into the database"
-        )
-        parser.add_argument(
-            "-t", "--teams", action="store_true", help="load teams into the database"
-        )
-        parser.add_argument(
-            "-l",
-            "--locations",
-            action="store_true",
-            help="load locations into the database",
-        )
-        parser.add_argument(
-            "-p",
-            "--path",
-            required=False,
-            type=str,
-            help="file path for fetching source data",
-        )
         parser.add_argument(
             "-d",
             "--database",
             action="store_true",
             help="pull data directly with sql queries",
+        )
+        parser.add_argument(
+            "-c",
+            "--create",
+            action="store_true",
+            help="create the items in the new database",
         )
 
     def handle(self, *args, **options):
@@ -205,9 +259,18 @@ class Command(Xfer, BaseCommand):
         if options.get("database"):
             self.create_db_connection()
 
-            # self.get_locs_from_db()
-            self.get_teams_from_db()
+            print("\nfetching locations")
+            self.get_locs_from_db()
+
+            # print("\nfetching users")
+            # self.get_users_from_db()
+
+            # print("\nfecting teams")
+            # self.get_teams_from_db()
 
             self.close_db_connection()
+
+        if options.get("create"):
+            self.load_locations()
 
         print("Finished loading data, Have a nice day!")
