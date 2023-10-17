@@ -1,18 +1,17 @@
-import json
 import os
 
 from django.core.management.base import BaseCommand, CommandParser
 from django.db import transaction
-from django.utils.crypto import get_random_string
 
 from game.models import *
 from user.models import *
 
-import pandas as pd
 import psycopg2
 
 
 class Xfer:
+    db_name = os.environ.get("XFER_DB_NAME")
+    db_password = os.environ.get("XFER_DB_PASSWORD")
     fp = None
     cur = None
     location_data = None
@@ -22,7 +21,7 @@ class Xfer:
     def create_db_connection(self):
         if self.cur is None:
             conn = psycopg2.connect(
-                "dbname=tm_transfer user=triviamafia password=supergoodpassword"
+                f"dbname={self.db_name} user=triviamafia password={self.db_password}"
             )
             self.cur = conn.cursor()
 
@@ -244,18 +243,26 @@ class Command(Xfer, BaseCommand):
 
     def handle(self, *args, **options):
         if options.get("database"):
+            if self.db_name is None or self.db_password is None:
+                print(
+                    "set environment variables for XFER_DB_NAME and XFER_DB_PASSWORD before running this command"
+                )
+                return
+
             self.create_db_connection()
 
-            print("\nfetching locations")
-            self.get_locs_from_db()
+            try:
+                print("\nfetching locations")
+                self.get_locs_from_db()
 
-            print("\nfetching users")
-            self.get_users_from_db()
+                print("\nfetching users")
+                self.get_users_from_db()
 
-            print("\nfecthing teams")
-            self.get_teams_from_db()
+                print("\nfecthing teams")
+                self.get_teams_from_db()
 
-            self.close_db_connection()
+            finally:
+                self.close_db_connection()
 
         if options.get("create"):
             print("\nloading locations")
