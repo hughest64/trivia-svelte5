@@ -84,7 +84,7 @@ class Xfer:
     def get_teams_from_db(self):
         team_string = """
             SELECT
-                -- team.id,
+                team.id,
                 team.team_name,
                 jc.join_code,
                 u.username,
@@ -113,8 +113,10 @@ class Xfer:
             team_dict.setdefault(
                 team_id,
                 {
-                    "id": team_id,
-                    "team_name": team_name,
+                    # "id": team_id,
+                    "team_name": team_name
+                    if len(team_name) <= 100
+                    else team_name[:97] + "...",
                     "password": password,
                     "members": set(),
                 },
@@ -124,7 +126,7 @@ class Xfer:
         print(len(team_dict.keys()), "total teams")
         print("team columns", [desc[0] for desc in self.cur.description])
 
-        team_dict_values = list(team_dict.values())
+        team_dict_values = [tuple(t.values()) for t in team_dict.values()]
         if len(team_dict_values) > 0:
             print(team_dict_values[0])
 
@@ -137,26 +139,23 @@ class Xfer:
             return
 
         locs_created = 0
-        try:
-            with transaction.atomic():
-                for row in self.location_data:
-                    name, address, active = row
-                    _, created = Location.objects.update_or_create(
-                        name=name,
-                        defaults={
-                            "address": address,
-                            "active": active,
-                            "use_sound": True,
-                        },
-                    )
-                    locs_created += int(created)
-        except Exception as e:
-            print("could not create locations", e)
 
-        else:
-            print(
-                f"Created {locs_created} new of {len(self.location_data)} locations provided"
-            )
+        with transaction.atomic():
+            for row in self.location_data:
+                name, address, active = row
+                _, created = Location.objects.update_or_create(
+                    name=name,
+                    defaults={
+                        "address": address,
+                        "active": active,
+                        "use_sound": True,
+                    },
+                )
+                locs_created += int(created)
+
+        print(
+            f"Created {locs_created} new of {len(self.location_data)} locations provided"
+        )
 
     def load_users(self):
         if self.user_data is None:
@@ -164,81 +163,68 @@ class Xfer:
             return
 
         users_created = 0
-        try:
-            with transaction.atomic():
-                for row in self.user_data:
-                    (
-                        username,
-                        email,
-                        password,
-                        is_staff,
-                        is_superuser,
-                        screen_name,
-                        # active_team_id,
-                        home_loc_name,
-                    ) = row
 
-                    try:
-                        user_home_location = Location.objects.get(name=home_loc_name)
-                    except Location.DoesNotExist:
-                        user_home_location = None
+        with transaction.atomic():
+            for row in self.user_data:
+                (
+                    username,
+                    email,
+                    password,
+                    is_staff,
+                    is_superuser,
+                    screen_name,
+                    # active_team_id,
+                    home_loc_name,
+                ) = row
 
-                    _, created = User.objects.update_or_create(
-                        username=username,
-                        email=email,
-                        defaults={
-                            "home_location": user_home_location,
-                            "password": password,
-                            "screen_name": screen_name,
-                            "is_staff": is_staff,
-                            "is_superuser": is_superuser,
-                        },
-                    )
-                    users_created += int(created)
+                try:
+                    user_home_location = Location.objects.get(name=home_loc_name)
+                except Location.DoesNotExist:
+                    user_home_location = None
 
-        except Exception as e:
-            print("could not create users", e)
-        else:
-            print(
-                f"Created {users_created} new of {len(self.user_data)} teams provided"
-            )
+                _, created = User.objects.update_or_create(
+                    username=username,
+                    email=email,
+                    defaults={
+                        "home_location": user_home_location,
+                        "password": password,
+                        "screen_name": screen_name,
+                        "is_staff": is_staff,
+                        "is_superuser": is_superuser,
+                    },
+                )
+                users_created += int(created)
+
+        print(f"Created {users_created} new of {len(self.user_data)} users provided")
 
     def load_teams(self):
-        if self.team_data_data is None:
+        if self.team_data is None:
             print("there are no locations to load")
             return
 
         teams_created = 0
-        try:
-            with transaction.atomic():
-                for row in self.team_data:
-                    name, joincode, users = row
-                    team, created = Team.objects.update_or_create(
-                        name=name, password=joincode
-                    )
-                    teams_created += int(created)
 
-                    # all members of a team
-                    members = User.objects.filter(
-                        username__in=[tup[0] for tup in users]
-                    )
-                    team.members.set(members)
+        with transaction.atomic():
+            for row in self.team_data:
+                name, joincode, users = row
+                team, created = Team.objects.update_or_create(
+                    name=name, password=joincode
+                )
+                teams_created += int(created)
 
-                    # get a list of usernames for whom this is the active team
-                    active_membernames = [tup[0] for tup in users if tup[1]]
-                    active_members = members.filter(username__in=active_membernames)
+                # all members of a team
+                members = User.objects.filter(username__in=[tup[0] for tup in users])
+                team.members.set(members)
 
-                    for m in active_members:
-                        m.active_team = team
-                    User.objects.bulk_update(active_members, fields=["active_team"])
+                # get a list of usernames for whom this is the active team
+                active_membernames = [tup[0] for tup in users if tup[1]]
+                active_members = members.filter(username__in=active_membernames)
 
-        except Exception as e:
-            print("could not create teams", e)
+                for m in active_members:
+                    m.active_team = team
+                User.objects.bulk_update(active_members, fields=["active_team"])
 
-        else:
-            print(
-                f"Created {teams_created} new of {len(self.team_data)} users provided"
-            )
+        print(f"Created {teams_created} new of {len(self.team_data)} teams provided")
 
 
 class Command(Xfer, BaseCommand):
@@ -257,22 +243,6 @@ class Command(Xfer, BaseCommand):
         )
 
     def handle(self, *args, **options):
-        self.fp = options.get("path")
-
-        if self.fp:
-            if not os.path.exists(os.path.dirname(self.fp)):
-                self.stderr.write(f"{self.fp} is not a valid file path")
-                return
-
-        if options.get("locations"):
-            self.load_locations()
-
-        if options.get("teams"):
-            self.load_teams()
-
-        if options.get("users"):
-            self.load_users()
-
         if options.get("database"):
             self.create_db_connection()
 
@@ -282,8 +252,8 @@ class Command(Xfer, BaseCommand):
             print("\nfetching users")
             self.get_users_from_db()
 
-            # print("\nfecting teams")
-            # self.get_teams_from_db()
+            print("\nfecthing teams")
+            self.get_teams_from_db()
 
             self.close_db_connection()
 
@@ -293,5 +263,8 @@ class Command(Xfer, BaseCommand):
 
             print("\nloading users")
             self.load_users()
+
+            print("\nloading teams")
+            self.load_teams()
 
         print("Finished loading data, Have a nice day!")
