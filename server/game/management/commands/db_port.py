@@ -49,14 +49,13 @@ class Xfer:
     def get_users_from_db(self):
         user_string = """
             SELECT
-                u.id,
                 u.username,
                 u.email,
                 u.password,
                 u.is_staff,
                 u.is_superuser,
                 tu.screen_name,
-                tu.active_team_id,
+                -- tu.active_team_id,
                 l.name
             FROM auth_user u
 
@@ -85,7 +84,7 @@ class Xfer:
     def get_teams_from_db(self):
         team_string = """
             SELECT
-                team.id,
+                -- team.id,
                 team.team_name,
                 jc.join_code,
                 u.username,
@@ -160,68 +159,86 @@ class Xfer:
             )
 
     def load_users(self):
-        with open(f"{self.fp}/users.json", "r") as f:
-            users_data = json.load(f)
-        users_created = 0
-        missing_teams = set()
+        if self.user_data is None:
+            print("there are no users to load")
+            return
 
+        users_created = 0
         try:
             with transaction.atomic():
-                for u in users_data:
+                for row in self.user_data:
+                    (
+                        username,
+                        email,
+                        password,
+                        is_staff,
+                        is_superuser,
+                        screen_name,
+                        # active_team_id,
+                        home_loc_name,
+                    ) = row
+
                     try:
-                        user_home_loc = Location.objects.get(
-                            name=u.get("home_location")
-                        )
-
+                        user_home_location = Location.objects.get(name=home_loc_name)
                     except Location.DoesNotExist:
-                        user_home_loc = None
+                        user_home_location = None
 
-                    user, created = User.objects.update_or_create(
-                        username=u.get("username"),
-                        email=u.get("email", ""),
+                    _, created = User.objects.update_or_create(
+                        username=username,
+                        email=email,
                         defaults={
-                            "home_location": user_home_loc,
-                            "password": u.get("password", get_random_string(12)),
-                            "screen_name": u.get("screen_name", ""),
-                            "is_staff": u.get("is_staff", False),
-                            "is_superuser": u.get("is_superuser", False),
+                            "home_location": user_home_location,
+                            "password": password,
+                            "screen_name": screen_name,
+                            "is_staff": is_staff,
+                            "is_superuser": is_superuser,
                         },
                     )
                     users_created += int(created)
 
-                    user_teams = u.get("teams")
-                    for t in user_teams:
-                        try:
-                            db_team = Team.objects.get(
-                                name=t.get("team_name"), password=t.get("password")
-                            )
-                            user.teams.add(db_team)
-                        except Team.DoesNotExist:
-                            missing_teams.add(t)
-
         except Exception as e:
             print("could not create users", e)
         else:
-            print(f"Created {users_created} new of {len(users_data)} teams provided")
-            if len(missing_teams) > 0:
-                print(missing_teams)
+            print(
+                f"Created {users_created} new of {len(self.user_data)} teams provided"
+            )
 
     def load_teams(self):
-        with open(f"{self.fp}/teams.json", "r") as f:
-            teams_data = json.load(f)
+        if self.team_data_data is None:
+            print("there are no locations to load")
+            return
+
         teams_created = 0
         try:
             with transaction.atomic():
-                for t in teams_data:
-                    _, created = Team.objects.update_or_create(
-                        name=t.get("team_name"), password=t.get("password")
+                for row in self.team_data:
+                    name, joincode, users = row
+                    team, created = Team.objects.update_or_create(
+                        name=name, password=joincode
                     )
                     teams_created += int(created)
+
+                    # all members of a team
+                    members = User.objects.filter(
+                        username__in=[tup[0] for tup in users]
+                    )
+                    team.members.set(members)
+
+                    # get a list of usernames for whom this is the active team
+                    active_membernames = [tup[0] for tup in users if tup[1]]
+                    active_members = members.filter(username__in=active_membernames)
+
+                    for m in active_members:
+                        m.active_team = team
+                    User.objects.bulk_update(active_members, fields=["active_team"])
+
         except Exception as e:
             print("could not create teams", e)
 
         else:
-            print(f"Created {teams_created} new of {len(teams_data)} users provided")
+            print(
+                f"Created {teams_created} new of {len(self.team_data)} users provided"
+            )
 
 
 class Command(Xfer, BaseCommand):
@@ -262,8 +279,8 @@ class Command(Xfer, BaseCommand):
             print("\nfetching locations")
             self.get_locs_from_db()
 
-            # print("\nfetching users")
-            # self.get_users_from_db()
+            print("\nfetching users")
+            self.get_users_from_db()
 
             # print("\nfecting teams")
             # self.get_teams_from_db()
@@ -271,6 +288,10 @@ class Command(Xfer, BaseCommand):
             self.close_db_connection()
 
         if options.get("create"):
+            print("\nloading locations")
             self.load_locations()
+
+            print("\nloading users")
+            self.load_users()
 
         print("Finished loading data, Have a nice day!")
