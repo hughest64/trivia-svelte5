@@ -21,6 +21,8 @@ server/db*.sqlite3
 server/server/settings_prod.py
 # for dev of the data transfer stuff (local only)
 server/server/settings_xfer.py
+# pre release settings
+server/server/settings_pre.py
 # test settings
 server/server/settings_tst.py
 # a file that changes frequently and is only used for development
