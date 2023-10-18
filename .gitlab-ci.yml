@@ -5,14 +5,10 @@ stages:
   - deploy
   - release
 
-variables:
-  PYTHON: "/home/gitlab-runner/.local/share/virtualenvs/tm-trivia-OAypQb65/bin/python"
-  NPM: "/home/gitlab-runner/.nvm/versions/node/v16.20.1/bin/npm"
-
 .build:
   script:
     # update and build SvelteKit
-    - $NPM i && $NPM run build
+    - $NPM i && $NPM_STAGING run build
     # update and build Django
     - pipenv install
     - cd server
@@ -26,6 +22,9 @@ staging-deploy-job:
   tags:
     - tm_staging
   stage: deploy
+  variables:
+    PYTHON: "/home/gitlab-runner/.local/share/virtualenvs/tm-trivia-OAypQb65/bin/python"
+    NPM: "/home/gitlab-runner/.nvm/versions/node/v1.20.1/bin/npm"
   before_script:
     - cd /opt/tm-trivia
     # pull the updated repo
@@ -40,6 +39,9 @@ production-release-job:
   tags:
     - tm_production
   stage: release
+  variables:
+    PYTHON: "/home/gitlab-runner/.local/share/virtualenvs/tm-trivia-d-ZBd7FX/bin/python"
+    NPM: "/home/gitlab-runner/.nvm/versions/node/v18.18.0/bin/npm"
   before_script:
     - cd /opt/cotn/tm-trivia
     # reset, fetch tags, and checkout the latest tag as a new branch
