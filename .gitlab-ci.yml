@@ -31,28 +31,20 @@ staging-deploy-job:
     # pull the updated repo
     - git reset --hard && git fetch origin main && git pull origin main
   extends: .build
-    # update and build SvelteKit
-    # - $NPM i && $NPM run build
-    # # update and build Django
-    # - pipenv install
-    # - cd server
-    # - $PYTHON manage.py collectstatic --no-input
-    # - $PYTHON manage.py migrate
-    # # restart services
-    # - sudo systemctl restart tm-trivia.service
-    # - sudo systemctl restart tm-trivia-api.service
   environment: staging
-  # rules:
+  rules:
      # only run when merging into main
-    #  - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
 production-release-job:
   tags:
     - tm_production
   stage: release
-  script:
+  before_script:
     - cd /opt/cotn/tm-trivia
-    - git status
+    - git reset --hard && git fetch origin $CI_COMMIT_TAG && git pull origin main
+  extends: .build
+  # TODO: script section that will invoke python to create a changelog entry in the db
   environment: production
   rules:
      - if: $CI_COMMIT_TAG
