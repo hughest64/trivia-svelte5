@@ -9,14 +9,8 @@ variables:
   PYTHON: "/home/gitlab-runner/.local/share/virtualenvs/tm-trivia-OAypQb65/bin/python"
   NPM: "/home/gitlab-runner/.nvm/versions/node/v16.20.1/bin/npm"
 
-staging-deploy-job:
-  tags:
-    - tm_staging
-  stage: deploy
+.build:
   script:
-    - cd /opt/tm-trivia
-    # pull the updated repo
-    - git reset --hard && git fetch origin main && git pull origin main
     # update and build SvelteKit
     - $NPM i && $NPM run build
     # update and build Django
@@ -27,10 +21,30 @@ staging-deploy-job:
     # restart services
     - sudo systemctl restart tm-trivia.service
     - sudo systemctl restart tm-trivia-api.service
+
+staging-deploy-job:
+  tags:
+    - tm_staging
+  stage: deploy
+  before_script:
+    - cd /opt/tm-trivia
+    # pull the updated repo
+    - git reset --hard && git fetch origin main && git pull origin main
+  extends: .build
+    # update and build SvelteKit
+    # - $NPM i && $NPM run build
+    # # update and build Django
+    # - pipenv install
+    # - cd server
+    # - $PYTHON manage.py collectstatic --no-input
+    # - $PYTHON manage.py migrate
+    # # restart services
+    # - sudo systemctl restart tm-trivia.service
+    # - sudo systemctl restart tm-trivia-api.service
   environment: staging
-  rules:
+  # rules:
      # only run when merging into main
-     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    #  - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
 production-release-job:
   tags:
