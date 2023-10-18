@@ -10,6 +10,8 @@ import psycopg2
 
 
 class Xfer:
+    # the owner of the db
+    db_usernname = os.environ.get("XFER_DB_USERNAME", "triviamafia")
     db_name = os.environ.get("XFER_DB_NAME")
     db_password = os.environ.get("XFER_DB_PASSWORD")
     fp = None
@@ -21,7 +23,7 @@ class Xfer:
     def create_db_connection(self):
         if self.cur is None:
             conn = psycopg2.connect(
-                f"dbname={self.db_name} user=triviamafia password={self.db_password}"
+                f"dbname={self.db_name} user={self.db_usernname} password={self.db_password}"
             )
             self.cur = conn.cursor()
 
@@ -54,7 +56,6 @@ class Xfer:
                 u.is_staff,
                 u.is_superuser,
                 tu.screen_name,
-                -- tu.active_team_id,
                 l.name
             FROM auth_user u
 
@@ -63,6 +64,7 @@ class Xfer:
 
             LEFT JOIN game_triviauser_home_locations hl
             ON hl.triviauser_id = tu.id
+
             LEFT JOIN game_location l
             ON l.id = hl.location_id
 
@@ -112,7 +114,6 @@ class Xfer:
             team_dict.setdefault(
                 team_id,
                 {
-                    # "id": team_id,
                     "team_name": team_name
                     if len(team_name) <= 100
                     else team_name[:97] + "...",
@@ -172,7 +173,6 @@ class Xfer:
                     is_staff,
                     is_superuser,
                     screen_name,
-                    # active_team_id,
                     home_loc_name,
                 ) = row
 
