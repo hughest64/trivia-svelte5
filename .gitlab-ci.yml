@@ -31,7 +31,6 @@ staging-deploy-job:
   rules:
      # only run when merging into main
      - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-      #  when: manual # force manual deployment (I thnk this adds a button the the ui?)
 
 production-release-job:
   tags:
@@ -43,7 +42,7 @@ production-release-job:
   environment: production
   rules:
      - if: $CI_COMMIT_TAG
-       when: manual
+       # when: manual
   release:
     tag_name: $CI_COMMIT_TAG
     name: 'Trivia Mafia Release $CI_COMMIT_TAG'
