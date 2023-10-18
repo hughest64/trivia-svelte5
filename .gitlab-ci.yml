@@ -40,22 +40,11 @@ production-release-job:
   script:
     - cd /opt/cotn/tm-trivia
     - git status
-    # pull the updated repo
-    # - git reset --hard && git fetch origin $CI_COMMIT_TAG && git pull origin $CI_COMMIT_TAG && git checkout --track origin/$CI_COMMIT_TAG
-    # update and build SvelteKit
-    # - $NPM i && $NPM run build
-    # # update and build Django
-    # - pipenv install
-    # - cd server
-    # - $PYTHON manage.py collectstatic --no-input
-    # - $PYTHON manage.py migrate
-    # # restart services
-    # - sudo systemctl restart tm-trivia.service
-    # - sudo systemctl restart tm-trivia-api.service
   environment: production
   rules:
      - if: $CI_COMMIT_TAG
+       when: manual
   release:
-    tag_name: $CI_COMMIT_TAG;
+    tag_name: $CI_COMMIT_TAG
     name: 'Trivia Mafia Release $CI_COMMIT_TAG'
     description: $CI_COMMIT_TAG_MESSAGE
