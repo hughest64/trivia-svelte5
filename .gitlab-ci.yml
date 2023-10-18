@@ -8,7 +8,7 @@ stages:
 .build:
   script:
     # update and build SvelteKit
-    - $NPM i && $NPM_STAGING run build
+    - $NPM i && $NPM run build
     # update and build Django
     - pipenv install
     - cd server
@@ -24,7 +24,7 @@ staging-deploy-job:
   stage: deploy
   variables:
     PYTHON: "/home/gitlab-runner/.local/share/virtualenvs/tm-trivia-OAypQb65/bin/python"
-    NPM: "/home/gitlab-runner/.nvm/versions/node/v1.20.1/bin/npm"
+    NPM: "/home/gitlab-runner/.nvm/versions/node/v18.18.0/bin/npm"
   before_script:
     - cd /opt/tm-trivia
     # pull the updated repo
