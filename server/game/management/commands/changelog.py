@@ -13,7 +13,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         try:
             # use the provided title if present, else auto generate one
-            title = options.get("title") or codename()
+            title = options.get("title") or codename(capitalize=True)
             notes = options.get("notes")
             app_version = options.get("appversion")
             changelog = ChangeLog.objects.create(
