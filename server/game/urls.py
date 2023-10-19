@@ -13,6 +13,8 @@ def redirect_to_admin(_):
 urlpatterns = [
     # nothing at the root, go to the admin
     path("", redirect_to_admin, name="redirect_to_admin"),
+    # change logs (no auth required)
+    re_path(r"^changelog/?$", common.ChangeLogView.as_view(), name="change_logs"),
     # host endpoints
     re_path(
         r"^host/(?P<joincode>\d+)/leaderboard/responses/(?P<team_id>\d+)/?$",

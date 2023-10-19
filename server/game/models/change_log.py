@@ -15,6 +15,7 @@ class ChangeLog(models.Model):
 
     def to_json(self):
         return {
+            "id": self.id,
             "date": datetime.date.isoformat(self.created_at),
             "title": self.title,
             "version": self.version,
