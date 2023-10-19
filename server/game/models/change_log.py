@@ -7,7 +7,7 @@ from django.utils import timezone
 class ChangeLog(models.Model):
     created_at = models.DateTimeField(default=timezone.now)
     title = models.CharField(max_length=120)
-    version = models.CharField(max_length=120)
+    version = models.CharField(max_length=120, unique=True)
     notes = models.TextField()
 
     def __str__(self):
