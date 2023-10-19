@@ -2,10 +2,13 @@ from rest_framework.response import Response
 from rest_framework.status import HTTP_400_BAD_REQUEST
 from rest_framework.views import APIView
 
+from game.models import ChangeLog
+from game.models.utils import queryset_to_json
 from game.views.validation.data_cleaner import get_event_or_404, DataCleaner
+from game.utils.socket_classes import SendEventMessage
+
 from user.authentication import JwtAuthentication
 
-from game.utils.socket_classes import SendEventMessage
 
 from game.models import (
     LeaderboardEntry,
@@ -57,3 +60,8 @@ class ChatCreateView(APIView):
         )
 
         return Response({"success": True})
+
+
+class ChangeLogView(APIView):
+    def get(self, request):
+        return Response({"change_logs": queryset_to_json(ChangeLog.objects.all())})

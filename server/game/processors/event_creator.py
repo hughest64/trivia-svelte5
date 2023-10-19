@@ -44,6 +44,7 @@ class TriviaEventCreator:
                 create_joincode=self.joincode is None,
             )
         self.game = self.event.game
+        self._get_or_create_event_leaderboard()
         self.create_event_states()
 
     def create_event_states(self):
@@ -52,3 +53,8 @@ class TriviaEventCreator:
             EventRoundState.objects.get_or_create(
                 event=self.event, round_number=round.round_number
             )
+
+    def _get_or_create_event_leaderboard(self):
+        if self.event is None:
+            raise AttributeError("this method is private, use get_or_create_event")
+        Leaderboard.objects.get_or_create(event=self.event)

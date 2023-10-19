@@ -15,7 +15,10 @@
     <a class="button button-primary" id="host" href="/host/event-setup" rel="external">Host A Game</a>
     <a class="button button-secondary" id="play" href="/team" rel="external">Play Trivia</a>
 
-    <small>To view the recent changes in the application, click Here.</small>
+    <small
+        >To view the recent changes in the application, click <a class="changelog-link" href="/changelog">Here.</a
+        ></small
+    >
 </main>
 
 <style>
@@ -23,7 +26,7 @@
         padding: 0 0.5em;
         font-size: 0.75rem;
     }
-    a {
+    a:not(.changelog-link) {
         text-decoration: none;
     }
 </style>
