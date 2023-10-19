@@ -10,13 +10,17 @@
 
     <a href="/" class="button button-primary" data-sveltekit-reload>Return to the app</a>
 
-    {#each logs as log (log.id)}
-        <div>
+    <div>
+        {#each logs as log (log.id)}
             <h2 class="title">{log.title}</h2>
             <p class="version">{log.version} released {log.date}</p>
-            <p class="notes">{log.notes}</p>
-        </div>
-    {/each}
+            <div class="note-container">
+                {#each log.notes.split('\n') as line}
+                    <p class="notes">{line}</p>
+                {/each}
+            </div>
+        {/each}
+    </div>
 
     <a href="/" class="button button-primary" data-sveltekit-reload>Return to the app</a>
 </main>
@@ -29,7 +33,10 @@
     .version {
         font-size: 1rem;
     }
+    .note-container {
+        margin: 1.5rem 0;
+    }
     .notes {
-        margin: 1rem 0 1.5rem;
+        margin: 0;
     }
 </style>

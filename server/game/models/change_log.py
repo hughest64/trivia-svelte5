@@ -10,6 +10,9 @@ class ChangeLog(models.Model):
     version = models.CharField(max_length=120, unique=True)
     notes = models.TextField()
 
+    class Meta:
+        ordering = ["-created_at"]
+
     def __str__(self):
         return self.title
 
