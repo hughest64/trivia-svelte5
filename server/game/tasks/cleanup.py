@@ -5,16 +5,12 @@ celery -A server worker -l INFO -P solo --without-gossip --without-mingle
 celery -A server beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler
 """
 
-from datetime import timedelta
-
 from celery import shared_task
 
 from django.contrib.sessions.models import Session
 from django.core import management
-from django.utils import timezone
 
 from game.models import *
-from user.models import User
 
 
 @shared_task
