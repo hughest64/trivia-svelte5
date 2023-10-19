@@ -27,7 +27,7 @@ class TeamAdmin(admin.ModelAdmin):
 
 
 class ChangeLogAdmin(admin.ModelAdmin):
-    list_display = ("created_at", "title")
+    list_display = ("title", "created_at")
 
 
 admin.site.register(ChatMessage, ChatAdmin)
@@ -46,4 +46,4 @@ admin.site.register(Location)
 admin.site.register(QuestionResponse)
 admin.site.register(Leaderboard)
 admin.site.register(LeaderboardEntry, LeaderboardEntryAdmin)
-admin.site.register(ChangeLog)
+admin.site.register(ChangeLog, ChangeLogAdmin)
