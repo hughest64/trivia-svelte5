@@ -19,29 +19,17 @@ from user.models import User
 
 @shared_task
 def anonymize_join_codes(days=30):
-    management.call_command("db_cleanup", job="joincodes", days=30)
+    management.call_command("db_cleanup", job="joincodes", days=days)
 
 
 @shared_task
 def purge_anonymous_users(days=7):
-    start_date = timezone.now() - timedelta(days=7)
-    anonymous_users = User.objects.filter(created_at__lte=start_date, is_guest=True)
-    user_count = anonymous_users.count()
-
-    if user_count < 1:
-        return {
-            "results": f"No active anonymous users found created before {start_date:%Y-%m-%d}"
-        }
-    anonymous_users.delete()
-
-    return {
-        "results": f"deleted {user_count} anonymous user(s) created before {start_date:%Y-%m-%d}"
-    }
+    management.call_command("db_cleanup", job="users", days=days)
 
 
 @shared_task
 def purge_empty_leaderboard_entries(days=7):
-    management.call_command("db_cleanup", job="leaderboard", days=7)
+    management.call_command("db_cleanup", job="leaderboard", days=days)
 
 
 # @shared_task

@@ -5,6 +5,7 @@ from django.db import transaction
 from django.utils import timezone
 
 from game.models import *
+from user.models import User
 
 
 class Command(BaseCommand):
@@ -20,6 +21,8 @@ class Command(BaseCommand):
             self.purge_empty_leaderboard_entries(days=days)
         elif job_type == "joincodes":
             self.anonymize_join_codes(days=days)
+        elif job_type == "users":
+            self.purge_anonymous_users(days=days)
         else:
             print("nothing to do")
 
@@ -52,6 +55,21 @@ class Command(BaseCommand):
             "results": f"updated join code for {len(events) - len(errors)} event(s) on or before {start_date:%Y-%m-%d}.{error_string}"
         }
 
+    def purge_anonymous_users(days=7):
+        start_date = timezone.now() - timedelta(days=days)
+        anonymous_users = User.objects.filter(created_at__lte=start_date, is_guest=True)
+        user_count = anonymous_users.count()
+
+        if user_count < 1:
+            return {
+                "results": f"No active anonymous users found created before {start_date:%Y-%m-%d}"
+            }
+        anonymous_users.delete()
+
+        return {
+            "results": f"deleted {user_count} anonymous user(s) created before {start_date:%Y-%m-%d}"
+        }
+
     def purge_empty_leaderboard_entries(self, days=7):
         start_date = timezone.now() - timedelta(days=days)
         entry_count = 0
@@ -68,9 +86,7 @@ class Command(BaseCommand):
                 event=event, team__in=teams_with_no_resps
             )
             entry_count += entries_to_delete.count()
-            # ct, _ = entries_to_delete.delete()
-            # entry_count += ct
-        print(len(events), "events", entry_count, "entries")
+            entries_to_delete.delete()
 
         if entry_count < 1:
             return {
