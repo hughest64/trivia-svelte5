@@ -64,6 +64,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     # packages
     "channels",
+    "django_celery_results",
+    "django_celery_beat",
     # apps
     "user",
     "game",
@@ -119,6 +121,7 @@ DATABASES = {
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
 
+# TODO: we don't really enfoce any of these in the ui and they are annoying in the admin...
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
@@ -159,6 +162,16 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# Celery
+CELERY_BROKER_URL = "redis://localhost:6379/0"
+CELERY_BROKER_BACKEND = "redis://localhost:6379/0"
+CELERY_CACHE_BACKEND = "redis://localhost:6379/0"
+CELERY_RESULT_BACKEND = "django-db"
+CELERY_ACCEPT_CONTENT = ["application/json"]
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_EXTENDED = True
 
 # NOTE we might need to consider whether or not it's a private event
 # number of days to roll the airtable query and host game lookups

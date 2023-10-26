@@ -228,6 +228,7 @@ class TriviaEvent(models.Model):
     players = models.ManyToManyField("user.User", related_name="players", blank=True)
     event_teams = models.ManyToManyField("team", related_name="event_teams", blank=True)
     event_complete = models.BooleanField(default=False)
+    archived = models.BooleanField(default=False)
 
     @property
     def current_question_key(self):
