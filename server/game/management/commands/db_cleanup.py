@@ -14,7 +14,7 @@ class Command(BaseCommand):
         parser.add_argument("-d", "--days", default=7)
 
     def handle(self, *args, **options):
-        days = options.get("days")
+        days = int(options.get("days"))
         job_type = options.get("job")
 
         if job_type == "leaderboard":
@@ -55,9 +55,11 @@ class Command(BaseCommand):
             "results": f"updated join code for {len(events) - len(errors)} event(s) on or before {start_date:%Y-%m-%d}.{error_string}"
         }
 
-    def purge_anonymous_users(days=7):
+    def purge_anonymous_users(self, days=7):
         start_date = timezone.now() - timedelta(days=days)
-        anonymous_users = User.objects.filter(created_at__lte=start_date, is_guest=True)
+        anonymous_users = User.objects.filter(
+            date_joined__lte=start_date, is_guest=True
+        )
         user_count = anonymous_users.count()
 
         if user_count < 1:
