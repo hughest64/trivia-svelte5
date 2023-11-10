@@ -21,7 +21,7 @@
 <ul>
     <li><EventMeta /></li>
     <li><a href="/rules" on:click>Rules and FAQ</a></li>
-    <li><a href="/user/settings" on:click data-sveltekit-reload>Manage Profile</a></li>
+    <li><a href="/user/settings?prev={$page.url.pathname}" on:click data-sveltekit-reload>Manage Profile</a></li>
     {#if isGameEndpoint && joincode}
         <li><a href={manageTeamLink} on:click>Manage Team</a></li>
     {/if}
