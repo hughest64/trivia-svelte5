@@ -40,7 +40,7 @@ test('team page routing', async ({ p1 }) => {
     await expect(selectedTeam).toBeVisible();
 
     // got to the team list
-    const teamLink = p1.page.locator('a', { hasText: /existing team/i });
+    const teamLink = p1.page.locator('a', { hasText: /different team/i });
     await expect(teamLink).toBeVisible();
     await teamLink.click();
     await expect(p1.page).toHaveURL(/\/team\/list/i);
