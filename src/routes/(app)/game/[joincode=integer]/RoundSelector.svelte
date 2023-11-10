@@ -68,7 +68,7 @@
 </div>
 
 <button class="current-question-link" on:click={handleGotoQuestion}>
-    go to current question {$currentEventData.question_key}
+    Jump to Current Question: {$currentEventData.question_key}
 </button>
 
 <style lang="scss">
