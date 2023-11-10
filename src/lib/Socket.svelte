@@ -370,11 +370,11 @@
                 const newChats = [...chats];
                 const lastChat = chats[chats.length - 1];
 
-                if (!lastChat.is_host_message && msg.is_host_message) {
+                if (!lastChat?.is_host_message && msg.is_host_message) {
                     newChats.push(msg);
                 } else if (lastChat?.userid !== msg.userid) {
                     newChats.push(msg);
-                } else if (lastChat.is_host_message && !msg.is_host_message) {
+                } else if (lastChat?.is_host_message && !msg.is_host_message) {
                     newChats.push(msg);
                 } else {
                     lastChat.chat_message += '\n' + msg.chat_message;
