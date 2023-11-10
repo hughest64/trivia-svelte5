@@ -1,9 +1,7 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { browser } from '$app/environment';
-    import { afterNavigate, beforeNavigate } from '$app/navigation';
     import { slide } from 'svelte/transition';
-    import { deserialize, enhance, applyAction } from '$app/forms';
+    import { enhance, applyAction } from '$app/forms';
     import { getStore } from '$lib/utils';
     import type { UserTeam } from '$lib/types';
 
@@ -34,22 +32,7 @@
 
     $: form = $page.form;
 
-    const clearStorage = () => sessionStorage.removeItem('previous_route');
-    let prevRoute = (browser && sessionStorage.getItem('previous_route')) || '/team';
-    afterNavigate(({ from, to }) => {
-        const fromPath = from?.url.pathname as string;
-        const toPath = to?.url.pathname as string;
-        if (fromPath && fromPath !== toPath) {
-            prevRoute = fromPath;
-            sessionStorage.setItem('previous_route', fromPath);
-        }
-    });
-
-    // hijack navigation in case of the back button being pressed which does weird things
-    beforeNavigate(({ to }) => {
-        clearStorage();
-        if (to?.url) window.location.assign(to.url);
-    });
+    const prevRoute = $page.url.searchParams.get('prev') || '/team';
 </script>
 
 <svelte:head><title>Trivia Mafia | Manage Team</title></svelte:head>
@@ -174,7 +157,7 @@
         <!-- TODO: link to team select or create -->
         <h1>You don't have a team selected</h1>
     {/if}
-    <a href={prevRoute} class="button button-tertiary" on:click={clearStorage}>Go Back</a>
+    <a href={prevRoute} class="button button-tertiary" data-sveltekit-reload>Go Back</a>
 </main>
 
 <style lang="scss">
