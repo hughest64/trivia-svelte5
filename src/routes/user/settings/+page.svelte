@@ -68,7 +68,7 @@
             <input type="hidden" name="auto_reveal" id="auto-reveal" bind:value={autoRevealValue} />
             <button id="auto-reveal" type="submit" class="slider" class:revealed={autoRevealValue} />
         </label>
-        <p>Auto Reveal Questions</p>
+        <p>Auto Advance</p>
     </div>
     <small>Select this option to auto navigate to the current question when revealed by the host</small>
 </form>
