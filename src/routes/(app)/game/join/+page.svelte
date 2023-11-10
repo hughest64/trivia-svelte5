@@ -13,7 +13,7 @@
     <h1>Enter Game Code</h1>
 
     {#if !!userData}
-        <p>Thanks for Playing with team {activeTeam?.name}! Enter the game code from your host to get started.</p>
+        <p>You're playing with {activeTeam?.name}</p>
     {/if}
 
     <form action="?/joinevent" method="POST">

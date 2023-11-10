@@ -23,6 +23,7 @@
     </form>
 
     <a class="create-link" href="create">Create a new team</a>
+    <a class="create-link" href="list">Show my teams</a>
 </main>
 
 <style lang="scss">

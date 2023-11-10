@@ -27,14 +27,14 @@
             </select>
             <input type="hidden" name="currentteam" value={$userData?.active_team_id} />
 
-            <a class="join-link" href="join">Join a different team (password required)</a>
+            <a class="join-link" href="join">Join an existing team (password required)</a>
 
             <button class="button button-primary" type="submit" id="team-select-submit">Let's Play!</button>
         </form>
         <h2 class="spacer">- or -</h2>
     {:else}
         <h2>It looks like you don't have any teams!</h2>
-        <a class="join-link" href="join">Join a different team (password required)</a>
+        <a class="join-link" href="join">Join a existing team (password required)</a>
         <h2 class="spacer">- or -</h2>
     {/if}
 
