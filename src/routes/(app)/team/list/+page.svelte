@@ -16,7 +16,7 @@
     {#if $userData?.teams?.length > 0}
         <h1>Teams you've joined:</h1>
 
-        <form action={'?/selectTeam' + qp} method="POST" use:enhance>
+        <form action={'?/selectTeam' + qp} method="POST">
             {#if form?.error}<p class="error">{form?.error}</p>{/if}
 
             <label class="select-label" for="team-select">Choose A Team</label>

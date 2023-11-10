@@ -13,7 +13,7 @@
 
 <main class="short">
     <h1>Enter team password</h1>
-    <form action={'?/joinTeam' + qp} method="POST" use:enhance>
+    <form action={'?/joinTeam' + qp} method="POST">
         {#if form?.error}<p class="error">{form?.error}</p>{/if}
         <div class="input-container">
             <input type="text" name="team_password" required value={paswordParam || ''} />
