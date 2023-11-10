@@ -1,6 +1,5 @@
 <script lang="ts">
     import { slide } from 'svelte/transition';
-    import { enhance } from '$app/forms';
     import { getStore } from '$lib/utils';
     import Round from './Round.svelte';
     import RoundSelector from './RoundSelector.svelte';
@@ -14,6 +13,10 @@
 </script>
 
 <h2>{activeRound?.title}</h2>
+
+{#if activeRound?.round_description}
+    <p>{activeRound?.round_description}</p>
+{/if}
 
 <RoundSelector />
 
