@@ -7,6 +7,7 @@
 
     const activeEventData = getStore('activeEventData');
     const playerJoined = getStore('playerJoined');
+    console.log($playerJoined);
     const rounds = getStore('rounds');
 
     $: activeRound = $rounds.find((rd) => rd.round_number === $activeEventData.activeRoundNumber) as GameRound;

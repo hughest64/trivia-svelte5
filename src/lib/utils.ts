@@ -179,7 +179,6 @@ const apiMap = new Map([
 
 export const handlePlayerAuth = async ({
     locals,
-    // params,
     fetch,
     isDataRequest,
     url,
