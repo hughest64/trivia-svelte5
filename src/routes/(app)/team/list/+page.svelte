@@ -16,7 +16,7 @@
     {#if $userData?.teams?.length > 0}
         <h1>Teams you've joined:</h1>
 
-        <form action={'?/selectTeam' + qp} method="POST" use:enhance>
+        <form action={'?/selectTeam' + qp} method="POST">
             {#if form?.error}<p class="error">{form?.error}</p>{/if}
 
             <label class="select-label" for="team-select">Choose A Team</label>
@@ -27,14 +27,14 @@
             </select>
             <input type="hidden" name="currentteam" value={$userData?.active_team_id} />
 
-            <a class="join-link" href="join">Join a different team (password required)</a>
+            <a class="join-link" href="join">Join an existing team (password required)</a>
 
             <button class="button button-primary" type="submit" id="team-select-submit">Let's Play!</button>
         </form>
         <h2 class="spacer">- or -</h2>
     {:else}
         <h2>It looks like you don't have any teams!</h2>
-        <a class="join-link" href="join">Join a different team (password required)</a>
+        <a class="join-link" href="join">Join a existing team (password required)</a>
         <h2 class="spacer">- or -</h2>
     {/if}
 

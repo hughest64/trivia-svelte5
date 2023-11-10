@@ -22,8 +22,7 @@
     $: createStore('teamNotes', writable($page.data.game_question_notes || []));
 
     // is the player stored as a participant for the event?
-    const playerJoined = createStore('playerJoined', writable(false));
-    $: playerJoined.set(data.player_joined || false);
+    $: createStore('playerJoined', writable(data.player_joined || false));
 
     $: createStore(
         'currentEventData',

@@ -1,9 +1,7 @@
 <script lang="ts">
-    import { browser } from '$app/environment';
     import { deserialize, enhance } from '$app/forms';
     import { slide } from 'svelte/transition';
     import { page } from '$app/stores';
-    import { afterNavigate } from '$app/navigation';
 
     $: form = $page.form;
     $: successMsg = form?.success?.msg;
@@ -49,17 +47,7 @@
     };
     $: successMsg && updateUsername();
 
-    let prevRoute = (browser && sessionStorage.getItem('previous_route')) || '/team';
-
-    afterNavigate(({ from, to }) => {
-        const fromPath = from?.url.pathname as string;
-        const toPath = to?.url.pathname as string;
-        if (fromPath && fromPath !== toPath) {
-            prevRoute = fromPath;
-            sessionStorage.setItem('previous_route', fromPath);
-        }
-    });
-    const clearStorage = () => sessionStorage.removeItem('previous_route');
+    const prevRoute = $page.url.searchParams.get('prev') || '/team';
 </script>
 
 <svelte:head><title>Trivia Mafa | User Settings</title></svelte:head>
@@ -80,7 +68,7 @@
             <input type="hidden" name="auto_reveal" id="auto-reveal" bind:value={autoRevealValue} />
             <button id="auto-reveal" type="submit" class="slider" class:revealed={autoRevealValue} />
         </label>
-        <p>Auto Reveal Questions</p>
+        <p>Auto Advance</p>
     </div>
     <small>Select this option to auto navigate to the current question when revealed by the host</small>
 </form>
@@ -143,7 +131,7 @@
     </form>
 {/if}
 
-<a href={prevRoute} class="button button-tertiary" on:click={clearStorage} data-sveltekit-reload>Go Back</a>
+<a href={prevRoute} class="button button-tertiary" data-sveltekit-reload>Go Back</a>
 
 <style lang="scss">
     .switch-container {

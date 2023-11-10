@@ -26,6 +26,7 @@
     let responseText = '';
     $: labelText = activeResponse?.recorded_answer ? 'Click To Edit Answer' : 'Enter Answer';
     $: submitText = activeResponse?.recorded_answer ? 'Submitted' : 'Submit';
+    $: submitBtnColorClass = activeResponse?.recorded_answer ? 'button-secondary' : 'button-primary';
     $: notsubmitted = responseText && responseText !== activeResponse?.recorded_answer;
     const syncInputText = (e: Event) => {
         const target = <HTMLInputElement>e.target;
@@ -34,9 +35,11 @@
             if (responseText !== activeResponse.recorded_answer) {
                 labelText = 'Update Answer';
                 submitText = 'Save';
+                submitBtnColorClass = 'button-primary';
             } else {
                 labelText = 'Click To Edit Answer';
                 submitText = 'Submitted';
+                submitBtnColorClass = 'button-secondary';
             }
         }
     };
@@ -93,7 +96,7 @@
 
     {#if form?.error}<p>{form.error}</p>{/if}
 
-    <button class:disabled class="button button-primary response-btn" {disabled}> {submitText} </button>
+    <button class:disabled class="button {submitBtnColorClass} response-btn" {disabled}> {submitText} </button>
 </form>
 
 <style lang="scss">

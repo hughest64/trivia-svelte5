@@ -46,7 +46,7 @@ test('team page routing', async ({ p1 }) => {
     await expect(p1.page).toHaveURL(/\/team\/list/i);
 
     // go to the password page (and back)
-    const passwordLink = p1.page.locator('a', { hasText: /join a different team/i });
+    const passwordLink = p1.page.locator('a', { hasText: /existing team/i });
     await expect(passwordLink).toBeVisible();
     await passwordLink.click();
     await expect(p1.page).toHaveURL(/\/team\/join/i);
