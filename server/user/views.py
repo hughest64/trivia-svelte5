@@ -302,6 +302,14 @@ class UpdateUserview(APIView):
         update_type = data.as_string("update_type")
         username = data.as_string("username")
         email = data.as_string("email")
+
+        # TODO this is to account for a bug in the DataCleaner class
+        # where it returns the string "None" if the parameter doesn't exist
+        if username.lower() == "none":
+            username = None
+        if email.lower() == "none":
+            email = None
+
         password = data.as_string("password")
         old_pass = data.as_string("old_pass")
 
@@ -317,7 +325,7 @@ class UpdateUserview(APIView):
         try:
             user.username = username or user.username
             user.email = email or user.email
-            if update_type == password:
+            if update_type == "password":
                 user.set_password(password)
 
             user.save()
