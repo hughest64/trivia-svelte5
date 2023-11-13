@@ -3,6 +3,7 @@
     import { browser } from '$app/environment';
     import { goto } from '$app/navigation';
     import { page } from '$app/stores';
+    import { PUBLIC_QUESTION_REVEAL_TIMEOUT } from '$env/static/public';
     import { createQuestionKey, getStore, resolveBool } from '$lib/utils';
     import type {
         CurrentEventData,
@@ -176,7 +177,7 @@
                 popupStore.set({
                     is_displayed: true,
                     popup_type: 'question_reveal',
-                    timer_value: Math.round($page.data.updateDelay / 1000),
+                    timer_value: Math.round(Number(PUBLIC_QUESTION_REVEAL_TIMEOUT) / 1000),
                     data: message
                 });
         },
