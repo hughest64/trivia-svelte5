@@ -121,14 +121,19 @@ class EventSetupView(APIView):
             )
         except AttributeError:
             locations = queryset_to_json(Location.objects.filter(active=True))
-
+        hasattr
         return Response(
             {
                 "location_select_data": locations,
                 "game_select_data": queryset_to_json(games),
                 "game_block_data": blocks,
                 "todays_events": [
-                    {"game_id": e.game.id, "location_id": e.location.id}
+                    {
+                        "game_id": e.game.id,
+                        "location_id": e.location.id
+                        if e.location is not None
+                        else None,
+                    }
                     for e in todays_events
                 ],
                 "user_data": user_data.to_json(),
