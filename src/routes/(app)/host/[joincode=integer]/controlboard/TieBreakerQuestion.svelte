@@ -2,6 +2,7 @@
     import { page } from '$app/stores';
     import { slide } from 'svelte/transition';
     import { swipeQuestion } from '$lib/swipe';
+    import DoubleArrow from '$lib/footer/icons/DoubleArrow.svelte';
 
     const tbquestions = $page.data.tiebreaker_questions || [];
     export let selectedQuestion = tbquestions[0];
@@ -37,8 +38,16 @@
         use:swipeQuestion
         on:swipe={handleQuestionSelect}
     >
-        <p>{selectedQuestion.question_text}</p>
-        {#if selectedQuestion.question_notes}<p><strong>Notes:</strong> {selectedQuestion.question_notes}</p>{/if}
+        <div class="question-nav">
+            <button class="nav-left">
+                <DoubleArrow />
+            </button>
+            <p>{selectedQuestion.question_text}</p>
+            {#if selectedQuestion.question_notes}<p><strong>Notes:</strong> {selectedQuestion.question_notes}</p>{/if}
+            <button class="nav-right">
+                <DoubleArrow />
+            </button>
+        </div>
         <button class="button button-secondary" on:click={() => (answerShown = !answerShown)}>
             {answerButtonTxt}
         </button>
@@ -55,6 +64,26 @@
 
 <style lang="scss">
     .tiebreaker-question-container {
-        max-width: calc(100% - 2rem);
+        width: 100%;
+        max-width: var(--max-element-width);
+        // outline: 1px dashed red;
+    }
+    .question-nav {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        .nav-left {
+            // padding: 0;
+            margin: 0 -1rem 0 -2rem;
+            rotate: 90deg;
+            align-self: center;
+        }
+        .nav-right {
+            // padding: 0;
+            margin: 0 -2rem 0 -1rem;
+            // margin-right: -2rem;
+            rotate: -90deg;
+            align-self: center;
+        }
     }
 </style>

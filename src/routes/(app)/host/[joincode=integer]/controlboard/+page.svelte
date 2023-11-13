@@ -23,7 +23,7 @@
     {tiebreakerButtonText}
 </button>
 {#if !hideTiebreaker}
-    <div class="flex-column" transition:slide>
+    <div class="tiebreaker-container flex-column" transition:slide>
         <Tiebreaker />
     </div>
 {/if}
@@ -46,5 +46,9 @@
         width: calc(100% - 2rem);
         text-align: right;
         padding-right: 1rem;
+    }
+    .tiebreaker-container {
+        width: 100%;
+        width: calc(100% - 2rem);
     }
 </style>
