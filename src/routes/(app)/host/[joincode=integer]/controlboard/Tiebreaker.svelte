@@ -89,7 +89,7 @@
                         </li>
                     {/each}
                 </ul>
-                <button type="submit" class="button button-primary">Apply Tiebreaker</button>
+                <button type="submit" class="button button-primary">Calculate Winner</button>
             </form>
         </li>
     {/each}

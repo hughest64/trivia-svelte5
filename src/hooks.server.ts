@@ -28,7 +28,6 @@ export const handle: Handle = async ({ event, resolve }) => {
         event.locals.activeQuestionKey = activeQuestionKey || '';
     }
     event.locals.websocketHost = PUBLIC_WEBSOCKET_HOST;
-    event.locals.updateDelay = Number(PUBLIC_QUESTION_REVEAL_TIMEOUT);
 
     const response = await resolve(event);
     return response;

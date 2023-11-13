@@ -80,7 +80,7 @@ test('ties initially show the same rank', async ({ host }) => {
     await expect(tbInputs).toHaveCount(2);
     await tbInputs.nth(0).fill(p1Answer);
     await tbInputs.nth(1).fill(p2Answer);
-    const submitBtn = host.page.locator('button', { hasText: /apply tiebreaker/i });
+    const submitBtn = host.page.locator('button', { hasText: /calculate winner/i });
     await expect(submitBtn).toHaveCount(1);
     await submitBtn.click();
 

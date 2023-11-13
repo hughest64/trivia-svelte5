@@ -25,7 +25,8 @@
 
     const teamResponseStore = getStore('responseData');
     $: responses = (expandable && $teamResponseStore) || [];
-    $: groupedResps = respsByround(responses, $rounds, $roundStates);
+    $: isHost = $page.url.pathname.startsWith('/host');
+    $: groupedResps = respsByround(responses, $rounds, $roundStates, isHost);
 
     let expanded = false;
     $: collapsed = !expandable ? null : !expanded;

@@ -6,6 +6,7 @@
     const gameSelectData = $page.data?.game_select_data || [];
     const locationSelectData = $page.data?.location_select_data || [];
     const gameBlocks = ($page.data?.game_block_data || []).sort();
+    const todaysEvents = $page.data?.todays_events || [];
 
     let selectedBlock = gameBlocks[0];
 
@@ -15,6 +16,10 @@
 
     $: availableGames = gameSelectData.filter((g) => g.block === selectedBlock && g.use_sound === useSound);
     $: selectedGame = availableGames[0]?.game_id;
+    $: selectedEventExists = !!todaysEvents.find(
+        (e) => e.location_id === selectedLocation && e.game_id === selectedGame
+    );
+    $: buttontext = selectedEventExists ? 'Join Trivia Event' : 'Begin Trivia Event';
 
     const handleLocationChange = (event: Event) => {
         const target = event.target as HTMLSelectElement;
@@ -32,7 +37,7 @@
         {#if form?.error}<p class="error">{form?.error}</p>{/if}
 
         <div class="switch-container">
-            <h4>Use Sound</h4>
+            <h4>Use Sound Round</h4>
             <label for="sound-choice" class="switch">
                 <input type="hidden" bind:value={useSound} name="sound-choice" />
                 <button
@@ -45,7 +50,7 @@
         </div>
 
         <div class="switch-container">
-            <h4>Player Limit</h4>
+            <h4>Limit Game to Single Device</h4>
             <label for="player_limit" class="switch">
                 <input type="hidden" bind:value={playerLimit} name="player_limit" />
                 <button
@@ -77,14 +82,14 @@
             {/each}
         </select>
 
-        <label class="select-label" for="game_select">Choose your Game</label>
+        <label class="select-label" for="game_select">You've Selected</label>
         <select class="select" name="game_select" id="game_select" bind:value={selectedGame}>
             {#each availableGames as game (game.game_id)}
                 <option value={game.game_id}>{game.game_title}</option>
             {/each}
         </select>
 
-        <button class="button button-primary" type="submit" name="submit" id="submit">Host Event</button>
+        <button class="button button-primary" type="submit" name="submit" id="submit">{buttontext}</button>
     </form>
 </main>
 

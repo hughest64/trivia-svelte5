@@ -22,6 +22,7 @@ declare global {
             game_question_notes?: Array<types.TeamNote>;
             event_data?: types.EventData;
             current_event_data?: types.CurrentEventData;
+            todays_events?: Array<types.TodaysEventsData>;
             rounds?: Array<types.GameRound>;
             questions?: Array<types.GameQuestion>;
             tiebreaker_questions?: Array<types.GameQuestion>;

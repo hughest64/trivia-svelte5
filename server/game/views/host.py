@@ -110,6 +110,8 @@ class EventSetupView(APIView):
         blocks = set([game.block for game in games])
         user_data = request.user
 
+        todays_events = TriviaEvent.objects.filter(date=timezone.localdate())
+
         # if the host has a home location set, put it at the front
         try:
             locations = [user_data.home_location.to_json()] + queryset_to_json(
@@ -119,12 +121,21 @@ class EventSetupView(APIView):
             )
         except AttributeError:
             locations = queryset_to_json(Location.objects.filter(active=True))
-
+        hasattr
         return Response(
             {
                 "location_select_data": locations,
                 "game_select_data": queryset_to_json(games),
                 "game_block_data": blocks,
+                "todays_events": [
+                    {
+                        "game_id": e.game.id,
+                        "location_id": e.location.id
+                        if e.location is not None
+                        else None,
+                    }
+                    for e in todays_events
+                ],
                 "user_data": user_data.to_json(),
             }
         )
@@ -584,7 +595,6 @@ class TiebreakerView(APIView):
             game=event.game, question__question_type=QUESTION_TYPE_TIE_BREAKER
         )
         responses = TiebreakerResponse.objects.filter(event=event)
-        # TODO get any existing tiebreaker responses
         return Response(
             {
                 "tiebreaker_questions": queryset_to_json(questions),

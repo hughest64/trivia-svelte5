@@ -105,4 +105,6 @@ test('player limit gets set properly', async () => {
     expect(response.status()).toBe(200);
 });
 
-// TODO: select a new block and validate the selected game
+// TODO:
+// - select a new block and validate the selected game
+// - validate button language for existing vs non-existing games
