@@ -6,6 +6,7 @@
     const gameSelectData = $page.data?.game_select_data || [];
     const locationSelectData = $page.data?.location_select_data || [];
     const gameBlocks = ($page.data?.game_block_data || []).sort();
+    const todaysEvents = $page.data?.todays_events || [];
 
     let selectedBlock = gameBlocks[0];
 
@@ -15,6 +16,10 @@
 
     $: availableGames = gameSelectData.filter((g) => g.block === selectedBlock && g.use_sound === useSound);
     $: selectedGame = availableGames[0]?.game_id;
+    $: selectedEventExists = !!todaysEvents.find(
+        (e) => e.location_id === selectedLocation && e.game_id === selectedGame
+    );
+    $: buttontext = selectedEventExists ? 'Join Trivia Event' : 'Begin Trivia Event';
 
     const handleLocationChange = (event: Event) => {
         const target = event.target as HTMLSelectElement;
@@ -84,7 +89,7 @@
             {/each}
         </select>
 
-        <button class="button button-primary" type="submit" name="submit" id="submit">Host Event</button>
+        <button class="button button-primary" type="submit" name="submit" id="submit">{buttontext}</button>
     </form>
 </main>
 

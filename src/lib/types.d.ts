@@ -93,6 +93,11 @@ export interface GameSelectData {
     use_sound: boolean;
 }
 
+export interface TodaysEventsData {
+    game_id: number;
+    location_id: number;
+}
+
 export interface HostSelectData {
     game_select_data: GameSelectData[];
     location_select_data: LocationSelectData[];

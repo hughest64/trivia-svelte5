@@ -110,6 +110,8 @@ class EventSetupView(APIView):
         blocks = set([game.block for game in games])
         user_data = request.user
 
+        todays_events = TriviaEvent.objects.filter(date=timezone.localdate())
+
         # if the host has a home location set, put it at the front
         try:
             locations = [user_data.home_location.to_json()] + queryset_to_json(
@@ -125,6 +127,10 @@ class EventSetupView(APIView):
                 "location_select_data": locations,
                 "game_select_data": queryset_to_json(games),
                 "game_block_data": blocks,
+                "todays_events": [
+                    {"game_id": e.game.id, "location_id": e.location.id}
+                    for e in todays_events
+                ],
                 "user_data": user_data.to_json(),
             }
         )
