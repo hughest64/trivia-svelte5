@@ -23,8 +23,6 @@
         const previousTiedForRank = hostEntries[index - 1]?.rank;
         const nextTiedForRank = hostEntries[index + 1]?.rank;
 
-        console.log(entry);
-
         return Number(entry.rank) && entry.rank !== nextTiedForRank && entry.rank === previousTiedForRank;
     };
 </script>

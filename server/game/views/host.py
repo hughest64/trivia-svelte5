@@ -590,7 +590,6 @@ class TiebreakerView(APIView):
             game=event.game, question__question_type=QUESTION_TYPE_TIE_BREAKER
         )
         responses = TiebreakerResponse.objects.filter(event=event)
-        # TODO get any existing tiebreaker responses
         return Response(
             {
                 "tiebreaker_questions": queryset_to_json(questions),
