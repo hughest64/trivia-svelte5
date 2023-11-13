@@ -114,7 +114,12 @@ export const setEventCookie = (data: ActiveEventData, joincode: string) => {
 /**
  * filter and back fill missing responses based on round data
  */
-export const respsByround = (resps: Response[], rounds: GameRound[], roundStates: RoundState[]) => {
+export const respsByround = (
+    resps: Response[],
+    rounds: GameRound[],
+    roundStates: RoundState[],
+    isHost: boolean = false
+) => {
     const roundResps: Record<string, ResponseMeta[]> = {};
 
     rounds.forEach((rd) => {
@@ -126,7 +131,7 @@ export const respsByround = (resps: Response[], rounds: GameRound[], roundStates
             const existingResp = rdResps.find((r) => r.question_number === i);
 
             let pts: string | number = '-';
-            if (rdState?.scored && existingResp) {
+            if (existingResp && (rdState?.scored || isHost)) {
                 pts = String(existingResp.points_awarded);
             }
 

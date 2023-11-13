@@ -23,7 +23,7 @@
 
 <div class="pop-timer" />
 <div class="pop-content">
-    <h3>Leaderboar Update</h3>
+    <h3>Leaderboard Update</h3>
     <h3>The leaderboard has been updated!</h3>
     <a href="/game/{$page.params.joincode}/leaderboard" on:click={resetPopup}> Check it out </a>
 </div>
