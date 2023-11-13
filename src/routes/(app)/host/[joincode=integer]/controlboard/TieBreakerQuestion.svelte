@@ -12,13 +12,14 @@
     $: answerButtonTxt = answerShown ? 'Hide Answer' : 'Show Answer';
 
     const handleQuestionSelect = async (event: MouseEvent | CustomEvent | KeyboardEvent) => {
-        const eventDirection = event.detail?.direction;
         const keyCode = (event as KeyboardEvent).code;
+        // SVG elements are tricksy when handling on clicks
+        const buttonDirection = (event.target as HTMLAreaElement).closest('button')?.id;
 
         let nextQuestionIndex = selectedQuestionIndex;
-        if (eventDirection === 'left' || keyCode === 'ArrowLeft') {
+        if (buttonDirection === 'left' || keyCode === 'ArrowLeft') {
             nextQuestionIndex -= 1;
-        } else if (eventDirection === 'right' || keyCode === 'ArrowRight') {
+        } else if (buttonDirection === 'right' || keyCode === 'ArrowRight') {
             nextQuestionIndex += 1;
         }
         const nextQuestion = tbquestions[nextQuestionIndex];
@@ -32,25 +33,25 @@
 
 <!-- TODO: probably change to swipe -->
 {#if tbquestions.length}
-    <div
-        transition:slide
-        class="tiebreaker-question-container flex-column"
-        use:swipeQuestion
-        on:swipe={handleQuestionSelect}
-    >
+    <div transition:slide class="tiebreaker-question-container flex-column">
         <div class="question-nav">
-            <button class="nav-left">
+            <button class="nav-left" id="left" on:click={handleQuestionSelect}>
                 <DoubleArrow />
             </button>
+
             <p>{selectedQuestion.question_text}</p>
+
             {#if selectedQuestion.question_notes}<p><strong>Notes:</strong> {selectedQuestion.question_notes}</p>{/if}
-            <button class="nav-right">
+
+            <button class="nav-right" id="right" on:click={handleQuestionSelect}>
                 <DoubleArrow />
             </button>
         </div>
+
         <button class="button button-secondary" on:click={() => (answerShown = !answerShown)}>
             {answerButtonTxt}
         </button>
+
         {#if answerShown}
             <div transition:slide class="flex-column">
                 <p>{selectedQuestion.display_answer}</p>
@@ -66,22 +67,18 @@
     .tiebreaker-question-container {
         width: 100%;
         max-width: var(--max-element-width);
-        // outline: 1px dashed red;
     }
     .question-nav {
         width: 100%;
         display: flex;
         justify-content: space-between;
         .nav-left {
-            // padding: 0;
             margin: 0 -1rem 0 -2rem;
             rotate: 90deg;
             align-self: center;
         }
         .nav-right {
-            // padding: 0;
             margin: 0 -2rem 0 -1rem;
-            // margin-right: -2rem;
             rotate: -90deg;
             align-self: center;
         }
