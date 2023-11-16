@@ -121,7 +121,7 @@ class EventSetupView(APIView):
             )
         except AttributeError:
             locations = queryset_to_json(Location.objects.filter(active=True))
-        hasattr
+
         return Response(
             {
                 "location_select_data": locations,
