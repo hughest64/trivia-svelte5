@@ -4,7 +4,7 @@ import { PUBLIC_API_HOST } from '$env/static/public';
 import * as cookie from 'cookie';
 import { redirect } from '@sveltejs/kit';
 import { getJwtPayload } from '$lib/utils';
-import { googleAuthToken, googleAuthUrl } from '../../utils';
+import { googleAuthToken, googleAuthUrl } from '../utils';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load = (async ({ cookies, fetch, url }) => {
