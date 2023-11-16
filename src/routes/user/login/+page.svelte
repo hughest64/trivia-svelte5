@@ -1,11 +1,12 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { googleAuthUrl } from '../utils';
+    import { enhance } from '$app/forms';
 
     $: form = $page.form;
     $: loaderror = $page.data.loaderror;
 
-    const teamPassword = $page.url.searchParams.get('password');
+    const teamPassword = $page.url.searchParams.get('password') || '';
+    const next = $page.url.searchParams.get('next') || '';
 </script>
 
 <svelte:head><title>Trivia Mafia | Login</title></svelte:head>
@@ -15,7 +16,11 @@
 {#if loaderror}
     <h3>{loaderror}</h3>
 {:else}
-    <a href={googleAuthUrl(!!teamPassword)} class="button button-primary">login with Google</a>
+    <form action="/user/google-auth?/auth" method="post" class="form" use:enhance>
+        <input type="hidden" name="team_password" id="team-password" value={teamPassword} />
+        <input type="hidden" name="next" id="next-route" value={next} />
+        <button class="button button-primary" type="submit">login with Google</button>
+    </form>
 
     <h2>-or-</h2>
 

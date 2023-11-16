@@ -1,7 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { slide } from 'svelte/transition';
-    import { swipeQuestion } from '$lib/swipe';
     import DoubleArrow from '$lib/footer/icons/DoubleArrow.svelte';
 
     const tbquestions = $page.data.tiebreaker_questions || [];
@@ -14,7 +13,7 @@
     const handleQuestionSelect = async (event: MouseEvent | CustomEvent | KeyboardEvent) => {
         const keyCode = (event as KeyboardEvent).code;
         // SVG elements are tricksy when handling on clicks
-        const buttonDirection = (event.target as HTMLAreaElement).closest('button')?.id;
+        const buttonDirection = (event.target as HTMLElement).closest('button')?.id;
 
         let nextQuestionIndex = selectedQuestionIndex;
         if (buttonDirection === 'left' || keyCode === 'ArrowLeft') {
