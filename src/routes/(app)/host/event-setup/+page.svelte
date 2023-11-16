@@ -14,10 +14,9 @@
     let selectedLocation = locationSelectData[0].location_id;
     let playerLimit = false;
 
-    $: availableGames = gameSelectData.filter((g) => g.block === selectedBlock && g.use_sound === useSound);
-    $: selectedGame = availableGames[0]?.game_id;
+    $: selectedGame = gameSelectData.filter((g) => g.block === selectedBlock && g.use_sound === useSound)[0];
     $: selectedEventExists = !!todaysEvents.find(
-        (e) => e.location_id === selectedLocation && e.game_id === selectedGame
+        (e) => e.location_id === selectedLocation && e.game_id === selectedGame?.game_id
     );
     $: buttontext = selectedEventExists ? 'Join Trivia Event' : 'Begin Trivia Event';
 
@@ -82,12 +81,15 @@
             {/each}
         </select>
 
-        <label class="select-label" for="game_select">You've Selected</label>
-        <select class="select" name="game_select" id="game_select" bind:value={selectedGame}>
-            {#each availableGames as game (game.game_id)}
-                <option value={game.game_id}>{game.game_title}</option>
-            {/each}
-        </select>
+        <label class="" for="game_select"><h2>You've Selected</h2></label>
+        <input
+            class="selected-game"
+            type="text"
+            name="game_select"
+            id="game_select"
+            readonly
+            value={selectedGame?.game_title}
+        />
 
         <button class="button button-primary" type="submit" name="submit" id="submit">{buttontext}</button>
     </form>
@@ -102,5 +104,9 @@
         label {
             margin-right: 0;
         }
+    }
+    .selected-game {
+        border: None;
+        font-size: 24px;
     }
 </style>

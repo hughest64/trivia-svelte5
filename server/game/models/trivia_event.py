@@ -190,7 +190,7 @@ class Game(models.Model):
         return {
             "game_id": self.pk,
             "game_title": self.title,
-            "block": self.block,
+            "block": self.block_code,
             "use_sound": self.use_sound,
         }
 

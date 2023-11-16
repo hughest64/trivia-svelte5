@@ -107,7 +107,7 @@ class EventSetupView(APIView):
     def get(self, request):
         """get this weeks games and a list of locations"""
         games = Game.objects.filter(active_through__gte=timezone.localdate())
-        blocks = set([game.block for game in games])
+        blocks = set([game.block_code for game in games])
         user_data = request.user
 
         todays_events = TriviaEvent.objects.filter(date=timezone.localdate())
