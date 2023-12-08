@@ -12,7 +12,8 @@ class ChangeLogAdmin(admin.ModelAdmin):
 
 @admin.register(ChatMessage)
 class ChatAdmin(admin.ModelAdmin):
-    list_display = ["__str__", "team", "event"]
+    search_fields = ["event__game__title", "team__name", "user__username"]
+    list_display = ["user", "team", "event", "chat_message"]
 
 
 @admin.register(EventQuestionState)
@@ -56,7 +57,8 @@ class LeaderboardEntryAdmin(admin.ModelAdmin):
         "tiebreaker_rank",
         "leaderboard_type",
     ]
-    exclude = ["leaderboard", "event"]
+    exclude = ["leaderboard"]
+    readonly_fields = ["event"]
 
 
 # no real reason to display this in the admin
@@ -83,7 +85,8 @@ class QuestionResponseAdmin(admin.ModelAdmin):
         "game_question__question__question_text",
     ]
     list_display = ["event", "team"]
-    exclude = ["game_question", "event", "team"]
+    exclude = ["game_question"]
+    readonly_fields = ["event", "team"]
 
 
 @admin.register(Question)
@@ -100,7 +103,7 @@ class QuestionAdmin(admin.ModelAdmin):
 class TeamAdmin(admin.ModelAdmin):
     search_fields = ["name", "password"]
     list_display = ["name", "password"]
-    exclude = ["members"]
+    readonly_fields = ["members"]
 
 
 @admin.register(TiebreakerResponse)
@@ -111,12 +114,13 @@ class TiebreakerResponseAdmin(admin.ModelAdmin):
         "game_question__question__question_text",
     ]
     list_display = ["event", "team"]
-    exclude = ["game_question", "event", "team"]
+    exclude = ["game_question"]
+    readonly_fields = ["event", "team"]
 
 
 @admin.register(TriviaEvent)
 class TriviaEventAdmin(admin.ModelAdmin):
-    search_fields = []
+    search_fields = ["game__title", "location__name", "game__block_code", "joincode"]
     list_display = ["date", "game", "location", "goto_leaderboard", "goto_event"]
 
     @admin.display(description="leaderboard")
