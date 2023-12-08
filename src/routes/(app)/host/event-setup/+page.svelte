@@ -81,15 +81,9 @@
             {/each}
         </select>
 
-        <label class="" for="game_select"><h2>You've Selected</h2></label>
-        <input
-            class="selected-game"
-            type="text"
-            name="game_select"
-            id="game_select"
-            readonly
-            value={selectedGame?.game_title || ''}
-        />
+        <h2>You've Selected</h2>
+        <p>{selectedGame.game_title || ''}</p>
+        <input class="selected-game" type="hidden" name="game_select" id="game_select" value={selectedGame?.game_id} />
 
         <button class="button button-primary" type="submit" name="submit" id="submit">{buttontext}</button>
     </form>
@@ -103,13 +97,6 @@
         margin-left: 0;
         label {
             margin-right: 0;
-        }
-    }
-    .selected-game {
-        border: None;
-        font-size: 24px;
-        &:focus {
-            outline: none;
         }
     }
 </style>
