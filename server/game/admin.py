@@ -42,7 +42,37 @@ class GameAdmin(admin.ModelAdmin):
 
 @admin.register(LeaderboardEntry)
 class LeaderboardEntryAdmin(admin.ModelAdmin):
+    search_fields = ["event__game__title", "team__name"]
     list_filter = ["leaderboard_type"]
+    list_display = ["team", "event", "total_points", "rank", "leaderboard_type"]
+    exclude = ["leaderboard", "event"]
+
+
+# no real reason to display this in the admin
+# admin.site.register(Leaderboard)
+
+
+@admin.register(Location)
+class LocationAdmin(admin.ModelAdmin):
+    search_fields = ["name", "address"]
+    list_filter = ["active", "use_sound"]
+    list_display = ["name", "address", "active", "use_sound"]
+
+
+@admin.register(QuestionAnswer)
+class QuestionAnserAdmin(admin.ModelAdmin):
+    search_fields = ["text"]
+
+
+@admin.register(QuestionResponse)
+class QuestionResponseAdmin(admin.ModelAdmin):
+    search_fields = [
+        "recorded_answer",
+        "event__game__title",
+        "game_question__question__question_text",
+    ]
+    list_display = ["event", "team"]
+    exclude = ["game_question", "event", "team"]
 
 
 @admin.register(Question)
@@ -51,15 +81,26 @@ class QuestionAdmin(admin.ModelAdmin):
     list_filter = ["question_type"]
 
 
+# not currently used in the app
+# admin.site.register(TeamNote)
+
+
 @admin.register(Team)
 class TeamAdmin(admin.ModelAdmin):
-    list_display = ("name", "password")
+    search_fields = ["name", "password"]
+    list_display = ["name", "password"]
+    exclude = ["members"]
 
 
-admin.site.register(Leaderboard)
-admin.site.register(Location)
-admin.site.register(QuestionAnswer)
-admin.site.register(QuestionResponse)
-admin.site.register(TeamNote)
-admin.site.register(TiebreakerResponse)
+@admin.register(TiebreakerResponse)
+class TiebreakerResponseAdmin(admin.ModelAdmin):
+    search_fields = [
+        "recorded_answer",
+        "event__game__title",
+        "game_question__question__question_text",
+    ]
+    list_display = ["event", "team"]
+    exclude = ["game_question", "event", "team"]
+
+
 admin.site.register(TriviaEvent)
