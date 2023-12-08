@@ -198,6 +198,8 @@ with open(BASE_DIR / "game/word_lists/positive.txt", "r") as f:
 GOOGLE_AUTH_ENDPOINT = env.str("GOOGLE_AUTH_ENDPOINT", "")
 GITHUB_AUTH_ENDPOINT = env.str("GITHUB_AUTH_ENDPOINT", "")
 
+CLIENT_BASE_URL = env.str("CLIENT_BASE_URL", "")
+
 # email settings
 EMAIL_HOST = "smtp.mailgun.org"
 EMAIL_PORT = 587
