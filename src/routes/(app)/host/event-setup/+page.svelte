@@ -88,7 +88,7 @@
             name="game_select"
             id="game_select"
             readonly
-            value={selectedGame?.game_title}
+            value={selectedGame?.game_title || ''}
         />
 
         <button class="button button-primary" type="submit" name="submit" id="submit">{buttontext}</button>
@@ -108,5 +108,8 @@
     .selected-game {
         border: None;
         font-size: 24px;
+        &:focus {
+            outline: none;
+        }
     }
 </style>
