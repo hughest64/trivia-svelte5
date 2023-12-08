@@ -334,7 +334,7 @@ class EventQuestionState(models.Model):
         return f"{self.round_number}.{self.question_number}"
 
     def __str__(self):
-        return f"Question {self.key} for event {self.event}"
+        return f"Question {self.key} - {self.event}"
 
     def to_json(self):
         return {
@@ -404,7 +404,7 @@ class EventRoundState(models.Model):
         ordering = ["event", "round_number"]
 
     def __str__(self):
-        return f"Round {self.round_number} for event {self.event}"
+        return f"Round {self.round_number} - {self.event}"
 
     def to_json(self):
         return {
