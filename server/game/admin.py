@@ -1,4 +1,6 @@
+from django.conf import settings
 from django.contrib import admin
+from django.utils.safestring import mark_safe
 
 from .models import *
 
@@ -44,7 +46,16 @@ class GameAdmin(admin.ModelAdmin):
 class LeaderboardEntryAdmin(admin.ModelAdmin):
     search_fields = ["event__game__title", "team__name"]
     list_filter = ["leaderboard_type"]
-    list_display = ["team", "event", "total_points", "rank", "leaderboard_type"]
+    list_display = [
+        "event",
+        "team",
+        "selected_megaround",
+        "points_adjustment",
+        "total_points",
+        "rank",
+        "tiebreaker_rank",
+        "leaderboard_type",
+    ]
     exclude = ["leaderboard", "event"]
 
 
@@ -103,4 +114,24 @@ class TiebreakerResponseAdmin(admin.ModelAdmin):
     exclude = ["game_question", "event", "team"]
 
 
-admin.site.register(TriviaEvent)
+@admin.register(TriviaEvent)
+class TriviaEventAdmin(admin.ModelAdmin):
+    search_fields = []
+    list_display = ["date", "game", "location", "goto_leaderboard", "goto_event"]
+
+    @admin.display(description="leaderboard")
+    def goto_leaderboard(self, obj):
+        return mark_safe(
+            f"<a href='/admin/game/leaderboardentry/?event__id={obj.id}&leaderboard_type__exact=0' >Leaderboard</a>"
+        )
+
+    @admin.display(description="Join Code")
+    def goto_event(self, obj):
+        try:
+            code = obj.joincode
+
+            return mark_safe(
+                f"<a href='{settings.CLIENT_BASE_URL}/host/{code}' target='_blank'>{code}</a>"
+            )
+        except:
+            return "-"
