@@ -23,9 +23,9 @@ const djangoservercmd = `
 `;
 
 const config: PlaywrightTestConfig = {
-    retries: 1,
-    workers: 3,
-    timeout: 30000,
+    // retries: 1,
+    // workers: 3,
+    timeout: 5000,
     webServer: [
         {
             command: testcmd,
@@ -39,7 +39,8 @@ const config: PlaywrightTestConfig = {
             reuseExistingServer: true
         }
     ],
-    use: { baseURL: 'http://127.0.0.1:4173' }
+    use: { baseURL: 'http://127.0.0.1:4173' },
+    testDir: 'tests_new'
 };
 
 export default config;
