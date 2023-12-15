@@ -17,6 +17,8 @@ const testcmd = `
 `;
 
 const djangoservercmd = `
+    pipenv run python manage.py migrate --settings=server.settings_tst &&\
+    pipenv run python manage.py reset_test_data -a --settings=server.settings_tst &&\
     DJANGO_SETTINGS_MODULE=server.settings_tst\
     pipenv run gunicorn -w 4 -k uvicorn.workers.UvicornWorker\
     --bind 127.0.0.1:7000 server.asgi:application

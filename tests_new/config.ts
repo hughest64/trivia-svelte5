@@ -1,16 +1,18 @@
 import * as fs from 'fs';
 
 import { request } from '@playwright/test';
-import games from './data/games.json' assert { type: 'json' };
-import users from './data/users.json' assert { type: 'json' };
+import games from '../tests/data/games.json' assert { type: 'json' };
+import users from '../tests/data/users.json' assert { type: 'json' };
 import type { Browser, Cookie, Page } from '@playwright/test';
 
 export const api_port = process.env.API_PORT || '7000';
 export interface UserAuthConfig {
     username: string;
     password: string;
-    teamName?: string;
-    authStoragePath: string;
+    email: string;
+    team_name?: string;
+    is_staff?: boolean;
+    auth_storage_path: string;
     cookies?: Cookie[];
 }
 
@@ -55,7 +57,7 @@ export const getUserPage = async (browser: Browser, userId: UserKey): Promise<Pa
     if (config === undefined) {
         throw new Error(`no configuration was found for userId ${userId}`);
     }
-    const storagePath = config.authStoragePath;
+    const storagePath = config.auth_storage_path;
     let expired = false;
     try {
         // check if the token is valid
@@ -68,14 +70,14 @@ export const getUserPage = async (browser: Browser, userId: UserKey): Promise<Pa
         expired = true;
     }
 
-    const context = await browser.newContext({ storageState: config.authStoragePath });
+    const context = await browser.newContext({ storageState: config.auth_storage_path });
     const page = await context.newPage();
     // reset the file if the token is expired
     if (expired) {
         console.log(`resetting auth for ${userId}`);
         // TODO: can we hook into the api directly instead of logging in via browser?
         await login(page, config.username, config.password);
-        await page.context().storageState({ path: config.authStoragePath });
+        await page.context().storageState({ path: config.auth_storage_path });
     }
     config.cookies = await context.cookies();
 

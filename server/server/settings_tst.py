@@ -1,5 +1,6 @@
 from .settings import *
 
+SETTINGS_FILE_NAME = __name__
 DEBUG = True
 
 ALLOWED_HOSTS = [
