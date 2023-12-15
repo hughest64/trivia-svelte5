@@ -60,7 +60,7 @@ class Command(BaseCommand):
     def create_users(self):
         logger.info(f"crating {len(user_data)} user(s)")
         for u in user_data.values():
-            is_staff = u.pop("is_staff", False)
+            is_staff = u.get("is_staff", False)
             # TOOD: get_or_create team (maybe we can reuse code here)
             team_name = u.pop("team_name", None)
             # throw the auth storage path away

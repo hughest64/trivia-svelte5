@@ -13,6 +13,12 @@
         "is_staff": true,
         "auth_storage_path": "playwright/.auth/api_user.json"
     },
+    "reset_user": {
+        "username": "reset_user",
+        "password": "abc123",
+        "email": "reset_user@no.no",
+        "auth_storage_path": ""
+    },
     "player_one": {
         "username": "player_one",
         "password": "abc123",
