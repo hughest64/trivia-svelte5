@@ -14,13 +14,19 @@ HOST_CHATS_PER_EVENT_limit = 50
 
 
 class TeamManager(models.Manager):
-    def create(self, *args, password=None, **kwargs):
+    def get_or_create(self, password=None, **kwargs):
+        try:
+            return self.get(password=password, **kwargs), False
+        except self.model.DoesNotExist:
+            return self.create(password=password, **kwargs), True
+
+    def create(self, password=None, **kwargs):
         if password is not None and self.filter(password=password).exists():
             raise TeamPasswordError("this password is not available")
 
         if password is None:
             password = self.generate_password(attempt_num=0, max_attempts=30)
-        return super().create(*args, password=password, **kwargs)
+        return super().create(password=password, **kwargs)
 
     def generate_password(self, attempt_num=0, max_attempts=30, sep="-"):
         if attempt_num > MAX_CREATE_JOINCODE_ATTEMPTS:

@@ -74,9 +74,7 @@ class Command(BaseCommand):
             team_name = u.pop("team_name", None)
             team = None
             if team_name is not None:
-                team, _ = Team.objects.get_or_create(
-                    name=team_name, create_password=True
-                )
+                team, _ = Team.objects.get_or_create(name=team_name)
 
             is_staff = u.get("is_staff", False)
             User.objects.create_user(**u, is_superuser=is_staff, active_team=team)
