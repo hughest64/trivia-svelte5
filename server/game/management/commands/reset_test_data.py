@@ -35,6 +35,7 @@ class Command(BaseCommand):
         parser.add_argument(
             "-g", "--games", action="store_true", help="create games but not users"
         )
+        parser.add_argument("-t", "--team", action="store_true")
 
     def handle(self, *args, **options) -> str | None:
         logger.info(f"Using settings file {settings.SETTINGS_FILE_NAME}")
@@ -47,26 +48,41 @@ class Command(BaseCommand):
         self.reset()
 
         if options.get("all"):
+            call_command("loaddata", "game/fixtures/gamedata.json")
             self.create_users()
             self.create_games()
 
         if options.get("games"):
             self.create_games()
 
+        if options.get("team"):
+            print(Team.objects.generate_password())
+
     def reset(self):
         excluded_users = excludes.get("users", [])
         User.objects.exclude(username__in=excluded_users).delete()
+        Game.objects.all().delete()
+        Question.objects.all().delete()
+        QuestionAnswer.objects.all().delete()
 
     def create_users(self):
         logger.info(f"crating {len(user_data)} user(s)")
         for u in user_data.values():
-            is_staff = u.get("is_staff", False)
-            # TOOD: get_or_create team (maybe we can reuse code here)
-            team_name = u.pop("team_name", None)
             # throw the auth storage path away
             u.pop("auth_storage_path", None)
-            User.objects.create_user(**u, is_superuser=is_staff)
+
+            team_name = u.pop("team_name", None)
+            team = None
+            if team_name is not None:
+                team, _ = Team.objects.get_or_create(
+                    name=team_name, create_password=True
+                )
+
+            is_staff = u.get("is_staff", False)
+            User.objects.create_user(**u, is_superuser=is_staff, active_team=team)
 
     def create_games(self):
-        logger.info("create games is not implemented")
         return
+        logger.info(f"creating {len(game_data)} game(s)")
+        for g in game_data.values():
+            Game.objects.create(*g)

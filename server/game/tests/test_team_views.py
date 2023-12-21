@@ -12,11 +12,25 @@ class TeamViewsTestCase(TestCase):
     def setUp(self) -> None:
         self.client = APIClient()
         self.client.force_authenticate(user=User.objects.get(username="player"))
+        Team.objects.create(name="duplicate_name", password="team")
 
     def tearDown(self) -> None:
         Team.objects.all().delete()
 
     def test_create_team(self):
+        # test w/ a team name that is too long
+        post_data = {"team_name": "a" * 123}
+        response = self.client.post("/team/create", data=post_data)
+        self.assertEqual(response.status_code, 400)
+        self.assertTrue("too long" in response.data.get("detail"))
+
+        post_data = {"team_name": "a" * 123}
+        response = self.client.post("/team/create", data=post_data)
+        self.assertEqual(response.status_code, 400)
+        self.assertTrue("too long" in response.data.get("detail"))
+        # TODO test with a password that is taken
+        # - this requires updates to DataCleaner so that we can try get an option password param from the payload
+
         post_data = {"team_name": "My Team"}
         response = self.client.post("/team/create", data=post_data)
 

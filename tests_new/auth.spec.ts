@@ -15,10 +15,43 @@ test.afterAll(async () => {
     await apicontext.dispose();
 });
 
-test('login as host', async ({ page }) => {
+test('login as host and navigate', async ({ page }) => {
     await page.goto('/user/login');
     await login(page, 'host_user', 'abc123', false);
     await expect(page).toHaveURL('/host/choice');
+    await page.locator('text=Play Trivia').click();
+    await expect(page).toHaveTitle(/team/i);
+
+    // host can host
+    await page.goBack();
+    await expect(page).toHaveTitle(/host or play/i);
+    await page.locator('text=Host a Game').click();
+    await expect(page).toHaveURL(/\/host\/event-setup/);
+});
+
+test.skip('login as player and navigate', async ({ page }) => {
+    // TODO:
+    // implement the resigned flow:
+    // - after login should be the joincode page
+    // - should be able to navigate elsehwere (/team, user settings, etc) (probably a different test)
+    // - enter bad jc
+    // - enter good jc
+    // -- should show the location of the event and have options to got the game (this does the join)
+    //    or enter a new code
+});
+
+test.skip('naviagate directly to a game', async ({ page }) => {
+    // TODO: decide if the is a
+});
+
+test('two players cannot join an event with a player limit', async ({ browser }) => {
+    const p1 = getUserPage(browser, 'player_one');
+    const p2 = getUserPage(browser, 'player_two');
+
+    // p1 joins game 1111
+    // - success
+    // p2 (same team) tries to join the game
+    // - gets error message - test navigation from the error?
 });
 
 test('guest login', async ({ page }) => {

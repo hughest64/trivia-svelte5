@@ -37,13 +37,15 @@ class TeamCreateView(APIView):
     @method_decorator(csrf_protect)
     def post(self, request):
         user: User = request.user
+        # TODO: make updates to the DataCleaner to allow optional params and check for a password key here
         data = DataCleaner(request.data)
         team_name = data.as_string("team_name")
+
         try:
-            team = Team.objects.create(name=team_name, create_password=True)
+            team = Team.objects.create(name=team_name)
             team.members.add(request.user)
         except ValidationError as e:
-            if hasattr(e, "error_dict") and "name" in e.error_dict:
+            if "name" in getattr(e, "error_dict", {}):
                 err = "That team name is too long. Please choose a shorter name."
             else:
                 err = "An error occured in creating the team, please try again."
