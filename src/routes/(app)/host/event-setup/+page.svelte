@@ -10,8 +10,8 @@
 
     let selectedBlock = gameBlocks[0];
 
-    let useSound = locationSelectData[0].use_sound;
-    let selectedLocation = locationSelectData[0].location_id;
+    let useSound = !!locationSelectData[0]?.use_sound;
+    let selectedLocation = locationSelectData[0]?.location_id;
     let playerLimit = false;
 
     $: selectedGame = gameSelectData.filter((g) => g.block === selectedBlock && g.use_sound === useSound)[0];
@@ -82,7 +82,7 @@
         </select>
 
         <h2>You've Selected</h2>
-        <p>{selectedGame.game_title || ''}</p>
+        <p>{selectedGame?.game_title || ''}</p>
         <input class="selected-game" type="hidden" name="game_select" id="game_select" value={selectedGame?.game_id} />
 
         <button class="button button-primary" type="submit" name="submit" id="submit">{buttontext}</button>
