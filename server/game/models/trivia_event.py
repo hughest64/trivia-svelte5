@@ -269,16 +269,19 @@ class TriviaEvent(models.Model):
     def __str__(self):
         return f"{self.game.title} on {self.date} - {self.joincode}"
 
+    def game_json(self):
+        return {
+            "id": self.pk,
+            # "game_id": self.pk,
+            "game_title": self.game.title,
+            "joincode": self.joincode,
+            "location": self.location.name if self.location else "",
+            "block_code": self.game.block_code,
+        }
+
     def to_json(self):
         return {
-            "event_data": {
-                "id": self.pk,
-                # "game_id": self.pk,
-                "game_title": self.game.title,
-                "joincode": self.joincode,
-                "location": self.location.name if self.location else "",
-                "block_code": self.game.block_code,
-            },
+            "event_data": self.game_json(),
             "current_event_data": {
                 "round_number": self.current_round_number,
                 "question_number": self.current_question_number,

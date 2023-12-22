@@ -109,7 +109,7 @@
 
         <button class="button button-primary" type="submit" name="submit" id="submit">{buttontext}</button>
     </form>
-    <small>Click <a href="/host/event-setup/recent">here</a> to view your recent games</small>
+    <small>Click <a href="/host/event-setup/recent" data-sveltekit-reload>here</a> to view your recent games</small>
 </main>
 
 <style lang="scss">

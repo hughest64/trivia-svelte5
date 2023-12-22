@@ -100,6 +100,20 @@ class EventTeamResponsesView(APIView):
         return Response({"responses": queryset_to_json(resps)})
 
 
+class RecentEventView(APIView):
+    authentication_classes = [JwtAuthentication]
+    permission_classes = [IsAdminUser]
+
+    def get(self, request):
+        recent_hosted_events = TriviaEvent.objects.filter(host=request.user)[:5]
+        return Response(
+            {
+                "recent_events": [e.game_json() for e in recent_hosted_events],
+                "user_data": request.user.to_json(),
+            }
+        )
+
+
 class EventSetupView(APIView):
     authentication_classes = [JwtAuthentication]
     permission_classes = [IsAdminUser]
