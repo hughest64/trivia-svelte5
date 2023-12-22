@@ -120,8 +120,21 @@ class TiebreakerResponseAdmin(admin.ModelAdmin):
 
 @admin.register(TriviaEvent)
 class TriviaEventAdmin(admin.ModelAdmin):
-    search_fields = ["game__title", "location__name", "game__block_code", "joincode"]
-    list_display = ["date", "game", "location", "goto_leaderboard", "goto_event"]
+    search_fields = [
+        "game__title",
+        "host__username",
+        "location__name",
+        "game__block_code",
+        "joincode",
+    ]
+    list_display = [
+        "date",
+        "game",
+        "host",
+        "location",
+        "goto_leaderboard",
+        "goto_event",
+    ]
     readonly_fields = ["event_teams", "players", "location", "game"]
 
     @admin.display(description="leaderboard")

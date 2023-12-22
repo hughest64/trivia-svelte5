@@ -151,7 +151,7 @@ class EventSetupView(APIView):
         game = get_game_or_404(game_id)
         location = get_location_or_404(location_id)
         event = TriviaEventCreator(
-            game=game, location=location, player_limit=player_limit
+            game=game, host=request.user, location=location, player_limit=player_limit
         ).event
 
         user_data = request.user.to_json()

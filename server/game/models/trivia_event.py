@@ -223,6 +223,13 @@ class TriviaEvent(models.Model):
     current_round_number = models.IntegerField(default=1)
     current_question_number = models.IntegerField(default=1)
 
+    host = models.ForeignKey(
+        "user.User",
+        related_name="event_host",
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+    )
     # used to limit qty of players from a team that can join an event
     player_limit = models.IntegerField(blank=True, null=True)
     players = models.ManyToManyField("user.User", related_name="players", blank=True)

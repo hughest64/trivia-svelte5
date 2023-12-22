@@ -1,18 +1,21 @@
 from datetime import date
 
 from game.models import *
+from user.models import User
 
 
 class TriviaEventCreator:
     def __init__(
         self,
         game: Game,
+        host: User = None,
         location: Location = None,
         joincode: int = None,
         auto_create=True,
         **kwargs
     ) -> None:
         self.game = game
+        self.host = host
         self.location = location
         self.joincode = joincode
         self.create_joincode = joincode is None
@@ -35,6 +38,7 @@ class TriviaEventCreator:
         except TriviaEvent.DoesNotExist:
             self.event = TriviaEvent.objects.create(
                 game=self.game,
+                host=self.host,
                 location=self.location if self.location else None,
                 joincode=self.joincode,
                 # hard coding a one player limit for now, could be expaned
