@@ -223,6 +223,13 @@ class TriviaEvent(models.Model):
     current_round_number = models.IntegerField(default=1)
     current_question_number = models.IntegerField(default=1)
 
+    host = models.ForeignKey(
+        "user.User",
+        related_name="event_host",
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+    )
     # used to limit qty of players from a team that can join an event
     player_limit = models.IntegerField(blank=True, null=True)
     players = models.ManyToManyField("user.User", related_name="players", blank=True)
@@ -262,16 +269,19 @@ class TriviaEvent(models.Model):
     def __str__(self):
         return f"{self.game.title} on {self.date} - {self.joincode}"
 
+    def game_json(self):
+        return {
+            "id": self.pk,
+            # "game_id": self.pk,
+            "game_title": self.game.title,
+            "joincode": self.joincode,
+            "location": self.location.name if self.location else "",
+            "block_code": self.game.block_code,
+        }
+
     def to_json(self):
         return {
-            "event_data": {
-                "id": self.pk,
-                # "game_id": self.pk,
-                "game_title": self.game.title,
-                "joincode": self.joincode,
-                "location": self.location.name if self.location else "",
-                "block_code": self.game.block_code,
-            },
+            "event_data": self.game_json(),
             "current_event_data": {
                 "round_number": self.current_round_number,
                 "question_number": self.current_question_number,
