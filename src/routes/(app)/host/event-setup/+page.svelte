@@ -6,13 +6,17 @@
     const gameSelectData = $page.data?.game_select_data || [];
     const locationSelectData = $page.data?.location_select_data || [];
     const gameBlocks = ($page.data?.game_block_data || []).sort();
-    const todaysEvents = $page.data?.todays_events || [];
+    const nonThemeBlocks = gameBlocks.filter((b) => ['a', 'b', 'c', 'd'].includes(b.toLocaleLowerCase()));
+    const themeBlocks = gameBlocks.filter((b) => !['a', 'b', 'c', 'd'].includes(b.toLocaleLowerCase()));
 
-    let selectedBlock = gameBlocks[0];
+    const todaysEvents = $page.data?.todays_events || [];
 
     let useSound = !!locationSelectData[0]?.use_sound;
     let selectedLocation = locationSelectData[0]?.location_id;
     let playerLimit = false;
+    let useThemeNight = false;
+
+    let selectedBlock = useThemeNight ? themeBlocks[0] : nonThemeBlocks[0];
 
     $: selectedGame = gameSelectData.filter((g) => g.block === selectedBlock && g.use_sound === useSound)[0];
     $: selectedEventExists = !!todaysEvents.find(
@@ -24,6 +28,11 @@
         const target = event.target as HTMLSelectElement;
         const newloc = locationSelectData.find((l) => String(l.location_id) === target.value);
         useSound = newloc?.use_sound === false ? false : true;
+    };
+
+    const handleUseThemeNight = () => {
+        useThemeNight = !useThemeNight;
+        selectedBlock = useThemeNight ? themeBlocks[0] : nonThemeBlocks[0];
     };
 </script>
 
@@ -61,9 +70,22 @@
             </label>
         </div>
 
+        <div class="switch-container">
+            <h4>Host Theme Event</h4>
+            <label for="event_type" class="switch">
+                <input type="hidden" bind:value={playerLimit} name="event_type" />
+                <button
+                    id="event-type-btn"
+                    class="slider"
+                    class:revealed={useThemeNight}
+                    on:click|preventDefault={handleUseThemeNight}
+                />
+            </label>
+        </div>
+
         <label class="select-label" for="block-select">Choose A Block</label>
         <select class="select" name="block-select" id="block-select" bind:value={selectedBlock}>
-            {#each gameBlocks as block}
+            {#each useThemeNight ? themeBlocks : nonThemeBlocks as block}
                 <option value={block}>{block}</option>
             {/each}
         </select>
