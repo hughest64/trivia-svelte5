@@ -1,37 +1,45 @@
 <script lang="ts">
+    import { enhance } from '$app/forms';
     import { page } from '$app/stores';
     import { getStore } from '$lib/utils';
 
+    $: form = $page.form;
+
     const userData = getStore('userData');
-    const activeTeam = $userData.teams.find((t) => t.id === $userData.active_team_id);
-    const queryString = $page.url.search;
-    const next = $page.url.searchParams.get('next') || 'game/join';
+    $: next = $page.url.searchParams.get('next');
+    $: qp = next ? `&next=${next}` : '';
 </script>
 
-<svelte:head><title>TriviaMafia | Team</title></svelte:head>
+<svelte:head><title>TriviaMafia | Team List</title></svelte:head>
 
 <main class="short">
-    <h1>Welcome!</h1>
+    {#if $userData?.teams?.length > 0}
+        <h1>Teams you've joined:</h1>
 
-    {#if activeTeam}
-        <h2>You are currently playing with team:</h2>
+        <form action={'?/selectTeam' + qp} method="POST">
+            {#if form?.error}<p class="error">{form?.error}</p>{/if}
 
-        <h3>{activeTeam?.name}</h3>
+            <label class="select-label" for="team-select">Choose A Team</label>
+            <select class="select" id="team-select" name="selectedteam">
+                {#each $userData.teams as team (team.id)}
+                    <option value={team.id}>{team.name}</option>
+                {/each}
+            </select>
+            <input type="hidden" name="currentteam" value={$userData?.active_team_id} />
 
-        <a class="button button-primary" href={next} data-sveltekit-reload>Looks good, let's go!</a>
-        <a class="link" href="/team/list{queryString}">Play with a different team</a>
-    {:else}
-        <h2>It looks like you haven't selected a team</h2>
-        <a class="link" href="/team/list{queryString}">Select a team</a>
+            <button class="button button-primary" type="submit" id="team-select-submit">Let's Play!</button>
+        </form>
     {/if}
+    <a href="team/create" class="button button-primary">Create a new team</a>
+
+    <h2>- or -</h2>
+
+    <a class="join-link" href="team/join">Join an existing team (password required)</a>
 </main>
 
 <style lang="scss">
-    .link {
-        font-style: italic;
-    }
-    h2,
-    h3 {
+    .join-link {
         margin: 2rem auto;
+        font-style: italic;
     }
 </style>
