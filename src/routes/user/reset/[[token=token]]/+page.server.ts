@@ -3,6 +3,7 @@ import { error, fail, redirect } from '@sveltejs/kit';
 import * as cookie from 'cookie';
 import { getJwtPayload } from '$lib/utils';
 import type { Actions, PageServerLoad } from './$types';
+import type { HttpResponseStatus } from '$lib/types';
 
 /**
  * TODO: right now there is no path for a logged in user to change their password
@@ -36,7 +37,7 @@ export const load: PageServerLoad = async ({ cookies, fetch, params, url }) => {
             redirect(307, '/user/forgot');
         }
         const message = respData?.detail || 'an error ocurred';
-        error(resp.status, { message });
+        error(resp.status as HttpResponseStatus, { message });
     }
 
     // set the long-lived token as a cookie
