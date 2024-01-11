@@ -22,7 +22,7 @@ const fetchEventData: Action = async ({ fetch, request }) => {
     }
 
     const joinCode = responseData?.event_data?.joincode;
-    throw redirect(302, `/host/${joinCode}`);
+    redirect(302, `/host/${joinCode}`);
 };
 
 export const actions = { fetchEventData };

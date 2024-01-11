@@ -33,10 +33,10 @@ export const load: PageServerLoad = async ({ cookies, fetch, params, url }) => {
     if (!resp.ok) {
         const respData = await resp.json();
         if (respData?.reason === 'authentication_failed') {
-            throw redirect(307, '/user/forgot');
+            redirect(307, '/user/forgot');
         }
         const message = respData?.detail || 'an error ocurred';
-        throw error(resp.status, { message });
+        error(resp.status, { message });
     }
 
     // set the long-lived token as a cookie
@@ -73,6 +73,6 @@ export const actions: Actions = {
             return fail(resp.status, { error: respData.detail });
         }
 
-        throw redirect(301, '/team');
+        redirect(301, '/team');
     }
 };

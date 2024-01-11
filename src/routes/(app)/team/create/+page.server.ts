@@ -20,6 +20,6 @@ export const actions: Actions = {
         }
 
         const next = url.searchParams.get('next') || '/game/join';
-        throw redirect(302, next);
+        redirect(302, next);
     }
 };

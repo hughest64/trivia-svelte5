@@ -193,7 +193,7 @@ export const handlePlayerAuth = async ({
     if (!locals.validtoken) {
         searchParams.set('next', url.pathname);
 
-        throw redirect(302, `/user/logout${decodeURIComponent(url.search)}`);
+        redirect(302, `/user/logout${decodeURIComponent(url.search)}`);
     }
 
     let data = {};
@@ -209,20 +209,20 @@ export const handlePlayerAuth = async ({
         if (response.status === 401) {
             searchParams.set('next', url.pathname);
 
-            throw redirect(302, `/user/logout${decodeURIComponent(url.search)}`);
+            redirect(302, `/user/logout${decodeURIComponent(url.search)}`);
         }
         // forbidden, redirect to a safe page
         if (response.status === 403) {
             // TODO: add a payload key to the error and send userdata through
             if (apiData?.reason === 'player_limit_exceeded') {
-                throw error(403, { message: apiData.detail, code: apiData.reason });
+                error(403, { message: apiData.detail, code: apiData.reason });
             }
-            throw redirect(302, `/team${decodeURIComponent(url.search)}`);
+            redirect(302, `/team${decodeURIComponent(url.search)}`);
         }
         // TODO: expand to handle other pages (/team, etc)
         // resolve the error page
         if (response.status === 404) {
-            throw error(404, { message: apiData.detail, next: '/game/join' });
+            error(404, { message: apiData.detail, next: '/game/join' });
         }
     }
 
@@ -242,9 +242,9 @@ export const handleHostAuth = async ({
 
     if (!locals.validtoken) {
         searchParams.set('next', url.pathname);
-        throw redirect(302, `/user/logout${decodeURIComponent(url.search)}`);
+        redirect(302, `/user/logout${decodeURIComponent(url.search)}`);
     }
-    if (!locals.staffuser) throw redirect(302, `/team${decodeURIComponent(url.search)}`);
+    if (!locals.staffuser) redirect(302, `/team${decodeURIComponent(url.search)}`);
 
     let data = {};
     if (!isDataRequest) {
@@ -257,16 +257,16 @@ export const handleHostAuth = async ({
         // not authorized, redirect to log out to ensure cookies get deleted
         if (response.status === 401) {
             searchParams.set('next', url.pathname);
-            throw redirect(302, `/user/logout${decodeURIComponent(url.search)}`);
+            redirect(302, `/user/logout${decodeURIComponent(url.search)}`);
         }
 
         // forbidden, redirect to a safe page
         if (response.status === 403) {
-            throw redirect(302, '/host/choice');
+            redirect(302, '/host/choice');
         }
 
         if (response.status === 404) {
-            throw error(404, { message: apiData.detail, next: '/host/choice' });
+            error(404, { message: apiData.detail, next: '/host/choice' });
         }
     }
 

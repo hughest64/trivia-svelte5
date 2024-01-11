@@ -6,5 +6,5 @@ export const load: PageServerLoad = async ({ cookies, url }) => {
     // delete auth cookies and redirect
     invalidateCookies(cookies, ['jwt', 'csrftoken']);
 
-    throw redirect(302, `/${url.search}`);
+    redirect(302, `/${url.search}`);
 };

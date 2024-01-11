@@ -25,7 +25,7 @@ const joinevent: Action = async ({ fetch, request }) => {
         return fail(responseData.status, { error: responseData.detail });
     }
 
-    throw redirect(303, `/game/${joincode}`);
+    redirect(303, `/game/${joincode}`);
 };
 
 export const actions = { joinevent };
