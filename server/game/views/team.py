@@ -9,7 +9,6 @@ from rest_framework.views import APIView
 from rest_framework.status import HTTP_400_BAD_REQUEST
 
 from game.models import Team
-from game.processors import TeamQr
 from game.utils.socket_classes import SendEventMessage
 from game.views.validation.exceptions import TeamNotFound
 from game.views.validation.data_cleaner import DataCleaner, DataValidationError
@@ -51,8 +50,7 @@ class TeamCreateView(APIView):
             else:
                 err = "An error occured in creating the team, please try again."
             raise DataValidationError(err)
-        
-        qr = TeamQr(team_password=team.password).create()
+
         user.active_team = team
         user.save()
 
@@ -62,7 +60,7 @@ class TeamCreateView(APIView):
             "team_data": {
                 "team_name": team.name,
                 "team_password": team.password,
-                "qr": qr
+                "qr": team.generate_qr()
             },
             "user_data": user.to_json()
             })

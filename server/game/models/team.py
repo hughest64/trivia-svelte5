@@ -4,6 +4,7 @@ from django.conf import settings
 from django.db import models
 from django.utils import timezone
 
+from game.utils.qr import TeamQr
 from game.views.validation.exceptions import TeamPasswordError
 
 MAX_CREATE_JOINCODE_ATTEMPTS = 30
@@ -46,6 +47,9 @@ class Team(models.Model):
     members = models.ManyToManyField("user.User", blank=True, related_name="teams")
 
     objects = TeamManager()
+
+    def generate_qr(self):
+        return TeamQr(team_password=self.password).create()
 
     def to_json(self):
         return {
