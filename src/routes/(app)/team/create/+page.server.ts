@@ -8,18 +8,19 @@ export const actions: Actions = {
     createTeam: async ({ fetch, request, url }) => {
         const data = Object.fromEntries((await request.formData()).entries());
 
-        const apiHost = PUBLIC_API_HOST;
-        const response = await fetch(`${apiHost}/team/create`, {
-            method: 'POST',
-            body: JSON.stringify(data)
-        });
+        // const apiHost = PUBLIC_API_HOST;
+        // const response = await fetch(`${apiHost}/team/create`, {
+        //     method: 'POST',
+        //     body: JSON.stringify(data)
+        // });
 
-        const responseData = await response.json();
-        if (!response.ok) {
-            return fail(response.status, { error: responseData.detail });
-        }
+        // const responseData = await response.json();
+        // if (!response.ok) {
+        //     return fail(response.status, { error: responseData.detail });
+        // }
 
-        const next = url.searchParams.get('next') || '/game/join';
-        redirect(302, next);
+        // const next = url.searchParams.get('next') || '/game/join';
+        // redirect(302, next);
+        return {teamName: data.team_name, teamPass: 'your-ona-team'}
     }
 };
