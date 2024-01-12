@@ -23,6 +23,7 @@ celery = "*"
 django-celery-beat = "*"
 django-celery-results = "*"
 redis = "*"
+qrcode = {extras = ["pil"], version = "*"}
 
 [dev-packages]
 black = "*"

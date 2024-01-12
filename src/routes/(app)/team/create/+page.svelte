@@ -4,16 +4,10 @@
     import { enhance } from '$app/forms';
     import { getStore } from '$lib/utils';
 
-    // TODO: qr code handling, probably in python like this:
-    // https://www.twilio.com/blog/generate-qr-code-with-python
-    // it uses this https://pypi.org/project/qrcode/
-    // and maybe we store an svg at a team table attritute, or
-    // maybe we store the image on 1pg.us and store the url on the team?
-
     $: form = $page.form;
-    $: teamName = form?.teamName || 'Remove This Default';
-    $: teamPass = form?.teamPass || 'not-the-password';
-    $: console.log(form);
+    $: teamName = form?.team_name; // || 'Remove This Default';
+    $: teamPass = form?.team_password; // || 'not-the-password';
+    $: qr = form?.qr;
 
     const userData = getStore('userData');
     const hasTeams = $userData.teams?.length > 0;
@@ -51,10 +45,11 @@
         <div class="flex-column full-width" in:fly={{ y: 500, duration: 1000 }}>
             <h1>Welcome</h1>
             <h3>{teamName}</h3>
-            <hr />
+            <div class="line" />
             <h3>Team Password:</h3>
             <h3>{teamPass}</h3>
-
+            <!-- TODO: check that it exists and use a sensible fallback -->
+            {@html qr}
             <a href="game/join" class="button button-primary">Next</a>
         </div>
     {/if}
@@ -68,9 +63,10 @@
         margin: 2rem auto;
         font-style: italic;
     }
-    hr {
+    .line {
         margin: 2rem 0;
-        width: var(--max-element-width);
-        border: 1px solid var(--color-secondary);
+        width: min(20rem, calc(100% - 1rem));
+        height: 1px;
+        background-color: var(--color-secondary);
     }
 </style>
