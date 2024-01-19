@@ -14,7 +14,8 @@ SITE_LINK = settings.EMAIL_REDIRECT_HOST
 class TeamQr:
     def __init__(self, team_password) -> None:
         self.team_password = team_password
-        self.svg = None
+        self.img = None
+        self.svg_string = None
 
     def create(self):
         qr = qrcode.QRCode(
@@ -24,10 +25,10 @@ class TeamQr:
         )
         qr.add_data(self._make_url())
 
-        img = qr.make_image()
-        self.svg = img.to_string(encoding='unicode')
+        self.img = qr.make_image()
+        self.svg_string = self.img.to_string(encoding='unicode')
 
-        return self.svg
+        return self.svg_string
     
     def _make_url(self):
         return f"{SITE_LINK}/team/join?password={self.team_password}"
