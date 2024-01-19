@@ -98,6 +98,15 @@ class EventView(APIView):
         )
 
 
+class EventCheckView(APIView):
+    authentication_classes = [JwtAuthentication]
+
+    @method_decorator(csrf_protect)
+    def get(self, request, joincode):
+        event = get_event_or_404(joincode=joincode)
+        return Response({"event_data": event.game_json(), "user_data": request.user.to_json()})
+
+
 class EventJoinView(APIView):
     authentication_classes = [JwtAuthentication]
 

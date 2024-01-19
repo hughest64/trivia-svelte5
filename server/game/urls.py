@@ -78,6 +78,7 @@ urlpatterns = [
         name="chat_create",
     ),
     # player endpoints
+    re_path(r"^game/check/(?P<joincode>\d+)/?$", game.EventCheckView.as_view(), name="event_check"),
     re_path(r"^game/join/?$", game.EventJoinView.as_view(), name="event_join"),
     re_path(
         r"^game/(?P<joincode>\d+)/response/?$",

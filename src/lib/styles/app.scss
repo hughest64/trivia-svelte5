@@ -377,6 +377,14 @@ button {
     flex-grow: 1;
 }
 
+.text-center {
+    text-align: center;
+}
+
+.max-width {
+    width: min(var(--max-element-width), calc(100% - 1rem));
+}
+
 /* ------------------- */
 /* Break Points        */
 /* ------------------- */
