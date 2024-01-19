@@ -104,6 +104,8 @@ class EventCheckView(APIView):
     @method_decorator(csrf_protect)
     def get(self, request, joincode):
         event = get_event_or_404(joincode=joincode)
+        # ensure that the player is able to join the game
+        check_player_limit(event, request.user)
         return Response({"event_data": event.game_json(), "user_data": request.user.to_json()})
 
 
