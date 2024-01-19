@@ -5,8 +5,8 @@
     import { getStore } from '$lib/utils';
 
     $: form = $page.form;
-    $: teamName = form?.team_name; // || 'Remove This Default';
-    $: teamPass = form?.team_password; // || 'not-the-password';
+    $: teamName = form?.team_name;
+    $: teamPass = form?.team_password;
     $: qr = form?.qr;
 
     const userData = getStore('userData');
