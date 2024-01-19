@@ -32,6 +32,7 @@ test.afterAll(async ({ host }) => {
 
 // TODO: what is the best way to delete the newly created guest user?
 test('guest login', async ({ page }) => {
+    // PORTED
     await page.goto('/');
     // not logged in, we should land on the welcome page
     await expect(page).toHaveTitle(/welcome/i);
@@ -44,6 +45,7 @@ test('guest login', async ({ page }) => {
 
 // TODO: can we test for query params? I think probably via regex
 test('all authed pages redirect to welcome page when not logged in', async ({ page }) => {
+    // SKIPPED
     await page.goto('/team');
     await expect(page).toHaveURL(/\/?next=\/team/);
 
@@ -84,6 +86,7 @@ test('navigate to a game', async ({ p3 }) => {
 });
 
 test('logout navigates back to the home page', async ({ p4 }) => {
+    // SKIPPED
     await p4.page.goto('/team');
     await p4.page.locator('text=menu').click();
     await p4.page.locator('text=Logout').click();
@@ -92,6 +95,7 @@ test('logout navigates back to the home page', async ({ p4 }) => {
 
 // host navigates to a game
 test('host navigation options', async ({ host }) => {
+    // PORTED (as part of host login)
     // hosts can play
     await host.page.goto('/host/choice');
     await expect(host.page).toHaveTitle(/host or play/i);
@@ -106,6 +110,7 @@ test('host navigation options', async ({ host }) => {
 });
 
 test('navigate directly to a game', async ({ p2 }) => {
+    // PORTED
     await p2.page.goto('/game/9906');
     // expect the message to appear
     const linkText = p2.page.locator('button', { hasText: 'Click here' });
@@ -121,6 +126,7 @@ test('navigate directly to a game', async ({ p2 }) => {
 });
 
 test('two players cannot join an event with a player limit', async ({ p3, p4 }) => {
+    // PORTED
     await p3.joinGame(joincode);
     await p4.joinGame(joincode);
 
@@ -146,6 +152,7 @@ test('two players cannot join an event with a player limit', async ({ p3, p4 }) 
 });
 
 test.describe('user creation', async () => {
+    // PORTED
     test.afterAll(async ({ host }) => {
         apicontext.post('ops/delete/', {
             headers: await host.getAuthHeader(),
@@ -214,6 +221,7 @@ test.describe('user creation', async () => {
 
 // TODO: possibly wrap these and send an after each to delete the new user
 test('password reset for logged in user', async ({ p1 }) => {
+    // SKIPPED
     // p1 should get redirected (cuz logged in) from /user/forgot
     await p1.page.goto('/user/forgot');
     await expect(p1.page).toHaveURL(/\/team/);
@@ -236,6 +244,7 @@ test('password reset for logged in user', async ({ p1 }) => {
 });
 
 test('password reset for not logged in user', async ({ page, host }) => {
+    // PORTED
     // post to the api to create a user
     let resp = await apicontext.post('/ops/create-user/', {
         headers: await host.getAuthHeader(),

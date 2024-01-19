@@ -7,6 +7,20 @@ export const load: PageServerLoad = async (loadEvent) => {
     return handlePlayerAuth({ ...loadEvent, endPoint: '/user' });
 };
 
+const checkevent: Action = async ({ fetch, request }) => {
+    const formData = await request.formData();
+    const joincode = formData.get('joincode');
+
+    const apiHost = PUBLIC_API_HOST;
+    const response = await fetch(`${apiHost}/game/check/${joincode}`);
+    const responseData = await response.json();
+    if (!response.ok) {
+        // TODO: check for player_limit_exceeded reason and throw error if present
+        return fail(responseData.status, { error: responseData.detail });
+    }
+    return responseData
+}
+
 const joinevent: Action = async ({ fetch, request }) => {
     const formData = await request.formData();
     const joincode = formData.get('joincode');
@@ -25,7 +39,7 @@ const joinevent: Action = async ({ fetch, request }) => {
         return fail(responseData.status, { error: responseData.detail });
     }
 
-    throw redirect(303, `/game/${joincode}`);
+    redirect(303, `/game/${joincode}`);
 };
 
-export const actions = { joinevent };
+export const actions = { checkevent, joinevent };

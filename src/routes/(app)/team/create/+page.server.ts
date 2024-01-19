@@ -3,8 +3,6 @@ import { PUBLIC_API_HOST } from '$env/static/public';
 import type { Actions } from './$types';
 
 export const actions: Actions = {
-    // TODO: should this one not redirect but give the nice note as in the currrent app?
-    // it would contain a link to /game/join
     createTeam: async ({ fetch, request, url }) => {
         const data = Object.fromEntries((await request.formData()).entries());
 
@@ -20,6 +18,7 @@ export const actions: Actions = {
         }
 
         const next = url.searchParams.get('next') || '/game/join';
-        throw redirect(302, next);
+        // redirect(302, next);
+        return responseData.team_data
     }
 };

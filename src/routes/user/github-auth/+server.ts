@@ -22,7 +22,7 @@ export const GET = (async ({ cookies, fetch, url }) => {
     });
 
     if (!apiResp.ok) {
-        throw error(400, { message: 'Cannot authenticate with Github' });
+        error(400, { message: 'Cannot authenticate with Github' });
     }
 
     const secureCookie = url.protocol === 'https:';
@@ -30,7 +30,7 @@ export const GET = (async ({ cookies, fetch, url }) => {
     const jwt = cookie.parse(responseCookies)?.jwt;
 
     if (!jwt) {
-        throw error(400, { message: 'Cannot authenticate with Github' });
+        error(400, { message: 'Cannot authenticate with Github' });
     }
 
     const jwtData = getJwtPayload(jwt);
@@ -40,5 +40,5 @@ export const GET = (async ({ cookies, fetch, url }) => {
     const next = cookies.get('next') || (jwtData?.staff_user ? '/host/choice' : '/team');
     cookies.delete('next', { path: '/' });
 
-    throw redirect(302, next);
+    redirect(302, next);
 }) satisfies RequestHandler;

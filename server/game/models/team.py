@@ -1,10 +1,10 @@
 import random
 
 from django.conf import settings
-from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
 
+from game.utils.qr import TeamQr
 from game.views.validation.exceptions import TeamPasswordError
 
 MAX_CREATE_JOINCODE_ATTEMPTS = 30
@@ -13,16 +13,43 @@ TEAM_CHAT_STORAGE_LIMIT = 200
 HOST_CHATS_PER_EVENT_limit = 50
 
 
-class Team(models.Model):
-    def __init__(self, *args, create_password=False, **kwargs):
-        # shall we auto-generate a team joincode?
-        self.create_password = create_password
-        super().__init__(*args, **kwargs)
+class TeamManager(models.Manager):
+    def get_or_create(self, password=None, **kwargs):
+        try:
+            return self.get(password=password, **kwargs), False
+        except self.model.DoesNotExist:
+            return self.create(password=password, **kwargs), True
 
+    def create(self, password=None, **kwargs):
+        if password is not None and self.filter(password=password).exists():
+            raise TeamPasswordError("this password is not available")
+
+        if password is None:
+            password = self.generate_password(attempt_num=0, max_attempts=30)
+        return super().create(password=password, **kwargs)
+
+    def generate_password(self, attempt_num=0, max_attempts=30, sep="-"):
+        if attempt_num > MAX_CREATE_JOINCODE_ATTEMPTS:
+            raise TeamPasswordError(
+                detail="cannot create a password for this team, too many attempts"
+            )
+        password = sep.join(random.sample(settings.WORD_LISZT, 3))
+        if self.filter(password=password).exists():
+            self.generate_password(attempt_num + 1, max_attempts=max_attempts)
+
+        return password
+
+
+class Team(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     name = models.CharField(max_length=100)
     password = models.CharField(max_length=120, unique=True, db_index=True)
     members = models.ManyToManyField("user.User", blank=True, related_name="teams")
+
+    objects = TeamManager()
+
+    def generate_qr(self):
+        return TeamQr(team_password=self.password).create()
 
     def to_json(self):
         return {
@@ -35,30 +62,8 @@ class Team(models.Model):
     def __str__(self):
         return self.name
 
-    def generate_password(self, attempts, *args, sep="-", **kwargs):
-        if attempts > MAX_CREATE_JOINCODE_ATTEMPTS:
-            raise TeamPasswordError(
-                detail="cannot create a password for this team, too many attempts"
-            )
-        try:
-            self.password = sep.join(random.sample(settings.WORD_LISZT, 3))
-            self.full_clean()
-
-        except ValidationError as e:
-            if "password" in e.error_dict:
-                self.generate_password(attempts + 1, *args, **kwargs)
-            raise ValidationError(e)
-
     def save(self, *args, **kwargs):
-        if self.pk is not None and self.create_password:
-            raise TeamPasswordError(
-                detail="cannot auto generate a password for an existing team"
-            )
-
-        if self.create_password:
-            self.generate_password(0, *args, **kwargs)
-        else:
-            self.full_clean()
+        self.full_clean()
 
         super().save(*args, **kwargs)
 

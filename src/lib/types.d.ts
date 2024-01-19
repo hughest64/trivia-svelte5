@@ -255,6 +255,8 @@ export interface StoreTypes {
 
 export type MessageHandler = Record<string, (message: any) => unknown>;
 
+export type HttpResponseStatus = NumericRange<400, 599>;
+
 interface CustomLoadEvent extends ServerLoadEvent {
     endPoint?: string;
 }

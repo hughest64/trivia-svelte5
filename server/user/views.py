@@ -226,9 +226,11 @@ class ForgotPasswordView(APIView):
         except User.DoesNotExist:
             raise NotFound("No user with that username or email address exists")
 
-        Mailer(user).send_password_reset()
+        mailer = Mailer(user)
+        mailer.set_reset_token()
+        mailer.send_password_reset()
 
-        return Response({"sucess": True})
+        return Response({"sucess": True, "token": mailer.reset_token})
 
 
 class ResetPasswordView(APIView):

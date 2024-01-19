@@ -1,0 +1,50 @@
+{
+    "host_user": {
+        "username": "host_user",
+        "password": "abc123",
+        "email": "host_user@no.no",
+        "is_staff": true,
+        "auth_storage_path": "playwright/.auth/host_user.json"
+    },
+    "api_user": {
+        "username": "api_user",
+        "password": "api_user_password",
+        "email": "api_user@no.no",
+        "is_staff": true,
+        "auth_storage_path": "playwright/.auth/api_user.json"
+    },
+    "reset_user": {
+        "username": "reset_user",
+        "password": "abc123",
+        "email": "reset_user@no.no",
+        "auth_storage_path": ""
+    },
+    "player_one": {
+        "username": "player_one",
+        "password": "abc123",
+        "email": "player_one@no.no",
+        "team_name": "hello world",
+        "auth_storage_path": "playwright/.auth/player_one.json"
+    },
+    "player_two": {
+        "username": "player_two",
+        "password": "abc123",
+        "email": "player_two@no.no",
+        "team_name": "hello world",
+        "auth_storage_path": "playwright/.auth/player_two.json"
+    },
+    "player_three": {
+        "username": "player_three",
+        "password": "abc123",
+        "email": "player_three@no.no",
+        "team_name": "for all the marbles",
+        "auth_storage_path": "playwright/.auth/player_three.json"
+    },
+    "player_four": {
+        "username": "player_four",
+        "password": "abc123",
+        "email": "player_four@no.no",
+        "team_name": "for all the marbles",
+        "auth_storage_path": "playwright/.auth/player_four.json"
+    }
+}

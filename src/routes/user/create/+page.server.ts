@@ -76,6 +76,6 @@ export const actions: Actions = {
                 next = '/team';
             }
         }
-        throw redirect(302, next + url.search);
+        redirect(302, next + url.search);
     }
 };

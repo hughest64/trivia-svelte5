@@ -5,7 +5,7 @@ import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals }) => {
     if (locals.validtoken) {
-        throw redirect(302, '/team');
+        redirect(302, '/team');
     }
 };
 

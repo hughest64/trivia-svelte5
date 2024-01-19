@@ -22,7 +22,7 @@ export const load = (async ({ cookies, fetch, url }) => {
     });
 
     if (!apiResp.ok) {
-        throw error(400, { message: 'Cannot authenticate with Google' });
+        error(400, { message: 'Cannot authenticate with Google' });
     }
 
     const secureCookie = url.protocol === 'https:';
@@ -30,7 +30,7 @@ export const load = (async ({ cookies, fetch, url }) => {
     const jwt = cookie.parse(responseCookies)?.jwt;
 
     if (!jwt) {
-        throw error(400, { message: 'Cannot authenticate with Google' });
+        error(400, { message: 'Cannot authenticate with Google' });
     }
 
     const jwtData = getJwtPayload(jwt);
@@ -46,7 +46,7 @@ export const load = (async ({ cookies, fetch, url }) => {
     cookies.delete('team_password', { path: '/' });
     cookies.delete('next', { path: '/' });
 
-    throw redirect(302, next);
+    redirect(302, next);
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
@@ -77,6 +77,6 @@ export const actions: Actions = {
 
         const googleUrl = googleAuthUrl();
 
-        throw redirect(302, googleUrl);
+        redirect(302, googleUrl);
     }
 };

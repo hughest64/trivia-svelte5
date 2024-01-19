@@ -7,8 +7,7 @@ import type { PlaywrightTestConfig } from '@playwright/test';
  * Subsequent test runs (if there are no code changes) can use `npm run test` which
  * eliminates the build step and saves time.
  */
-// npm run build:test &&\
-// node -r dotenv/config build_test dotenv_config_path=./.env.test
+
 const testcmd = `
     ORIGIN='http://127.0.0.1:4173'\
     HOST='127.0.0.1'\
@@ -17,15 +16,17 @@ const testcmd = `
 `;
 
 const djangoservercmd = `
+    pipenv run python manage.py migrate --settings=server.settings_tst &&\
+    pipenv run python manage.py reset_test_data -a --settings=server.settings_tst &&\
     DJANGO_SETTINGS_MODULE=server.settings_tst\
     pipenv run gunicorn -w 4 -k uvicorn.workers.UvicornWorker\
     --bind 127.0.0.1:7000 server.asgi:application
 `;
 
 const config: PlaywrightTestConfig = {
-    retries: 1,
-    workers: 3,
-    timeout: 30000,
+    // retries: 1,
+    // workers: 3,
+    timeout: 5000,
     webServer: [
         {
             command: testcmd,
@@ -39,7 +40,8 @@ const config: PlaywrightTestConfig = {
             reuseExistingServer: true
         }
     ],
-    use: { baseURL: 'http://127.0.0.1:4173' }
+    use: { baseURL: 'http://127.0.0.1:4173' },
+    testDir: 'tests_new'
 };
 
 export default config;

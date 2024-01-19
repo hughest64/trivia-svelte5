@@ -369,8 +369,20 @@ button {
     align-items: center;
 }
 
+.full-width {
+    width: 100%;
+}
+
 .grow {
     flex-grow: 1;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.max-width {
+    width: min(var(--max-element-width), calc(100% - 1rem));
 }
 
 /* ------------------- */
