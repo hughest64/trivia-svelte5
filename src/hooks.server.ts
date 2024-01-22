@@ -27,8 +27,6 @@ export const handle: Handle = async ({ event, resolve }) => {
         event.locals.activeQuestionNumber = activeQuestionNumber || '';
         event.locals.activeQuestionKey = activeQuestionKey || '';
     }
-    event.locals.websocketHost = PUBLIC_WEBSOCKET_HOST;
-
     const response = await resolve(event);
     return response;
 };

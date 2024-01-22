@@ -12,7 +12,6 @@ declare global {
             activeRoundNumber?: string | number;
             activeQuestionNumber?: string | number;
             activeQuestionKey?: string;
-            websocketHost?: string;
             updateDelay?: number;
         }
         interface PageData {
