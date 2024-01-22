@@ -1,9 +1,11 @@
 <script lang="ts">
+    import { page } from '$app/stores';
     import { getStore } from './utils';
     import { deserialize } from '$app/forms';
     const userData = getStore('userData');
 
     $: autoRevealValue = !!$userData?.auto_reveal_questions;
+
     let formError = '';
     const handleAutoReveal = async (e: Event) => {
         formError = '';

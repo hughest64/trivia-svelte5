@@ -22,21 +22,21 @@
 <ul>
     {#if joincode}
         <li><EventMeta /></li>
-    {/if}
 
-    <li>
-        <form action="" class="auto-advance-form" on:submit|preventDefault>
-            <span>Auto Advance Questions</span>
-            <AutoRevealToggle />
-        </form>
-    </li>
+        <li>
+            <form action="" class="auto-advance-form" on:submit|preventDefault>
+                <span>Auto Advance Questions</span>
+                <AutoRevealToggle />
+            </form>
+        </li>
+    {/if}
 
     {#if isGameEndpoint && joincode}
         <li><a href="/team/manage?prev={prev}" on:click data-sveltekit-reload>Team Page</a></li>
     {/if}
 
     <li><a href="/user/settings?prev={prev}" on:click data-sveltekit-reload>Manage Profile</a></li>
-    <li><a href="/rules" on:click data-sveltekit-reload>Rules and FAQ</a></li>
+    <li><a href="/rules?prev={prev}" on:click data-sveltekit-reload>Rules and FAQ</a></li>
 
     {#if isHost}
         <li><a href={adminLink} rel="external" on:click>Trivia Mafia Administration</a></li>
