@@ -3,7 +3,7 @@
     import { browser } from '$app/environment';
     import { goto } from '$app/navigation';
     import { page } from '$app/stores';
-    import { PUBLIC_QUESTION_REVEAL_TIMEOUT } from '$env/static/public';
+    import { PUBLIC_QUESTION_REVEAL_TIMEOUT, PUBLIC_WEBSOCKET_HOST } from '$env/static/public';
     import { createQuestionKey, getStore, resolveBool } from '$lib/utils';
     import type {
         CurrentEventData,
@@ -23,7 +23,7 @@
     } from './types';
     const path = $page.url.pathname;
 
-    export let socketUrl = `${$page.data.websocketHost}/ws${path}/`;
+    export let socketUrl = `${PUBLIC_WEBSOCKET_HOST}/ws${path}/`;
     export let maxRetries = 50;
     export let retryInterval = 1000;
     export let reconnect = true;

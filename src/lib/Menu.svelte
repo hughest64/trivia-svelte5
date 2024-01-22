@@ -3,6 +3,7 @@
     import { dev } from '$app/environment';
     import { PUBLIC_API_HOST } from '$env/static/public';
     import { getStore } from './utils';
+    import AutoRevealToggle from './AutoRevealToggle.svelte';
     import EventMeta from './EventMeta.svelte';
 
     const joincode = $page.params.joincode;
@@ -19,23 +20,40 @@
 </script>
 
 <ul>
-    <li><EventMeta /></li>
-    <li><a href="/rules" on:click>Rules and FAQ</a></li>
-    <li><a href="/user/settings?prev={prev}" on:click data-sveltekit-reload>Manage Profile</a></li>
-    {#if isGameEndpoint && joincode}
-        <li><a href="/team/manage?prev={prev}" on:click data-sveltekit-reload>Manage Team</a></li>
+    {#if joincode}
+        <li><EventMeta /></li>
+
+        <li>
+            <form action="" class="auto-advance-form" on:submit|preventDefault>
+                <span>Auto Advance Questions</span>
+                <AutoRevealToggle />
+            </form>
+        </li>
     {/if}
+
+    {#if isGameEndpoint && joincode}
+        <li><a href="/team/manage?prev={prev}" on:click data-sveltekit-reload>Team Page</a></li>
+    {/if}
+
+    <li><a href="/user/settings?prev={prev}" on:click data-sveltekit-reload>Manage Profile</a></li>
+    <li><a href="/rules?prev={prev}" on:click data-sveltekit-reload>Rules and FAQ</a></li>
+
     {#if isHost}
         <li><a href={adminLink} rel="external" on:click>Trivia Mafia Administration</a></li>
     {/if}
+
     <li><a href={feedbackLink} target="_blank" on:click>Submit App Feedback</a></li>
-    {#if isHost}
+
+    <li><a href="/game/join" on:click>Join a Different Game</a></li>
+
+    <!-- {#if isHost}
         <li>
             <a href="https://hosts.triviamafia.com" rel="external" target="_blank" on:click>
                 Trivia Mafia Host Feedback
             </a>
         </li>
-    {/if}
+    {/if} -->
+
     <li><a rel="external" href="/user/logout">Logout</a></li>
     <button on:click>X</button>
 </ul>
@@ -55,6 +73,14 @@
         &:last-of-type {
             flex-grow: 1;
         }
+    }
+    .auto-advance-form {
+        // outline: 1px dashed pink;
+        position: relative;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        min-width: 100%;
     }
     a {
         text-decoration: none;

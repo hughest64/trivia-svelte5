@@ -1,30 +1,19 @@
 <script lang="ts">
-    import { browser } from '$app/environment';
-    import { afterNavigate } from '$app/navigation';
+    import { page } from '$app/stores';
     import { getStore } from './utils';
 
     const userData = getStore('userData');
     const userEmail = $userData.email;
     const feedbackLink = `https://docs.google.com/forms/d/e/1FAIpQLSeT5FX2OGycY0yDqjiwj8ItAFi8CE64GatBiO-lsYAz1hLguA/viewform?usp=pp_url&entry.1807181492=${userEmail}`;
 
-    let prevRoute = (browser && sessionStorage.getItem('previous_round')) || '/team';
-
-    afterNavigate(({ from, to }) => {
-        const fromPath = from?.url.pathname as string;
-        const toPath = to?.url.pathname as string;
-        if (fromPath && fromPath !== toPath) {
-            prevRoute = fromPath;
-            sessionStorage.setItem('previous_round', fromPath);
-        }
-    });
-    const clearStorage = () => sessionStorage.removeItem('previous_round');
+    const prevRoute = $page.url.searchParams.get('prev') || '/team';
 </script>
 
 <svelte:head><title>Trivia Mafia | Rules</title></svelte:head>
 
 <main class="short">
     <h1>Trivia Mafia Rules, Links, FAQ</h1>
-    <a href={prevRoute} class="button button-tertiary" on:click={clearStorage} data-sveltekit-reload>Go Back</a>
+    <a href={prevRoute} class="button button-tertiary" data-sveltekit-reload>Go Back</a>
 
     <article>
         <h3>How to play:</h3>
@@ -113,7 +102,7 @@
         <p>We want to hear about what the problem is, so drop us a line on our Feedback Form so that we can fix it!</p>
     </article>
 
-    <a href={prevRoute} class="button button-tertiary" on:click={clearStorage} data-sveltekit-reload>Go Back</a>
+    <a href={prevRoute} class="button button-tertiary" data-sveltekit-reload>Go Back</a>
 
     <small>App created by <a href="https://codeofthenorth.com" target="_blank">Code of the North</a></small>
 </main>
