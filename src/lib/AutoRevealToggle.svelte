@@ -5,6 +5,7 @@
     const userData = getStore('userData');
 
     $: autoRevealValue = !!$userData?.auto_reveal_questions;
+    $: console.log($userData);
 
     let formError = '';
     const handleAutoReveal = async (e: Event) => {
@@ -14,7 +15,7 @@
         userData.update((data) => ({ ...data, auto_reveal_questions: !data.auto_reveal_questions }));
 
         const formData = new FormData();
-        formData.set('auto_reveal', String(autoRevealValue));
+        formData.set('auto_reveal', String(!autoRevealValue));
 
         const response = await fetch(target.action, {
             method: 'post',
