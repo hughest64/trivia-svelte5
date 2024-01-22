@@ -56,12 +56,7 @@
 
 <h2>Manage your profile</h2>
 
-<form
-    action="?/auto_reveal_update"
-    on:submit|preventDefault
-    class="auto-reveal"
-    on:submit|preventDefault={handleAutoReveal}
->
+<form action="?/auto_reveal_update" class="auto-reveal" on:submit|preventDefault={handleAutoReveal}>
     {#if formError} <p class="error">{formError}</p>{/if}
     <div class="switch-container">
         <label for="player_limit" class="switch">

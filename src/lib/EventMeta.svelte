@@ -15,24 +15,15 @@
 </script>
 
 <div class="meta-container">
-    <p class="title">Today's Join Codes</p>
     <div class="data">
-        <span>Team Name</span>
-        <strong>{activeTeam?.name || '-'}</strong>
-    </div>
-    <div class="data">
-        <span>Team Password</span>
-        <strong>{activeTeam?.password || '-'}</strong>
-    </div>
-    <div class="data">
-        <span>Game Join Code</span>
+        <strong>Game Join Code:</strong>
         <strong>{$page.params.joincode || '-'}</strong>
     </div>
-    {#if activeTeam}
+    <!-- {#if activeTeam}
         <button class="join-link" on:click={handleCopyLink}>
             Share <strong>this link</strong> to join team {copiedMsg}
         </button>
-    {/if}
+    {/if} -->
 </div>
 
 <style lang="scss">
@@ -42,22 +33,16 @@
         display: flex;
         flex-direction: column;
     }
-    .title {
-        text-align: center;
-        font-size: 1.5rem;
-    }
     .data {
         display: flex;
         justify-content: space-between;
         padding: 0.5rem 0;
     }
-    span {
-        font-weight: normal;
-    }
-    .join-link {
-        margin: 1rem auto;
-        color: var(--color-tertiary);
-        font-weight: normal;
-        font-size: 1rem;
-    }
+
+    // .join-link {
+    //     margin: 1rem auto;
+    //     color: var(--color-tertiary);
+    //     font-weight: normal;
+    //     font-size: 1rem;
+    // }
 </style>
