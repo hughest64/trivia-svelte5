@@ -37,8 +37,9 @@ export const actions: Actions = {
             body: JSON.stringify(body)
         });
 
+        const respData = await response.json()
         if (!response.ok) {
-            // TODO: error handling
+            return fail(response.status, respData)
         }
 
         return { success: true };

@@ -2,6 +2,7 @@ from typing import List
 
 from django.db.models import QuerySet
 from django.utils import timezone
+from django.db import transaction
 
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
@@ -41,6 +42,7 @@ from game.models import (
 from game.models.utils import queryset_to_json
 from game.processors import LeaderboardProcessor
 from game.utils.socket_classes import SendEventMessage, SendHostMessage
+from game.utils.number_convertor import NumberConvertor, NumberConversionException
 from game.views.validation.exceptions import LeaderboardEntryNotFound
 
 
@@ -636,20 +638,25 @@ class TiebreakerView(APIView):
 
         through_round = event.max_locked_round()
         question_responses = []
-        for entry in team_data:
-            team_id = entry.get("team_id")
-            try:
-                answer = int(entry.get("answer"))
-            except:
-                answer = None
+        with transaction.atomic():
+            for entry in team_data:
+                team_id = entry.get("team_id")
+                answer = entry.get("answer")
 
-            question_response, _ = TiebreakerResponse.objects.update_or_create(
-                game_question=question,
-                event=event,
-                team_id=team_id,
-                defaults={"recorded_answer": answer, "round_number": through_round},
-            )
-            question_responses.append(question_response)
+                try:
+                    NumberConvertor.convert_to_number(answer)
+                except NumberConversionException as e:
+                    print("raising")
+                    # raise DataValidationError(str(e))
+                    return Response({"detail": str(e)}, status=400)
+
+                question_response, _ = TiebreakerResponse.objects.update_or_create(
+                    game_question=question,
+                    event=event,
+                    team_id=team_id,
+                    defaults={"recorded_answer": answer, "round_number": through_round},
+                )
+                question_responses.append(question_response)
 
         # grade is abs(actual_answer - resp.answer)
         sorted_resps = sorted(question_responses, key=lambda resp: resp.grade)
