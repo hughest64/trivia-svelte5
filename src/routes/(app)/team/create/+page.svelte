@@ -50,7 +50,7 @@
             <h3>{teamPass}</h3>
             <!-- TODO: check that it exists and use a sensible fallback -->
             {@html qr}
-            <a href="game/join" class="button button-primary">Next</a>
+            <a href="/game/join" class="button button-primary" data-sveltekit-reload>Next</a>
         </div>
     {/if}
 </main>

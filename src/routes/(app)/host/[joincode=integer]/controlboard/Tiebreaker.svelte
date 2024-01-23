@@ -38,7 +38,9 @@
     };
     $: groupedEntries = groupEntries(hostEntries);
 
+    let errorMessage: string | undefined;
     const handleSubmit = async (e: Event) => {
+        errorMessage = undefined;
         const target = e.target as HTMLFormElement;
         const data = new FormData(target);
 
@@ -46,10 +48,11 @@
             method: target.method,
             body: data
         });
-        const result: ActionResult = deserialize(await response.text());
+        const result = deserialize(await response.text());
 
-        if (result.type !== 'success') {
-            // TODO: handle error
+        if (result.type === 'failure') {
+            console.log(result);
+            errorMessage = result.data?.detail as string;
         }
     };
 </script>
@@ -60,6 +63,7 @@
     {#each Object.entries(groupedEntries) as [forRank, group]}
         <li>
             <form action="?/submit_tiebreakers" method="post" on:submit|preventDefault={handleSubmit}>
+                {#if errorMessage}<p class="error">{errorMessage}</p>{/if}
                 <h3 class="spacer">For {forRank}{placeMap[forRank] || 'th'} Place</h3>
 
                 <input type="hidden" name="tied_for_rank" value={forRank} />

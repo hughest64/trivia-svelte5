@@ -1,7 +1,13 @@
+import logging
+
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 
 from fuzzywuzzy import fuzz
+
+from game.utils.number_convertor import NumberConvertor, NumberConversionException
+
+logger = logging.getLogger(__name__)
 
 FUZZ_MATCH_RATIO = 85
 
@@ -222,7 +228,7 @@ class TiebreakerResponse(models.Model):
     game_question = models.ForeignKey("GameQuestion", on_delete=models.CASCADE)
     # the round at which the response was created (likely the event.max_locked_round())
     round_number = models.IntegerField()
-    recorded_answer = models.IntegerField(blank=True, null=True)
+    recorded_answer = models.CharField(blank=True, max_length=120)
     team = models.ForeignKey(
         "Team", related_name="tiebreaker_responses", on_delete=models.CASCADE
     )
@@ -233,15 +239,16 @@ class TiebreakerResponse(models.Model):
     # delta between the actual answer and a recored answer
     @property
     def grade(self):
-        if self.recorded_answer is None:
+        try:
+            player_answer = NumberConvertor.convert_to_number(self.recorded_answer)
+            correct_answser = NumberConvertor.convert_to_number(
+                self.game_question.question.display_answer.text
+            )
+        except NumberConversionException as e:
+            logging.error(f"cannot grade response id {self.id}\n{e}")
             return "NaN"
 
-        return str(
-            abs(
-                int(self.game_question.question.display_answer.text)
-                - self.recorded_answer
-            )
-        )
+        return str(abs(correct_answser - player_answer))
 
     def __str__(self):
         return f"Tiebreaker Response for {self.team} at {self.event}"
