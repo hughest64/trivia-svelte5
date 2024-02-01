@@ -1,15 +1,25 @@
 <script lang="ts">
+    import { page } from '$app/stores';
     import { slide } from 'svelte/transition';
-    import { getStore } from '$lib/utils';
+    import { getStore, setEventCookie } from '$lib/utils';
     import Round from './Round.svelte';
     import RoundSelector from './RoundSelector.svelte';
     import type { GameRound } from '$lib/types';
 
     const activeEventData = getStore('activeEventData');
+    const currentEventData = getStore('currentEventData');
     const playerJoined = getStore('playerJoined');
     const rounds = getStore('rounds');
 
     $: activeRound = $rounds.find((rd) => rd.round_number === $activeEventData.activeRoundNumber) as GameRound;
+    const handleGoToCurrent = () => {
+        $activeEventData = {
+            activeRoundNumber: $currentEventData.round_number,
+            activeQuestionNumber: $currentEventData.round_number,
+            activeQuestionKey: $currentEventData.question_key
+        };
+        setEventCookie($activeEventData, $page.params.joinCode);
+    };
 </script>
 
 <h2>{activeRound?.title}</h2>
@@ -30,6 +40,12 @@
 
 <Round {activeRound} />
 
+{#if $activeEventData.activeQuestionKey !== $currentEventData.question_key}
+    <button class="go-to-current" on:click={handleGoToCurrent}>
+        <p>Jump To Current Question</p>
+    </button>
+{/if}
+
 <style lang="scss">
     .not-joined-warning {
         margin: 1rem 0;
@@ -43,5 +59,12 @@
     .submit {
         text-decoration: underline;
         color: var(--color-primary);
+    }
+    .go-to-current {
+        background-color: var(--color-current);
+        width: min(100vw, var(--max-container-width));
+        text-align: center;
+        font-weight: bold;
+        margin: 0;
     }
 </style>
