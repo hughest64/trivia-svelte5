@@ -45,7 +45,7 @@
         {#if form?.error}<p class="error">{form?.error}</p>{/if}
 
         <div class="switch-container">
-            <h4>Use Sound Round</h4>
+            <h4>Use Sound Round?</h4>
             <label for="sound-choice" class="switch">
                 <input type="hidden" bind:value={useSound} name="sound-choice" />
                 <button
@@ -58,20 +58,7 @@
         </div>
 
         <div class="switch-container">
-            <h4>Limit Game to Single Device</h4>
-            <label for="player_limit" class="switch">
-                <input type="hidden" bind:value={playerLimit} name="player_limit" />
-                <button
-                    id="player-limit-btn"
-                    class="slider"
-                    class:revealed={playerLimit}
-                    on:click|preventDefault={() => (playerLimit = !playerLimit)}
-                />
-            </label>
-        </div>
-
-        <div class="switch-container">
-            <h4>Host Theme Event</h4>
+            <h4>Theme Night?</h4>
             <label for="event_type" class="switch">
                 <input type="hidden" bind:value={playerLimit} name="event_type" />
                 <button
@@ -79,6 +66,19 @@
                     class="slider"
                     class:revealed={useThemeNight}
                     on:click|preventDefault={handleUseThemeNight}
+                />
+            </label>
+        </div>
+
+        <div class="switch-container">
+            <h4>Limit Game to Single Device?</h4>
+            <label for="player_limit" class="switch">
+                <input type="hidden" bind:value={playerLimit} name="player_limit" />
+                <button
+                    id="player-limit-btn"
+                    class="slider"
+                    class:revealed={playerLimit}
+                    on:click|preventDefault={() => (playerLimit = !playerLimit)}
                 />
             </label>
         </div>
