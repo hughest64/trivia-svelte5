@@ -322,14 +322,15 @@ class RoundLockView(APIView):
         )
         resps.update(locked=locked)
 
+        # update the host leaderboard
+        lb_processor = LeaderboardProcessor(event)
+        leaderboard_data = lb_processor.update_host_leaderboard(
+            through_round=event.max_locked_round()  # or round_state.round_number
+        )
+
         resp_summary = None
         if locked:
             resp_summary = QuestionResponse.summarize(event=event)
-            # update the host leaderboard
-            lb_processor = LeaderboardProcessor(event)
-            leaderboard_data = lb_processor.update_host_leaderboard(
-                through_round=event.max_locked_round() or round_state.round_number
-            )
 
             # TODO: perhaps we don't need to send this as a separate host message
             # maybe we just ignore the piece of data if the broswer is on a /game route

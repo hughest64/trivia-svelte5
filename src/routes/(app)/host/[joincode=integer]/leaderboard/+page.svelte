@@ -45,7 +45,6 @@
 
     <RoundSelector />
 
-    <!-- TODO: and nice slide transition would be cool here -->
     {#if lbView === 'public'}
         {#if $leaderboard.through_round}
             <h4>Public Leaderboard Through Round {$leaderboard.through_round}</h4>
@@ -59,7 +58,6 @@
             {/each}
         </ul>
     {:else}
-        <!-- TODO: we might need to display both buttons rather than having a preference for revealed first -->
         {#if !revealed}
             <form action="?/revealanswers" method="post" use:enhance>
                 <button id="reveal-button" class="button button-secondary">Reveal Answers</button>
