@@ -72,3 +72,17 @@
 </div>
 
 <Round {activeRound} />
+
+<div class="lock-container">
+    {#if error}<p>{error}</p>{/if}
+    <label id={`rd-${activeRound?.round_number}`} for="round-lock" class="lock">
+        <input
+            type="checkbox"
+            name="round-lock"
+            id="round-lock"
+            bind:checked={locked}
+            on:click|preventDefault={handleLockRound}
+        />
+        <span class:checked={locked} />
+    </label>
+</div>
