@@ -1,8 +1,12 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import type { EventData } from '$lib/types';
 
-    type RecentEvent = Omit<EventData, 'current_round_number' | 'current_question_number'>;
+    interface RecentEvent {
+        id: string;
+        location: string;
+        game_title: string;
+        joincode: string;
+    }
     const recentEvents: RecentEvent[] = $page.data.recent_events;
 </script>
 
@@ -11,7 +15,7 @@
 <main>
     <h1>Recent Hosted Events</h1>
     <ul>
-        {#each recentEvents as event (event.event_id)}
+        {#each recentEvents as event (event.id)}
             <li class="event-entry flex-column">
                 <h4>{event.game_title} @ {event.location}</h4>
                 <h4>Joincode: <a href="/host/{event.joincode}" data-sveltekit-reload>{event.joincode}</a></h4>
