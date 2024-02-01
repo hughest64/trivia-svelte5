@@ -1,5 +1,7 @@
 <script lang="ts">
     import { page } from '$app/stores';
+    import { afterNavigate, replaceState } from '$app/navigation';
+    import { getStore, setEventCookie, splitQuestionKey } from '$lib/utils';
     import QuizIcon from '$lib/footer/icons/QuizIcon.svelte';
     import ChatIcon from './icons/ChatIcon.svelte';
     import LeaderboardIcon from './icons/LeaderboardIcon.svelte';
@@ -18,6 +20,22 @@
     // use beforeNavigate to update $activeEventData to the lowest round that has not been scored
     // that makes it it nice an easy for the host to get to gettin'
     // for the case of "edit this rounds scores", we could look for a query param and use that instead
+    const activeEventData = getStore('activeEventData');
+    afterNavigate(({ to }) => {
+        const queryParams = to?.url.searchParams;
+        const activeKey = queryParams?.get('active-key');
+        // update the active question if provided
+        if (activeKey && to?.url) {
+            const { round, question } = splitQuestionKey(activeKey);
+            $activeEventData = {
+                activeRoundNumber: Number(round),
+                activeQuestionNumber: Number(question),
+                activeQuestionKey: activeKey
+            };
+            setEventCookie($activeEventData, joinCode);
+            replaceState(`${to?.url.origin}${to?.url.pathname}`, {});
+        }
+    });
 </script>
 
 <nav>

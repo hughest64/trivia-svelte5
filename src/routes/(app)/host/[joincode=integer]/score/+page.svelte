@@ -26,6 +26,9 @@
     $: isFirstQuestion = Number($activeEventData.activeQuestionKey) === Math.min(...questionKeys);
     $: isLastQuestion = Number($activeEventData.activeQuestionKey) === Math.max(...questionKeys);
 
+    $: minUnscoredRound = Math.min(...$roundStates.filter((rs) => !rs.scored).map((rs) => rs.round_number));
+    $: readAnswersLink = `/host/${joincode}?active-key=${minUnscoredRound}.1`;
+
     const advance = async () => {
         const next = scoringQuestionNumber + 1;
         const maxQuestion = Math.max(...roundQuestionNumbers);
@@ -106,9 +109,7 @@
         {#if !isLastQuestion}
             <button class="button button-secondary" on:click={advance}>Next</button>
         {:else}
-            <!-- TODO: query param that will set active event data to the min of unscored rounds -->
-            <!-- (see notes in Footer.svelte, I think an after navigate will handle it) -->
-            <a href="/host/{joincode}" class="button button-primary">Go Read Answers Aloud</a>
+            <a href={readAnswersLink} class="button button-primary" on:click>Go Read Answers Aloud</a>
         {/if}
     </div>
 
@@ -127,11 +128,12 @@
         {#if !isLastQuestion}
             <button class="button button-secondary" on:click={advance}>Next</button>
         {:else}
-            <a href="/host/{joincode}" class="button button-primary">Go Read Answers Aloud</a>
+            <a href={readAnswersLink} class="button button-primary">Go Read Answers Aloud</a>
         {/if}
     </div>
 {:else}
     <h2>Round {roundNumber} is not locked</h2>
+    <a href={readAnswersLink} class="button button-primary">Go Read Answers Aloud</a>
 {/if}
 
 <style lang="scss">

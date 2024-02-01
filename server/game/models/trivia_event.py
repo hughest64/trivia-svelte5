@@ -411,7 +411,7 @@ class EventRoundState(models.Model):
     scored = models.BooleanField(default=False)
 
     class Meta:
-        ordering = ["event", "round_number"]
+        ordering = ["-event", "round_number"]
 
     def __str__(self):
         return f"Round {self.round_number} - {self.event}"
