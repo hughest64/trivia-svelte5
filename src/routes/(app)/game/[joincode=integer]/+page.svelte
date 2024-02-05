@@ -41,7 +41,7 @@
 <Round {activeRound} />
 
 {#if $activeEventData.activeQuestionKey !== $currentEventData.question_key}
-    <button class="go-to-current" on:click={handleGoToCurrent}>
+    <button class="go-to-current" transition:slide on:click={handleGoToCurrent}>
         <p>Jump To Current Question</p>
     </button>
 {/if}
@@ -61,6 +61,9 @@
         color: var(--color-primary);
     }
     .go-to-current {
+        position: fixed;
+        bottom: calc(var(--footer-height) + 0.25rem);
+        z-index: 4;
         background-color: var(--color-current);
         width: min(100vw, var(--max-container-width));
         text-align: center;
