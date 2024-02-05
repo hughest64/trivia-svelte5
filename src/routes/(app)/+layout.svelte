@@ -1,6 +1,7 @@
 <script lang="ts">
     import Footer from '$lib/footer/Footer.svelte';
     import Menu from '$lib/Menu.svelte';
+    import MenuDots from '$lib/icons/MenuDots.svelte';
     import { slide } from 'svelte/transition';
     import Stores from '$lib/Stores.svelte';
 
@@ -8,6 +9,10 @@
 </script>
 
 <Stores>
+    <button class="menu-button" on:click={() => (displayMenu = !displayMenu)}>
+        <MenuDots />
+    </button>
+
     {#if displayMenu}
         <div class="menu-slider" transition:slide={{ duration: 500 }}>
             <div class="menu-content">
@@ -25,6 +30,24 @@
 </Stores>
 
 <style lang="scss">
+    .menu-button {
+        position: fixed;
+        top: 0.25rem;
+        right: 1rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        // border: 2px solid black;
+        border-radius: 50%;
+        height: 2.5rem;
+        width: 2.5rem;
+        margin: 0;
+        padding: 0;
+        cursor: pointer;
+        &:hover {
+            background-color: var(--color-current);
+        }
+    }
     .menu-slider {
         display: flex;
         flex-direction: column;
