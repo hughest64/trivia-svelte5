@@ -64,6 +64,16 @@
                     <p>Megaround</p>
                 </a>
             </li>
+            <li class:active={setActive('score')}>
+                <a
+                    data-sveltekit-preload-code="tap"
+                    data-sveltekit-reload
+                    href="/team/manage?prev={$page.url.pathname}"
+                >
+                    <TeamIcon cls="svg" />
+                    <p>Team</p>
+                </a>
+            </li>
         {:else if routeId === 'host' && isEventRoute}
             <li class:active={setActive('controlboard')}>
                 <a data-sveltekit-preload-code="tap" href={`/${routeId}/${joinCode}/controlboard`}>
@@ -85,13 +95,6 @@
                 <p>Menu</p>
             </button>
         </li> -->
-        <li class:active={setActive('score')}>
-            <!-- TODO: handle "&previous=where/I/came/from" querystring -->
-            <a data-sveltekit-preload-code="tap" data-sveltekit-reload href="/team/manage">
-                <TeamIcon cls="svg" />
-                <p>Team</p>
-            </a>
-        </li>
     </ul>
 </nav>
 
@@ -156,8 +159,6 @@
     .active {
         a {
             background-color: #413f43;
-            // width: 4.25em;
-            // height: 4.25em;
         }
         :global(.svg path) {
             fill: var(--color-text-white);
