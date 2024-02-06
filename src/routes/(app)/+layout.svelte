@@ -9,9 +9,13 @@
 </script>
 
 <Stores>
-    <button class="menu-button" on:click={() => (displayMenu = !displayMenu)}>
-        <MenuDots />
-    </button>
+    <div class="menu-button-container">
+        <div class="menu-button-inner">
+            <button class="menu-button" on:click={() => (displayMenu = !displayMenu)}>
+                <MenuDots />
+            </button>
+        </div>
+    </div>
 
     {#if displayMenu}
         <div class="menu-slider" transition:slide={{ duration: 500 }}>
@@ -30,10 +34,20 @@
 </Stores>
 
 <style lang="scss">
-    .menu-button {
+    .menu-button-container {
         position: fixed;
         top: 0.25rem;
-        right: 1rem;
+        display: flex;
+        justify-content: center;
+        width: 100%;
+    }
+    .menu-button-inner {
+        width: min(100vw, var(--max-container-width));
+        display: flex;
+        justify-content: flex-end;
+    }
+    .menu-button {
+        // right: 1rem;
         display: flex;
         justify-content: center;
         align-items: center;
