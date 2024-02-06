@@ -15,7 +15,6 @@
         RoundState,
         ChatMessage,
         SocketMessage,
-        HostResponse,
         HostMegaRoundInstance,
         UserTeam,
         TiebreakerResponse,
@@ -43,6 +42,7 @@
     const roundStates = getStore('roundStates');
     const popupStore = getStore('popupData');
     const questionStateStore = getStore('questionStates');
+    const activeEventStore = getStore('activeEventData');
     const currentEventStore = getStore('currentEventData');
     const hostResponseStore = getStore('hostResponseData');
     const responseSummaryStore = getStore('responseSummary');
@@ -212,6 +212,13 @@
                     round_number: message.round_number,
                     question_key: createQuestionKey(message.round_number, message.question_number)
                 });
+                if ($userStore.auto_reveal_questions) {
+                    activeEventStore.set({
+                        activeRoundNumber: message.round_number,
+                        activeQuestionNumber: message.question_number,
+                        activeQuestionKey: createQuestionKey(message.round_number, message.question_number)
+                    });
+                }
             }
         },
         current_data_update: (message: CurrentEventData) => {

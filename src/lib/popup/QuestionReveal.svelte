@@ -1,28 +1,13 @@
 <script lang="ts">
     import '$lib/styles/popup.scss';
     import { fly } from 'svelte/transition';
-    import { page } from '$app/stores';
     import CloseButton from './CloseButton.svelte';
-    import { createQuestionKey, getStore, setEventCookie } from '$lib/utils';
-
-    const userData = getStore('userData');
-
-    const activeEventData = getStore('activeEventData');
+    import { getStore } from '$lib/utils';
     const popupData = getStore('popupData');
+
     $: count = $popupData.timer_value || 0;
 
     const resetPopup = () => ($popupData = { is_displayed: false, popup_type: '' });
-    const gotoQuestion = async () => {
-        if ($userData?.auto_reveal_questions && !$page.url.pathname.startsWith('/host')) {
-            const popData = $popupData.data;
-            $activeEventData = {
-                activeQuestionKey: createQuestionKey(popData?.round_number, popData?.question_number),
-                activeRoundNumber: popData?.round_number,
-                activeQuestionNumber: popData?.question_number
-            };
-            setEventCookie($activeEventData, $page.params.joincode);
-        }
-    };
 
     let interval: ReturnType<typeof setTimeout>;
     const countDown = () => {
@@ -31,7 +16,7 @@
             setTimeout(countDown, 1000);
         } else {
             clearTimeout(interval);
-            gotoQuestion();
+            // gotoQuestion();
             resetPopup();
         }
     };
