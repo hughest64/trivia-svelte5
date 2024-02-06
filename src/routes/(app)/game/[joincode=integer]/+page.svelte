@@ -76,5 +76,8 @@
         text-align: center;
         font-weight: bold;
         margin: 0;
+        p {
+            color: var(--color-secondary);
+        }
     }
 </style>

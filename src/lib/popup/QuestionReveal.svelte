@@ -50,7 +50,7 @@
         The Next Question Will Be Revealed in
         {#key count}
             <span style="display: inline-block" in:fly={{ y: -20 }}>{count}</span>
-        {/key} second{count === 1 ? '' : 's'}
+        {/key} Second{count === 1 ? '' : 's'}
     </p>
 </div>
 

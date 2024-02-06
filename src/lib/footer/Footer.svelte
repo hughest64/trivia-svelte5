@@ -61,7 +61,7 @@
             <li class:active={setActive('megaround')}>
                 <a data-sveltekit-preload-code="tap" href={`/game/${joinCode}/megaround`}>
                     <MegaroundIcon cls="svg" />
-                    <p>Megaround</p>
+                    <p>Mega Round</p>
                 </a>
             </li>
             <li class:active={setActive('score')}>

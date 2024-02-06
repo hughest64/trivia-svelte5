@@ -25,7 +25,7 @@
 
         <li>
             <form action="" class="auto-advance-form" on:submit|preventDefault>
-                <span>Auto Advance Questions</span>
+                <span>Auto-Advance Questions</span>
                 <AutoRevealToggle />
             </form>
         </li>
