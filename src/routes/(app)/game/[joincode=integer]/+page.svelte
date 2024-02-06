@@ -42,7 +42,7 @@
 <Round {activeRound} />
 
 {#if $activeEventData.activeQuestionKey !== $currentEventData.question_key}
-    <button class="go-to-current" transition:slide on:click={handleGoToCurrent}>
+    <button class="go-to-current" transition:slide={{ delay: 300 }} on:click={handleGoToCurrent}>
         <Zeppelin />
         <p>Jump To Current Question</p>
         <Zeppelin />
@@ -65,7 +65,7 @@
     }
     .go-to-current {
         position: fixed;
-        bottom: calc(var(--footer-height) + 0.25rem);
+        bottom: calc(var(--footer-height) + 1rem);
         z-index: 4;
         display: flex;
         justify-content: center;
@@ -76,5 +76,8 @@
         text-align: center;
         font-weight: bold;
         margin: 0;
+        p {
+            color: var(--color-secondary);
+        }
     }
 </style>
