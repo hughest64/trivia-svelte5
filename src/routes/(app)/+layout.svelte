@@ -44,8 +44,10 @@
         margin: 0;
         padding: 0;
         cursor: pointer;
-        &:hover {
+        &:hover,
+        &:focus {
             background-color: var(--color-current);
+            outline: none;
         }
     }
     .menu-slider {
