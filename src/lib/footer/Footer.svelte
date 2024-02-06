@@ -2,12 +2,12 @@
     import { page } from '$app/stores';
     import { afterNavigate, replaceState } from '$app/navigation';
     import { getStore, setEventCookie, splitQuestionKey } from '$lib/utils';
-    import GameIcon from '$lib/footer/icons/new/GameIcon.svelte';
-    import ChatIcon from './icons/new/ChatIcon.svelte';
-    import LeaderboardIcon from './icons/new/LeaderboardIcon.svelte';
-    import MegaroundIcon from './icons/new/MegaroundIcon.svelte';
+    import GameIcon from '$lib/footer/icons/GameIcon.svelte';
+    import ChatIcon from './icons/ChatIcon.svelte';
+    import LeaderboardIcon from './icons/LeaderboardIcon.svelte';
+    import MegaroundIcon from './icons/MegaroundIcon.svelte';
     import MenuIcon from './icons/MenuIcon.svelte';
-    import TeamIcon from './icons/new/TeamIcon.svelte';
+    import TeamIcon from './icons/TeamIcon.svelte';
     import ScoringIcon from './icons/ScoringIcon.svelte';
 
     const reg = /^\/\(\w+\)\/(game|host)\/[[=\w]+]\/?/;
