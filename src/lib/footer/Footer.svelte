@@ -6,7 +6,6 @@
     import ChatIcon from './icons/ChatIcon.svelte';
     import LeaderboardIcon from './icons/LeaderboardIcon.svelte';
     import MegaroundIcon from './icons/MegaroundIcon.svelte';
-    import MenuIcon from './icons/MenuIcon.svelte';
     import TeamIcon from './icons/TeamIcon.svelte';
     import ScoringIcon from './icons/ScoringIcon.svelte';
 
@@ -111,6 +110,7 @@
         justify-content: space-between;
         align-items: baseline;
         margin: 0 auto;
+        padding: 0 0.75rem;
         width: 100%;
         max-width: var(--max-container-width);
         background-color: var(--color-tertiary);
@@ -125,9 +125,9 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: center;
-        width: 4.5em;
-        height: 4.5em;
+        justify-content: flex-end;
+        width: 4.5rem;
+        height: 4.5rem;
         margin: 0 auto;
         border: none;
         border-radius: 0.5em;
@@ -135,11 +135,6 @@
         color: var(--color-black);
         cursor: pointer;
     }
-    // .menu {
-    //     margin: 0 auto;
-    //     padding: 0;
-    //     border: none;
-    // }
     a:hover,
     a:focus {
         text-decoration: none;
@@ -149,7 +144,7 @@
         stroke: var(--color-alt-black);
     }
     p {
-        font-size: 0.75rem;
+        font-size: 10px;
         margin: 0.25rem 0;
         color: var(--color-black);
     }
@@ -166,6 +161,13 @@
         }
         p {
             color: var(--color-text-white);
+        }
+    }
+
+    @media screen and (max-width: 600px) {
+        ul {
+            justify-content: space-around;
+            padding: 0;
         }
     }
 </style>
