@@ -47,11 +47,9 @@
         justify-content: flex-end;
     }
     .menu-button {
-        // right: 1rem;
         display: flex;
         justify-content: center;
         align-items: center;
-        // border: 2px solid black;
         border-radius: 50%;
         height: 2.5rem;
         width: 2.5rem;
