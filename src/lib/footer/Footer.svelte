@@ -1,10 +1,13 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import QuizIcon from '$lib/footer/icons/QuizIcon.svelte';
+    import { afterNavigate, replaceState } from '$app/navigation';
+    import { getStore, setEventCookie, splitQuestionKey } from '$lib/utils';
+    import GameIcon from '$lib/footer/icons/GameIcon.svelte';
     import ChatIcon from './icons/ChatIcon.svelte';
     import LeaderboardIcon from './icons/LeaderboardIcon.svelte';
     import MegaroundIcon from './icons/MegaroundIcon.svelte';
     import MenuIcon from './icons/MenuIcon.svelte';
+    import TeamIcon from './icons/TeamIcon.svelte';
     import ScoringIcon from './icons/ScoringIcon.svelte';
 
     const reg = /^\/\(\w+\)\/(game|host)\/[[=\w]+]\/?/;
@@ -14,10 +17,22 @@
     $: isEventRoute = reg.test($page.route.id || '');
     $: setActive = (link: string) => $page.url.pathname.endsWith(link);
 
-    // TODO: consider this when navigating to /score:
-    // use beforeNavigate to update $activeEventData to the lowest round that has not been scored
-    // that makes it it nice an easy for the host to get to gettin'
-    // for the case of "edit this rounds scores", we could look for a query param and use that instead
+    const activeEventData = getStore('activeEventData');
+    afterNavigate(({ to }) => {
+        const queryParams = to?.url.searchParams;
+        const activeKey = queryParams?.get('active-key');
+        // update the active question if provided
+        if (activeKey && to?.url) {
+            const { round, question } = splitQuestionKey(activeKey);
+            $activeEventData = {
+                activeRoundNumber: Number(round),
+                activeQuestionNumber: Number(question),
+                activeQuestionKey: activeKey
+            };
+            setEventCookie($activeEventData, joinCode);
+            replaceState(`${to?.url.origin}${to?.url.pathname}`, {});
+        }
+    });
 </script>
 
 <nav>
@@ -25,8 +40,8 @@
         {#if isEventRoute}
             <li class:active={setActive(joinCode)}>
                 <a data-sveltekit-preload-code="tap" href={`/${routeId}/${joinCode}`}>
-                    <QuizIcon cls="svg" />
-                    <p>Quiz</p>
+                    <GameIcon cls="svg" />
+                    <p>Game</p>
                 </a>
             </li>
             <li class:active={setActive('leaderboard')}>
@@ -49,6 +64,16 @@
                     <p>Megaround</p>
                 </a>
             </li>
+            <li class:active={setActive('score')}>
+                <a
+                    data-sveltekit-preload-code="tap"
+                    data-sveltekit-reload
+                    href="/team/manage?prev={$page.url.pathname}"
+                >
+                    <TeamIcon cls="svg" />
+                    <p>Team</p>
+                </a>
+            </li>
         {:else if routeId === 'host' && isEventRoute}
             <li class:active={setActive('controlboard')}>
                 <a data-sveltekit-preload-code="tap" href={`/${routeId}/${joinCode}/controlboard`}>
@@ -63,12 +88,13 @@
                 </a>
             </li>
         {/if}
-        <li>
+        <!-- TODO: keep this for the host? -->
+        <!-- <li>
             <button class="menu" on:click>
                 <MenuIcon cls="svg" />
                 <p>Menu</p>
             </button>
-        </li>
+        </li> -->
     </ul>
 </nav>
 
@@ -83,7 +109,7 @@
     ul {
         display: flex;
         justify-content: space-between;
-        align-items: center;
+        align-items: baseline;
         margin: 0 auto;
         width: 100%;
         max-width: var(--max-container-width);
@@ -94,38 +120,33 @@
         margin: 0.25em 0;
     }
 
-    li > a,
-    .menu {
+    /**.menu */
+    li > a {
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        width: 4em;
-        height: 4em;
+        width: 4.5em;
+        height: 4.5em;
         margin: 0 auto;
-        padding: 0.5em;
         border: none;
         border-radius: 0.5em;
         text-decoration: none;
         color: var(--color-black);
         cursor: pointer;
     }
-    .menu {
-        margin: 0 auto;
-        padding: 0;
-        border: none;
-    }
+    // .menu {
+    //     margin: 0 auto;
+    //     padding: 0;
+    //     border: none;
+    // }
     a:hover,
     a:focus {
         text-decoration: none;
     }
     :global(.svg path) {
-        fill: #413f43;
-        stroke: #413f43;
-        // &:not(.no-color-change) path {
-        // fill: #413f43;
-        // stroke: #413f43;
-        // }
+        fill: var(--color-alt-black);
+        stroke: var(--color-alt-black);
     }
     p {
         font-size: 0.75rem;
@@ -140,28 +161,11 @@
             background-color: #413f43;
         }
         :global(.svg path) {
-            fill: #fcfcfc;
-            stroke: #fcfcfc;
+            fill: var(--color-text-white);
+            stroke: var(--color-text-white);
         }
-        // svg:not(.no-color-change) path {
-        // 	fill: #fcfcfc;
-        // 	stroke: #fcfcfc;
-        // }
         p {
-            color: #fcfcfc;
-        }
-    }
-
-    @media (max-width: 350px) {
-        nav {
-            font-size: 0.75rem;
-        }
-        ul {
-            justify-content: space-around;
-        }
-        .menu {
-            width: 2.5rem;
-            height: 2.5rem;
+            color: var(--color-text-white);
         }
     }
 </style>

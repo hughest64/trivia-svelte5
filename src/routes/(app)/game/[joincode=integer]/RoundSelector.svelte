@@ -24,16 +24,6 @@
         $page.url.pathname.endsWith('leaderboard') && goto(`/game/${joincode}`);
     };
 
-    const handleGotoQuestion = () => {
-        $activeEventData = {
-            activeQuestionNumber: $currentEventData.question_number,
-            activeRoundNumber: $currentEventData.round_number,
-            activeQuestionKey: $currentEventData.question_key
-        };
-
-        setEventCookie($activeEventData, joincode);
-    };
-
     $: missingResponses = (roundNumber: number) => {
         if ($currentEventData.round_number <= roundNumber) return false;
 
@@ -67,14 +57,7 @@
     {/each}
 </div>
 
-<button class="current-question-link" on:click={handleGotoQuestion}>
-    Jump to Current Question: {$currentEventData.question_key}
-</button>
-
 <style lang="scss">
-    .current-question-link {
-        text-decoration: underline;
-    }
     button {
         position: relative;
         &.roundlocked {

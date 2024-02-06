@@ -1,7 +1,7 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { slide } from 'svelte/transition';
-    import DoubleArrow from '$lib/footer/icons/DoubleArrow.svelte';
+    import DoubleArrow from '$lib/icons/DoubleArrow.svelte';
 
     const tbquestions = $page.data.tiebreaker_questions || [];
     export let selectedQuestion = tbquestions[0];

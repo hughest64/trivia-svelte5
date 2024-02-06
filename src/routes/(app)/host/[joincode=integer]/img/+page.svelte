@@ -34,7 +34,6 @@
 
         img {
             background-color: rgba(0, 0, 0, 0.75);
-            // background-color: #fcfcfc;
             object-fit: contain;
             width: 100%;
             height: 100%;
@@ -42,7 +41,7 @@
     }
 
     button {
-        color: #fcfcfc;
+        color: var(--color-text-white);
         display: block;
         width: 100%;
         max-width: var(--max-container-width);
