@@ -19,7 +19,7 @@
             activeQuestionNumber: $currentEventData.round_number,
             activeQuestionKey: $currentEventData.question_key
         };
-        setEventCookie($activeEventData, $page.params.joinCode);
+        setEventCookie($activeEventData, $page.params.joincode);
     };
 </script>
 
