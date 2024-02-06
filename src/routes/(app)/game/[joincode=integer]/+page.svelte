@@ -42,7 +42,7 @@
 <Round {activeRound} />
 
 {#if $activeEventData.activeQuestionKey !== $currentEventData.question_key}
-    <button class="go-to-current" transition:slide={{ delay: 300 }} on:click={handleGoToCurrent}>
+    <button class="go-to-current" transition:slide on:click={handleGoToCurrent}>
         <Zeppelin />
         <p>Jump To Current Question</p>
         <Zeppelin />
