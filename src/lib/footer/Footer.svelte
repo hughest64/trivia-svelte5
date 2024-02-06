@@ -106,7 +106,7 @@
     ul {
         display: flex;
         justify-content: space-between;
-        align-items: center;
+        align-items: baseline;
         margin: 0 auto;
         width: 100%;
         max-width: var(--max-container-width);
@@ -117,27 +117,26 @@
         margin: 0.25em 0;
     }
 
-    li > a,
-    .menu {
+    /**.menu */
+    li > a {
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        width: 4em;
-        height: 4em;
+        width: 4.5em;
+        height: 4.5em;
         margin: 0 auto;
-        padding: 0.5em;
         border: none;
         border-radius: 0.5em;
         text-decoration: none;
         color: var(--color-black);
         cursor: pointer;
     }
-    .menu {
-        margin: 0 auto;
-        padding: 0;
-        border: none;
-    }
+    // .menu {
+    //     margin: 0 auto;
+    //     padding: 0;
+    //     border: none;
+    // }
     a:hover,
     a:focus {
         text-decoration: none;
@@ -157,6 +156,8 @@
     .active {
         a {
             background-color: #413f43;
+            // width: 4.25em;
+            // height: 4.25em;
         }
         :global(.svg path) {
             fill: var(--color-text-white);
@@ -164,19 +165,6 @@
         }
         p {
             color: var(--color-text-white);
-        }
-    }
-
-    @media (max-width: 350px) {
-        nav {
-            font-size: 0.75rem;
-        }
-        ul {
-            justify-content: space-around;
-        }
-        .menu {
-            width: 2.5rem;
-            height: 2.5rem;
         }
     }
 </style>
