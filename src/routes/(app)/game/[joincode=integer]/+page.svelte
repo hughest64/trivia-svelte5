@@ -4,6 +4,7 @@
     import { getStore, setEventCookie } from '$lib/utils';
     import Round from './Round.svelte';
     import RoundSelector from './RoundSelector.svelte';
+    import Zeppelin from '$lib/icons/Zeppelin.svelte';
     import type { GameRound } from '$lib/types';
 
     const activeEventData = getStore('activeEventData');
@@ -42,7 +43,9 @@
 
 {#if $activeEventData.activeQuestionKey !== $currentEventData.question_key}
     <button class="go-to-current" transition:slide on:click={handleGoToCurrent}>
+        <Zeppelin />
         <p>Jump To Current Question</p>
+        <Zeppelin />
     </button>
 {/if}
 
@@ -64,6 +67,10 @@
         position: fixed;
         bottom: calc(var(--footer-height) + 0.25rem);
         z-index: 4;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 1.25rem;
         background-color: var(--color-current);
         width: min(100vw, var(--max-container-width));
         text-align: center;
