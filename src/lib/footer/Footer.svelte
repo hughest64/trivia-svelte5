@@ -143,12 +143,8 @@
         text-decoration: none;
     }
     :global(.svg path) {
-        fill: #413f43;
-        stroke: #413f43;
-        // &:not(.no-color-change) path {
-        // fill: #413f43;
-        // stroke: #413f43;
-        // }
+        fill: var(--color-alt-black);
+        stroke: var(--color-alt-black);
     }
     p {
         font-size: 0.75rem;
@@ -163,15 +159,11 @@
             background-color: #413f43;
         }
         :global(.svg path) {
-            fill: #fcfcfc;
-            stroke: #fcfcfc;
+            fill: var(--color-text-white);
+            stroke: var(--color-text-white);
         }
-        // svg:not(.no-color-change) path {
-        // 	fill: #fcfcfc;
-        // 	stroke: #fcfcfc;
-        // }
         p {
-            color: #fcfcfc;
+            color: var(--color-text-white);
         }
     }
 

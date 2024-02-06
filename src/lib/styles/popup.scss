@@ -10,7 +10,7 @@
 .pop {
     width: 100%;
     max-width: var(--max-container-width);
-    color: #fcfcfc;
+    color: var(--color-text-white);
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -83,7 +83,7 @@
         }
         a {
             text-decoration: underline;
-            color: #fcfcfc;
+            color: var(--color-text-white);
         }
     }
 }
