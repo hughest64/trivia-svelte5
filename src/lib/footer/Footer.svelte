@@ -107,9 +107,10 @@
     }
     ul {
         display: flex;
-        justify-content: space-around;
+        justify-content: space-between;
         align-items: baseline;
         margin: 0 auto;
+        padding: 0 0.75rem;
         width: 100%;
         max-width: var(--max-container-width);
         background-color: var(--color-tertiary);
@@ -143,7 +144,7 @@
         stroke: var(--color-alt-black);
     }
     p {
-        font-size: 10px; // 0.75rem;
+        font-size: 10px;
         margin: 0.25rem 0;
         color: var(--color-black);
     }
@@ -160,6 +161,13 @@
         }
         p {
             color: var(--color-text-white);
+        }
+    }
+
+    @media screen and (max-width: 600px) {
+        ul {
+            justify-content: space-around;
+            padding: 0;
         }
     }
 </style>
