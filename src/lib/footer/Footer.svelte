@@ -2,11 +2,12 @@
     import { page } from '$app/stores';
     import { afterNavigate, replaceState } from '$app/navigation';
     import { getStore, setEventCookie, splitQuestionKey } from '$lib/utils';
-    import QuizIcon from '$lib/footer/icons/QuizIcon.svelte';
-    import ChatIcon from './icons/ChatIcon.svelte';
-    import LeaderboardIcon from './icons/LeaderboardIcon.svelte';
-    import MegaroundIcon from './icons/MegaroundIcon.svelte';
+    import GameIcon from '$lib/footer/icons/new/GameIcon.svelte';
+    import ChatIcon from './icons/new/ChatIcon.svelte';
+    import LeaderboardIcon from './icons/new/LeaderboardIcon.svelte';
+    import MegaroundIcon from './icons/new/MegaroundIcon.svelte';
     import MenuIcon from './icons/MenuIcon.svelte';
+    import TeamIcon from './icons/new/TeamIcon.svelte';
     import ScoringIcon from './icons/ScoringIcon.svelte';
 
     const reg = /^\/\(\w+\)\/(game|host)\/[[=\w]+]\/?/;
@@ -39,8 +40,8 @@
         {#if isEventRoute}
             <li class:active={setActive(joinCode)}>
                 <a data-sveltekit-preload-code="tap" href={`/${routeId}/${joinCode}`}>
-                    <QuizIcon cls="svg" />
-                    <p>Quiz</p>
+                    <GameIcon cls="svg" />
+                    <p>Game</p>
                 </a>
             </li>
             <li class:active={setActive('leaderboard')}>
@@ -77,11 +78,19 @@
                 </a>
             </li>
         {/if}
-        <li>
+        <!-- TODO: keep this for the host? -->
+        <!-- <li>
             <button class="menu" on:click>
                 <MenuIcon cls="svg" />
                 <p>Menu</p>
             </button>
+        </li> -->
+        <li class:active={setActive('score')}>
+            <!-- TODO: handle "&previous=where/I/came/from" querystring -->
+            <a data-sveltekit-preload-code="tap" data-sveltekit-reload href="/team/manage">
+                <TeamIcon cls="svg" />
+                <p>Team</p>
+            </a>
         </li>
     </ul>
 </nav>
