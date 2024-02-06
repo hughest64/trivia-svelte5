@@ -16,6 +16,7 @@
     $: next = $page.url.searchParams.get('next');
     $: qp = next ? `&next=${next}` : '';
     let showForm = hasTeams;
+    $: msgText = isGuest ? 'Create a Team' : "It looks like you don't have any teams yet";
 </script>
 
 <svelte:head><title>TriviaMafia | Create Team</title></svelte:head>
@@ -23,8 +24,9 @@
 <main class="short">
     {#if !teamName}
         <div class="flex-column full-width" out:slide>
-            {#if !hasTeams && !isGuest}
-                <h2 class="form-header">It looks like you don't have any teams yet</h2>
+            {#if !hasTeams}
+                <h2 class="form-header">{msgText}</h2>
+
                 <a class="join-link" href="join">Join an existing team (password required)</a>
                 <h2 class="form-header">- or -</h2>
                 <button class="button button-primary" on:click={() => (showForm = !showForm)}>Create New Team</button>
