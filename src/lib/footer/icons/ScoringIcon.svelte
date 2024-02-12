@@ -2,7 +2,7 @@
     export let cls: string = '';
 </script>
 
-<svg class={cls} viewBox="0 0 408.576 408.576" width="50" height="45">
+<svg class={cls} viewBox="-15 0 408.576 408.576" width="50" height="45">
     <g>
         <path
             d="M204.288,0C91.648,0,0,91.648,0,204.288s91.648,204.288,204.288,204.288s204.288-91.648,204.288-204.288

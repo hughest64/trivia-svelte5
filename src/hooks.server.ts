@@ -1,5 +1,4 @@
 import { getJwtPayload } from '$lib/utils';
-import { PUBLIC_WEBSOCKET_HOST, PUBLIC_QUESTION_REVEAL_TIMEOUT } from '$env/static/public';
 import type { Handle, HandleFetch } from '@sveltejs/kit';
 
 export const handle: Handle = async ({ event, resolve }) => {

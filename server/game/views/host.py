@@ -146,9 +146,9 @@ class EventSetupView(APIView):
                 "todays_events": [
                     {
                         "game_id": e.game.id,
-                        "location_id": e.location.id
-                        if e.location is not None
-                        else None,
+                        "location_id": (
+                            e.location.id if e.location is not None else None
+                        ),
                     }
                     for e in todays_events
                 ],

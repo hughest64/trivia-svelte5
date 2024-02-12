@@ -47,10 +47,10 @@
         <div class="switch-container">
             <h4>Use Sound Round?</h4>
             <label for="sound-choice" class="switch">
-                <input type="hidden" bind:value={useSound} name="sound-choice" />
+                <input type="checkbox" bind:checked={useSound} name="sound-choice" />
                 <button
                     id="sound-btn"
-                    class="slider"
+                    class="slider round"
                     class:revealed={useSound}
                     on:click|preventDefault={() => (useSound = !useSound)}
                 />
@@ -60,10 +60,10 @@
         <div class="switch-container">
             <h4>Theme Night?</h4>
             <label for="event_type" class="switch">
-                <input type="hidden" bind:value={playerLimit} name="event_type" />
+                <input type="checkbox" bind:checked={useThemeNight} name="event_type" />
                 <button
                     id="event-type-btn"
-                    class="slider"
+                    class="slider round"
                     class:revealed={useThemeNight}
                     on:click|preventDefault={handleUseThemeNight}
                 />
@@ -73,10 +73,10 @@
         <div class="switch-container">
             <h4>Limit Game to Single Device?</h4>
             <label for="player_limit" class="switch">
-                <input type="hidden" bind:value={playerLimit} name="player_limit" />
+                <input type="checkbox" bind:checked={playerLimit} name="player_limit" />
                 <button
                     id="player-limit-btn"
-                    class="slider"
+                    class="slider round"
                     class:revealed={playerLimit}
                     on:click|preventDefault={() => (playerLimit = !playerLimit)}
                 />
