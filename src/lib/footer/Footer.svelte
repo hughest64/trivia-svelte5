@@ -3,10 +3,12 @@
     import { afterNavigate, replaceState } from '$app/navigation';
     import { getStore, setEventCookie, splitQuestionKey } from '$lib/utils';
     import GameIcon from '$lib/footer/icons/GameIcon.svelte';
+    import GameIconFilled from '$lib/footer/icons/GameIconFilled.svelte';
     import ChatIcon from './icons/ChatIcon.svelte';
     import LeaderboardIcon from './icons/LeaderboardIcon.svelte';
     import MegaroundIcon from './icons/MegaroundIcon.svelte';
     import TeamIcon from './icons/TeamIcon.svelte';
+    import ControlIcon from './icons/ControlIcon.svelte';
     import ScoringIcon from './icons/ScoringIcon.svelte';
 
     const reg = /^\/\(\w+\)\/(game|host)\/[[=\w]+]\/?/;
@@ -15,6 +17,7 @@
     $: routeId = $page.route.id?.split('/')[2];
     $: isEventRoute = reg.test($page.route.id || '');
     $: setActive = (link: string) => $page.url.pathname.endsWith(link);
+    $: gameIsActive = $page.url.pathname.endsWith(joinCode);
 
     const activeEventData = getStore('activeEventData');
     afterNavigate(({ to }) => {
@@ -39,7 +42,11 @@
         {#if isEventRoute}
             <li class:active={setActive(joinCode)}>
                 <a data-sveltekit-preload-code="tap" href={`/${routeId}/${joinCode}`}>
-                    <GameIcon cls="svg" />
+                    {#if gameIsActive}
+                        <GameIconFilled cls="svg" />
+                    {:else}
+                        <GameIcon cls="svg" />
+                    {/if}
                     <p>Game</p>
                 </a>
             </li>
@@ -76,7 +83,7 @@
         {:else if routeId === 'host' && isEventRoute}
             <li class:active={setActive('controlboard')}>
                 <a data-sveltekit-preload-code="tap" href={`/${routeId}/${joinCode}/controlboard`}>
-                    <ChatIcon cls="svg" />
+                    <ControlIcon cls="svg" />
                     <p>Controls</p>
                 </a>
             </li>
@@ -155,7 +162,9 @@
         a {
             background-color: #413f43;
         }
-        :global(.svg path) {
+        :global(.svg path),
+        :global(.svg rect),
+        :global(.svg circle) {
             fill: var(--color-text-white);
             stroke: var(--color-text-white);
         }
