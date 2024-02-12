@@ -42,11 +42,11 @@
         {#if isEventRoute}
             <li class:active={setActive(joinCode)}>
                 <a data-sveltekit-preload-code="tap" href={`/${routeId}/${joinCode}`}>
-                    {#if gameIsActive}
+                    <!-- {#if gameIsActive}
                         <GameIconFilled cls="svg" />
-                    {:else}
-                        <GameIcon cls="svg" />
-                    {/if}
+                    {:else} -->
+                    <GameIcon cls="svg" />
+                    <!-- {/if} -->
                     <p>Game</p>
                 </a>
             </li>
