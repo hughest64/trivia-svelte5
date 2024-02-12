@@ -60,8 +60,8 @@
     {#if formError} <p class="error">{formError}</p>{/if}
     <div class="switch-container">
         <label for="player_limit" class="switch">
-            <input type="hidden" name="auto_reveal" id="auto-reveal" bind:value={autoRevealValue} />
-            <button id="auto-reveal" type="submit" class="slider" class:revealed={autoRevealValue} />
+            <input type="checkbox" name="auto_reveal" id="auto-reveal" bind:checked={autoRevealValue} />
+            <button id="auto-reveal" type="submit" class="slider round" class:revealed={autoRevealValue} />
         </label>
         <p>Auto Advance</p>
     </div>
