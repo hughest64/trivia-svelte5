@@ -189,11 +189,10 @@ export const handlePlayerAuth = async ({
     url,
     endPoint
 }: CustomLoadEvent): Promise<App.PageData> => {
-    const searchParams = url.searchParams;
+    const searchParams = new URLSearchParams(url.searchParams);
     if (!locals.validtoken) {
         searchParams.set('next', url.pathname);
-
-        redirect(302, `/user/logout${decodeURIComponent(url.search)}`);
+        redirect(302, `/user/logout?${decodeURIComponent(searchParams.toString())}`);
     }
 
     let data = {};
@@ -208,8 +207,7 @@ export const handlePlayerAuth = async ({
         // not authorized, redirect to log out to ensure cookies get deleted
         if (response.status === 401) {
             searchParams.set('next', url.pathname);
-
-            redirect(302, `/user/logout${decodeURIComponent(url.search)}`);
+            redirect(302, `/user/logout?${decodeURIComponent(searchParams.toString())}`);
         }
         // forbidden, redirect to a safe page
         if (response.status === 403) {
@@ -238,11 +236,11 @@ export const handleHostAuth = async ({
 }: CustomLoadEvent): Promise<App.PageData> => {
     const apiEndpoint = apiMap.get(endPoint || '') || endPoint;
 
-    const searchParams = url.searchParams;
+    const searchParams = new URLSearchParams(url.searchParams);
 
     if (!locals.validtoken) {
         searchParams.set('next', url.pathname);
-        redirect(302, `/user/logout${decodeURIComponent(url.search)}`);
+        redirect(302, `/user/logout?${decodeURIComponent(searchParams.toString())}`);
     }
     if (!locals.staffuser) redirect(302, `/team${decodeURIComponent(url.search)}`);
 
@@ -257,7 +255,7 @@ export const handleHostAuth = async ({
         // not authorized, redirect to log out to ensure cookies get deleted
         if (response.status === 401) {
             searchParams.set('next', url.pathname);
-            redirect(302, `/user/logout${decodeURIComponent(url.search)}`);
+            redirect(302, `/user/logout${decodeURIComponent(searchParams.toString())}`);
         }
 
         // forbidden, redirect to a safe page
