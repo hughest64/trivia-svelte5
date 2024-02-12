@@ -183,7 +183,7 @@
             {#each $mrStore as { num, used }}
                 <button
                     id="megaround-value-{num}"
-                    class="button-white"
+                    class="mr-selector-button"
                     class:used
                     on:click|preventDefault={handleSetInputValue}>{num}</button
                 >
@@ -260,6 +260,8 @@
             height: 3rem;
             font-weight: bold;
             font-size: 1.25rem;
+            padding: 0;
+            color: var(--color-secondary);
             border: 2px solid var(--color-secondary);
             border-radius: 50%;
             cursor: pointer;

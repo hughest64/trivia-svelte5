@@ -65,7 +65,7 @@
     }
     .go-to-current {
         position: fixed;
-        bottom: calc(var(--footer-height) + 1rem);
+        bottom: calc(var(--footer-height) + 0.25rem);
         z-index: 4;
         display: flex;
         justify-content: center;
