@@ -47,6 +47,7 @@
         justify-content: flex-end;
     }
     .menu-button {
+        z-index: 99;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -54,6 +55,7 @@
         height: 2.5rem;
         width: 2.5rem;
         margin: 0;
+        margin-right: 1rem;
         padding: 0;
         cursor: pointer;
         &:hover,
