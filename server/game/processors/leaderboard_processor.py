@@ -108,23 +108,25 @@ class LeaderboardProcessor:
                 lbe.tiebreaker_rank = None
                 lbe.tiebreaker_round_number = None
 
-    def _unsync_leadboards(self, through_round):
-        self._check_order()
+    def _set_leaderbaord_sync_status(self, through_round):
+        # self._check_order()
 
-        return Leaderboard.objects.update_or_create(
+        lb = Leaderboard.objects.update_or_create(
             event=self.event,
             defaults={
                 "host_through_round": through_round,
-                "synced": False,
+                "synced": through_round is None,
             },
         )
+
+        return lb
 
     def rank_host_leaderboard(self, entries, through_round):
         """Apply new rankings to leaderboard entries"""
         self.processing = True
 
         # the leaderboards are no longer synced
-        lb, _ = self._unsync_leadboards(through_round)
+        lb, _ = self._set_leaderbaord_sync_status(through_round)
 
         # with transaction.atomic():
         self._set_leaderboard_rank(entries)
@@ -143,34 +145,37 @@ class LeaderboardProcessor:
 
     def update_host_leaderboard(self, through_round):
         self._validate_round_number(through_round)
+
         self.processing = True
         try:
             with transaction.atomic():
                 apply_megaround = self.event.all_rounds_are_locked()
                 # the leaderboards are no longer synced
-                lb, _ = self._unsync_leadboards(through_round)
+                lb, _ = self._set_leaderbaord_sync_status(through_round)
 
                 entries = LeaderboardEntry.objects.filter(
                     event=self.event, leaderboard_type=LEADERBOARD_TYPE_HOST
                 )
-                for entry in entries:
-                    entry.leaderboard = lb
-                    entry.megaround_applied = apply_megaround
-                    self._set_team_score(entry, through_round)
+                # don't try to update entires if there is no through round set
+                if through_round is not None:
+                    for entry in entries:
+                        entry.leaderboard = lb
+                        entry.megaround_applied = apply_megaround
+                        self._set_team_score(entry, through_round)
 
-                self._set_leaderboard_rank(entries)
-                LeaderboardEntry.objects.bulk_update(
-                    entries,
-                    [
-                        "total_points",
-                        "rank",
-                        "tied_for_rank",
-                        "tiebreaker_round_number",
-                        "tiebreaker_rank",
-                        "leaderboard",
-                        "megaround_applied",
-                    ],
-                )
+                    self._set_leaderboard_rank(entries)
+                    LeaderboardEntry.objects.bulk_update(
+                        entries,
+                        [
+                            "total_points",
+                            "rank",
+                            "tied_for_rank",
+                            "tiebreaker_round_number",
+                            "tiebreaker_rank",
+                            "leaderboard",
+                            "megaround_applied",
+                        ],
+                    )
 
             logger.info(
                 f"Host leaderboard for event {self.event} updated through round {through_round}"
@@ -181,11 +186,12 @@ class LeaderboardProcessor:
 
         self.processing = False
 
+        # TODO: relying on variables created inside the try block is risky...
         return {
             "host_leaderboard_entries": queryset_to_json(
                 entries.order_by("rank", "pk")
             ),
-            "synced": False,
+            "synced": lb.synced,
         }
 
     def sync_leaderboards(self):

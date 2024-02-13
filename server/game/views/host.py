@@ -308,7 +308,7 @@ class RoundLockView(APIView):
         # update the host leaderboard
         lb_processor = LeaderboardProcessor(event)
         leaderboard_data = lb_processor.update_host_leaderboard(
-            through_round=event.max_locked_round()  # or round_state.round_number
+            through_round=event.max_locked_round()
         )
 
         resp_summary = None
