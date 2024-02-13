@@ -315,16 +315,14 @@ class RoundLockView(APIView):
         if locked:
             resp_summary = QuestionResponse.summarize(event=event)
 
-            # TODO: perhaps we don't need to send this as a separate host message
-            # maybe we just ignore the piece of data if the broswer is on a /game route
-            # send host message
-            SendHostMessage(
-                joincode,
-                {
-                    "msg_type": "leaderboard_update",
-                    "message": leaderboard_data,
-                },
-            )
+        # send host message
+        SendHostMessage(
+            joincode,
+            {
+                "msg_type": "leaderboard_update",
+                "message": leaderboard_data,
+            },
+        )
 
         SendEventMessage(
             joincode,
