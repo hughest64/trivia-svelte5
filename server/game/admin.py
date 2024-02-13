@@ -61,8 +61,7 @@ class LeaderboardEntryAdmin(admin.ModelAdmin):
     readonly_fields = ["event"]
 
 
-# no real reason to display this in the admin
-# admin.site.register(Leaderboard)
+admin.site.register(Leaderboard)
 
 
 @admin.register(Location)

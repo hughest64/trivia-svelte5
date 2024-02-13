@@ -185,62 +185,36 @@ class QuestionRevealView(APIView):
     permission_classes = [IsAdminUser]
 
     @staticmethod
-    def update_event_data(
-        round_number: int, question_numbers: List[int], event: TriviaEvent
-    ):
-        """update the current attributes of a trivia event when the game play advances
-        set_current_question is being used instead of this currently
+    def set_current_question(event: TriviaEvent, updated_state: EventQuestionState):
         """
-        event_data = {"event_updated": False}
-        if (round_number > event.current_round_number) or (
-            round_number == event.current_round_number
-            and max(question_numbers) > event.current_question_number
-        ):
-            event.current_round_number = round_number
-            event.current_question_number = min(question_numbers)
+        Determine whether on not to update the current round and question in a Trivia Event based on
+        the index of the updated question state object compared to it's index in all event questions.
+        Only update the current question if the indcies match. I.e. all states before the updated state
+        have been revelead.
+        Note that progress of a game never moves backwards. Unrevealing a question does NOT rest the current
+        round or question.
+        """
+        # look up all revealed question states and sort the keys
+        displayed_states = event.question_states.filter(question_displayed=True)
+        displayed_state_keys = sorted([s.key for s in displayed_states])
+
+        # look up all questions keys (excluding tiebreakers) and sort
+        all_question_keys = sorted(
+            [q.key for q in event.game.game_questions.exclude(round_number=0)]
+        )
+
+        # check for matching indicies and update the event if appropriate
+        question_key_index = all_question_keys.index(updated_state.key)
+        displayed_state_index = displayed_state_keys.index(updated_state.key)
+        should_update = question_key_index == displayed_state_index
+
+        if should_update:
+            event.current_question_number = updated_state.question_number
+            event.current_round_number = updated_state.round_number
             event.save()
-            event_data = {
-                "event_updated": True,
-                "question_number": event.current_question_number,
-                "round_number": event.current_round_number,
-            }
-        return event_data
-
-    @staticmethod
-    def set_current_question(
-        event: TriviaEvent, updated_state: EventQuestionState, commit: bool
-    ):
-        current_key = event.current_question_key
-
-        displayed_states = event.question_states.filter(
-            question_displayed=True
-        ).order_by("round_number", "question_number")
-        displayed_state_keys = [s.key for s in displayed_states]
-
-        question_keys = [
-            q.key
-            for q in event.game.game_questions.exclude(round_number=0)
-            if q.key <= updated_state.key
-        ]
-
-        if len(displayed_states) > 1:
-            updated_current = updated_state
-            for i, q in enumerate(question_keys):
-                if q not in displayed_state_keys and i > 0:
-                    updated_key = question_keys[i - 1]
-
-                    updated_current = [
-                        ds for ds in displayed_states if ds.key == updated_key
-                    ][0]
-                    break
-
-            if commit:
-                event.current_question_number = updated_current.question_number
-                event.current_round_number = updated_current.round_number
-                event.save()
 
         return {
-            "event_updated": current_key < event.current_question_key,
+            "event_updated": should_update,
             "question_number": event.current_question_number,
             "round_number": event.current_round_number,
         }
@@ -278,9 +252,18 @@ class QuestionRevealView(APIView):
                 )
                 updated_states.append(question_state)
 
-            current_event_data = self.set_current_question(
-                event, updated_states[0], commit=reveal
-            )
+            current_event_data = {
+                "event_updated": False,
+                "question_number": event.current_question_number,
+                "round_number": event.current_round_number,
+            }
+
+            # update the current question of the game if questions were revealed
+            # use the first question state in the case of multiple state updates
+            if reveal:
+                current_event_data.update(
+                    self.set_current_question(event, updated_states[0])
+                )
 
             SendEventMessage(
                 joincode,
@@ -332,16 +315,14 @@ class RoundLockView(APIView):
         if locked:
             resp_summary = QuestionResponse.summarize(event=event)
 
-            # TODO: perhaps we don't need to send this as a separate host message
-            # maybe we just ignore the piece of data if the broswer is on a /game route
-            # send host message
-            SendHostMessage(
-                joincode,
-                {
-                    "msg_type": "leaderboard_update",
-                    "message": leaderboard_data,
-                },
-            )
+        # send host message
+        SendHostMessage(
+            joincode,
+            {
+                "msg_type": "leaderboard_update",
+                "message": leaderboard_data,
+            },
+        )
 
         SendEventMessage(
             joincode,

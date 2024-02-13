@@ -35,7 +35,10 @@ class LeaderboardProcessor:
             raise ProcedureError("This method cannot be called independently")
 
     def _validate_round_number(self, through_round):
-        if not self.event.game.game_rounds.filter(round_number=through_round).exists():
+        if (
+            not self.event.game.game_rounds.filter(round_number=through_round).exists()
+            and through_round is not None
+        ):
             raise ValueError(
                 f"event {self.event} does not contain a round {through_round}"
             )
@@ -197,11 +200,13 @@ class LeaderboardProcessor:
             event_lb.synced = True
             event_lb.save()
 
-            # mark rounds scored through the current round
-            round_states = EventRoundState.objects.filter(
-                event=self.event, round_number__lte=event_lb.host_through_round
-            )
-            round_states.update(scored=True)
+            # mark rounds scored through the current round if there is one
+            round_states = []
+            if event_lb.host_through_round:
+                round_states = EventRoundState.objects.filter(
+                    event=self.event, round_number__lte=event_lb.host_through_round
+                )
+                round_states.update(scored=True)
 
             public_entries = []
             for e in host_lb_entries:
