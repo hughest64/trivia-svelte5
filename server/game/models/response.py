@@ -131,7 +131,7 @@ class Leaderboard(models.Model):
     )
     public_through_round = models.IntegerField(blank=True, null=True)
     host_through_round = models.IntegerField(blank=True, null=True)
-    # do the two sets of entires match? note that this is not toally dependent upon through rounds matching
+    # do the two sets of entries match? note that this is not toally dependent upon through rounds matching
     synced = models.BooleanField(default=True)
 
     def __str__(self):
@@ -258,9 +258,9 @@ class TiebreakerResponse(models.Model):
             "id": self.id,
             "game_question_id": self.game_question.id,
             "round_number": self.round_number,
-            "recorded_answer": self.recorded_answer
-            if self.recorded_answer is not None
-            else "NaN",
+            "recorded_answer": (
+                self.recorded_answer if self.recorded_answer is not None else "NaN"
+            ),
             "team_id": self.team.id,
             "grade": self.grade,
         }
