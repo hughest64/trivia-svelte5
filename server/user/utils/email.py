@@ -4,7 +4,6 @@ import logging
 from django.core.mail import send_mail
 from django.conf import settings
 from django.template.loader import render_to_string
-from django.utils.safestring import mark_safe
 
 from game.models import Team
 from user.models import User
@@ -64,7 +63,6 @@ class Mailer:
                 "cta_link": f"{SITE_LINK}/team/join?password={self.team.password}",
                 "hero_image_link": SITE_LINK,
                 "hero_image_alt": "Play Trivia With Us Tonight",
-                "qr_code": mark_safe(self.team.generate_qr()),
                 "footer_text": f"Copyright {date.today():%Y}, Trivia Mafia",
             },
         )

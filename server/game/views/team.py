@@ -78,14 +78,13 @@ class TeamJoinView(APIView):
     authentication_classes = [JwtAuthentication]
 
     def get(self, request):
+        """if a team password was provided as a query parameter, use it to lookup team data and send it back"""
         team_password = request.query_params.get("password")
-        print(team_password)
         team_data = None
         if team_password:
             try:
                 team_data = Team.objects.get(password=team_password).to_json()
             except Team.DoesNotExist:
-                print("no team found")
                 pass
 
         return Response(
