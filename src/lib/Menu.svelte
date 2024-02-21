@@ -22,16 +22,15 @@
 <ul>
     {#if joincode}
         <li><EventMeta /></li>
+    {/if}
 
+    {#if isGameEndpoint && joincode}
         <li>
             <form action="" class="auto-advance-form" on:submit|preventDefault>
                 <span>Auto-Advance Questions</span>
                 <AutoRevealToggle />
             </form>
         </li>
-    {/if}
-
-    {#if isGameEndpoint && joincode}
         <li><a href="/team/manage?prev={prev}" on:click data-sveltekit-reload>Team Page</a></li>
     {/if}
 
