@@ -31,7 +31,7 @@
     let membersDisplayed = false;
     let teamNameDisplayed = false;
     let passwordDisplayed = false;
-    let qrCodeDisplayed = true;
+    let qrCodeDisplayed = false;
 
     $: form = $page.form;
 
@@ -50,7 +50,7 @@
             class:disabled={qrCodeDisplayed}
             on:click={() => (qrCodeDisplayed = !qrCodeDisplayed)}
         >
-            Show QR Code
+            {qrCodeDisplayed ? 'Hide' : 'Show'} QR Code
         </button>
 
         {#if qrCodeDisplayed}
