@@ -77,6 +77,21 @@ class TeamJoinView(APIView):
 
     authentication_classes = [JwtAuthentication]
 
+    def get(self, request):
+        team_password = request.query_params.get("password")
+        print(team_password)
+        team_data = None
+        if team_password:
+            try:
+                team_data = Team.objects.get(password=team_password).to_json()
+            except Team.DoesNotExist:
+                print("no team found")
+                pass
+
+        return Response(
+            {"user_data": request.user.to_json(), "team_to_join": team_data}
+        )
+
     @method_decorator(csrf_protect)
     def post(self, request):
         user = request.user

@@ -199,7 +199,7 @@ export const handlePlayerAuth = async ({
     if (!isDataRequest) {
         const apiEndpoint = apiMap.get(endPoint || '') || endPoint;
         const apiHost = PUBLIC_API_HOST;
-        const response = await fetch(`${apiHost}${apiEndpoint}/`);
+        const response = await fetch(`${apiHost}${apiEndpoint}${url.search}`);
 
         const apiData = await response.json();
         if (response.ok) data = { ...apiData, ...locals };
