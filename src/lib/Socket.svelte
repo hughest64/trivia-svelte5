@@ -74,7 +74,6 @@
         },
         // TODO: better typings
         leaderboard_update: (msg: Record<string, unknown>) => {
-            console.log(msg);
             const { tiebreaker_responses, ...leaderboard } = msg;
             const { round_states, ...leaderboardData } = leaderboard;
 

@@ -3,7 +3,10 @@ import { handlePlayerAuth, sortUserTeams } from '$lib/utils';
 import type { LayoutServerLoad } from './$types';
 
 export const load: LayoutServerLoad = async (loadEvent) => {
-    const data = await handlePlayerAuth({ ...loadEvent, endPoint: '/user' });
+    const requestPath = loadEvent.url.pathname;
+    // hit the api at /team/join if that's the age we are landing on
+    const endPoint = requestPath === '/team/join' ? requestPath : '/team';
+    const data = await handlePlayerAuth({ ...loadEvent, endPoint });
     const activeTeamId = data.user_data?.active_team_id;
     const userTeams = data.user_data?.teams;
 

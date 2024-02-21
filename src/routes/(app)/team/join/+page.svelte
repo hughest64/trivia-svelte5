@@ -4,14 +4,27 @@
     $: form = $page.form;
     const paswordParam = $page.url.searchParams.get('password');
 
-    $: next = $page.url.searchParams.get('next');
-    $: qp = next ? `?next=${next}` : '';
+    const next = $page.url.searchParams.get('next');
+    const qp = next ? `?next=${next}` : '';
+
+    const teamToJoin = $page.data.team_to_join;
 </script>
 
 <svelte:head><title>TriviaMafia | Join Team</title></svelte:head>
 
 <main class="short">
     <h1>Join a Team!</h1>
+    {#if paswordParam && teamToJoin}
+        <h2>Team: {teamToJoin.name}</h2>
+        <h4>Team Members:</h4>
+        <ul>
+            {#each teamToJoin?.members || [] as member}
+                <li>{member}</li>
+            {/each}
+        </ul>
+    {:else}
+        <h4>Sorry, we couldn't find a team with that password</h4>
+    {/if}
     <form action={'?/joinTeam' + qp} method="POST">
         {#if form?.error}<p class="error">{form?.error}</p>{/if}
         <div class="input-container">

@@ -25,8 +25,12 @@ class TeamView(APIView):
 
     def get(self, request):
         user_data = request.user.to_json()
+        active_team = request.user.active_team
+        qr_code = None
+        if active_team:
+            qr_code = active_team.generate_qr()
 
-        return Response({"user_data": user_data})
+        return Response({"user_data": user_data, "team_qr": qr_code})
 
 
 class TeamCreateView(APIView):
@@ -56,20 +60,37 @@ class TeamCreateView(APIView):
 
         Mailer(user, team).send_team_welcome()
 
-        return Response({
-            "team_data": {
-                "team_name": team.name,
-                "team_password": team.password,
-                "qr": team.generate_qr()
-            },
-            "user_data": user.to_json()
-            })
+        return Response(
+            {
+                "team_data": {
+                    "team_name": team.name,
+                    "team_password": team.password,
+                    "qr": team.generate_qr(),
+                },
+                "user_data": user.to_json(),
+            }
+        )
 
 
 class TeamJoinView(APIView):
     """Add an existing team to a players teams and set active"""
 
     authentication_classes = [JwtAuthentication]
+
+    def get(self, request):
+        team_password = request.query_params.get("password")
+        print(team_password)
+        team_data = None
+        if team_password:
+            try:
+                team_data = Team.objects.get(password=team_password).to_json()
+            except Team.DoesNotExist:
+                print("no team found")
+                pass
+
+        return Response(
+            {"user_data": request.user.to_json(), "team_to_join": team_data}
+        )
 
     @method_decorator(csrf_protect)
     def post(self, request):
@@ -193,6 +214,6 @@ class RemoveTeamMembersView(APIView):
         ]
         team.members.set(members_to_keep)
 
-        # do we need a socket message?
+        # TODO: do we need a socket message?
 
         return Response({"success": True})

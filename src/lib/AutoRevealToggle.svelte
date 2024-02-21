@@ -4,7 +4,6 @@
     const userData = getStore('userData');
 
     $: autoRevealValue = !!$userData?.auto_reveal_questions;
-    $: console.log($userData);
 
     let formError = '';
     const handleAutoReveal = async (e: Event) => {

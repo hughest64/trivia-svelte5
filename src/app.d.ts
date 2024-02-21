@@ -32,6 +32,8 @@ declare global {
             game_select_data?: Array<types.GameSelectData>;
             game_block_data?: string[];
             player_joined?: boolean;
+            team_qr?: string;
+            team_to_join?: types.UserTeam;
             points_adjustment_reasons?: Array<types.PointsAdjustmentReson>;
         }
         // interface Platform {}
