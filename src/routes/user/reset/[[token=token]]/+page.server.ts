@@ -63,6 +63,8 @@ export const actions: Actions = {
         // get the token from the url param or the cookie of an already logged in user
         const token = params.token || cookies.get('jwt') || '';
 
+        const tokenPayload = getJwtPayload(token);
+
         const resp = await fetch(`${PUBLIC_API_HOST}/user/reset`, {
             method: 'post',
             headers: { accept: 'application/json', 'content-type': 'application/json' },
@@ -73,7 +75,7 @@ export const actions: Actions = {
             const respData = await resp.json();
             return fail(resp.status, { error: respData.detail });
         }
-
-        redirect(301, '/team');
+        const next = tokenPayload.staff_user ? '/host/choice' : '/team';
+        redirect(301, next);
     }
 };
