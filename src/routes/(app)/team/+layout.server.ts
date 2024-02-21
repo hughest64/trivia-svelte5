@@ -3,7 +3,7 @@ import { handlePlayerAuth, sortUserTeams } from '$lib/utils';
 import type { LayoutServerLoad } from './$types';
 
 export const load: LayoutServerLoad = async (loadEvent) => {
-    const data = await handlePlayerAuth({ ...loadEvent, endPoint: '/user' });
+    const data = await handlePlayerAuth({ ...loadEvent, endPoint: '/team' });
     const activeTeamId = data.user_data?.active_team_id;
     const userTeams = data.user_data?.teams;
 

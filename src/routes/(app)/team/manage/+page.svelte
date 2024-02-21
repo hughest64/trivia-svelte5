@@ -5,6 +5,8 @@
     import { getStore } from '$lib/utils';
     import type { UserTeam } from '$lib/types';
 
+    const qrCode = $page.data.team_qr || '<p>Not Found</p>';
+
     const joincode = $page.url.searchParams.get('joincode') || '0';
 
     const userData = getStore('userData');
@@ -29,6 +31,7 @@
     let membersDisplayed = false;
     let teamNameDisplayed = false;
     let passwordDisplayed = false;
+    let qrCodeDisplayed = true;
 
     $: form = $page.form;
 
@@ -41,6 +44,20 @@
     {#if activeTeam}
         <h1>{activeTeam.name}</h1>
         <h3>Manage Your Team</h3>
+
+        <button
+            class="button button-primary"
+            class:disabled={qrCodeDisplayed}
+            on:click={() => (qrCodeDisplayed = !qrCodeDisplayed)}
+        >
+            Show QR Code
+        </button>
+
+        {#if qrCodeDisplayed}
+            <div transition:slide>
+                {@html qrCode}
+            </div>
+        {/if}
 
         <button
             class="button button-primary"

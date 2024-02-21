@@ -25,8 +25,13 @@ class TeamView(APIView):
 
     def get(self, request):
         user_data = request.user.to_json()
+        active_team = request.user.active_team
+        qr_code = None
+        if active_team:
+            qr_code = active_team.generate_qr()
+        print(active_team)
 
-        return Response({"user_data": user_data})
+        return Response({"user_data": user_data, "team_qr": qr_code})
 
 
 class TeamCreateView(APIView):
@@ -56,14 +61,16 @@ class TeamCreateView(APIView):
 
         Mailer(user, team).send_team_welcome()
 
-        return Response({
-            "team_data": {
-                "team_name": team.name,
-                "team_password": team.password,
-                "qr": team.generate_qr()
-            },
-            "user_data": user.to_json()
-            })
+        return Response(
+            {
+                "team_data": {
+                    "team_name": team.name,
+                    "team_password": team.password,
+                    "qr": team.generate_qr(),
+                },
+                "user_data": user.to_json(),
+            }
+        )
 
 
 class TeamJoinView(APIView):
@@ -193,6 +200,6 @@ class RemoveTeamMembersView(APIView):
         ]
         team.members.set(members_to_keep)
 
-        # do we need a socket message?
+        # TODO: do we need a socket message?
 
         return Response({"success": True})
