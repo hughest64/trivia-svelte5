@@ -29,7 +29,6 @@ class TeamView(APIView):
         qr_code = None
         if active_team:
             qr_code = active_team.generate_qr()
-        print(active_team)
 
         return Response({"user_data": user_data, "team_qr": qr_code})
 
