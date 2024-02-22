@@ -109,7 +109,7 @@
         {#if !isLastQuestion}
             <button class="button button-secondary" on:click={advance}>Next</button>
         {:else}
-            <a href={readAnswersLink} class="button button-primary" on:click>Go Read Answers Aloud</a>
+            <a href={readAnswersLink} class="button button-primary read-info" on:click>Go Read Answers Aloud</a>
         {/if}
     </div>
 
@@ -119,7 +119,7 @@
                 <ResponseGroup {response} />
             {/each}
         {:else}
-            <h4>There are no responses to this question</h4>
+            <h4 class="no-resp">There are no responses to this question</h4>
         {/if}
     </ul>
 
@@ -132,8 +132,8 @@
         {/if}
     </div>
 {:else}
-    <h2>Round {roundNumber} is not locked</h2>
-    <a href={readAnswersLink} class="button button-primary">Go Read Answers Aloud</a>
+    <h2 class="read-info">Round {roundNumber} is not locked</h2>
+    <a href={readAnswersLink} class="button button-primary read-info">Go Read Answers Aloud</a>
 {/if}
 
 <style lang="scss">
@@ -142,5 +142,13 @@
         max-width: calc(100% - 2em);
         display: flex;
         gap: 1rem;
+    }
+    .read-info {
+        width: var(--max-element-width);
+        max-width: calc(100% - 2rem);
+        text-align: center;
+    }
+    .no-resp {
+        padding: 0 1rem;
     }
 </style>

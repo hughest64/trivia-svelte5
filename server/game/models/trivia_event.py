@@ -34,7 +34,7 @@ QUESTION_TYPES = [
 QUESTION_TYPE_DICT = dict(QUESTION_TYPES)
 
 # higher numbers are currently reserved for testing, but this may change in the future
-MAX_JOINCODE_VALUE = 8999
+MAX_JOINCODE_VALUE = 9999
 MAX_CREATE_JOINCODE_ATTEMPTS = 30
 
 
