@@ -13,8 +13,14 @@
 </script>
 
 {#if entry}
-    <h3>{entry.team_name}</h3>
+    <!-- TODO: possibly make this a form and allow team name editng here (required for the host side) -->
+    <h2><strong>{entry.team_name}</strong></h2>
+
     <div class="answer-container">
+        <div class="leaderboard-meta">
+            <p><strong>Place:</strong> {entry.rank}</p>
+            <p><strong>Points:</strong> {entry.total_points}</p>
+        </div>
         <p class="team-password">Team Password: {entry.team_password}</p>
         <ul class="response-round-list">
             {#each groupedResps || [] as group}
@@ -29,5 +35,12 @@
         </ul>
     </div>
 {:else}
-    <h3 class="error">A summary is not currently available</h3>
+    <h2 class="error">A summary is not currently available</h2>
 {/if}
+
+<style lang="scss">
+    .leaderboard-meta {
+        display: flex;
+        justify-content: space-between;
+    }
+</style>
