@@ -1,5 +1,6 @@
 <script lang="ts">
     import { slide } from 'svelte/transition';
+    import { goto } from '$app/navigation';
     import { page } from '$app/stores';
     import { applyAction, enhance } from '$app/forms';
     import { getStore, respsByround, splitQuestionKey } from '$lib/utils';
@@ -36,25 +37,30 @@
     const handleExpand = async () => {
         if (!expandable) return;
 
-        if (expanded) {
-            teamName = entry.team_name;
-            nameEditable = false;
-        }
+        // TODO: temporary to maintain the host side
+        if (isHost) {
+            if (expanded) {
+                teamName = entry.team_name;
+                nameEditable = false;
+            }
 
-        if (isPlayerEndpoint || fetched) {
+            if (isPlayerEndpoint || fetched) {
+                expanded = !expanded;
+                return;
+            }
+
+            const resp = await fetch(`${$page.url.pathname}/responses/${entry.team_id}`);
+            if (resp.ok) {
+                responses = (await resp.json())?.responses || [];
+                fetched = true;
+            } else {
+                // TODO: handle error state
+            }
+
             expanded = !expanded;
-            return;
-        }
-
-        const resp = await fetch(`${$page.url.pathname}/responses/${entry.team_id}`);
-        if (resp.ok) {
-            responses = (await resp.json())?.responses || [];
-            fetched = true;
         } else {
-            // TODO: handle error state
+            goto('leaderboard/summary');
         }
-
-        expanded = !expanded;
     };
 
     const syncInputText = (e: Event) => {

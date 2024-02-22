@@ -13,15 +13,15 @@
 </script>
 
 {#if entry}
-    <!-- TODO: possibly make this a form and allow team name editng here (required for the host side) -->
+    <!-- TODO: make this a form and allow team name editng here -->
     <h2><strong>{entry.team_name}</strong></h2>
 
     <div class="answer-container">
+        <p class="team-password">Team Password: {entry.team_password}</p>
         <div class="leaderboard-meta">
             <p><strong>Place:</strong> {entry.rank}</p>
             <p><strong>Points:</strong> {entry.total_points}</p>
         </div>
-        <p class="team-password">Team Password: {entry.team_password}</p>
         <ul class="response-round-list">
             {#each groupedResps || [] as group}
                 {@const isMegaRound = splitQuestionKey(group[0].key).round === String(entry.megaround)}
