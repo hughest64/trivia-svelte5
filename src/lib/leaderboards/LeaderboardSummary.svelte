@@ -4,6 +4,7 @@
     import type { LeaderboardEntry } from '$lib/types';
 
     export let entry: LeaderboardEntry | undefined;
+    console.log(entry);
 
     const rounds = getStore('rounds');
     const roundStates = getStore('roundStates');

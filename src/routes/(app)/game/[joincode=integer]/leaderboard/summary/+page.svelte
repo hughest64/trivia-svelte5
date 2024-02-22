@@ -6,8 +6,6 @@
     const leaderboard = getStore('leaderboard');
     const userData = getStore('userData');
     const entry = $leaderboard.public_leaderboard_entries.find((entry) => entry.team_id === $userData.active_team_id);
-    $: console.log($leaderboard.public_leaderboard_entries);
-    $: console.log($userData);
 </script>
 
 <h1>Leaderboard Summary</h1>
