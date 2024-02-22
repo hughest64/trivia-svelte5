@@ -34,7 +34,8 @@
 
     let fetched = false;
     let nameEditable = false;
-    const handleExpand = async (id = 0) => {
+    // TODO: reomve all instances of this and replace buttons with anchors
+    const handleExpand = async (id: number) => {
         if (!expandable) return;
 
         // TODO: temporary to maintain the host side
@@ -50,6 +51,7 @@
             //     return;
             // }
 
+            // TODO: validate the necessity of this and move to a load function
             // const resp = await fetch(`${$page.url.pathname}/responses/${entry.team_id}`);
             // if (resp.ok) {
             //     responses = (await resp.json())?.responses || [];
