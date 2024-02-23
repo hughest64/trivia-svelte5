@@ -43,11 +43,6 @@
             <h3 class="points-display">{entry.total_points}</h3>
         </div>
     </a>
-
-    <!-- TODO: move to the summary! -->
-    <!-- {#if !isPlayerEndpoint}
-        <PointsAdjustment {entry} />
-    {/if} -->
 </li>
 
 <style lang="scss">
