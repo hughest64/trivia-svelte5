@@ -54,7 +54,7 @@
 
         <ul id="public-leaderboard-view" class="leaderboard-rankings">
             {#each $leaderboard.public_leaderboard_entries as entry}
-                <Entry {entry} {lbView} />
+                <Entry {entry} />
             {/each}
         </ul>
     {:else}
@@ -76,7 +76,7 @@
 
         <ul id="host-leaderboard-view" class="leaderboard-rankings">
             {#each $leaderboard.host_leaderboard_entries || [] as entry, index}
-                <Entry {entry} {lbView} />
+                <Entry {entry} />
 
                 {#if showTiebreakerButton(entry, index)}
                     <div class="resolve-tiebreaker">
