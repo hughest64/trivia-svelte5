@@ -33,7 +33,7 @@
     $: collapsed = !expandable ? null : !expanded;
 
     let nameEditable = false;
-    // TODO: reomve all instances of this and replace buttons with anchors
+    // TODO: remove all instances of this and replace buttons with anchors
     const handleExpand = async (team_id: number) => {
         if (!expandable) return;
 

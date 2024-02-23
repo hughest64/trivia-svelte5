@@ -1,20 +1,49 @@
 <script lang="ts">
+    import { page } from '$app/stores';
+    import { applyAction, enhance } from '$app/forms';
     import { getStore, respsByround, splitQuestionKey } from '$lib/utils';
     import RoundResponses from '$lib/leaderboards/RoundResponses.svelte';
+    import EditTeamName from './icons/EditTeamName.svelte';
     import type { LeaderboardEntry } from '$lib/types';
 
     export let entry: LeaderboardEntry | undefined;
+    let teamName = entry?.team_name;
 
     const rounds = getStore('rounds');
     const roundStates = getStore('roundStates');
     $: isSecondHalf = Math.max(...$roundStates.map((rs) => (rs.scored ? rs.round_number : 0)));
     const teamResponseStore = getStore('responseData');
     $: groupedResps = respsByround($teamResponseStore, $rounds, $roundStates, false);
+
+    let nameEditable = false;
+    const syncInputText = (e: Event) => {
+        const target = <HTMLInputElement>e.target;
+        teamName = target.value;
+    };
 </script>
 
 {#if entry}
-    <!-- TODO: make this a form and allow team name editng here -->
-    <h2><strong>{entry.team_name}</strong></h2>
+    <form
+        action="/host/{$page.params.joincode}/leaderboard?/updateteamname"
+        method="post"
+        class="name-form"
+        use:enhance={() =>
+            ({ result }) => {
+                nameEditable = false;
+                applyAction(result);
+            }}
+    >
+        {#if nameEditable}
+            <input type="hidden" name="team_id" value={entry.team_id} />
+            <input type="text" class="team-name" name="team_name" value={teamName} on:input={syncInputText} />
+            <button class="submit-btn" type="submit">✓</button>
+        {:else}
+            <h2><strong>{entry.team_name}</strong></h2>
+            <button on:click={() => (nameEditable = !nameEditable)}>
+                <EditTeamName />
+            </button>
+        {/if}
+    </form>
 
     <div class="answer-container">
         <p class="team-password">Team Password: {entry.team_password}</p>
@@ -42,5 +71,27 @@
     .leaderboard-meta {
         display: flex;
         justify-content: space-between;
+    }
+    .name-form {
+        flex-direction: row;
+        justify-content: center;
+        gap: 1rem;
+    }
+    .team-name {
+        font-size: 1.25rem;
+        font-weight: bold;
+        font-family: 'Montserrat';
+        padding: 0.3rem;
+        border: 2px solid var(--color-secondary);
+        border-radius: 5px;
+    }
+    .submit-btn {
+        font-size: 24px;
+        font-weight: bold;
+        width: 2.5rem;
+        height: 2.5rem;
+        background-color: var(--color-current);
+        border: 2px solid var(--color-secondary);
+        border-radius: 5px;
     }
 </style>
