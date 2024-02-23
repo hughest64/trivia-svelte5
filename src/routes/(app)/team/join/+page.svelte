@@ -13,7 +13,7 @@
 <svelte:head><title>TriviaMafia | Join Team</title></svelte:head>
 
 <main class="short">
-    <h1>Join a Team!</h1>
+    <h2>Join a Team!</h2>
     {#if paswordParam && teamToJoin}
         <h2>Team: {teamToJoin.name}</h2>
         <h4>Team Members:</h4>
@@ -22,7 +22,7 @@
                 <li>{member}</li>
             {/each}
         </ul>
-    {:else}
+    {:else if paswordParam}
         <h4>Sorry, we couldn't find a team with that password</h4>
     {/if}
     <form action={'?/joinTeam' + qp} method="POST">
