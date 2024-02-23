@@ -21,7 +21,7 @@
         formData.set('adjustment_points', String(pts));
         formData.set('team_id', String(entry.team_id));
 
-        const response = await fetch('?/updatepointsadjustment', {
+        const response = await fetch(`/host/${$page.params.joincode}/leaderboard?/updatepointsadjustment`, {
             method: 'post',
             body: formData
         });

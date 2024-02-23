@@ -7,11 +7,11 @@
     const leaderboard_id = $page.params.team_id;
     const leaderboard = getStore('leaderboard');
 
-    const entry = $leaderboard.host_leaderboard_entries?.find((entry) => entry.team_id === Number(leaderboard_id));
+    $: entry = $leaderboard.host_leaderboard_entries?.find((entry) => entry.team_id === Number(leaderboard_id));
 </script>
 
 <h1>Leaderboard Summary</h1>
 
 <RoundSelector />
 
-<LeaderboardSummary {entry} />
+<LeaderboardSummary bind:entry />

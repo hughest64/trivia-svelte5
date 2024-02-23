@@ -4,15 +4,16 @@
     import { getStore, respsByround, splitQuestionKey } from '$lib/utils';
     import RoundResponses from '$lib/leaderboards/RoundResponses.svelte';
     import EditTeamName from './icons/EditTeamName.svelte';
+    import PointsAdjustment from './PointsAdjustment.svelte';
     import type { LeaderboardEntry } from '$lib/types';
 
     export let entry: LeaderboardEntry | undefined;
     $: teamName = entry?.team_name;
 
+    $: isHost = $page.url.pathname.startsWith('/host');
+
     const rounds = getStore('rounds');
     const roundStates = getStore('roundStates');
-    // TODO: handle this!!! (its' for mega round indicators)
-    $: isSecondHalf = Math.max(...$roundStates.map((rs) => (rs.scored ? rs.round_number : 0)));
     const teamResponseStore = getStore('responseData');
     $: groupedResps = respsByround($teamResponseStore, $rounds, $roundStates, false);
 
@@ -64,6 +65,9 @@
             {/each}
         </ul>
     </div>
+    {#if isHost}
+        <PointsAdjustment bind:entry />
+    {/if}
 {:else}
     <h2 class="error">A summary is not currently available</h2>
 {/if}
