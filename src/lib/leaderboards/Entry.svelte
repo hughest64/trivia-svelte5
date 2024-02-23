@@ -32,35 +32,14 @@
     let expanded = false;
     $: collapsed = !expandable ? null : !expanded;
 
-    let fetched = false;
     let nameEditable = false;
     // TODO: reomve all instances of this and replace buttons with anchors
-    const handleExpand = async (id: number) => {
+    const handleExpand = async (team_id: number) => {
         if (!expandable) return;
 
         // TODO: temporary to maintain the host side
         if (isHost) {
-            goto(`leaderboard/summary/${id}`);
-            // if (expanded) {
-            //     teamName = entry.team_name;
-            //     nameEditable = false;
-            // }
-
-            // if (isPlayerEndpoint || fetched) {
-            //     expanded = !expanded;
-            //     return;
-            // }
-
-            // TODO: validate the necessity of this and move to a load function
-            // const resp = await fetch(`${$page.url.pathname}/responses/${entry.team_id}`);
-            // if (resp.ok) {
-            //     responses = (await resp.json())?.responses || [];
-            //     fetched = true;
-            // } else {
-            //     // TODO: handle error state
-            // }
-
-            expanded = !expanded;
+            goto(`leaderboard/summary/${team_id}`, { invalidateAll: true });
         } else {
             goto('leaderboard/summary');
         }
@@ -74,13 +53,13 @@
 
 <li class="leaderboard-entry-container">
     <div class="leaderboard-entry-meta">
-        <button class="rank" class:collapsed class:expanded on:click={() => handleExpand(entry.id)}>
+        <button class="rank" class:collapsed class:expanded on:click={() => handleExpand(entry.team_id)}>
             <h3 class="rank-display">{entry.rank}</h3>
         </button>
 
         <div class="team-name grow" class:team-name-wide={collapsed}>
             {#if !expanded}
-                <button class="team-name-btn" on:click={() => handleExpand(entry.id)}>
+                <button class="team-name-btn" on:click={() => handleExpand(entry.team_id)}>
                     <h3 class="team-name-display">{teamName}</h3>
                     {#if (isPlayerTeamEntry || !isPlayerEndpoint) && isSecondHalf && !entry.megaround}
                         <span class="megaround-alert">!Mega Round</span>
@@ -101,17 +80,17 @@
                         <input type="text" name="team_name" value={teamName} on:input={syncInputText} />
                         <button class="edit-teamname submit-btn" type="submit">✓</button>
                     {:else if expanded}
-                        <button on:click={() => handleExpand(entry.id)}><h3>{teamName}</h3></button>
+                        <button on:click={() => handleExpand(entry.team_id)}><h3>{teamName}</h3></button>
                         <button class="edit-teamname" on:click={() => (nameEditable = !nameEditable)}>
                             <EditTeamName />
                         </button>
-                        <button class="grow filler-btn" on:click={() => handleExpand(entry.id)}>-</button>
+                        <button class="grow filler-btn" on:click={() => handleExpand(entry.team_id)}>-</button>
                     {/if}
                 </form>
             {/if}
         </div>
 
-        <button class="points" on:click={() => handleExpand(entry.id)}>
+        <button class="points" on:click={() => handleExpand(entry.team_id)}>
             <h3 class="points-display">{entry.total_points}</h3>
         </button>
     </div>

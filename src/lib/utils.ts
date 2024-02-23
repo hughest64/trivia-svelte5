@@ -247,7 +247,7 @@ export const handleHostAuth = async ({
     let data = {};
     if (!isDataRequest) {
         const apiHost = PUBLIC_API_HOST;
-        const response = await fetch(`${apiHost}${apiEndpoint}/`);
+        const response = await fetch(`${apiHost}${apiEndpoint}`);
         const apiData = await response.json();
         if (response.ok) {
             data = { ...apiData, ...locals };

@@ -18,8 +18,8 @@ urlpatterns = [
     # host endpoints
     re_path(r"^host/recent/?$", host.RecentEventView.as_view(), name="recent_events"),
     re_path(
-        r"^host/(?P<joincode>\d+)/leaderboard/responses/(?P<team_id>\d+)/?$",
-        host.EventTeamResponsesView.as_view(),
+        r"^host/(?P<joincode>\d+)/leaderboard/summary/(?P<team_id>\d+)/?$",
+        host.EventHostView.as_view(),
         name="team_responses",
     ),
     re_path(
@@ -78,7 +78,11 @@ urlpatterns = [
         name="chat_create",
     ),
     # player endpoints
-    re_path(r"^game/check/(?P<joincode>\d+)/?$", game.EventCheckView.as_view(), name="event_check"),
+    re_path(
+        r"^game/check/(?P<joincode>\d+)/?$",
+        game.EventCheckView.as_view(),
+        name="event_check",
+    ),
     re_path(r"^game/join/?$", game.EventJoinView.as_view(), name="event_join"),
     re_path(
         r"^game/(?P<joincode>\d+)/response/?$",

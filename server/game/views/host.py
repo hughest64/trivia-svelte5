@@ -50,7 +50,7 @@ class EventHostView(APIView):
     authentication_classes = [JwtAuthentication]
     permission_classes = [IsAdminUser]
 
-    def get(self, request, joincode):
+    def get(self, request, joincode, team_id=None):
         """fetch a specific event from the joincode parsed from the url"""
         user_data = request.user.to_json()
         event = get_event_or_404(joincode=joincode)
@@ -74,12 +74,20 @@ class EventHostView(APIView):
         except Leaderboard.DoesNotExist:
             pass
 
+        # if passed a team id (i.e. leaderboard summary page), fetch respones for the team in question
+        response_data = []
+        if team_id is not None:
+            response_data = queryset_to_json(
+                QuestionResponse.objects.filter(event=event, team_id=team_id)
+            )
+
         return Response(
             {
                 **event.to_json(),
                 "user_data": user_data,
                 "chat_messages": queryset_to_json(chat_messages),
                 "points_adjustment_reasons": PTS_ADJUSTMENT_OPTIONS_LIST,
+                "response_data": response_data,
                 "leaderboard_data": {
                     "public_leaderboard_entries": queryset_to_json(public_lb_entries),
                     "host_leaderboard_entries": queryset_to_json(host_lb_entries),
@@ -89,17 +97,6 @@ class EventHostView(APIView):
                 },
             }
         )
-
-
-class EventTeamResponsesView(APIView):
-    authentication_classes = [JwtAuthentication]
-    permission_classes = [IsAdminUser]
-
-    def get(self, request, joincode, team_id):
-        event = get_event_or_404(joincode=joincode)
-        resps = QuestionResponse.objects.filter(event=event, team_id=team_id)
-
-        return Response({"responses": queryset_to_json(resps)})
 
 
 class RecentEventView(APIView):
