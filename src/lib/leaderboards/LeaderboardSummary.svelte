@@ -7,10 +7,11 @@
     import type { LeaderboardEntry } from '$lib/types';
 
     export let entry: LeaderboardEntry | undefined;
-    let teamName = entry?.team_name;
+    $: teamName = entry?.team_name;
 
     const rounds = getStore('rounds');
     const roundStates = getStore('roundStates');
+    // TODO: handle this!!! (its' for mega round indicators)
     $: isSecondHalf = Math.max(...$roundStates.map((rs) => (rs.scored ? rs.round_number : 0)));
     const teamResponseStore = getStore('responseData');
     $: groupedResps = respsByround($teamResponseStore, $rounds, $roundStates, false);
@@ -93,5 +94,13 @@
         background-color: var(--color-current);
         border: 2px solid var(--color-secondary);
         border-radius: 5px;
+    }
+    .megaround {
+        border: 2px solid var(--color-primary);
+        border-radius: 10px;
+        h3 {
+            padding: 0.5rem;
+            padding-bottom: 0;
+        }
     }
 </style>
