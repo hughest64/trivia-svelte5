@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { goto } from '$app/navigation';
     import { page } from '$app/stores';
     import { getStore } from '$lib/utils';
     import type { LeaderboardEntry } from '$lib/types';
@@ -11,41 +10,39 @@
     const userStore = getStore('userData');
     const isPlayerEndpoint = $page.url.pathname.startsWith('/game');
     $: isPlayerTeamEntry = entry.team_id === $userStore.active_team_id;
+
     const roundStates = getStore('roundStates');
     $: isSecondHalf = Math.max(...$roundStates.map((rs) => (rs.scored ? rs.round_number : 0)));
 
     $: isHost = $page.url.pathname.startsWith('/host');
 
-    // TODO: remove all instances of this and replace buttons with anchors
-    const handleExpand = async (team_id: number) => {
-        // TODO: temporary to maintain the host side
-        if (isHost) {
-            goto(`leaderboard/summary/${team_id}`, { invalidateAll: true });
-        } else {
-            goto('leaderboard/summary');
-        }
-    };
+    // TODO: this isn't a good solution as we shouldn't revove the href (ever)
+    // but we need a way to prevent players from viewing other teams entries
+    $: summaryLink = isPlayerTeamEntry || isHost ? 'leaderboard/summary/' : '';
 </script>
 
 <li class="leaderboard-entry-container">
-    <div class="leaderboard-entry-meta">
-        <button class="rank" on:click={() => handleExpand(entry.team_id)}>
+    <a
+        href={`${summaryLink}${isHost ? entry.team_id : ''}`}
+        class="leaderboard-entry-meta"
+        class:anchor={isPlayerTeamEntry || isHost}
+        data-sveltekit-reload={isHost}
+    >
+        <div class="rank">
             <h3 class="rank-display">{entry.rank}</h3>
-        </button>
-
-        <div class="team-name grow">
-            <button class="team-name-btn" on:click={() => handleExpand(entry.team_id)}>
-                <h3 class="team-name-display">{teamName}</h3>
-                {#if (isPlayerTeamEntry || !isPlayerEndpoint) && isSecondHalf && !entry.megaround}
-                    <span class="megaround-alert">!Mega Round</span>
-                {/if}
-            </button>
         </div>
 
-        <button class="points" on:click={() => handleExpand(entry.team_id)}>
+        <div class="team-name grow">
+            <h3 class="team-name-display">{teamName}</h3>
+            {#if (isPlayerTeamEntry || !isPlayerEndpoint) && isSecondHalf && !entry.megaround}
+                <span class="megaround-alert">!Mega Round</span>
+            {/if}
+        </div>
+
+        <div class="points">
             <h3 class="points-display">{entry.total_points}</h3>
-        </button>
-    </div>
+        </div>
+    </a>
 
     <!-- TODO: move to the summary! -->
     <!-- {#if !isPlayerEndpoint}
@@ -62,15 +59,22 @@
         & > * {
             display: flex;
             align-items: center;
+            text-decoration: none;
+            color: inherit;
         }
         .leaderboard-entry-meta {
             display: flex;
             width: 100%;
             padding: 0;
             margin: 0;
+            cursor: default;
+        }
+        .anchor {
+            cursor: pointer;
         }
         .rank {
             justify-content: center;
+            text-align: center;
             min-width: 3.5rem;
             padding: 1.25rem;
             background-color: var(--color-alt-black);
@@ -80,13 +84,6 @@
         .team-name {
             margin: 0.5rem 0;
             padding: 0 1rem;
-            button {
-                position: relative;
-                text-align: left;
-            }
-            .team-name-btn {
-                width: 100%;
-            }
         }
         .points {
             padding: 1rem;
