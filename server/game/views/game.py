@@ -132,16 +132,17 @@ class EventJoinView(APIView):
         event.event_teams.add(user.active_team)
         event.players.add(user)
 
-        # TODO: I think we need to associsate the top level leaderbaord with the entries
         LeaderboardEntry.objects.get_or_create(
             event=event,
             leaderboard_type=LEADERBOARD_TYPE_HOST,
             team=user.active_team,
+            defaults={"leaderboard": event.leaderboard},
         )
         public_lbe, created = LeaderboardEntry.objects.get_or_create(
             event=event,
             leaderboard_type=LEADERBOARD_TYPE_PUBLIC,
             team=user.active_team,
+            defaults={"leaderboard": event.leaderboard},
         )
 
         if created:
