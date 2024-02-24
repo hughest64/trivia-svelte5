@@ -67,6 +67,9 @@
         text-align: left;
         font-size: 1rem;
         padding: 0;
+        div {
+            color: var(--color-secondary);
+        }
         :last-child {
             justify-self: right;
         }

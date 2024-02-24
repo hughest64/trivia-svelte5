@@ -106,7 +106,9 @@ class EventCheckView(APIView):
         event = get_event_or_404(joincode=joincode)
         # ensure that the player is able to join the game
         check_player_limit(event, request.user)
-        return Response({"event_data": event.game_json(), "user_data": request.user.to_json()})
+        return Response(
+            {"event_data": event.game_json(), "user_data": request.user.to_json()}
+        )
 
 
 class EventJoinView(APIView):
@@ -134,11 +136,13 @@ class EventJoinView(APIView):
             event=event,
             leaderboard_type=LEADERBOARD_TYPE_HOST,
             team=user.active_team,
+            defaults={"leaderboard": event.leaderboard},
         )
         public_lbe, created = LeaderboardEntry.objects.get_or_create(
             event=event,
             leaderboard_type=LEADERBOARD_TYPE_PUBLIC,
             team=user.active_team,
+            defaults={"leaderboard": event.leaderboard},
         )
 
         if created:
@@ -294,10 +298,10 @@ class MegaRoundView(APIView):
         SendEventMessage(
             joincode,
             {
-                "msg_type": "host_megaround_update",
+                "msg_type": "event_megaround_update",
                 "message": {
                     "team_id": request.user.active_team.id,
-                    "has_megaround": True,
+                    "selected_megaround": round_number,
                 },
             },
         )

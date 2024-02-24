@@ -6,6 +6,7 @@
     export let entry: LeaderboardEntry;
 
     const adjustmentReasons = $page.data.points_adjustment_reasons || [];
+    // $: console.log($page.data);
 
     let adjustmentPoints = entry.points_adjustment_value;
     let adjustmentReason = entry.points_adjustment_reason_id;
@@ -40,7 +41,7 @@
         formData.set(target.name, target.value);
         formData.set('team_id', String(entry.team_id));
 
-        const response = await fetch('?/updatepointsadjustment', {
+        const response = await fetch(`/host/${$page.params.joincode}/leaderboard?/updatepointsadjustment`, {
             method: 'post',
             body: formData
         });

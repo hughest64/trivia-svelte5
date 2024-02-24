@@ -20,6 +20,7 @@
         TiebreakerResponse,
         TeamNote
     } from './types';
+    import Messaging from '../routes/(app)/host/[joincode=integer]/controlboard/Messaging.svelte';
     const path = $page.url.pathname;
 
     export let socketUrl = `${PUBLIC_WEBSOCKET_HOST}/ws${path}/`;
@@ -295,16 +296,18 @@
 
             selectedMegaroundStore.set(selected_megaround);
         },
-        host_megaround_update: (msg: HostMegaRoundInstance) => {
-            // only update host routes
-            if (!isHostEndpoint) return;
+        event_megaround_update: (msg: Record<'team_id' | 'selected_megaround', number>) => {
+            const { team_id, selected_megaround } = msg;
 
             leaderboardStore.update((lb) => {
                 const newLb = { ...lb };
-                const megaroundList = newLb.host_megaround_list || [];
-                const indexToUpdate = megaroundList.findIndex((e) => e.team_id === msg.team_id);
-                indexToUpdate > -1 ? (megaroundList[indexToUpdate] = msg) : megaroundList?.push(msg);
-                newLb.host_megaround_list = megaroundList;
+
+                const hostEntry = newLb.host_leaderboard_entries?.find((entry) => entry.team_id === team_id);
+                hostEntry && (hostEntry.megaround = selected_megaround);
+
+                const publicEntry = newLb.public_leaderboard_entries.find((entry) => entry.team_id === team_id);
+                publicEntry && (publicEntry.megaround = selected_megaround);
+
                 return newLb;
             });
         },

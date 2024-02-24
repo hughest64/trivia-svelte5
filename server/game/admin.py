@@ -57,8 +57,7 @@ class LeaderboardEntryAdmin(admin.ModelAdmin):
         "tiebreaker_rank",
         "leaderboard_type",
     ]
-    exclude = ["leaderboard"]
-    readonly_fields = ["event"]
+    readonly_fields = ["event", "leaderboard"]
 
 
 admin.site.register(Leaderboard)

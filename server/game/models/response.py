@@ -127,7 +127,7 @@ class Leaderboard(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     event = models.OneToOneField(
-        "TriviaEvent", related_name="leaderboards", on_delete=models.CASCADE
+        "TriviaEvent", related_name="leaderboard", on_delete=models.CASCADE
     )
     public_through_round = models.IntegerField(blank=True, null=True)
     host_through_round = models.IntegerField(blank=True, null=True)
