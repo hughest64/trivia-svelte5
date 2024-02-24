@@ -21,7 +21,11 @@
         };
 
         setEventCookie($activeEventData, joincode);
-        $page.url.pathname.endsWith('leaderboard') && goto(`/game/${joincode}`);
+        const pathname = $page.url.pathname;
+
+        if (pathname.endsWith('leaderboard') || pathname.endsWith('summary')) {
+            goto(`/game/${joincode}`);
+        }
     };
 
     $: missingResponses = (roundNumber: number) => {

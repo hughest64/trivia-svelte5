@@ -15,3 +15,10 @@
 <RoundSelector />
 
 <LeaderboardSummary bind:entry />
+
+<style lang="scss">
+    :global(main .answer-container),
+    h1 {
+        padding: 0 1rem;
+    }
+</style>
