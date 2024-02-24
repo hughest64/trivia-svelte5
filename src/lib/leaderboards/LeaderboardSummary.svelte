@@ -23,8 +23,7 @@
         teamName = target.value;
     };
 
-    $: isMegaRound = (group: ResponseMeta[], lbEntry: LeaderboardEntry) =>
-        splitQuestionKey(group[0].key).round === String(lbEntry?.megaround);
+    $: isMegaRound = (group: ResponseMeta[]) => splitQuestionKey(group[0].key).round === String(entry?.megaround);
 </script>
 
 {#if entry}
@@ -58,8 +57,8 @@
         </div>
         <ul class="response-round-list">
             {#each groupedResps || [] as group}
-                <li class:megaround={isMegaRound(group, entry)}>
-                    {#if isMegaRound(group, entry)}
+                <li class:megaround={isMegaRound(group)}>
+                    {#if isMegaRound(group)}
                         <h3>Mega Round!</h3>
                     {/if}
                     <RoundResponses roundResps={group} />
