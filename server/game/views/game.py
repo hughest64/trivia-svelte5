@@ -298,10 +298,10 @@ class MegaRoundView(APIView):
         SendEventMessage(
             joincode,
             {
-                "msg_type": "host_megaround_update",
+                "msg_type": "event_megaround_update",
                 "message": {
                     "team_id": request.user.active_team.id,
-                    "has_megaround": True,
+                    "selected_megaround": round_number,
                 },
             },
         )

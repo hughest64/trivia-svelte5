@@ -76,9 +76,6 @@ export interface Leaderboard {
     synced?: boolean;
     public_leaderboard_entries: LeaderboardEntry[];
     host_leaderboard_entries?: LeaderboardEntry[];
-    // array of objects with team id as a key and a boolean value
-    // indicating whether or not they have selected a mega round
-    host_megaround_list?: HostMegaRoundInstance[];
 }
 export interface LocationSelectData {
     location_id: string | number;

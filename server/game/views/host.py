@@ -59,10 +59,6 @@ class EventHostView(APIView):
         lb_entries = LeaderboardEntry.objects.filter(event=event)
         public_lb_entries = lb_entries.filter(leaderboard_type=LEADERBOARD_TYPE_PUBLIC)
         host_lb_entries = lb_entries.filter(leaderboard_type=LEADERBOARD_TYPE_HOST)
-        host_megaround_list = [
-            {"team_id": lbe.team.id, "has_megaround": bool(lbe.selected_megaround)}
-            for lbe in public_lb_entries
-        ]
         through_round = None
         synced = True
 
@@ -91,7 +87,6 @@ class EventHostView(APIView):
                 "leaderboard_data": {
                     "public_leaderboard_entries": queryset_to_json(public_lb_entries),
                     "host_leaderboard_entries": queryset_to_json(host_lb_entries),
-                    "host_megaround_list": host_megaround_list,
                     "through_round": through_round,
                     "synced": synced,
                 },
