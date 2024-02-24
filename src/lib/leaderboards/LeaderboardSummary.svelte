@@ -5,7 +5,7 @@
     import RoundResponses from '$lib/leaderboards/RoundResponses.svelte';
     import EditTeamName from './icons/EditTeamName.svelte';
     import PointsAdjustment from './PointsAdjustment.svelte';
-    import type { LeaderboardEntry } from '$lib/types';
+    import type { LeaderboardEntry, ResponseMeta } from '$lib/types';
 
     export let entry: LeaderboardEntry | undefined;
     $: teamName = entry?.team_name;
@@ -22,6 +22,9 @@
         const target = <HTMLInputElement>e.target;
         teamName = target.value;
     };
+
+    $: isMegaRound = (group: ResponseMeta[], lbEntry: LeaderboardEntry) =>
+        splitQuestionKey(group[0].key).round === String(lbEntry?.megaround);
 </script>
 
 {#if entry}
@@ -55,9 +58,8 @@
         </div>
         <ul class="response-round-list">
             {#each groupedResps || [] as group}
-                {@const isMegaRound = splitQuestionKey(group[0].key).round === String(entry.megaround)}
-                <li class:megaround={isMegaRound}>
-                    {#if isMegaRound}
+                <li class:megaround={isMegaRound(group, entry)}>
+                    {#if isMegaRound(group, entry)}
                         <h3>Mega Round!</h3>
                     {/if}
                     <RoundResponses roundResps={group} />

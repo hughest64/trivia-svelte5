@@ -106,7 +106,9 @@ class EventCheckView(APIView):
         event = get_event_or_404(joincode=joincode)
         # ensure that the player is able to join the game
         check_player_limit(event, request.user)
-        return Response({"event_data": event.game_json(), "user_data": request.user.to_json()})
+        return Response(
+            {"event_data": event.game_json(), "user_data": request.user.to_json()}
+        )
 
 
 class EventJoinView(APIView):
@@ -130,6 +132,7 @@ class EventJoinView(APIView):
         event.event_teams.add(user.active_team)
         event.players.add(user)
 
+        # TODO: I think we need to associsate the top level leaderbaord with the entries
         LeaderboardEntry.objects.get_or_create(
             event=event,
             leaderboard_type=LEADERBOARD_TYPE_HOST,

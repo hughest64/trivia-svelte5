@@ -494,6 +494,7 @@ class UpdateAdjustmentPointsView(APIView):
                 entries, event.max_locked_round()
             )
 
+        # TODO: this fails if the top level lb is not tied to the entry, but it's tied sometimes, how?
         lbe.leaderboard.synced = False
         lbe.leaderboard.save()
 
