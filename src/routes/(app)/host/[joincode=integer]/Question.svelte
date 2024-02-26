@@ -16,7 +16,6 @@
 
     const responses = getStore('responseData');
     $: questionResponses = $responses.filter((r) => r.key === question.key);
-    $: questionResponses.length && console.log(questionResponses);
     $: correct = questionResponses.filter((r) => Number(r.points_awarded) === 1).length;
     $: half = questionResponses.filter((r) => Number(r.points_awarded) === 0.5).length;
     $: funny = questionResponses.filter((r) => resolveBool(r.funny)).map((r) => r.recorded_answer);
