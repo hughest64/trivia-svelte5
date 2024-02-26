@@ -6,7 +6,6 @@
     export let entry: LeaderboardEntry;
 
     const adjustmentReasons = $page.data.points_adjustment_reasons || [];
-    // $: console.log($page.data);
 
     let adjustmentPoints = entry.points_adjustment_value;
     let adjustmentReason = entry.points_adjustment_reason_id;

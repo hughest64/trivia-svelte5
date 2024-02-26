@@ -26,7 +26,6 @@
         href={`${summaryLink}${isHost ? entry.team_id : ''}`}
         class="leaderboard-entry-meta"
         class:anchor={isPlayerTeamEntry || isHost}
-        data-sveltekit-reload={isHost}
     >
         <div class="rank">
             <h3 class="rank-display">{entry.rank}</h3>

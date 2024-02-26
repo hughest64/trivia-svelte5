@@ -9,6 +9,18 @@
     export let question: GameQuestion;
     let formError: string;
 
+    const roundStates = getStore('roundStates');
+    $: roundIsLocked = $roundStates.find((rs) => rs.round_number === question.round_number)?.locked;
+    const responses = getStore('responseData');
+
+    $: respSummary = (() => {
+        const questionResponses = $responses.filter((r) => r.key === question.key);
+        const correct = questionResponses.filter((r) => r.points_awarded === 1).length;
+        const half = questionResponses.filter((r) => r.points_awarded === 0.5).length;
+        const funny = questionResponses.filter((r) => r.funny).map((r) => r.recorded_answer);
+        return { total: questionResponses.length, correct, half, funny };
+    })();
+
     const questionStates = getStore('questionStates') || [];
     $: questionRevealed = $questionStates.find((qs) => qs.key === question.key)?.question_displayed;
     $: hasImage = question.question_type.toLocaleLowerCase().startsWith('image');
@@ -86,5 +98,20 @@
     {#if answerDisplayed}
         <h4>{question.display_answer}</h4>
         {#if question.answer_notes}<p><strong>Notes:</strong> {question.answer_notes}</p>{/if}
+
+        {#if respSummary.total > 0 && roundIsLocked}
+            <p class="resp-summary">
+                {respSummary.correct}/{respSummary.total} correct, {respSummary.half} half points
+            </p>
+        {/if}
+        {#if respSummary.funny.length > 0 && roundIsLocked}
+            <p>Funny Responses: {respSummary.funny.join(', ')}</p>
+        {/if}
     {/if}
 </div>
+
+<style lang="scss">
+    .resp-summary {
+        color: var(--color-primary);
+    }
+</style>
