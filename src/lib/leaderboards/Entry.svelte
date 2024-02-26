@@ -11,8 +11,11 @@
     const isPlayerEndpoint = $page.url.pathname.startsWith('/game');
     $: isPlayerTeamEntry = entry.team_id === $userStore.active_team_id;
 
+    const rounds = getStore('rounds');
     const roundStates = getStore('roundStates');
-    $: isSecondHalf = Math.max(...$roundStates.map((rs) => (rs.scored ? rs.round_number : 0)));
+    $: halfway = $rounds.length / 2;
+    $: firstHalfScored = $roundStates.filter((rs) => rs.round_number <= halfway && rs.scored);
+    $: isSecondHalf = firstHalfScored.length >= halfway;
 
     $: isHost = $page.url.pathname.startsWith('/host');
 
