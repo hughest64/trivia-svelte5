@@ -11,12 +11,15 @@
     const isPlayerEndpoint = $page.url.pathname.startsWith('/game');
     $: isPlayerTeamEntry = entry.team_id === $userStore.active_team_id;
 
+    const rounds = getStore('rounds');
     const roundStates = getStore('roundStates');
-    $: isSecondHalf = Math.max(...$roundStates.map((rs) => (rs.scored ? rs.round_number : 0)));
+    $: halfway = $rounds.length / 2;
+    $: firstHalfScored = $roundStates.filter((rs) => rs.round_number <= halfway && rs.scored);
+    $: isSecondHalf = firstHalfScored.length >= halfway;
 
     $: isHost = $page.url.pathname.startsWith('/host');
 
-    // TODO: this isn't a good solution as we shouldn't revove the href (ever)
+    // TODO: this isn't a good solution as we shouldn't remove the href (ever)
     // but we need a way to prevent players from viewing other teams entries
     $: summaryLink = isPlayerTeamEntry || isHost ? 'leaderboard/summary/' : '';
 </script>
@@ -26,6 +29,7 @@
         href={`${summaryLink}${isHost ? entry.team_id : ''}`}
         class="leaderboard-entry-meta"
         class:anchor={isPlayerTeamEntry || isHost}
+        data-sveltekit-reload={isHost}
     >
         <div class="rank">
             <h3 class="rank-display">{entry.rank}</h3>
