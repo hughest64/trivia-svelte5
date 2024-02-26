@@ -4,6 +4,7 @@
     import { enhance, applyAction } from '$app/forms';
     import { getStore } from '$lib/utils';
     import type { UserTeam } from '$lib/types';
+    import type { Action, ActionResult } from '@sveltejs/kit';
 
     const qrCode = $page.data.team_qr || '<p>Not Found</p>';
 
@@ -36,13 +37,34 @@
     $: form = $page.form;
 
     const prevRoute = $page.url.searchParams.get('prev') || '/team';
+
+    const handleUpdate = (result: ActionResult, updateType: 'teamName' | 'password') => {
+        if (result.type === 'success') {
+            userData.update((u) => {
+                const newData = { ...u };
+                const teamToUpdate = u.teams?.find((t) => t.id === $userData.active_team_id);
+
+                if (teamToUpdate && updateType === 'teamName') {
+                    teamToUpdate.name = currentName;
+                } else if (teamToUpdate && updateType === 'password') {
+                    teamToUpdate.password = currentPassword;
+                }
+
+                return newData;
+            });
+        }
+        applyAction(result);
+    };
 </script>
 
 <svelte:head><title>Trivia Mafia | Manage Team</title></svelte:head>
 
 <main class="short">
     {#if activeTeam}
-        <h1>{activeTeam.name}</h1>
+        <h1 class="name-header">{activeTeam.name}</h1>
+
+        <p>Password: {activeTeam.password}</p>
+
         <h3>Manage Your Team</h3>
 
         <button
@@ -112,17 +134,8 @@
                 action="?/updatename&joincode={joincode}"
                 method="post"
                 use:enhance={() =>
-                    ({ result }) => {
-                        if (result.type === 'success') {
-                            userData.update((u) => {
-                                const newData = { ...u };
-                                const teamToUpdate = u.teams?.find((t) => t.id === $userData.active_team_id);
-                                if (teamToUpdate) teamToUpdate.name = currentName;
-                                return newData;
-                            });
-                        }
-                        applyAction(result);
-                    }}
+                    ({ result }) =>
+                        handleUpdate(result, 'teamName')}
             >
                 {#if form?.error?.teamname}<p class="error">{form.error.teamname}</p>{/if}
                 {#if form?.success?.teamname}<p>{form?.success?.teamname}</p>{/if}
@@ -150,9 +163,8 @@
                 action="?/update-password&joincode={joincode}"
                 method="post"
                 use:enhance={() =>
-                    ({ result }) => {
-                        applyAction(result);
-                    }}
+                    ({ result }) =>
+                        handleUpdate(result, 'password')}
             >
                 {#if form?.error?.password}<p class="error">{form.error.password}</p>{/if}
                 {#if form?.success?.password}<p>{form.success.password}</p>{/if}
@@ -178,6 +190,9 @@
 </main>
 
 <style lang="scss">
+    .name-header {
+        margin-bottom: 0;
+    }
     .member-container {
         width: var(--max-element-width);
         max-width: calc(100vw - 2rem);

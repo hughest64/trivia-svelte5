@@ -156,7 +156,6 @@ class TeamUpdateName(APIView):
         return Response({"detail": "The team name has been updated"})
 
 
-# TODO: we should return a socket message to the event, need the joincode
 class UpdateTeamPasswordView(APIView):
     authentication_classes = [JwtAuthentication]
 
