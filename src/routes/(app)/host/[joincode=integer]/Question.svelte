@@ -2,12 +2,23 @@
     import { page } from '$app/stores';
     import { getStore } from '$lib/utils';
     import { deserialize } from '$app/forms';
+    import { resolveBool } from '$lib/utils';
     import type { GameQuestion } from '$lib/types';
 
     const joincode = $page.params.joincode;
 
     export let question: GameQuestion;
     let formError: string;
+
+    const roundStates = getStore('roundStates');
+    // only display the response summary if the round is locked
+    $: roundIsLocked = $roundStates.find((rs) => rs.round_number === question.round_number)?.locked;
+
+    const responses = getStore('responseData');
+    $: questionResponses = $responses.filter((r) => r.key === question.key);
+    $: correct = questionResponses.filter((r) => Number(r.points_awarded) === 1).length;
+    $: half = questionResponses.filter((r) => Number(r.points_awarded) === 0.5).length;
+    $: funny = questionResponses.filter((r) => resolveBool(r.funny)).map((r) => r.recorded_answer);
 
     const questionStates = getStore('questionStates') || [];
     $: questionRevealed = $questionStates.find((qs) => qs.key === question.key)?.question_displayed;
@@ -86,5 +97,20 @@
     {#if answerDisplayed}
         <h4>{question.display_answer}</h4>
         {#if question.answer_notes}<p><strong>Notes:</strong> {question.answer_notes}</p>{/if}
+
+        {#if questionResponses.length > 0 && roundIsLocked}
+            <p class="resp-summary">
+                {correct}/{questionResponses.length} correct, {half} half points
+            </p>
+        {/if}
+        {#if funny.length > 0 && roundIsLocked}
+            <p>Funny Responses: {funny.join(', ')}</p>
+        {/if}
     {/if}
 </div>
+
+<style lang="scss">
+    .resp-summary {
+        color: var(--color-primary);
+    }
+</style>

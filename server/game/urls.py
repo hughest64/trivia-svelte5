@@ -17,11 +17,12 @@ urlpatterns = [
     re_path(r"^changelog/?$", common.ChangeLogView.as_view(), name="change_logs"),
     # host endpoints
     re_path(r"^host/recent/?$", host.RecentEventView.as_view(), name="recent_events"),
-    re_path(
-        r"^host/(?P<joincode>\d+)/leaderboard/summary/(?P<team_id>\d+)/?$",
-        host.EventHostView.as_view(),
-        name="team_responses",
-    ),
+    # TODO: probably remove
+    # re_path(
+    #     r"^host/(?P<joincode>\d+)/leaderboard/summary/(?P<team_id>\d+)/?$",
+    #     host.EventHostView.as_view(),
+    #     name="team_responses",
+    # ),
     re_path(
         r"^host/(?P<joincode>\d+)/lock/?$",
         host.RoundLockView.as_view(),

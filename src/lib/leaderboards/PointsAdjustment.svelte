@@ -6,7 +6,6 @@
     export let entry: LeaderboardEntry;
 
     const adjustmentReasons = $page.data.points_adjustment_reasons || [];
-    // $: console.log($page.data);
 
     let adjustmentPoints = entry.points_adjustment_value;
     let adjustmentReason = entry.points_adjustment_reason_id;
@@ -89,6 +88,7 @@
         align-items: center;
         padding: 0 2rem;
         .plus-minus {
+            color: var(--color-secondary);
             font-size: 3.5rem;
             padding: 0 1rem;
             margin: 0;
@@ -97,6 +97,7 @@
             padding-right: 0;
         }
         select {
+            color: var(--color-secondary);
             width: 12rem;
             padding: 0.25rem;
             font-size: 1rem;

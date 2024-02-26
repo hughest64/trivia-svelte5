@@ -66,11 +66,6 @@ export interface LeaderboardEntry {
     points_adjustment_reason_id: number;
 }
 
-export interface HostMegaRoundInstance {
-    team_id: number;
-    has_megaround: boolean;
-}
-
 export interface Leaderboard {
     through_round?: number;
     synced?: boolean;

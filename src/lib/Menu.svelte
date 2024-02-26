@@ -10,11 +10,11 @@
     const prev = $page.url.pathname;
 
     const userData = getStore('userData');
-    $: userEmail = $userData.email;
 
     $: isGameEndpoint = $page.url.pathname.startsWith('/game');
     $: isHost = $userData.is_staff;
-    const feedbackLink = `https://docs.google.com/forms/d/e/1FAIpQLSeT5FX2OGycY0yDqjiwj8ItAFi8CE64GatBiO-lsYAz1hLguA/viewform?usp=pp_url&entry.1807181492=${userEmail}`;
+    $: feedbackQuery = !$userData.is_guest ? `?usp=pp_url&entry.1807181492=${$userData.email}` : '';
+    $: feedbackLink = `https://docs.google.com/forms/d/e/1FAIpQLSeT5FX2OGycY0yDqjiwj8ItAFi8CE64GatBiO-lsYAz1hLguA/viewform${feedbackQuery}`;
 
     const adminLink = dev ? `${PUBLIC_API_HOST}/admin` : '/admin';
 </script>
@@ -41,7 +41,7 @@
         <li><a href={adminLink} rel="external" on:click>Trivia Mafia Administration</a></li>
     {/if}
 
-    <li><a href={feedbackLink} target="_blank" on:click>Submit App Feedback</a></li>
+    <li><a href={feedbackLink} on:click target="_blank" on:click>Submit App Feedback</a></li>
 
     <li><a href="/game/join" on:click>Join a Different Game</a></li>
 
@@ -52,6 +52,7 @@
             </a>
         </li>
     {/if} -->
+    <li><a href={feedbackLink} target="_blank">Submit App Feedback</a></li>
 
     <li><a rel="external" href="/user/logout">Logout</a></li>
     <button on:click>X</button>

@@ -50,7 +50,7 @@ class EventHostView(APIView):
     authentication_classes = [JwtAuthentication]
     permission_classes = [IsAdminUser]
 
-    def get(self, request, joincode, team_id=None):
+    def get(self, request, joincode):
         """fetch a specific event from the joincode parsed from the url"""
         user_data = request.user.to_json()
         event = get_event_or_404(joincode=joincode)
@@ -70,12 +70,13 @@ class EventHostView(APIView):
         except Leaderboard.DoesNotExist:
             pass
 
+        response_data = QuestionResponse.objects.filter(event=event)  # []
+        # for now, send all responses so we can do x/y correct summaries, maybe there is a better way in the future?
         # if passed a team id (i.e. leaderboard summary page), fetch respones for the team in question
-        response_data = []
-        if team_id is not None:
-            response_data = queryset_to_json(
-                QuestionResponse.objects.filter(event=event, team_id=team_id)
-            )
+        # if team_id is not None:
+        #     response_data = queryset_to_json(
+        #         QuestionResponse.objects.filter(event=event, team_id=team_id)
+        #     )
 
         return Response(
             {
@@ -83,7 +84,7 @@ class EventHostView(APIView):
                 "user_data": user_data,
                 "chat_messages": queryset_to_json(chat_messages),
                 "points_adjustment_reasons": PTS_ADJUSTMENT_OPTIONS_LIST,
-                "response_data": response_data,
+                "response_data": queryset_to_json(response_data),
                 "leaderboard_data": {
                     "public_leaderboard_entries": queryset_to_json(public_lb_entries),
                     "host_leaderboard_entries": queryset_to_json(host_lb_entries),
@@ -366,11 +367,10 @@ class ScoreRoundView(APIView):
         if round_number is not None:
             questions = questions.filter(round_number=round_number)
 
-        response_data = []
+        all_responses = QuestionResponse.objects.filter(event=event)
+        host_response_data = []
         for question in questions:
-            responses = QuestionResponse.objects.filter(
-                game_question=question, event=event
-            )
+            responses = all_responses.filter(game_question=question)
             grouped_responses = {}
             for response in responses:
                 text = response.recorded_answer.lower().strip()
@@ -392,7 +392,7 @@ class ScoreRoundView(APIView):
                 )
                 grouped_responses[text]["response_ids"].append(response.id)
 
-            response_data.extend(
+            host_response_data.extend(
                 sorted(
                     grouped_responses.values(), key=self.get_fuzz_ratio, reverse=True
                 )
@@ -408,7 +408,8 @@ class ScoreRoundView(APIView):
                     "through_round": through_round,
                     "synced": synced,
                 },
-                "host_response_data": response_data,
+                "response_data": queryset_to_json(all_responses),
+                "host_response_data": host_response_data,
             }
         )
 
