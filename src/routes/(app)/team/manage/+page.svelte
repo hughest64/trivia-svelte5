@@ -8,7 +8,7 @@
 
     const qrCode = $page.data.team_qr || '<p>Not Found</p>';
 
-    const joincode = $page.url.searchParams.get('joincode') || '0';
+    const prev = $page.url.searchParams.get('prev');
 
     const userData = getStore('userData');
     $: activeTeam = $userData.teams.find((t) => t.id === $userData.active_team_id) as UserTeam;
@@ -131,7 +131,7 @@
         {#if teamNameDisplayed}
             <form
                 transition:slide
-                action="?/updatename&joincode={joincode}"
+                action="?/updatename&prev={prev}"
                 method="post"
                 use:enhance={() =>
                     ({ result }) =>
@@ -160,7 +160,7 @@
         {#if passwordDisplayed}
             <form
                 transition:slide
-                action="?/update-password&joincode={joincode}"
+                action="?/update-password&prev={prev}"
                 method="post"
                 use:enhance={() =>
                     ({ result }) =>

@@ -5,7 +5,9 @@ import type { Actions } from './$types';
 export const actions: Actions = {
     updatename: async ({ request, fetch, url }) => {
         const data = Object.fromEntries(await request.formData());
-        const joincode = url.searchParams.get('joincode');
+        const prev = url.searchParams.get('prev');
+        const joincodereg = /^\/game\/(?<joincode>\d+)\/?/;
+        const joincode = prev?.match(joincodereg)?.groups?.joincode;
         Object.assign(data, { joincode });
 
         const response = await fetch(`${PUBLIC_API_HOST}/team/updateteamname`, {
@@ -37,7 +39,9 @@ export const actions: Actions = {
     },
     'update-password': async ({ request, fetch, url }) => {
         const data = Object.fromEntries(await request.formData());
-        const joincode = url.searchParams.get('joincode');
+        const prev = url.searchParams.get('prev');
+        const joincodereg = /^\/game\/(?<joincode>\d+)\/?/;
+        const joincode = prev?.match(joincodereg)?.groups?.joincode;
         Object.assign(data, { joincode });
 
         const response = await fetch(`${PUBLIC_API_HOST}/team/update-password`, {

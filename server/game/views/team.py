@@ -139,6 +139,8 @@ class TeamUpdateName(APIView):
         team_name = data.as_string("team_name")
         joincode = data.as_int("joincode")
 
+        print("jc", joincode)
+
         try:
             team = Team.objects.get(id=team_id)
         except Team.DoesNotExist:

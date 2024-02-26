@@ -15,12 +15,10 @@
         RoundState,
         ChatMessage,
         SocketMessage,
-        HostMegaRoundInstance,
         UserTeam,
         TiebreakerResponse,
         TeamNote
     } from './types';
-    import Messaging from '../routes/(app)/host/[joincode=integer]/controlboard/Messaging.svelte';
     const path = $page.url.pathname;
 
     export let socketUrl = `${PUBLIC_WEBSOCKET_HOST}/ws${path}/`;
@@ -312,6 +310,7 @@
             });
         },
         teamname_update: (msg: UserTeam) => {
+            console.log(msg);
             leaderboardStore.update((lb) => {
                 const newLb = { ...lb };
                 const { public_leaderboard_entries, host_leaderboard_entries } = newLb;
