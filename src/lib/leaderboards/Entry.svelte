@@ -16,7 +16,7 @@
 
     $: isHost = $page.url.pathname.startsWith('/host');
 
-    // TODO: this isn't a good solution as we shouldn't revove the href (ever)
+    // TODO: this isn't a good solution as we shouldn't remove the href (ever)
     // but we need a way to prevent players from viewing other teams entries
     $: summaryLink = isPlayerTeamEntry || isHost ? 'leaderboard/summary/' : '';
 </script>
@@ -26,6 +26,7 @@
         href={`${summaryLink}${isHost ? entry.team_id : ''}`}
         class="leaderboard-entry-meta"
         class:anchor={isPlayerTeamEntry || isHost}
+        data-sveltekit-reload={isHost}
     >
         <div class="rank">
             <h3 class="rank-display">{entry.rank}</h3>

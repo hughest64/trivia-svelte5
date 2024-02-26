@@ -6,6 +6,8 @@
     import RoundSelector from '../RoundSelector.svelte';
     import type { LeaderboardEntry } from '$lib/types';
 
+    $: console.log($page.data);
+
     const leaderboard = getStore('leaderboard');
     const rounds = getStore('rounds');
     const roundStates = getStore('roundStates');

@@ -41,7 +41,7 @@
         <li><a href={adminLink} rel="external" on:click>Trivia Mafia Administration</a></li>
     {/if}
 
-    <li><a href={feedbackLink} on:click target="_blank" on:click>Submit App Feedback</a></li>
+    <li><a href={feedbackLink} target="_blank" on:click>Submit App Feedback</a></li>
 
     <li><a href="/game/join" on:click>Join a Different Game</a></li>
 
