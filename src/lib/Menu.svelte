@@ -10,7 +10,6 @@
     const prev = $page.url.pathname;
 
     const userData = getStore('userData');
-    $: console.log($userData);
 
     $: isGameEndpoint = $page.url.pathname.startsWith('/game');
     $: isHost = $userData.is_staff;
