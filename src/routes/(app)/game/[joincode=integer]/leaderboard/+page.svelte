@@ -14,6 +14,8 @@
 
 <RoundSelector />
 
+<a href="leaderboard/summary/" class="button button-primary summary-link">View Game Summary</a>
+
 <ul id="player-leaderboard-view" class="leaderboard-rankings">
     {#each $leaderboard.public_leaderboard_entries as entry}
         <Entry {entry} />
@@ -21,6 +23,9 @@
 </ul>
 
 <style lang="scss">
+    .summary-link {
+        margin: 0;
+    }
     ul {
         width: 100%;
     }
