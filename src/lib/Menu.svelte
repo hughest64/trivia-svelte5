@@ -43,7 +43,7 @@
 
     <li><a href={feedbackLink} target="_blank" on:click>Submit App Feedback</a></li>
 
-    <li><a href="/game/join" on:click>Join a Different Game</a></li>
+    <li><a href={isGameEndpoint ? '/game/join' : '/host/event-setup'} on:click>Join a Different Game</a></li>
 
     <!-- {#if isHost}
         <li>
