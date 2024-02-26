@@ -267,6 +267,17 @@
                     }
                     return newResps;
                 });
+                responseStore.update((resps) => {
+                    const newResps = [...resps];
+                    const respsToUpdate = newResps.filter((resp) => response_ids.includes(resp.id));
+                    for (const resp of respsToUpdate) {
+                        resp.points_awarded = points_awarded;
+                        resp.funny = funny;
+                    }
+
+                    return newResps;
+                });
+
                 if (leaderboard_data) {
                     leaderboardStore.update((lb) => {
                         const newLb = { ...lb };

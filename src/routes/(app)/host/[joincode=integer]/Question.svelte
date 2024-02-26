@@ -2,6 +2,7 @@
     import { page } from '$app/stores';
     import { getStore } from '$lib/utils';
     import { deserialize } from '$app/forms';
+    import { resolveBool } from '$lib/utils';
     import type { GameQuestion } from '$lib/types';
 
     const joincode = $page.params.joincode;
@@ -10,16 +11,15 @@
     let formError: string;
 
     const roundStates = getStore('roundStates');
+    // only display the response summary if the round is locked
     $: roundIsLocked = $roundStates.find((rs) => rs.round_number === question.round_number)?.locked;
-    const responses = getStore('responseData');
 
-    $: respSummary = (() => {
-        const questionResponses = $responses.filter((r) => r.key === question.key);
-        const correct = questionResponses.filter((r) => r.points_awarded === 1).length;
-        const half = questionResponses.filter((r) => r.points_awarded === 0.5).length;
-        const funny = questionResponses.filter((r) => r.funny).map((r) => r.recorded_answer);
-        return { total: questionResponses.length, correct, half, funny };
-    })();
+    const responses = getStore('responseData');
+    $: questionResponses = $responses.filter((r) => r.key === question.key);
+    $: questionResponses.length && console.log(questionResponses);
+    $: correct = questionResponses.filter((r) => Number(r.points_awarded) === 1).length;
+    $: half = questionResponses.filter((r) => Number(r.points_awarded) === 0.5).length;
+    $: funny = questionResponses.filter((r) => resolveBool(r.funny)).map((r) => r.recorded_answer);
 
     const questionStates = getStore('questionStates') || [];
     $: questionRevealed = $questionStates.find((qs) => qs.key === question.key)?.question_displayed;
@@ -99,13 +99,13 @@
         <h4>{question.display_answer}</h4>
         {#if question.answer_notes}<p><strong>Notes:</strong> {question.answer_notes}</p>{/if}
 
-        {#if respSummary.total > 0 && roundIsLocked}
+        {#if questionResponses.length > 0 && roundIsLocked}
             <p class="resp-summary">
-                {respSummary.correct}/{respSummary.total} correct, {respSummary.half} half points
+                {correct}/{questionResponses.length} correct, {half} half points
             </p>
         {/if}
-        {#if respSummary.funny.length > 0 && roundIsLocked}
-            <p>Funny Responses: {respSummary.funny.join(', ')}</p>
+        {#if funny.length > 0 && roundIsLocked}
+            <p>Funny Responses: {funny.join(', ')}</p>
         {/if}
     {/if}
 </div>
