@@ -248,7 +248,7 @@ class TiebreakerResponse(models.Model):
             logging.error(f"cannot grade response id {self.id}\n{e}")
             return "NaN"
 
-        return str(abs(correct_answser - player_answer))
+        return abs(correct_answser - player_answer)
 
     def __str__(self):
         return f"Tiebreaker Response for {self.team} at {self.event}"

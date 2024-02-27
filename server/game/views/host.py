@@ -482,22 +482,22 @@ class UpdateAdjustmentPointsView(APIView):
             lbe.save()
 
         leaderboard_data = None
+        synced = False
         if points is not None:
             lbe.points_adjustment += points
             lbe.total_points += points
             lbe.save()
-            leaderboard_data = LeaderboardProcessor(event=event).rank_host_leaderboard(
+
+            lb_processor = LeaderboardProcessor(event=event)
+            leaderboard_data, synced = lb_processor.rank_host_leaderboard(
                 entries, event.max_locked_round()
             )
-
-        event.leaderboard.synced = False
-        event.leaderboard.save()
 
         message = {
             "msg_type": "leaderboard_update_host_entry",
             "message": {
                 "entry": lbe.to_json(),
-                "synced": False,
+                "synced": synced,
             },
         }
 
@@ -613,6 +613,7 @@ class TiebreakerView(APIView):
 
         through_round = event.max_locked_round()
         question_responses = []
+        nan_respones = []
         with transaction.atomic():
             for entry in team_data:
                 team_id = entry.get("team_id")
@@ -621,8 +622,6 @@ class TiebreakerView(APIView):
                 try:
                     NumberConvertor.convert_to_number(answer)
                 except NumberConversionException as e:
-                    print("raising")
-                    # raise DataValidationError(str(e))
                     return Response({"detail": str(e)}, status=400)
 
                 question_response, _ = TiebreakerResponse.objects.update_or_create(
@@ -631,33 +630,39 @@ class TiebreakerView(APIView):
                     team_id=team_id,
                     defaults={"recorded_answer": answer, "round_number": through_round},
                 )
-                question_responses.append(question_response)
+                # if there is an error calculating the grade, we get the string "NaN"
+                # we keep those separate to make sorting easier
+                if question_response.grade == "NaN":
+                    nan_respones.append(question_response)
+                else:
+                    question_responses.append(question_response)
 
         # grade is abs(actual_answer - resp.answer)
-        sorted_resps = sorted(question_responses, key=lambda resp: resp.grade)
-        sorted_teams = [resp.team.id for resp in sorted_resps]
+        sorted_resps = (
+            sorted(question_responses, key=lambda resp: resp.grade) + nan_respones
+        )
 
+        resp_teams = [resp.team.id for resp in sorted_resps]
         # set lb rank (and rank) on each entry based on index + for_rank
-        entries_to_update = leaderboard_entries.filter(team_id__in=sorted_teams)
+        entries_to_update = leaderboard_entries.filter(team_id__in=resp_teams)
         for lb_entry in entries_to_update:
-            lb_entry.tiebreaker_rank = tied_for_rank + sorted_teams.index(
+            lb_entry.tiebreaker_rank = tied_for_rank + resp_teams.index(
                 lb_entry.team.id
             )
             lb_entry.tiebreaker_round_number = through_round
         LeaderboardEntry.objects.bulk_update(
             entries_to_update, fields=["tiebreaker_rank", "tiebreaker_round_number"]
         )
-        ranked_entries = LeaderboardProcessor(event=event).rank_host_leaderboard(
-            leaderboard_entries, through_round
-        )
-        # host socket message w/ updated lb entries (might need a new msg_type to handle selective updates)
+        ranked_entries, synced = LeaderboardProcessor(
+            event=event
+        ).rank_host_leaderboard(leaderboard_entries, through_round)
 
         message = {
             "msg_type": "leaderboard_update",
             "message": {
                 "host_leaderboard_entries": ranked_entries,
                 "tiebreaker_responses": queryset_to_json(sorted_resps),
-                "synced": False,
+                "synced": synced,
             },
         }
 
