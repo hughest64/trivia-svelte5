@@ -15,7 +15,7 @@ test.afterAll(async () => {
     await apicontext.dispose();
 });
 
-test('login as host and navigate', async ({ page }) => {
+test('login as host', async ({ page }) => {
     await page.goto('/user/login');
     await login(page, 'host_user', 'abc123', false);
     await expect(page).toHaveURL('/host/choice');
@@ -29,31 +29,6 @@ test('login as host and navigate', async ({ page }) => {
     await expect(page).toHaveURL(/\/host\/event-setup/);
 });
 
-test.skip('login as player and navigate', async ({ page }) => {
-    // TODO:
-    // implement the resigned flow:
-    // - after login should be the joincode page
-    // - should be able to navigate elsehwere (/team, user settings, etc) (probably a different test)
-    // - enter bad jc
-    // - enter good jc
-    // -- should show the location of the event and have options to got the game (this does the join)
-    //    or enter a new code
-});
-
-test.skip('naviagate directly to a game', async ({ page }) => {
-    // TODO: decide if the is a
-});
-
-test('two players cannot join an event with a player limit', async ({ browser }) => {
-    const p1 = getUserPage(browser, 'player_one');
-    const p2 = getUserPage(browser, 'player_two');
-
-    // p1 joins game 1111
-    // - success
-    // p2 (same team) tries to join the game
-    // - gets error message - test navigation from the error?
-});
-
 test('guest login', async ({ page }) => {
     await page.goto('/');
     // not logged in, we should land on the welcome page
@@ -63,6 +38,16 @@ test('guest login', async ({ page }) => {
     // since guest is not a staff user, they should see the team select component
     await expect(page).toHaveTitle(/create team/i);
     await expect(page.locator('h2', { hasText: /choose a team name/i })).toBeVisible();
+});
+
+test.skip('login as player', async ({ page }) => {
+    // TODO:
+    // login as a player with a team
+    // check that team is selected
+    // click let's play
+    // should be on the join page w/ team name visible
+    // strike all that, let's just make this a player with no team (i.e. a new player)
+    // that makes the test very similary to a guest user and we don't cross test boundaries
 });
 
 const submitCreateForm = async (page: Page, values: Record<string, string>) => {
