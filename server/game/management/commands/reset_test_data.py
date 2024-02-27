@@ -66,7 +66,7 @@ class Command(BaseCommand):
         QuestionAnswer.objects.all().delete()
 
     def create_users(self):
-        logger.info(f"crating {len(user_data)} user(s)")
+        logger.info(f"creating {len(user_data)} user(s)")
         for u in user_data.values():
             # throw the auth storage path away
             u.pop("auth_storage_path", None)

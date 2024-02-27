@@ -1,4 +1,5 @@
 import datetime
+import logging
 
 from channels.db import database_sync_to_async
 from channels.sessions import CookieMiddleware
@@ -6,11 +7,14 @@ from channels.sessions import CookieMiddleware
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
+from django.db.models import Q
 
 from rest_framework import authentication
 from rest_framework.exceptions import AuthenticationFailed
 
 import jwt
+
+logger = logging.getLogger()
 
 User = get_user_model()
 
@@ -23,6 +27,7 @@ def create_token(user, user_created=False, expires_in=None):
 
     payload = {
         "id": user.id,
+        "username": user.username,
         "staff_user": user.is_staff,
         "guest_user": user.is_guest,
         "user_created": user_created,
@@ -73,17 +78,24 @@ class JwtAuthentication(authentication.BaseAuthentication):
         token = self.token or request.COOKIES.get("jwt")
 
         if not token:
+            logger.info("no token")
             raise AuthenticationFailed("You need to log in!")
 
         try:
             payload = jwt.decode(token, settings.JWT_TOKEN_SECRET, algorithms=["HS256"])
 
         except jwt.ExpiredSignatureError:
+            logger.info("expired token")
+
             raise AuthenticationFailed("You need to log in!")
 
         try:
-            user = User.objects.get(id=payload["id"])
+            user = User.objects.get(
+                Q(id=payload["id"]) | Q(username=payload.get("username"))
+            )
         except User.DoesNotExist:
+            logger.info("no user")
+
             raise AuthenticationFailed("User not found")
 
         return (user, None)

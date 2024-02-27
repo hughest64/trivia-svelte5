@@ -62,7 +62,7 @@ test('guest login', async ({ page }) => {
     await page.locator('text=Play as a Guest').click();
     // since guest is not a staff user, they should see the team select component
     await expect(page).toHaveTitle(/create team/i);
-    await expect(page.locator('h2', { hasText: /create a new team/i })).toBeVisible();
+    await expect(page.locator('h2', { hasText: /choose a team name/i })).toBeVisible();
 });
 
 const submitCreateForm = async (page: Page, values: Record<string, string>) => {

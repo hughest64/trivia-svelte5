@@ -24,7 +24,7 @@ export const login = async (page: Page, username: string, password: string, navi
     navigate && (await page.goto('/user/login'));
     await page.locator('input[name="username"]').fill(username);
     await page.locator('input[name="password"]').fill(password);
-    await page.locator('button[type="submit"]').click({ timeout: 5000 });
+    await page.locator('button[type="submit"]', { hasText: /submit/i }).click({ timeout: 5000 });
 };
 
 export const logout = async (page: Page) => {
