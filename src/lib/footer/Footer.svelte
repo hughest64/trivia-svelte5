@@ -89,13 +89,6 @@
                 </a>
             </li>
         {/if}
-        <!-- TODO: keep this for the host? -->
-        <!-- <li>
-            <button class="menu" on:click>
-                <MenuIcon cls="svg" />
-                <p>Menu</p>
-            </button>
-        </li> -->
     </ul>
 </nav>
 

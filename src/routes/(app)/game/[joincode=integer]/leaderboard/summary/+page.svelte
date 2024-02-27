@@ -10,7 +10,6 @@
 
 <h1>Leaderboard Summary</h1>
 
-<!-- TODO: we need the same click logic as the actual lb, i.e. goto the game page -->
 <RoundSelector />
 
 <LeaderboardSummary bind:entry />

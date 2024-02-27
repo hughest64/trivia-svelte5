@@ -17,7 +17,8 @@ urlpatterns = [
     re_path(r"^changelog/?$", common.ChangeLogView.as_view(), name="change_logs"),
     # host endpoints
     re_path(r"^host/recent/?$", host.RecentEventView.as_view(), name="recent_events"),
-    # TODO: probably remove
+    # NOTE: not currently used as we are now returning all player responses to the host
+    # rather than a specific team's responses
     # re_path(
     #     r"^host/(?P<joincode>\d+)/leaderboard/summary/(?P<team_id>\d+)/?$",
     #     host.EventHostView.as_view(),

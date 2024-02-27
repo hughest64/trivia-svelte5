@@ -30,7 +30,6 @@
 
 <svelte:window on:keyup={handleQuestionSelect} />
 
-<!-- TODO: probably change to swipe -->
 {#if tbquestions.length}
     <div transition:slide class="tiebreaker-question-container flex-column">
         <div class="question-nav">

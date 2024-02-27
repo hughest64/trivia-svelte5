@@ -214,6 +214,4 @@ class RemoveTeamMembersView(APIView):
         ]
         team.members.set(members_to_keep)
 
-        # TODO: do we need a socket message?
-
         return Response({"success": True})

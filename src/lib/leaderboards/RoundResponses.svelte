@@ -8,10 +8,6 @@
     import type { ComponentType } from 'svelte';
     import type { ResponseMeta } from '$lib/types';
 
-    // TODO:
-    // points adjustment (probably a component)
-    // tiebreaker stuffz
-
     export let roundResps: ResponseMeta[];
     const activeEventData = getStore('activeEventData');
 
