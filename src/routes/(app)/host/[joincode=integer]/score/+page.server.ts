@@ -18,6 +18,18 @@ const updateresponse: Action = async ({ fetch, request, params }) => {
     return { success: true };
 };
 
-export const actions = {
-    updateresponse
+const revealanswers: Action = async ({ fetch, params }) => {
+    const publicApiHost = PUBLIC_API_HOST;
+    const response = await fetch(`${publicApiHost}/host/${params.joincode}/revealanswers`, {
+        method: 'post'
+    });
+
+    if (!response.ok) {
+        const respJson = await response.json();
+        return fail(response.status, { error: respJson.detail });
+    }
+
+    return { success: true };
 };
+
+export const actions = { updateresponse, revealanswers };

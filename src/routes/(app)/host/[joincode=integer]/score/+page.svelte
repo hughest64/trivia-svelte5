@@ -1,5 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
+    import { enhance } from '$app/forms';
     import { getStore, setEventCookie } from '$lib/utils';
     import RoundSelector from '../RoundSelector.svelte';
     import ResponseGroup from './ResponseGroup.svelte';
@@ -28,6 +29,9 @@
 
     $: minUnscoredRound = Math.min(...$roundStates.filter((rs) => !rs.scored).map((rs) => rs.round_number));
     $: readAnswersLink = `/host/${joincode}?active-key=${minUnscoredRound}.1`;
+
+    $: lockedRounds = $roundStates.filter((rs) => rs.locked);
+    $: revealed = lockedRounds.every((rd) => rd.revealed);
 
     const advance = async () => {
         const next = scoringQuestionNumber + 1;
@@ -132,7 +136,14 @@
         {/if}
     </div>
 {:else}
-    <h2 class="read-info">Round {roundNumber} is not locked</h2>
+    {#if !revealed}
+        <h2 class="read-info">All Caught Up!</h2>
+        <form action="?/revealanswers" method="post" class="read-info" use:enhance>
+            <button id="reveal-button" class="button button-secondary">Reveal Answers</button>
+        </form>
+    {:else}
+        <h2 class="read-info">Round {roundNumber} is not locked</h2>
+    {/if}
     <a href={readAnswersLink} class="button button-primary read-info">Go Read Answers Aloud</a>
 {/if}
 

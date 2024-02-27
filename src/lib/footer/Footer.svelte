@@ -3,7 +3,6 @@
     import { afterNavigate, replaceState } from '$app/navigation';
     import { getStore, setEventCookie, splitQuestionKey } from '$lib/utils';
     import GameIcon from '$lib/footer/icons/GameIcon.svelte';
-    import GameIconFilled from '$lib/footer/icons/GameIconFilled.svelte';
     import ChatIcon from './icons/ChatIcon.svelte';
     import LeaderboardIcon from './icons/LeaderboardIcon.svelte';
     import MegaroundIcon from './icons/MegaroundIcon.svelte';
@@ -42,11 +41,7 @@
         {#if isEventRoute}
             <li class:active={setActive(joinCode)}>
                 <a data-sveltekit-preload-code="tap" href={`/${routeId}/${joinCode}`}>
-                    <!-- {#if gameIsActive}
-                        <GameIconFilled cls="svg" />
-                    {:else} -->
                     <GameIcon cls="svg" />
-                    <!-- {/if} -->
                     <p>Game</p>
                 </a>
             </li>

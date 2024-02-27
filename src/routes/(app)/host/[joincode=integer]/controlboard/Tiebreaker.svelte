@@ -3,7 +3,6 @@
     import { deserialize } from '$app/forms';
     import { getStore } from '$lib/utils';
     import type { LeaderboardEntry, GameQuestion } from '$lib/types';
-    import type { ActionResult } from '@sveltejs/kit';
 
     const leaderboardEntries = getStore('leaderboard');
     $: hostEntries = $leaderboardEntries?.host_leaderboard_entries || [];

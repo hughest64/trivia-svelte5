@@ -108,16 +108,18 @@ class LeaderboardProcessor:
                 lbe.tiebreaker_rank = None
                 lbe.tiebreaker_round_number = None
 
-    def _set_leaderbaord_sync_status(self, through_round):
+    def _set_leaderboard_sync_status(self, through_round, save=True):
         # self._check_order()
 
-        lb = Leaderboard.objects.update_or_create(
+        lb, _ = Leaderboard.objects.update_or_create(
             event=self.event,
             defaults={
                 "host_through_round": through_round,
                 "synced": through_round is None,
             },
         )
+        if save:
+            lb.save()
 
         return lb
 
@@ -126,7 +128,7 @@ class LeaderboardProcessor:
         self.processing = True
 
         # the leaderboards are no longer synced
-        lb, _ = self._set_leaderbaord_sync_status(through_round)
+        lb = self._set_leaderboard_sync_status(through_round)
 
         # with transaction.atomic():
         self._set_leaderboard_rank(entries)
@@ -141,7 +143,7 @@ class LeaderboardProcessor:
         )
 
         self.processing = False
-        return queryset_to_json(entries.order_by("rank", "pk"))
+        return (queryset_to_json(entries.order_by("rank", "pk")), lb.synced)
 
     def update_host_leaderboard(self, through_round):
         self._validate_round_number(through_round)
@@ -151,7 +153,7 @@ class LeaderboardProcessor:
             with transaction.atomic():
                 apply_megaround = self.event.all_rounds_are_locked()
                 # the leaderboards are no longer synced
-                lb, _ = self._set_leaderbaord_sync_status(through_round)
+                lb = self._set_leaderboard_sync_status(through_round)
 
                 entries = LeaderboardEntry.objects.filter(
                     event=self.event, leaderboard_type=LEADERBOARD_TYPE_HOST
