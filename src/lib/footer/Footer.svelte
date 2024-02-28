@@ -19,6 +19,17 @@
     $: gameIsActive = $page.url.pathname.endsWith(joinCode);
 
     const activeEventData = getStore('activeEventData');
+    const roundStates = getStore('roundStates');
+    $: minUnscoredRound = Math.min(...$roundStates.filter((rs) => !rs.scored).map((rs) => rs.round_number));
+    const setActiveQuestion = () => {
+        $activeEventData = {
+            activeRoundNumber: minUnscoredRound,
+            activeQuestionNumber: 1,
+            activeQuestionKey: `${minUnscoredRound}.1`
+        };
+        setEventCookie($activeEventData, $page.params.joincode);
+    };
+
     afterNavigate(({ to }) => {
         const queryParams = to?.url.searchParams;
         const activeKey = queryParams?.get('active-key');
@@ -83,7 +94,12 @@
                 </a>
             </li>
             <li class:active={setActive('score')}>
-                <a data-sveltekit-preload-code="tap" data-sveltekit-reload href={`/host/${joinCode}/score`}>
+                <a
+                    data-sveltekit-preload-code="tap"
+                    data-sveltekit-reload
+                    href={`/host/${joinCode}/score`}
+                    on:click={setActiveQuestion}
+                >
                     <ScoringIcon cls="svg" />
                     <p>Scoring</p>
                 </a>
