@@ -10,9 +10,6 @@
     const rounds = getStore('rounds');
     const roundStates = getStore('roundStates');
 
-    // const teamResps = getStore('responseData');
-    // $: console.log($teamResps);
-
     // show the reveal button if any locked rounds are not revealed
     $: lockedRounds = $roundStates.filter((rs) => rs.locked);
     $: revealed = lockedRounds.every((rd) => rd.revealed);

@@ -182,9 +182,9 @@ class QuestionRevealView(APIView):
         """
         Determine whether on not to update the current round and question in a Trivia Event based on
         the index of the updated question state object compared to it's index in all event questions.
-        Only update the current question if the indcies match. I.e. all states before the updated state
-        have been revelead.
-        Note that progress of a game never moves backwards. Unrevealing a question does NOT rest the current
+        Only update the current question if the indicies match; i.e. all states before the updated state
+        must be revealed.
+        Note that progress of a game never moves backwards. Unrevealing a question does NOT reset the current
         round or question.
         """
         # look up all revealed question states and sort the keys
