@@ -8,6 +8,9 @@ class Location(models.Model):
     active = models.BooleanField(default=True)
     use_sound = models.BooleanField(default=True)
 
+    class Meta:
+        ordering = ["-active", "name"]
+
     def __str__(self):
         return self.name
 
