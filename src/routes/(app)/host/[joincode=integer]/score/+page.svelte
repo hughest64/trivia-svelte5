@@ -24,6 +24,7 @@
     $: scoringQuestion = roundQuestions.find((q) => q.question_number === scoringQuestionNumber);
     $: scoringResponses = ($responses && $responses.filter((r) => r.key === $activeEventData.activeQuestionKey)) || [];
 
+    // TODO: PROPOSED FIX this logic fixes being able to show the display answers button earlier (see isLastQuestion)
     $: lockedRounds = $roundStates.filter((rs) => rs.locked);
     $: lockedRoundNumbers = lockedRounds.map((r) => r.round_number);
     $: lockedQuestions = $allQuestions.filter((q) => lockedRoundNumbers.includes(q.round_number));
@@ -148,6 +149,7 @@
         {/if}
     </div>
 {:else}
+    <!-- TODO: PROPOSED FIX (this logic has been added to the "Next" button blocks) -->
     <!-- {#if !revealed}
         <h2 class="read-info">All Caught Up!</h2>
         <form action="?/revealanswers" method="post" class="read-info" use:enhance>
