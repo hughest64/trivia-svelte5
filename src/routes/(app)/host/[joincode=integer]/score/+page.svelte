@@ -24,14 +24,18 @@
     $: scoringQuestion = roundQuestions.find((q) => q.question_number === scoringQuestionNumber);
     $: scoringResponses = ($responses && $responses.filter((r) => r.key === $activeEventData.activeQuestionKey)) || [];
 
+    $: lockedRounds = $roundStates.filter((rs) => rs.locked);
+    $: lockedRoundNumbers = lockedRounds.map((r) => r.round_number);
+    $: lockedQuestions = $allQuestions.filter((q) => lockedRoundNumbers.includes(q.round_number));
+    $: lockedQuestionNumbers = lockedQuestions.map((q) => Number(q.key));
+
+    $: revealed = lockedRounds.every((rd) => rd.revealed);
+
     $: isFirstQuestion = Number($activeEventData.activeQuestionKey) === Math.min(...questionKeys);
-    $: isLastQuestion = Number($activeEventData.activeQuestionKey) === Math.max(...questionKeys);
+    $: isLastQuestion = Number($activeEventData.activeQuestionKey) === Math.max(...lockedQuestionNumbers);
 
     $: minUnscoredRound = Math.min(...$roundStates.filter((rs) => !rs.scored).map((rs) => rs.round_number));
     $: readAnswersLink = `/host/${joincode}?active-key=${minUnscoredRound}.1`;
-
-    $: lockedRounds = $roundStates.filter((rs) => rs.locked);
-    $: revealed = lockedRounds.every((rd) => rd.revealed);
 
     const advance = async () => {
         const next = scoringQuestionNumber + 1;
@@ -112,8 +116,12 @@
         <button class="button button-secondary" disabled={isFirstQuestion} on:click={goBack}>Previous</button>
         {#if !isLastQuestion}
             <button class="button button-secondary" on:click={advance}>Next</button>
+        {:else if !revealed}
+            <form action="?/revealanswers" method="post" use:enhance>
+                <button id="reveal-button" class="button button-primary">Reveal Answers</button>
+            </form>
         {:else}
-            <a href={readAnswersLink} class="button button-primary read-info" on:click>Go Read Answers Aloud</a>
+            <a href={readAnswersLink} class="button button-primary" on:click>Go Read Answers Aloud</a>
         {/if}
     </div>
 
@@ -131,20 +139,25 @@
         <button class="button button-secondary" disabled={isFirstQuestion} on:click={goBack}>Previous</button>
         {#if !isLastQuestion}
             <button class="button button-secondary" on:click={advance}>Next</button>
+        {:else if !revealed}
+            <form action="?/revealanswers" method="post" use:enhance>
+                <button id="reveal-button" class="button button-primary">Reveal Answers</button>
+            </form>
         {:else}
             <a href={readAnswersLink} class="button button-primary">Go Read Answers Aloud</a>
         {/if}
     </div>
 {:else}
-    {#if !revealed}
+    <!-- {#if !revealed}
         <h2 class="read-info">All Caught Up!</h2>
         <form action="?/revealanswers" method="post" class="read-info" use:enhance>
             <button id="reveal-button" class="button button-secondary">Reveal Answers</button>
         </form>
     {:else}
         <h2 class="read-info">Round {roundNumber} is not locked</h2>
-    {/if}
-    <a href={readAnswersLink} class="button button-primary read-info">Go Read Answers Aloud</a>
+    {/if} -->
+    <h2 class="read-info">Round {roundNumber} is not locked</h2>
+    <!-- <a href={readAnswersLink} class="button button-primary read-info">Go Read Answers Aloud</a> -->
 {/if}
 
 <style lang="scss">
