@@ -7,8 +7,8 @@ export const actions: Actions = {
         const data = Object.fromEntries((await request.formData()).entries());
 
         const teamname = data.team_name as string;
-        if (teamname.trim().match(/^\d{4}$/)) {
-            return fail(400, { error: 'Joincodes are not valid team names. Please enter a valid team name.' });
+        if (/^\d{4}$/.test(teamname.trim())) {
+            return fail(400, { error: 'That looks like a join code! Please enter your team name.' });
         }
 
         const apiHost = PUBLIC_API_HOST;
