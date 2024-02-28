@@ -71,7 +71,7 @@
         </div>
 
         <div class="switch-container">
-            <h4>Limit Game to Single Device?</h4>
+            <h4>Limit Teams to Single Device?</h4>
             <label for="player_limit" class="switch">
                 <input type="checkbox" bind:checked={playerLimit} name="player_limit" />
                 <button
