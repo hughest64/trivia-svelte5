@@ -189,12 +189,12 @@ class QuestionRevealView(APIView):
         """
         # look up all revealed question states and sort the keys
         displayed_states = event.question_states.filter(question_displayed=True)
-        displayed_state_keys = sorted([s.key for s in displayed_states])
+        displayed_state_keys = [s.key for s in displayed_states]
 
         # look up all questions keys (excluding tiebreakers) and sort
-        all_question_keys = sorted(
-            [q.key for q in event.game.game_questions.exclude(round_number=0)]
-        )
+        all_question_keys = [
+            q.key for q in event.game.game_questions.exclude(round_number=0)
+        ]
 
         # check for matching indicies and update the event if appropriate
         question_key_index = all_question_keys.index(updated_state.key)

@@ -100,6 +100,9 @@ class GameQuestion(models.Model):
     round_number = models.IntegerField()
     question_number = models.IntegerField()
 
+    class Meta:
+        ordering = ["game", "round_number", "question_number"]
+
     @property
     def key(self):
         return f"{self.round_number}.{self.question_number}"
