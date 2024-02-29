@@ -51,8 +51,10 @@
             }
         } else if (target.id) {
             nextQuestionKey = target.id;
+            nextIndex = allQuestionKeys.findIndex((key) => nextQuestionKey === key);
         }
         swipeDirection = nextIndex < currentIndex ? 'left' : 'right';
+        console.log(swipeDirection);
 
         const { round, question } = splitQuestionKey(nextQuestionKey);
         activeEventData.update((data) => ({
