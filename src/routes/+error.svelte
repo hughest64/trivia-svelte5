@@ -13,11 +13,14 @@ a component form an object (or acutal map) -->
         <h5>{$page.error?.message}</h5>
         <!-- TODO: a link back to the home page? -->
     {:else}
-        <h1>Sorry</h1>
-        <p>The player limit for your team has been reached for this event</p>
-        <div class="button-container">
-            <a class="button button-black" href="/game/join" data-sveltekit-reload>Join a Different Game</a>
-            <a class="button button-red" href="/team/list" data-sveltekit-reload>Select a Different Team</a>
+        <!-- <h1>Sorry</h1> -->
+        <div class="limit-container">
+            <p>
+                Sorry! This game is limited to one device per team, and someone from your team has already joined this
+                game.
+            </p>
+            <a class="button button-secondary" href="/team/create" data-sveltekit-reload>Go Here to create a new team</a
+            >
         </div>
     {/if}
     {#if $page.error?.next && !$page.url.pathname.includes('host')}
@@ -30,10 +33,12 @@ a component form an object (or acutal map) -->
         max-width: calc(100% - 2em);
         margin: auto 1em;
     }
-    .button-container {
+    .limit-container {
         display: flex;
         flex-direction: column;
+        align-items: center;
         a {
+            color: var(--color-tertiary);
             width: 18em;
             text-decoration: none;
         }
