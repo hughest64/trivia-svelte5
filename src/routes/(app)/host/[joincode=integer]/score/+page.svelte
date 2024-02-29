@@ -24,7 +24,7 @@
     $: scoringQuestion = roundQuestions.find((q) => q.question_number === scoringQuestionNumber);
     $: scoringResponses = ($responses && $responses.filter((r) => r.key === $activeEventData.activeQuestionKey)) || [];
 
-    // TODO: PROPOSED FIX this logic fixes being able to show the display answers button earlier (see isLastQuestion)
+    // TODO: move  reveal button back to the leaderboard
     $: lockedRounds = $roundStates.filter((rs) => rs.locked);
     $: lockedRoundNumbers = lockedRounds.map((r) => r.round_number);
     $: lockedQuestions = $allQuestions.filter((q) => lockedRoundNumbers.includes(q.round_number));
@@ -119,7 +119,7 @@
             <button class="button button-secondary" on:click={advance}>Next</button>
         {:else if !revealed}
             <form action="?/revealanswers" method="post" use:enhance>
-                <button id="reveal-button" class="button button-primary">Reveal Answers</button>
+                <button id="reveal-button" class="button button-primary">Reveal Answers to Players</button>
             </form>
         {:else}
             <a href={readAnswersLink} class="button button-primary" on:click>Go Read Answers Aloud</a>
@@ -142,22 +142,13 @@
             <button class="button button-secondary" on:click={advance}>Next</button>
         {:else if !revealed}
             <form action="?/revealanswers" method="post" use:enhance>
-                <button id="reveal-button" class="button button-primary">Reveal Answers</button>
+                <button id="reveal-button" class="button button-primary">Reveal Answers To Players</button>
             </form>
         {:else}
             <a href={readAnswersLink} class="button button-primary">Go Read Answers Aloud</a>
         {/if}
     </div>
 {:else}
-    <!-- TODO: PROPOSED FIX (this logic has been added to the "Next" button blocks) -->
-    <!-- {#if !revealed}
-        <h2 class="read-info">All Caught Up!</h2>
-        <form action="?/revealanswers" method="post" class="read-info" use:enhance>
-            <button id="reveal-button" class="button button-secondary">Reveal Answers</button>
-        </form>
-    {:else}
-        <h2 class="read-info">Round {roundNumber} is not locked</h2>
-    {/if} -->
     <h2 class="read-info">Round {roundNumber} is not locked</h2>
     <!-- <a href={readAnswersLink} class="button button-primary read-info">Go Read Answers Aloud</a> -->
 {/if}
