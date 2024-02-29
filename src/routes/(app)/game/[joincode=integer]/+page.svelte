@@ -11,6 +11,17 @@
     const currentEventData = getStore('currentEventData');
     const playerJoined = getStore('playerJoined');
     const rounds = getStore('rounds');
+    const roundStates = getStore('roundStates');
+    const questionStates = getStore('questionStates');
+    const userData = getStore('userData');
+
+    // track revealed questions in unlocked rounds
+    $: lockedRoundNumbers = $roundStates.filter((rs) => rs.locked).map((rs) => rs.round_number);
+    $: unlockedRevealedQuestions = $questionStates.filter(
+        (qs) => !lockedRoundNumbers.includes(qs.round_number) && qs.question_displayed
+    );
+
+    $: showGoToCurrent = !$userData.auto_reveal_questions && unlockedRevealedQuestions.length > 0;
 
     $: activeRound = $rounds.find((rd) => rd.round_number === $activeEventData.activeRoundNumber) as GameRound;
     const handleGoToCurrent = () => {
@@ -41,7 +52,7 @@
 
 <Round {activeRound} />
 
-{#if $activeEventData.activeQuestionKey !== $currentEventData.question_key}
+{#if showGoToCurrent && $activeEventData.activeQuestionKey !== $currentEventData.question_key}
     <button class="go-to-current" transition:slide on:click={handleGoToCurrent}>
         <Zeppelin />
         <p>Jump To Current Question</p>
