@@ -59,4 +59,18 @@ const updatepointsadjustment: Action = async ({ request, fetch, params }) => {
     return { success: true };
 };
 
-export const actions = { updateleaderboard, finishgame, updateteamname, updatepointsadjustment };
+const revealanswers: Action = async ({ fetch, params }) => {
+    const publicApiHost = PUBLIC_API_HOST;
+    const response = await fetch(`${publicApiHost}/host/${params.joincode}/revealanswers`, {
+        method: 'post'
+    });
+
+    if (!response.ok) {
+        const respJson = await response.json();
+        return fail(response.status, { error: respJson.detail });
+    }
+
+    return { success: true };
+};
+
+export const actions = { updateleaderboard, finishgame, updateteamname, revealanswers, updatepointsadjustment };

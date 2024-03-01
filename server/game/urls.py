@@ -17,7 +17,8 @@ urlpatterns = [
     re_path(r"^changelog/?$", common.ChangeLogView.as_view(), name="change_logs"),
     # host endpoints
     re_path(r"^host/recent/?$", host.RecentEventView.as_view(), name="recent_events"),
-    # TODO: probably remove
+    # NOTE: not currently used as we are now returning all player responses to the host
+    # rather than a specific team's responses
     # re_path(
     #     r"^host/(?P<joincode>\d+)/leaderboard/summary/(?P<team_id>\d+)/?$",
     #     host.EventHostView.as_view(),
@@ -63,14 +64,14 @@ urlpatterns = [
     ),
     re_path(r"^host/event-setup/?$", host.EventSetupView.as_view(), name="event_setup"),
     re_path(
+        r"^host/(?P<joincode>\d+)/reminder/(?P<reminder_type>(megaround|imageround))?$",
+        host.ReminderView.as_view(),
+        name="megaround_reminder",
+    ),
+    re_path(
         r"^host/(?P<joincode>\d+)[/\w]*/?$",
         host.EventHostView.as_view(),
         name="host_view",
-    ),
-    re_path(
-        r"^host/(?P<joincode>\d+)/megaround-reminder/?$",
-        host.MegaroundReminderView.as_view(),
-        name="megaround_reminder",
     ),
     # common endpoints
     re_path(

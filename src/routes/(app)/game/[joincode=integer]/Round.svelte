@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { getContext } from 'svelte';
     import Question from './Question.svelte';
     // import Note from './Note.svelte';
     import { fly } from 'svelte/transition';
@@ -6,6 +7,7 @@
     import { page } from '$app/stores';
     import { swipeQuestion } from '$lib/swipe';
     import { getStore, getQuestionKeys, setEventCookie, splitQuestionKey } from '$lib/utils';
+    import type { Writable } from 'svelte/store';
     import type { GameRound } from '$lib/types';
 
     const joincode = $page.params?.joincode;
@@ -20,10 +22,11 @@
     $: roundIsLocked = $roundStates.find((rs) => rs.round_number === $activeEventData.activeRoundNumber && rs.locked);
     $: questionKeys = getQuestionKeys($questions || [], activeRound);
 
-    let swipeDirection: 'left' | 'right' = 'right';
-    $: swipeXValue = swipeDirection === 'right' ? 1000 : -4000;
+    const swipeDirection = getContext<Writable<'left' | 'right'>>('swipeDirection');
+
+    $: swipeXValue = $swipeDirection === 'right' ? 1000 : -4000;
     const inSwipeDuration = 600;
-    $: outSwipeDuration = swipeDirection === 'right' ? 100 : 350;
+    $: outSwipeDuration = $swipeDirection === 'right' ? 100 : 350;
 
     const allQuestionKeys: string[] = $questions.map((q) => q.key);
     const handleQuestionSelect = async (event: MouseEvent | CustomEvent | KeyboardEvent) => {
@@ -51,8 +54,9 @@
             }
         } else if (target.id) {
             nextQuestionKey = target.id;
+            nextIndex = allQuestionKeys.findIndex((key) => nextQuestionKey === key);
         }
-        swipeDirection = nextIndex < currentIndex ? 'left' : 'right';
+        swipeDirection.set(nextIndex < currentIndex ? 'left' : 'right');
 
         const { round, question } = splitQuestionKey(nextQuestionKey);
         activeEventData.update((data) => ({

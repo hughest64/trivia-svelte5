@@ -13,7 +13,7 @@
 <div class="pop-timer" />
 <div class="pop-content">
     <h3>{winnerText}</h3>
-    <h3>{winners.join(',')}</h3>
+    <h3>{winners.join(', ')}</h3>
     <a href="https://www.triviamafia.com/schedule" rel="external" target="_blank">
         Check out our schedule for more Trivia
     </a>

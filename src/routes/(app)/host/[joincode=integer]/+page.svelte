@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { getStore } from '$lib/utils';
+    import { getStore, setEventCookie } from '$lib/utils';
     import { deserialize } from '$app/forms';
     import Round from './Round.svelte';
     import RoundSelector from './RoundSelector.svelte';
@@ -43,6 +43,16 @@
             }
         }
     };
+    // TDOO: perhaps set to this round if button text says "edit"
+    // otherwise use the min if unscored (revealed?) rounds
+    const setActiveQuestion = () => {
+        $activeEventData = {
+            activeRoundNumber: Number(activeRound.round_number),
+            activeQuestionNumber: 1,
+            activeQuestionKey: `${activeRound.round_number}.1`
+        };
+        setEventCookie($activeEventData, $page.params.joincode);
+    };
 </script>
 
 <div class="host-container flex-column">
@@ -67,7 +77,12 @@
     {#if error}<p>{error}</p>{/if}
 
     {#if locked}
-        <a class="button button-primary" data-sveltekit-reload href={`/host/${joincode}/score`}>{scoreButtonText}</a>
+        <a
+            class="button button-primary"
+            data-sveltekit-reload
+            href={`/host/${joincode}/score`}
+            on:click={setActiveQuestion}>{scoreButtonText}</a
+        >
     {/if}
 </div>
 

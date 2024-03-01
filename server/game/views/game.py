@@ -75,7 +75,6 @@ class EventView(APIView):
             event=event, team=user.active_team
         )
 
-        # TODO: I dislike the reverse shenannigans, but it works
         chats = ChatMessage.objects.filter(
             Q(team=user.active_team) | Q(is_host_message=True), Q(event=event)
         ).reverse()[:50]

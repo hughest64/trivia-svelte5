@@ -63,10 +63,12 @@ class LeaderboardProcessor:
 
         lbe.total_points = points + lbe.points_adjustment
 
+    # TODO PROPOSED FIX (don' track pts adj here as it is already in lbe.total_points)
     def _set_leaderboard_rank(self, leaderboard_entries):
         self._check_order()
         pts_vals = sorted(
-            [lbe.total_points + lbe.points_adjustment for lbe in leaderboard_entries],
+            # [lbe.total_points + lbe.points_adjustment for lbe in leaderboard_entries],
+            [lbe.total_points for lbe in leaderboard_entries],
             reverse=True,
         )
 
@@ -80,7 +82,7 @@ class LeaderboardProcessor:
 
         for lbe in leaderboard_entries:
             # combine response points and points awarded
-            pts_with_adj = lbe.total_points + lbe.points_adjustment
+            pts_with_adj = lbe.total_points
 
             # don't assign rank for 0 points
             if pts_with_adj <= 0:

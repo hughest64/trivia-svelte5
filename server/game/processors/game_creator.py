@@ -192,7 +192,7 @@ class TriviaGameCreator:
             use_megaround=False,
             defaults={"date": data.date_used},
         )
-        # TODO: update to use the new joincode creation system?
+        # TODO: update to use the new joincode creation system - Pivate Event related
         if created:
             trivia_event.join_code_id = (
                 1234  # db.create_join_code("game").get("join_code_id")

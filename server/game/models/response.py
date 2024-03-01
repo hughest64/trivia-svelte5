@@ -60,6 +60,7 @@ class QuestionResponse(models.Model):
     def to_json(self):
         return {
             "id": self.pk,
+            "team_id": self.team.id,
             "points_awarded": self.points_awarded,
             "megaround_value": self.megaround_value,
             "funny": self.funny,
