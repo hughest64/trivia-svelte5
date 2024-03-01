@@ -1,6 +1,5 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { enhance } from '$app/forms';
     import { getStore, setEventCookie } from '$lib/utils';
     import RoundSelector from '../RoundSelector.svelte';
     import ResponseGroup from './ResponseGroup.svelte';
@@ -11,6 +10,9 @@
     const roundNumbers = $rounds.map((rd) => rd.round_number) || [];
     const joincode = $page.params.joincode;
     const questionKeys = $allQuestions.map((q) => Number(q.key));
+
+    const lb = getStore('leaderboard');
+    $: console.log($lb);
 
     const activeEventData = getStore('activeEventData');
     const responses = getStore('hostResponseData');

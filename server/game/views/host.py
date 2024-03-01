@@ -1,4 +1,4 @@
-from typing import List
+import logging
 
 from django.db.models import QuerySet
 from django.utils import timezone
@@ -44,6 +44,8 @@ from game.processors import LeaderboardProcessor
 from game.utils.socket_classes import SendEventMessage, SendHostMessage
 from game.utils.number_convertor import NumberConvertor, NumberConversionException
 from game.views.validation.exceptions import LeaderboardEntryNotFound
+
+logger = logging.getLogger(__name__)
 
 
 class EventHostView(APIView):
@@ -346,13 +348,14 @@ class ScoreRoundView(APIView):
         public_lb_entries = lb_entries.filter(leaderboard_type=LEADERBOARD_TYPE_PUBLIC)
         host_lb_entries = lb_entries.filter(leaderboard_type=LEADERBOARD_TYPE_HOST)
         through_round = None
-        synced = True
-        try:
-            first = public_lb_entries.first()
-            through_round = first.leaderboard.public_through_round
-            synced = first.leaderboard.synced
-        except AttributeError:
-            pass
+        if hasattr(event, "leaderboard"):
+            synced = event.leaderboard.synced
+        else:
+            synced = False
+            # NOTE: this is unlikely to occur, be it is possible.
+            logger.error(
+                f"No leaderboard was found for event with joincode {joincode}, cannot determine leaderboard sync status"
+            )
 
         if (
             round_number is not None
