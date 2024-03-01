@@ -15,8 +15,10 @@
 
     $: routeId = $page.route.id?.split('/')[2];
     $: isEventRoute = reg.test($page.route.id || '');
-    $: setActive = (link: string) => $page.url.pathname.endsWith(link);
-    $: gameIsActive = $page.url.pathname.endsWith(joinCode);
+    $: setActive = (link: string) => {
+        const path = $page.url.pathname;
+        return link === 'leaderboard' ? path.includes(link) : path.endsWith(link);
+    };
 
     const activeEventData = getStore('activeEventData');
     const roundStates = getStore('roundStates');
