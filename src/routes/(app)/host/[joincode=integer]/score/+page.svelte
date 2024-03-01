@@ -12,7 +12,6 @@
     const questionKeys = $allQuestions.map((q) => Number(q.key));
 
     const lb = getStore('leaderboard');
-    $: console.log($lb);
 
     const activeEventData = getStore('activeEventData');
     const responses = getStore('hostResponseData');

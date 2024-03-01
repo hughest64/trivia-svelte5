@@ -7,7 +7,6 @@
     import type { LeaderboardEntry } from '$lib/types';
 
     const leaderboard = getStore('leaderboard');
-    $: console.log($leaderboard);
     const rounds = getStore('rounds');
     const roundStates = getStore('roundStates');
 
