@@ -25,8 +25,8 @@
 <div class="pop-timer" />
 <div class="pop-content">
     <h3>Reminder!</h3>
-    <h3>Don’t forget to finish your Image Round! It’s now revealed in Round 4.</h3>
-    <a href="/game/{$page.params.joincode}/" on:click={setRoundAndResetPopup}> Go to the Image Round </a>
+    <h3>Don’t forget to finish your Image Round!</h3>
+    <!-- <a href="/game/{$page.params.joincode}/" on:click={setRoundAndResetPopup}> Go to the Image Round </a> -->
 </div>
 
 <CloseButton on:click={resetPopup} />

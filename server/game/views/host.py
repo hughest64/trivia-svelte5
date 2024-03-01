@@ -38,6 +38,7 @@ from game.models import (
     LEADERBOARD_TYPE_HOST,
     PTS_ADJUSTMENT_OPTIONS_LIST,
     QUESTION_TYPE_TIE_BREAKER,
+    QUESTION_TYPE_IMAGE_ROUND,
 )
 from game.models.utils import queryset_to_json
 from game.processors import LeaderboardProcessor
@@ -689,15 +690,19 @@ class ReminderView(APIView):
             )
             team_ids = [e.team.id for e in entries]
         elif reminder_type == "imageround":
-            # get team_ids of all teams
-            # event_team_ids = [t.id for t in event.event_teams.all()]
-            # look up all rd 4 responses
-            for team in event.event_teams:
-                resps = QuestionResponse.objects.filter(event=event, team=team)
-            # get the number of questions in rd 4
-            # count rd 4 resps per team, if < total questions, add to team _ids
+            team_ids = [t.id for t in event.event_teams.all()]
 
-            pass
+            # NOTE: this is untested, but is meant to check each teams responses for image rounds
+            # image_questions = Game.objects.filter(
+            #     game=event.game, question___question_type=QUESTION_TYPE_IMAGE_ROUND
+            # )
+            # for team in event.event_teams:
+            #     resps = QuestionResponse.objects.filter(
+            #         event=event, team=team, game_question__in=image_questions
+            #     )
+            #     # if not all image questions have respones
+            #     if resps.count() < image_questions.count():
+            #         team_ids.append(team.id)
 
         SendEventMessage(
             joincode=joincode,
