@@ -117,10 +117,6 @@
         <button class="button button-secondary" disabled={isFirstQuestion} on:click={goBack}>Previous</button>
         {#if !isLastQuestion}
             <button class="button button-secondary" on:click={advance}>Next</button>
-        {:else if !revealed}
-            <form action="?/revealanswers" method="post" use:enhance>
-                <button id="reveal-button" class="button button-primary">Reveal Answers to Players</button>
-            </form>
         {:else}
             <a href={readAnswersLink} class="button button-primary" on:click>Go Read Answers Aloud</a>
         {/if}
@@ -140,10 +136,6 @@
         <button class="button button-secondary" disabled={isFirstQuestion} on:click={goBack}>Previous</button>
         {#if !isLastQuestion}
             <button class="button button-secondary" on:click={advance}>Next</button>
-        {:else if !revealed}
-            <form action="?/revealanswers" method="post" use:enhance>
-                <button id="reveal-button" class="button button-primary">Reveal Answers To Players</button>
-            </form>
         {:else}
             <a href={readAnswersLink} class="button button-primary">Go Read Answers Aloud</a>
         {/if}
