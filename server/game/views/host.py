@@ -674,24 +674,36 @@ class TiebreakerView(APIView):
         return Response({"success": True})
 
 
-class MegaroundReminderView(APIView):
+class ReminderView(APIView):
     authentication_classes = [JwtAuthentication]
     permission_classes = [IsAdminUser]
 
-    def get(self, request, joincode):
+    def get(self, request, joincode, reminder_type):
         event = get_event_or_404(joincode=joincode)
-        entries = LeaderboardEntry.objects.filter(
-            event=event,
-            leaderboard_type=LEADERBOARD_TYPE_HOST,
-            selected_megaround__isnull=True,
-        )
-        team_ids = [e.team.id for e in entries]
+        team_ids = []
+        if reminder_type == "megaround":
+            entries = LeaderboardEntry.objects.filter(
+                event=event,
+                leaderboard_type=LEADERBOARD_TYPE_HOST,
+                selected_megaround__isnull=True,
+            )
+            team_ids = [e.team.id for e in entries]
+        elif reminder_type == "imageround":
+            # get team_ids of all teams
+            # event_team_ids = [t.id for t in event.event_teams.all()]
+            # look up all rd 4 responses
+            for team in event.event_teams:
+                resps = QuestionResponse.objects.filter(event=event, team=team)
+            # get the number of questions in rd 4
+            # count rd 4 resps per team, if < total questions, add to team _ids
+
+            pass
 
         SendEventMessage(
             joincode=joincode,
             message={
-                "msg_type": "megaround_reminder",
-                "message": {"team_ids": team_ids},
+                "msg_type": "host_reminder",
+                "message": {"type": reminder_type, "team_ids": team_ids},
             },
         )
         return Response({"success": True})

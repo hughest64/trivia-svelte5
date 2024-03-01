@@ -37,9 +37,9 @@ export const actions: Actions = {
             body: JSON.stringify(body)
         });
 
-        const respData = await response.json()
+        const respData = await response.json();
         if (!response.ok) {
-            return fail(response.status, respData)
+            return fail(response.status, respData);
         }
 
         return { success: true };
@@ -60,8 +60,9 @@ export const actions: Actions = {
 
         return { success: true };
     },
-    megaround_reminder: async ({ fetch, params }) => {
-        const response = await fetch(`${PUBLIC_API_HOST}/host/${params.joincode}/megaround-reminder`);
+    host_reminder: async ({ fetch, params, url }) => {
+        const reminder_type = url.searchParams.get('type') || '';
+        const response = await fetch(`${PUBLIC_API_HOST}/host/${params.joincode}/reminder/${reminder_type}`);
 
         if (!response.ok) {
             const respData = await response.json();

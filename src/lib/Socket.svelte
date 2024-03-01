@@ -53,6 +53,11 @@
 
     $: isHostEndpoint = $page.url.pathname.startsWith('/host');
 
+    interface HostReminder {
+        type: string;
+        team_ids?: number[];
+    }
+
     const handlers: MessageHandler = {
         connected: () => console.log('connected!'),
         leaderboard_join: (message: LeaderboardEntry) => {
@@ -405,12 +410,12 @@
                 return newChats;
             });
         },
-        megaround_reminder: (msg: Record<string, Array<number | null | undefined>>) => {
-            if (isHostEndpoint || !msg.team_ids.includes($userStore.active_team_id)) return;
+        host_reminder: (msg: HostReminder) => {
+            if (isHostEndpoint || !msg.team_ids?.includes($userStore.active_team_id as number)) return;
 
             popupStore.set({
                 is_displayed: true,
-                popup_type: 'megaround_reminder'
+                popup_type: msg.type
             });
         }
     };
