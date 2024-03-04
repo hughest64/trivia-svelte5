@@ -6,6 +6,7 @@ from django.core.management import call_command
 from django.conf import settings
 
 from game.models import *
+from game.processors import TriviaEventCreator
 
 from user.models import User
 
@@ -52,11 +53,9 @@ class Command(BaseCommand):
             self.create_users()
             self.create_games()
 
-        if options.get("games"):
-            self.create_games()
-
-        if options.get("team"):
-            print(Team.objects.generate_password())
+        else:
+            if options.get("games"):
+                self.create_games()
 
     def reset(self):
         excluded_users = excludes.get("users", [])
@@ -71,13 +70,19 @@ class Command(BaseCommand):
             # throw the auth storage path away
             u.pop("auth_storage_path", None)
 
-            team_name = u.pop("team_name", None)
-            team = None
-            if team_name is not None:
-                team, _ = Team.objects.get_or_create(name=team_name)
+            team_names = u.pop("team_names", [])
+            teams = []
+            if len(team_names) > 0:
+                for name in team_names:
+                    team, _ = Team.objects.get_or_create(name=name)
+                    teams.append(team)
 
+            active_team = teams[0] if len(teams) > 0 else None
             is_staff = u.get("is_staff", False)
-            User.objects.create_user(**u, is_superuser=is_staff, active_team=team)
+            u = User.objects.create_user(
+                **u, is_superuser=is_staff, active_team=active_team
+            )
+            u.teams.set(teams)
 
     def create_games(self):
         return

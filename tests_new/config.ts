@@ -10,7 +10,8 @@ export interface UserAuthConfig {
     username: string;
     password: string;
     email: string;
-    team_name?: string;
+    // an array of team names, the first team is always considered the user's active team
+    team_names?: string[];
     is_staff?: boolean;
     auth_storage_path: string;
     cookies?: Cookie[];

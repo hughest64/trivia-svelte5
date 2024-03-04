@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { createApiContext, login, getUserPage } from './config.js';
+import { createApiContext, login, getUserPage, userAuthConfigs } from './config.js';
 import type { APIRequestContext, Page } from '@playwright/test';
 
 let apicontext: APIRequestContext;
@@ -40,14 +40,22 @@ test('guest login', async ({ page }) => {
     await expect(page.locator('h2', { hasText: /choose a team name/i })).toBeVisible();
 });
 
-test.skip('login as player', async ({ page }) => {
-    // TODO:
-    // login as a player with a team
+test('login as player', async ({ page }) => {
+    const user = userAuthConfigs.player_four;
+    const activeTeam = (user.team_names || [])[0];
+    await page.goto('/user/login');
+    await login(page, user.username, user.password, false);
+    await expect(page).toHaveURL('/team');
     // check that team is selected
+    const teamSelect = page.locator('option', { hasText: activeTeam });
+    await expect(teamSelect).toHaveText(activeTeam);
+
     // click let's play
+    await page.locator('button', { hasText: /let's play/i }).click({ timeout: 5000 });
     // should be on the join page w/ team name visible
-    // strike all that, let's just make this a player with no team (i.e. a new player)
-    // that makes the test very similary to a guest user and we don't cross test boundaries
+    await expect(page).toHaveURL('/game/join');
+    // we can see the user's active team
+    await expect(page.locator('h2', { hasText: activeTeam })).toBeVisible();
 });
 
 const submitCreateForm = async (page: Page, values: Record<string, string>) => {
