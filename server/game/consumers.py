@@ -1,4 +1,5 @@
 import logging
+from urllib.parse import urlparse, parse_qsl
 
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
@@ -18,12 +19,16 @@ logger = logging.getLogger(__name__)
 
 
 # TODO: this may be necessary to handle clients reconnecting after being idle
-# @database_sync_to_async
-# def get_game_data(user_type, user_id):
-#     if user_type == "host":
-#         return  # host things
+@database_sync_to_async
+def get_game_data(game_type, joincode):
+    # for a player we'd need their responses
+    # for a host all responses
+    # both would need lb + entries + all states for the game
 
-#     return  # player things
+    if game_type == "host":
+        return {}  # host things
+
+    return {}  # player things
 
 
 class SocketConsumer(AsyncJsonWebsocketConsumer):
@@ -67,6 +72,13 @@ class SocketConsumer(AsyncJsonWebsocketConsumer):
 
         await self._set_attrs()
         await self.join_socket_groups()
+
+        # game_data = {}
+        # qs = self.scope.get("query_string")
+        # is_reconnect = dict(parse_qsl(qs.decode())).get("is_reconnect")
+        # if is_reconnect == "true":
+        #     game_data = await get_game_data(self.gametype, self.joincode)
+
         await self.send_json(
             {"msg_type": "connected", "message": "Ready to Play Trivia!"}
         )

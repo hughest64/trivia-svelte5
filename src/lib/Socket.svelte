@@ -21,10 +21,10 @@
     } from './types';
     const path = $page.url.pathname;
 
-    export let socketUrl = `${PUBLIC_WEBSOCKET_HOST}/ws${path}/`;
+    export let is_reconnect = false;
+    export let socketUrl = `${PUBLIC_WEBSOCKET_HOST}/ws${path}/?is_reconnect=${is_reconnect}`;
     export let maxRetries = 50;
     export let retryInterval = 1000;
-    export let is_reconnect = false;
 
     let interval: ReturnType<typeof setTimeout>;
     let retries = 0;
@@ -59,7 +59,10 @@
     }
 
     const handlers: MessageHandler = {
-        connected: () => console.log('connected!'),
+        connected: () => {
+            // TODO in the case of reconnect, the may contain game data in the future
+            console.log('connected!');
+        },
         leaderboard_join: (message: LeaderboardEntry) => {
             leaderboardStore.update((lb) => {
                 const newLB = { ...lb };
@@ -326,7 +329,6 @@
             });
         },
         teamname_update: (msg: UserTeam) => {
-            console.log(msg);
             leaderboardStore.update((lb) => {
                 const newLb = { ...lb };
                 const { public_leaderboard_entries, host_leaderboard_entries } = newLb;
@@ -432,6 +434,8 @@
             if (event.code === 4010) {
                 goto('/user/logout', { invalidateAll: true });
             } else if (!event.wasClean && event.code !== 4010 && retries <= maxRetries) {
+                // in the case of a device going to sleep, we lose the socket connection and have
+                // the potential to be out of sync, in this case we want to reload the page after connecting
                 is_reconnect = true;
                 retries++;
                 interval = setTimeout(createSocket, retryInterval);
