@@ -24,7 +24,7 @@
     export let socketUrl = `${PUBLIC_WEBSOCKET_HOST}/ws${path}/`;
     export let maxRetries = 50;
     export let retryInterval = 1000;
-    export let reconnect = true;
+    export let is_reconnect = false;
 
     let interval: ReturnType<typeof setTimeout>;
     let retries = 0;
@@ -425,12 +425,14 @@
         webSocket.onopen = () => {
             clearTimeout(interval);
             retries = 0;
+            is_reconnect && window.location.reload();
         };
         webSocket.onclose = (event) => {
             // authentication issue remove the exisitng token if there is one by forcing a logout
             if (event.code === 4010) {
                 goto('/user/logout', { invalidateAll: true });
-            } else if (!event.wasClean && event.code !== 4010 && reconnect && retries <= maxRetries) {
+            } else if (!event.wasClean && event.code !== 4010 && retries <= maxRetries) {
+                is_reconnect = true;
                 retries++;
                 interval = setTimeout(createSocket, retryInterval);
             } else {
