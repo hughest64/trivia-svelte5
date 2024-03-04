@@ -11,8 +11,8 @@
 <div class="pop-timer" />
 <div class="pop-content">
     <h3>Reminder!</h3>
-    <h3>Remember to submit your Megaround!</h3>
-    <a href="/game/{$page.params.joincode}/megaround" on:click={resetPopup}> Go to the Megaround </a>
+    <h3>Remember to submit your Mega Round!</h3>
+    <a href="/game/{$page.params.joincode}/megaround" on:click={resetPopup}> Go to the Mega Round </a>
 </div>
 
 <CloseButton on:click={resetPopup} />

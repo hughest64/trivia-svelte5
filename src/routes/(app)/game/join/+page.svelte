@@ -6,6 +6,7 @@
     import type { EventData } from '$lib/types';
 
     $: form = $page.form;
+    $: console.log(form);
     $: eventData = form?.event_data satisfies EventData | null;
 
     const userData = getStore('userData');
@@ -26,6 +27,9 @@
             <h1>Enter Game Code</h1>
             <form action="?/checkevent" method="POST" use:enhance>
                 {#if form?.error}<p class="error">{form?.error}</p>{/if}
+                {#if form?.reason === 'player_limit_exceeded'}
+                    <a href="/team/create">Go here to create a new team</a>
+                {/if}
                 <div class="input-container">
                     <input
                         type="text"

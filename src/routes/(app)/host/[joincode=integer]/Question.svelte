@@ -25,8 +25,8 @@
     $: hasImage = question.question_type.toLocaleLowerCase().startsWith('image');
     $: hasSoundLink = question.question_type.toLocaleLowerCase().startsWith('sound');
 
-    // TODO: default should be set based on whether or not answers are revealed for all
-    let answerDisplayed = false;
+    // always show the answer if the round is locked
+    $: answerDisplayed = roundIsLocked;
 
     let updating = false;
     const handleRevealQuestion = async () => {
@@ -112,5 +112,9 @@
 <style lang="scss">
     .resp-summary {
         color: var(--color-primary);
+    }
+    img {
+        max-width: min(calc(var(--max-element-width) + 15rem), 100%);
+        margin: 0 auto;
     }
 </style>

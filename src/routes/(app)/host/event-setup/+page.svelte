@@ -71,7 +71,7 @@
         </div>
 
         <div class="switch-container">
-            <h4>Limit Game to Single Device?</h4>
+            <h4>Limit Teams to Single Device?</h4>
             <label for="player_limit" class="switch">
                 <input type="checkbox" bind:checked={playerLimit} name="player_limit" />
                 <button
@@ -104,10 +104,12 @@
         </select>
 
         <h2>You've Selected</h2>
-        <p>{selectedGame?.game_title || ''}</p>
+        <p>{selectedGame?.game_title || 'No Matching Game'}</p>
         <input class="selected-game" type="hidden" name="game_select" id="game_select" value={selectedGame?.game_id} />
 
-        <button class="button button-primary" type="submit" name="submit" id="submit">{buttontext}</button>
+        <button class="button button-primary" type="submit" name="submit" id="submit" disabled={!selectedGame?.game_id}>
+            {buttontext}
+        </button>
     </form>
     <small>Click <a href="/host/event-setup/recent" data-sveltekit-reload>here</a> to view your recent games</small>
 </main>
@@ -121,5 +123,8 @@
         label {
             margin-right: 0;
         }
+    }
+    button:disabled {
+        color: gray;
     }
 </style>

@@ -1,7 +1,9 @@
 <script lang="ts">
+    import { getContext } from 'svelte';
     import { page } from '$app/stores';
     import { goto } from '$app/navigation';
     import { getStore, setEventCookie } from '$lib/utils';
+    import type { Writable } from 'svelte/store';
 
     const rounds = getStore('rounds');
     const roundNumbers = $rounds?.map((rd) => rd.round_number) || [];
@@ -11,8 +13,12 @@
     const currentEventData = getStore('currentEventData');
     $: joincode = $page.params?.joincode;
 
+    const swipeDirection = getContext<Writable<'left' | 'right'>>('swipeDirection');
+
     const handleRoundSelect = async (event: MouseEvent) => {
         const target = <HTMLButtonElement>event.target;
+        const newSwipDir = $activeEventData.activeRoundNumber > Number(target.id) ? 'left' : 'right';
+        swipeDirection.set(newSwipDir);
 
         $activeEventData = {
             activeQuestionNumber: 1,

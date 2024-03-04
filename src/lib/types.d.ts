@@ -161,6 +161,7 @@ export interface CurrentEventData {
 
 export interface Response {
     id: number;
+    team_id: number;
     recorded_answer: string;
     points_awarded: number;
     megaround_value?: number;
@@ -171,9 +172,8 @@ export interface Response {
     key: string;
 }
 
-export interface TiebreakerResponse extends Pick<Response, 'recorded_answer' | 'round_number' | 'id'> {
+export interface TiebreakerResponse extends Pick<Response, 'recorded_answer' | 'round_number' | 'id' | 'team_id'> {
     game_question_id: number;
-    team_id: number;
     grade: number | string;
 }
 

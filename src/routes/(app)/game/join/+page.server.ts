@@ -15,11 +15,10 @@ const checkevent: Action = async ({ fetch, request }) => {
     const response = await fetch(`${apiHost}/game/check/${joincode}`);
     const responseData = await response.json();
     if (!response.ok) {
-        // TODO: check for player_limit_exceeded reason and throw error if present
-        return fail(responseData.status, { error: responseData.detail });
+        return fail(responseData.status, { error: responseData.detail, reason: responseData.reason || 'generic' });
     }
-    return responseData
-}
+    return responseData;
+};
 
 const joinevent: Action = async ({ fetch, request }) => {
     const formData = await request.formData();
@@ -35,8 +34,7 @@ const joinevent: Action = async ({ fetch, request }) => {
     });
     const responseData = await response.json();
     if (!response.ok) {
-        // TODO: check for player_limit_exceeded reason and throw error if present
-        return fail(responseData.status, { error: responseData.detail });
+        return fail(responseData.status, { error: JSON.stringify(responseData) });
     }
 
     redirect(303, `/game/${joincode}`);

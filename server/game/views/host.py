@@ -1,4 +1,4 @@
-from typing import List
+import logging
 
 from django.db.models import QuerySet
 from django.utils import timezone
@@ -10,6 +10,7 @@ from django.views.decorators.csrf import csrf_protect
 from rest_framework.exceptions import NotFound
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
+from rest_framework.status import HTTP_400_BAD_REQUEST
 from rest_framework.views import APIView
 
 from game.processors import TriviaEventCreator
@@ -38,12 +39,15 @@ from game.models import (
     LEADERBOARD_TYPE_HOST,
     PTS_ADJUSTMENT_OPTIONS_LIST,
     QUESTION_TYPE_TIE_BREAKER,
+    QUESTION_TYPE_IMAGE_ROUND,
 )
 from game.models.utils import queryset_to_json
 from game.processors import LeaderboardProcessor
 from game.utils.socket_classes import SendEventMessage, SendHostMessage
 from game.utils.number_convertor import NumberConvertor, NumberConversionException
 from game.views.validation.exceptions import LeaderboardEntryNotFound
+
+logger = logging.getLogger(__name__)
 
 
 class EventHostView(APIView):
@@ -182,19 +186,19 @@ class QuestionRevealView(APIView):
         """
         Determine whether on not to update the current round and question in a Trivia Event based on
         the index of the updated question state object compared to it's index in all event questions.
-        Only update the current question if the indcies match. I.e. all states before the updated state
-        have been revelead.
-        Note that progress of a game never moves backwards. Unrevealing a question does NOT rest the current
+        Only update the current question if the indicies match; i.e. all states before the updated state
+        must be revealed.
+        Note that progress of a game never moves backwards. Unrevealing a question does NOT reset the current
         round or question.
         """
         # look up all revealed question states and sort the keys
         displayed_states = event.question_states.filter(question_displayed=True)
-        displayed_state_keys = sorted([s.key for s in displayed_states])
+        displayed_state_keys = [s.key for s in displayed_states]
 
         # look up all questions keys (excluding tiebreakers) and sort
-        all_question_keys = sorted(
-            [q.key for q in event.game.game_questions.exclude(round_number=0)]
-        )
+        all_question_keys = [
+            q.key for q in event.game.game_questions.exclude(round_number=0)
+        ]
 
         # check for matching indicies and update the event if appropriate
         question_key_index = all_question_keys.index(updated_state.key)
@@ -255,7 +259,7 @@ class QuestionRevealView(APIView):
             # use the first question state in the case of multiple state updates
             if reveal:
                 current_event_data.update(
-                    self.set_current_question(event, updated_states[0])
+                    self.set_current_question(event, updated_states[-1])
                 )
 
             SendEventMessage(
@@ -346,13 +350,14 @@ class ScoreRoundView(APIView):
         public_lb_entries = lb_entries.filter(leaderboard_type=LEADERBOARD_TYPE_PUBLIC)
         host_lb_entries = lb_entries.filter(leaderboard_type=LEADERBOARD_TYPE_HOST)
         through_round = None
-        synced = True
-        try:
-            first = public_lb_entries.first()
-            through_round = first.leaderboard.public_through_round
-            synced = first.leaderboard.synced
-        except AttributeError:
-            pass
+        if hasattr(event, "leaderboard"):
+            synced = event.leaderboard.synced
+        else:
+            synced = False
+            # NOTE: this is unlikely to occur, be it is possible.
+            logger.error(
+                f"No leaderboard was found for event with joincode {joincode}, cannot determine leaderboard sync status"
+            )
 
         if (
             round_number is not None
@@ -477,20 +482,29 @@ class UpdateAdjustmentPointsView(APIView):
         except LeaderboardEntry.DoesNotExist:
             raise LeaderboardEntryNotFound
 
-        if adjustment_reason is not None:
-            lbe.points_adjustment_reason = adjustment_reason
-            lbe.save()
+        try:
+            with transaction.atomic():
+                if adjustment_reason is not None:
+                    lbe.points_adjustment_reason = adjustment_reason
+                    lbe.save()
 
-        leaderboard_data = None
-        synced = False
-        if points is not None:
-            lbe.points_adjustment += points
-            lbe.total_points += points
-            lbe.save()
+                leaderboard_data = None
+                synced = False
+                if points is not None:
+                    lbe.points_adjustment += points
+                    lbe.total_points += points
+                    lbe.save()
 
-            lb_processor = LeaderboardProcessor(event=event)
-            leaderboard_data, synced = lb_processor.rank_host_leaderboard(
-                entries, event.max_locked_round()
+                    lb_processor = LeaderboardProcessor(event=event)
+                    leaderboard_data, synced = lb_processor.rank_host_leaderboard(
+                        entries, event.max_locked_round()
+                    )
+        except Exception as e:
+            logger.error(f"could not updated adjustment points, {e}")
+
+            return Response(
+                {"detail": "Sorry, could not update adjustment points"},
+                status=HTTP_400_BAD_REQUEST,
             )
 
         message = {
@@ -671,24 +685,40 @@ class TiebreakerView(APIView):
         return Response({"success": True})
 
 
-class MegaroundReminderView(APIView):
+class ReminderView(APIView):
     authentication_classes = [JwtAuthentication]
     permission_classes = [IsAdminUser]
 
-    def get(self, request, joincode):
+    def get(self, request, joincode, reminder_type):
         event = get_event_or_404(joincode=joincode)
-        entries = LeaderboardEntry.objects.filter(
-            event=event,
-            leaderboard_type=LEADERBOARD_TYPE_HOST,
-            selected_megaround__isnull=True,
-        )
-        team_ids = [e.team.id for e in entries]
+        team_ids = []
+        if reminder_type == "megaround":
+            entries = LeaderboardEntry.objects.filter(
+                event=event,
+                leaderboard_type=LEADERBOARD_TYPE_HOST,
+                selected_megaround__isnull=True,
+            )
+            team_ids = [e.team.id for e in entries]
+        elif reminder_type == "imageround":
+            team_ids = [t.id for t in event.event_teams.all()]
+
+            # NOTE: this is untested, but is meant to check each teams responses for image rounds
+            # image_questions = Game.objects.filter(
+            #     game=event.game, question___question_type=QUESTION_TYPE_IMAGE_ROUND
+            # )
+            # for team in event.event_teams:
+            #     resps = QuestionResponse.objects.filter(
+            #         event=event, team=team, game_question__in=image_questions
+            #     )
+            #     # if not all image questions have respones
+            #     if resps.count() < image_questions.count():
+            #         team_ids.append(team.id)
 
         SendEventMessage(
             joincode=joincode,
             message={
-                "msg_type": "megaround_reminder",
-                "message": {"team_ids": team_ids},
+                "msg_type": "host_reminder",
+                "message": {"type": reminder_type, "team_ids": team_ids},
             },
         )
         return Response({"success": True})

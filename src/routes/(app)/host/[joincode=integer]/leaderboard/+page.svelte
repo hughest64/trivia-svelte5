@@ -58,7 +58,11 @@
             {/each}
         </ul>
     {:else}
-        {#if !$leaderboard.synced && revealed}
+        {#if !revealed}
+            <form action="?/revealanswers" method="post" use:enhance>
+                <button id="reveal-button" class="button button-primary">Reveal Answers to Players</button>
+            </form>
+        {:else if !$leaderboard.synced}
             <form action="?/updateleaderboard" method="post" use:enhance>
                 <button id="sync-button" type="submit" class="button button-primary">Update Public View</button>
             </form>

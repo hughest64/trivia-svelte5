@@ -38,7 +38,7 @@ class LeaderboardEntryNotFound(APIException):
 
 class PlayerLimitExceeded(APIException):
     status_code = HTTP_403_FORBIDDEN
-    default_detail = "Somone from your team has already joined this event"
+    default_detail = "Sorry! This game is limited to one device per team, and someone from your team has already joined this game."
     default_code = "player_limit_exceeded"
 
 

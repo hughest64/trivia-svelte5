@@ -64,14 +64,14 @@ urlpatterns = [
     ),
     re_path(r"^host/event-setup/?$", host.EventSetupView.as_view(), name="event_setup"),
     re_path(
+        r"^host/(?P<joincode>\d+)/reminder/(?P<reminder_type>(megaround|imageround))?$",
+        host.ReminderView.as_view(),
+        name="megaround_reminder",
+    ),
+    re_path(
         r"^host/(?P<joincode>\d+)[/\w]*/?$",
         host.EventHostView.as_view(),
         name="host_view",
-    ),
-    re_path(
-        r"^host/(?P<joincode>\d+)/megaround-reminder/?$",
-        host.MegaroundReminderView.as_view(),
-        name="megaround_reminder",
     ),
     # common endpoints
     re_path(
