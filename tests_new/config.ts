@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 
 import { request } from '@playwright/test';
-import games from '../tests/data/games.json' assert { type: 'json' };
+import games from '../tests/data/trivia_events.json' assert { type: 'json' };
 import users from '../tests/data/users.json' assert { type: 'json' };
 import type { Browser, Cookie, Page } from '@playwright/test';
 

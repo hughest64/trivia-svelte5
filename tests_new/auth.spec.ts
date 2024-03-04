@@ -143,3 +143,22 @@ test('reset password', async ({ page }) => {
     await login(page, 'reset_user', 'new_pass', true);
     await expect(page).toHaveURL('/team/create');
 });
+
+test('only one team member can join a single device game', async ({ browser }) => {
+    const p3 = await getUserPage(browser, 'player_three');
+    const p4 = await getUserPage(browser, 'player_four');
+    // each player goes to /game/join
+    // enter joincode (get from trivia_events)
+    // p3 is successful
+    // p4 is thwarted
+    // p4 also cannot navigate directly to the game
+    // test link to create a new team (both cases)
+});
+
+test('regular users cannot access host endpoints', async ({ browser }) => {
+    const page = await getUserPage(browser, 'player_two');
+    // go to /host/choice
+    await page.goto('/host/choice');
+    // should be back on /team
+    await expect(page).toHaveURL('/team');
+});

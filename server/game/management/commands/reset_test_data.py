@@ -17,8 +17,8 @@ logger = logging.getLogger(__name__)
 with open(DATA_DIR / "users.json") as f:
     user_data = json.load(f)
 
-with open(DATA_DIR / "games.json") as f:
-    game_data = json.load(f)
+with open(DATA_DIR / "trivia_events.json") as f:
+    trivia_events = json.load(f)
 
 ## games, users, etc from this file will not be deleted on db reset
 with open(DATA_DIR / "exclude.json") as f:
@@ -51,15 +51,13 @@ class Command(BaseCommand):
         if options.get("all"):
             call_command("loaddata", "game/fixtures/gamedata.json")
             self.create_users()
-            self.create_games()
-
-        else:
-            if options.get("games"):
-                self.create_games()
+            # self.create_games()
+            self.create_trivia_events()
 
     def reset(self):
         excluded_users = excludes.get("users", [])
         User.objects.exclude(username__in=excluded_users).delete()
+        Team.objects.all().delete()
         Game.objects.all().delete()
         Question.objects.all().delete()
         QuestionAnswer.objects.all().delete()
@@ -84,8 +82,12 @@ class Command(BaseCommand):
             )
             u.teams.set(teams)
 
-    def create_games(self):
-        return
-        logger.info(f"creating {len(game_data)} game(s)")
-        for g in game_data.values():
-            Game.objects.create(*g)
+    def create_trivia_events(self):
+        games = Game.objects.all()
+        for t_event in trivia_events:
+            # TODO: handle single device option
+            print(trivia_event)
+            # if no game data is specified choose the first (or a random game?)
+            # event_creator = TriviaEventCreator(
+            #     joincode=t_event.get("joincode"), game=games.first()
+            # )
