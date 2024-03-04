@@ -1,5 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
+    import { goto } from '$app/navigation';
     import { getStore, setEventCookie } from '$lib/utils';
 
     const joincode = $page.params.joincode;
@@ -19,6 +20,12 @@
         };
         $activeEventData = postData;
         setEventCookie($activeEventData, joincode);
+        const pathname = $page.url.pathname;
+        const reg = /summary\/\d+$/;
+
+        if (pathname.endsWith('leaderboard') || reg.test(pathname)) {
+            goto(`/host/${joincode}`);
+        }
     };
 
     $: roundIsScored = (round_number: Number) => {

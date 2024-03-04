@@ -104,7 +104,7 @@
         margin-top: 0;
     }
     img {
-        max-width: calc(var(--max-element-width) + 15rem);
+        max-width: min(calc(var(--max-element-width) + 15rem), 100%);
         margin: 0 auto;
     }
     .question-text {
