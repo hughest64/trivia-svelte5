@@ -103,6 +103,10 @@
     .response-btn {
         margin-top: 0;
     }
+    img {
+        max-width: calc(var(--max-element-width) + 15rem);
+        margin: 0 auto;
+    }
     .question-text {
         padding: 0 0.5rem;
     }
