@@ -1,5 +1,6 @@
 import logging
 
+from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 
 from django.contrib.auth.models import AnonymousUser
@@ -14,6 +15,15 @@ from game.utils.socket_classes import (
 )
 
 logger = logging.getLogger(__name__)
+
+
+# TODO: this may be necessary to handle clients reconnecting after being idle
+# @database_sync_to_async
+# def get_game_data(user_type, user_id):
+#     if user_type == "host":
+#         return  # host things
+
+#     return  # player things
 
 
 class SocketConsumer(AsyncJsonWebsocketConsumer):

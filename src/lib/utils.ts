@@ -129,15 +129,17 @@ export const respsByround = (
         const rdResps = resps.filter((r) => r.round_number === rdNum) || [];
         for (let i = 1; i < rd.question_count + 1; i++) {
             const existingResp = rdResps.find((r) => r.question_number === i);
+            const answer = existingResp?.recorded_answer;
 
             let pts: string | number = '-';
-            if (existingResp && (rdState?.scored || isHost)) {
+            if (existingResp && (rdState?.scored || (isHost && rdState?.locked))) {
                 pts = String(existingResp.points_awarded);
             }
 
+            const show_answer = answer && ((isHost && rdState?.locked) || !isHost);
             const resp = {
                 key: `${rdNum}.${i}`,
-                recorded_answer: existingResp?.recorded_answer || '-',
+                recorded_answer: show_answer ? answer : '-',
                 points_awarded: pts
             };
 
