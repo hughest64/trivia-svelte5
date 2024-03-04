@@ -16,7 +16,7 @@
     const roundStates = getStore('roundStates');
     const teamResponseStore = getStore('responseData');
     const teamResponses = $teamResponseStore.filter((r) => r.team_id === entry?.team_id);
-    $: groupedResps = respsByround(teamResponses, $rounds, $roundStates, false);
+    $: groupedResps = respsByround(teamResponses, $rounds, $roundStates, isHost);
 
     let nameEditable = false;
     const syncInputText = (e: Event) => {
