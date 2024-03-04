@@ -10,6 +10,7 @@ from django.views.decorators.csrf import csrf_protect
 from rest_framework.exceptions import NotFound
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
+from rest_framework.status import HTTP_400_BAD_REQUEST
 from rest_framework.views import APIView
 
 from game.processors import TriviaEventCreator
@@ -481,20 +482,29 @@ class UpdateAdjustmentPointsView(APIView):
         except LeaderboardEntry.DoesNotExist:
             raise LeaderboardEntryNotFound
 
-        if adjustment_reason is not None:
-            lbe.points_adjustment_reason = adjustment_reason
-            lbe.save()
+        try:
+            with transaction.atomic():
+                if adjustment_reason is not None:
+                    lbe.points_adjustment_reason = adjustment_reason
+                    lbe.save()
 
-        leaderboard_data = None
-        synced = False
-        if points is not None:
-            lbe.points_adjustment += points
-            lbe.total_points += points
-            lbe.save()
+                leaderboard_data = None
+                synced = False
+                if points is not None:
+                    lbe.points_adjustment += points
+                    lbe.total_points += points
+                    lbe.save()
 
-            lb_processor = LeaderboardProcessor(event=event)
-            leaderboard_data, synced = lb_processor.rank_host_leaderboard(
-                entries, event.max_locked_round()
+                    lb_processor = LeaderboardProcessor(event=event)
+                    leaderboard_data, synced = lb_processor.rank_host_leaderboard(
+                        entries, event.max_locked_round()
+                    )
+        except Exception as e:
+            logger.error(f"could not updated adjustment points, {e}")
+
+            return Response(
+                {"detail": "Sorry, could not update adjustment points"},
+                status=HTTP_400_BAD_REQUEST,
             )
 
         message = {

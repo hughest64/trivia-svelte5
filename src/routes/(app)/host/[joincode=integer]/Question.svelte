@@ -113,4 +113,8 @@
     .resp-summary {
         color: var(--color-primary);
     }
+    img {
+        max-width: min(calc(var(--max-element-width) + 15rem), 100%);
+        margin: 0 auto;
+    }
 </style>
