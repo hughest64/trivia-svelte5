@@ -24,7 +24,9 @@
 <div class="pop-timer" />
 <div class="pop-content">
     <h3>The Leaderboard has been updated!</h3>
-    <a href="/game/{$page.params.joincode}/leaderboard" on:click={resetPopup}> Check it out </a>
+    {#if !$page.url.pathname.includes('leaderboard')}
+        <a href="/game/{$page.params.joincode}/leaderboard" on:click={resetPopup}> Check it out </a>
+    {/if}
 </div>
 
 <CloseButton on:click={resetPopup} />
