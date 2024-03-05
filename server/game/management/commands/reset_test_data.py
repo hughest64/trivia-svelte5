@@ -21,8 +21,12 @@ with open(DATA_DIR / "trivia_events.json") as f:
     trivia_events = json.load(f)
 
 ## games, users, etc from this file will not be deleted on db reset
-with open(DATA_DIR / "exclude.json") as f:
-    excludes = json.load(f)
+try:
+    with open(DATA_DIR / "exclude.json") as f:
+        excludes = json.load(f)
+except Exception as e:
+    logger.warning(f"could not load exclued test reset data\m{e}")
+    excludes = {}
 
 
 class Command(BaseCommand):
