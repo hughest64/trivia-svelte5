@@ -1,5 +1,4 @@
 import datetime
-import logging
 
 from channels.db import database_sync_to_async
 from channels.sessions import CookieMiddleware
@@ -13,8 +12,6 @@ from rest_framework import authentication
 from rest_framework.exceptions import AuthenticationFailed
 
 import jwt
-
-logger = logging.getLogger()
 
 User = get_user_model()
 
@@ -78,15 +75,12 @@ class JwtAuthentication(authentication.BaseAuthentication):
         token = self.token or request.COOKIES.get("jwt")
 
         if not token:
-            logger.info("no token")
             raise AuthenticationFailed("You need to log in!")
 
         try:
             payload = jwt.decode(token, settings.JWT_TOKEN_SECRET, algorithms=["HS256"])
 
         except jwt.ExpiredSignatureError:
-            logger.info("expired token")
-
             raise AuthenticationFailed("You need to log in!")
 
         try:
@@ -94,8 +88,6 @@ class JwtAuthentication(authentication.BaseAuthentication):
                 Q(id=payload["id"]) | Q(username=payload.get("username"))
             )
         except User.DoesNotExist:
-            logger.info("no user")
-
             raise AuthenticationFailed("User not found")
 
         return (user, None)
