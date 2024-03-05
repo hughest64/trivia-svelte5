@@ -73,7 +73,9 @@ class Command(BaseCommand):
             u.pop("auth_storage_path", None)
 
             team_names = u.pop("team_names", [])
+            team_configs = u.pop("team_configs", [])
             teams = []
+            # first add generic teams (auto gen the password)
             if len(team_names) > 0:
                 for name in team_names:
                     try:
@@ -81,6 +83,14 @@ class Command(BaseCommand):
                     except Team.DoesNotExist:
                         team = Team.objects.create(name=name)
                     teams.append(team)
+
+            # then more specific team data
+            if len(team_configs) > 0:
+                for config in team_configs:
+                    join = config.pop("join", False)
+                    team = Team.objects.create(**config)
+                    if join:
+                        teams.append(team)
 
             active_team = teams[0] if len(teams) > 0 else None
             is_staff = u.get("is_staff", False)
