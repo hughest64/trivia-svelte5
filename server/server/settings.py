@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SETTINGS_FILE_NAME = __name__
 
 ENV_PATH = Path(os.environ.get("ENV_PATH", BASE_DIR.parent))
-environ.Env.read_env(BASE_DIR.parent / ".env.django")
+environ.Env.read_env(ENV_PATH / ".env.django")
 
 PRIVATE_EVENT = env.bool("PRIVATE_EVENT")
 
