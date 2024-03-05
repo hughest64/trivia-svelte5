@@ -21,7 +21,7 @@ stages:
 
 test-job:
   tags:
-    -tm_staging
+    - tm_staging
   stage: test
   when: manual
   variables:
