@@ -8,7 +8,7 @@
     let { tiebreaker, messaging } = Object.fromEntries(params);
 
     let hideTiebreaker = !tiebreaker;
-    $: tiebreakerButtonText = hideTiebreaker ? 'Show Tiebreaker' : 'Hide Tibreaker';
+    $: tiebreakerButtonText = hideTiebreaker ? 'Show Tiebreaker' : 'Hide Tiebreaker';
     let hideMessaging = !messaging;
     $: messagingButtonText = hideMessaging ? 'Message Players' : 'Hide Messages';
 </script>
