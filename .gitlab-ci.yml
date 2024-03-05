@@ -33,9 +33,9 @@ test-job:
     - npm i
     - npx playwright install
     - npm run test:build
+    - pip install pipenv
+    - pipenv install
     # skip python tests for now
-    # - pip install pipenv
-    # - pipenv install
     # - cd server
     # - pipenv run python manage.py test
 
