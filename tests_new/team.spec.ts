@@ -10,10 +10,15 @@ test('create a team', async ({ browser }) => {
     const nameInput = p1.locator('input[name="team_name"]');
     await expect(nameInput).toBeVisible();
 
+    await nameInput.fill('1234');
+    await p1.locator('button#team-create-submit').click();
+    let errMsg = p1.locator('p.error', { hasText: /join code/i });
+    await expect(errMsg).toBeVisible();
+
     // can't use a name longer than 100 characters
     await nameInput.fill('a'.repeat(101));
     await p1.locator('button#team-create-submit').click();
-    const errMsg = p1.locator('p.error', { hasText: /too long/i }); //.first();
+    errMsg = p1.locator('p.error', { hasText: /too long/i });
     await expect(errMsg).toBeVisible();
 
     await nameInput.fill(TEST_TEAM_NAME);
