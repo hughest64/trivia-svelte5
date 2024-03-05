@@ -44,7 +44,24 @@
         "username": "player_four",
         "password": "abc123",
         "email": "player_four@no.no",
-        "team_names": ["for all the marbles", "a team2"],
+        "team_names": ["for all the marbles"],
         "auth_storage_path": "playwright/.auth/player_four.json"
+    },
+    "two_team_player": {
+        "username": "two_team_player",
+        "password": "abc123",
+        "email": "two_team_player@no.no",
+        "team_names": ["team 1", "team 2"],
+        "auth_storage_path": "playwright/.auth/two_team_player.json"
+    },
+    "no_team_player": {
+        "username": "no_team_player",
+        "password": "abc123",
+        "email": "no_team_player@no.no",
+        "team_names": [],
+        "team_configs": [
+            { "name": "join my team", "password": "brand-new-team", "join": false }
+        ],
+        "auth_storage_path": "playwright/.auth/no_team_player.json"
     }
 }
