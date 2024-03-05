@@ -15,6 +15,7 @@ HOST_CHATS_PER_EVENT_limit = 50
 
 class TeamManager(models.Manager):
     def get_or_create(self, password=None, **kwargs):
+        raise NotImplementedError("get_or_create is not implmented for the Team model")
         try:
             return self.get(password=password, **kwargs), False
         except self.model.DoesNotExist:

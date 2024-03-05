@@ -72,7 +72,10 @@ class Command(BaseCommand):
             teams = []
             if len(team_names) > 0:
                 for name in team_names:
-                    team, _ = Team.objects.get_or_create(name=name)
+                    try:
+                        team = Team.objects.get(name=name)
+                    except Team.DoesNotExist:
+                        team = Team.objects.create(name=name)
                     teams.append(team)
 
             active_team = teams[0] if len(teams) > 0 else None
@@ -83,11 +86,13 @@ class Command(BaseCommand):
             u.teams.set(teams)
 
     def create_trivia_events(self):
+        logger.info(f"creating {len(trivia_events)} trivia events")
+
         games = Game.objects.all()
-        for t_event in trivia_events:
-            # TODO: handle single device option
-            print(trivia_event)
-            # if no game data is specified choose the first (or a random game?)
-            # event_creator = TriviaEventCreator(
-            #     joincode=t_event.get("joincode"), game=games.first()
-            # )
+
+        for event in trivia_events.values():
+            event_creator = TriviaEventCreator(
+                joincode=event.get("joincode"),
+                game=games.first(),  # TODO: use a .get with a fallback to .first() (or random)?
+                player_limit=event.get("player_limit", False),
+            )

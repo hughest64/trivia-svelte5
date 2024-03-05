@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { createApiContext, login, getUserPage, userAuthConfigs } from './config.js';
+import { createApiContext, login, triva_events, getUserPage, userAuthConfigs, asyncTimeout } from './config.js';
 import type { APIRequestContext, Page } from '@playwright/test';
 
 let apicontext: APIRequestContext;
@@ -145,14 +145,36 @@ test('reset password', async ({ page }) => {
 });
 
 test('only one team member can join a single device game', async ({ browser }) => {
+    const joincode = triva_events.player_limit_test.joincode;
+
     const p3 = await getUserPage(browser, 'player_three');
     const p4 = await getUserPage(browser, 'player_four');
-    // each player goes to /game/join
-    // enter joincode (get from trivia_events)
-    // p3 is successful
-    // p4 is thwarted
+
+    // p3 joins the event first
+    await p3.goto('/game/join');
+    await p3.locator('input[name="joincode"]').fill(joincode, { timeout: 5000 });
+    await p3.locator('button', { hasText: /join game/i }).click({ timeout: 5000 });
+    await expect(p3.locator('h2', { hasText: /you're playing at/i })).toBeVisible();
+    await p3.locator('button', { hasText: /looks good/i }).click({ timeout: 5000 });
+    await expect(p3).toHaveURL(`/game/${joincode}`);
+
+    // p4 cannot join the same event
+    await p4.goto('/game/join');
+    await p4.locator('input[name="joincode"]').fill(joincode, { timeout: 5000 });
+    await p4.locator('button', { hasText: /join game/i }).click({ timeout: 5000 });
+
+    await expect(p4.locator('p', { hasText: /sorry/i })).toBeVisible();
+    let teamLink = p4.locator('a', { hasText: /go here to create a new team/i });
+    await expect(teamLink).toBeVisible();
+    await teamLink.click({ timeout: 5000 });
+    await expect(p4).toHaveURL('/team/create');
+
     // p4 also cannot navigate directly to the game
-    // test link to create a new team (both cases)
+    await p4.goto(`/game/${joincode}`);
+    teamLink = p4.locator('a', { hasText: /create a new team/i });
+    await expect(teamLink).toBeVisible();
+    await teamLink.click({ timeout: 5000 });
+    await expect(p4).toHaveURL('/team/create');
 });
 
 test('regular users cannot access host endpoints', async ({ browser }) => {

@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 
 import { request } from '@playwright/test';
-import games from '../tests/data/trivia_events.json' assert { type: 'json' };
+import triva_events from '../tests/data/trivia_events.json' assert { type: 'json' };
 import users from '../tests/data/users.json' assert { type: 'json' };
 import type { Browser, Cookie, Page } from '@playwright/test';
 
@@ -89,4 +89,4 @@ export async function asyncTimeout(ms = 100): Promise<ReturnType<typeof setTimeo
     return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export { games };
+export { triva_events };
