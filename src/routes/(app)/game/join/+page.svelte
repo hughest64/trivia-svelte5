@@ -6,7 +6,6 @@
     import type { EventData } from '$lib/types';
 
     $: form = $page.form;
-    $: console.log(form);
     $: eventData = form?.event_data satisfies EventData | null;
 
     const userData = getStore('userData');

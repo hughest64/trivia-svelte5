@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 
 import { request } from '@playwright/test';
-import games from '../tests/data/games.json' assert { type: 'json' };
+import triva_events from '../tests/data/trivia_events.json' assert { type: 'json' };
 import users from '../tests/data/users.json' assert { type: 'json' };
 import type { Browser, Cookie, Page } from '@playwright/test';
 
@@ -10,7 +10,8 @@ export interface UserAuthConfig {
     username: string;
     password: string;
     email: string;
-    team_name?: string;
+    // an array of team names, the first team is always considered the user's active team
+    team_names?: string[];
     is_staff?: boolean;
     auth_storage_path: string;
     cookies?: Cookie[];
@@ -24,7 +25,7 @@ export const login = async (page: Page, username: string, password: string, navi
     navigate && (await page.goto('/user/login'));
     await page.locator('input[name="username"]').fill(username);
     await page.locator('input[name="password"]').fill(password);
-    await page.locator('button[type="submit"]').click({ timeout: 5000 });
+    await page.locator('button[type="submit"]', { hasText: /submit/i }).click({ timeout: 5000 });
 };
 
 export const logout = async (page: Page) => {
@@ -88,4 +89,4 @@ export async function asyncTimeout(ms = 100): Promise<ReturnType<typeof setTimeo
     return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export { games };
+export { triva_events };

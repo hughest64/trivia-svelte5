@@ -6,6 +6,7 @@ from django.core.management import call_command
 from django.conf import settings
 
 from game.models import *
+from game.processors import TriviaEventCreator
 
 from user.models import User
 
@@ -16,8 +17,8 @@ logger = logging.getLogger(__name__)
 with open(DATA_DIR / "users.json") as f:
     user_data = json.load(f)
 
-with open(DATA_DIR / "games.json") as f:
-    game_data = json.load(f)
+with open(DATA_DIR / "trivia_events.json") as f:
+    trivia_events = json.load(f)
 
 ## games, users, etc from this file will not be deleted on db reset
 with open(DATA_DIR / "exclude.json") as f:
@@ -50,37 +51,48 @@ class Command(BaseCommand):
         if options.get("all"):
             call_command("loaddata", "game/fixtures/gamedata.json")
             self.create_users()
-            self.create_games()
-
-        if options.get("games"):
-            self.create_games()
-
-        if options.get("team"):
-            print(Team.objects.generate_password())
+            # self.create_games()
+            self.create_trivia_events()
 
     def reset(self):
         excluded_users = excludes.get("users", [])
         User.objects.exclude(username__in=excluded_users).delete()
+        Team.objects.all().delete()
         Game.objects.all().delete()
         Question.objects.all().delete()
         QuestionAnswer.objects.all().delete()
 
     def create_users(self):
-        logger.info(f"crating {len(user_data)} user(s)")
+        logger.info(f"creating {len(user_data)} user(s)")
         for u in user_data.values():
             # throw the auth storage path away
             u.pop("auth_storage_path", None)
 
-            team_name = u.pop("team_name", None)
-            team = None
-            if team_name is not None:
-                team, _ = Team.objects.get_or_create(name=team_name)
+            team_names = u.pop("team_names", [])
+            teams = []
+            if len(team_names) > 0:
+                for name in team_names:
+                    try:
+                        team = Team.objects.get(name=name)
+                    except Team.DoesNotExist:
+                        team = Team.objects.create(name=name)
+                    teams.append(team)
 
+            active_team = teams[0] if len(teams) > 0 else None
             is_staff = u.get("is_staff", False)
-            User.objects.create_user(**u, is_superuser=is_staff, active_team=team)
+            u = User.objects.create_user(
+                **u, is_superuser=is_staff, active_team=active_team
+            )
+            u.teams.set(teams)
 
-    def create_games(self):
-        return
-        logger.info(f"creating {len(game_data)} game(s)")
-        for g in game_data.values():
-            Game.objects.create(*g)
+    def create_trivia_events(self):
+        logger.info(f"creating {len(trivia_events)} trivia events")
+
+        games = Game.objects.all()
+
+        for event in trivia_events.values():
+            event_creator = TriviaEventCreator(
+                joincode=event.get("joincode"),
+                game=games.first(),  # TODO: use a .get with a fallback to .first() (or random)?
+                player_limit=event.get("player_limit", False),
+            )

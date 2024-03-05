@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { createApiContext, login, getUserPage } from './config.js';
+import { createApiContext, login, triva_events, getUserPage, userAuthConfigs, asyncTimeout } from './config.js';
 import type { APIRequestContext, Page } from '@playwright/test';
 
 let apicontext: APIRequestContext;
@@ -15,7 +15,7 @@ test.afterAll(async () => {
     await apicontext.dispose();
 });
 
-test('login as host and navigate', async ({ page }) => {
+test('login as host', async ({ page }) => {
     await page.goto('/user/login');
     await login(page, 'host_user', 'abc123', false);
     await expect(page).toHaveURL('/host/choice');
@@ -29,31 +29,6 @@ test('login as host and navigate', async ({ page }) => {
     await expect(page).toHaveURL(/\/host\/event-setup/);
 });
 
-test.skip('login as player and navigate', async ({ page }) => {
-    // TODO:
-    // implement the resigned flow:
-    // - after login should be the joincode page
-    // - should be able to navigate elsehwere (/team, user settings, etc) (probably a different test)
-    // - enter bad jc
-    // - enter good jc
-    // -- should show the location of the event and have options to got the game (this does the join)
-    //    or enter a new code
-});
-
-test.skip('naviagate directly to a game', async ({ page }) => {
-    // TODO: decide if the is a
-});
-
-test('two players cannot join an event with a player limit', async ({ browser }) => {
-    const p1 = getUserPage(browser, 'player_one');
-    const p2 = getUserPage(browser, 'player_two');
-
-    // p1 joins game 1111
-    // - success
-    // p2 (same team) tries to join the game
-    // - gets error message - test navigation from the error?
-});
-
 test('guest login', async ({ page }) => {
     await page.goto('/');
     // not logged in, we should land on the welcome page
@@ -62,7 +37,25 @@ test('guest login', async ({ page }) => {
     await page.locator('text=Play as a Guest').click();
     // since guest is not a staff user, they should see the team select component
     await expect(page).toHaveTitle(/create team/i);
-    await expect(page.locator('h2', { hasText: /create a new team/i })).toBeVisible();
+    await expect(page.locator('h2', { hasText: /choose a team name/i })).toBeVisible();
+});
+
+test('login as player', async ({ page }) => {
+    const user = userAuthConfigs.player_four;
+    const activeTeam = (user.team_names || [])[0];
+    await page.goto('/user/login');
+    await login(page, user.username, user.password, false);
+    await expect(page).toHaveURL('/team');
+    // check that team is selected
+    const teamSelect = page.locator('option', { hasText: activeTeam });
+    await expect(teamSelect).toHaveText(activeTeam);
+
+    // click let's play
+    await page.locator('button', { hasText: /let's play/i }).click({ timeout: 5000 });
+    // should be on the join page w/ team name visible
+    await expect(page).toHaveURL('/game/join');
+    // we can see the user's active team
+    await expect(page.locator('h2', { hasText: activeTeam })).toBeVisible();
 });
 
 const submitCreateForm = async (page: Page, values: Record<string, string>) => {
@@ -149,4 +142,45 @@ test('reset password', async ({ page }) => {
     // login w/ new password
     await login(page, 'reset_user', 'new_pass', true);
     await expect(page).toHaveURL('/team/create');
+});
+
+test('only one team member can join a single device game', async ({ browser }) => {
+    const joincode = triva_events.player_limit_test.joincode;
+
+    const p3 = await getUserPage(browser, 'player_three');
+    const p4 = await getUserPage(browser, 'player_four');
+
+    // p3 joins the event first
+    await p3.goto('/game/join');
+    await p3.locator('input[name="joincode"]').fill(joincode, { timeout: 5000 });
+    await p3.locator('button', { hasText: /join game/i }).click({ timeout: 5000 });
+    await expect(p3.locator('h2', { hasText: /you're playing at/i })).toBeVisible();
+    await p3.locator('button', { hasText: /looks good/i }).click({ timeout: 5000 });
+    await expect(p3).toHaveURL(`/game/${joincode}`);
+
+    // p4 cannot join the same event
+    await p4.goto('/game/join');
+    await p4.locator('input[name="joincode"]').fill(joincode, { timeout: 5000 });
+    await p4.locator('button', { hasText: /join game/i }).click({ timeout: 5000 });
+
+    await expect(p4.locator('p', { hasText: /sorry/i })).toBeVisible();
+    let teamLink = p4.locator('a', { hasText: /go here to create a new team/i });
+    await expect(teamLink).toBeVisible();
+    await teamLink.click({ timeout: 5000 });
+    await expect(p4).toHaveURL('/team/create');
+
+    // p4 also cannot navigate directly to the game
+    await p4.goto(`/game/${joincode}`);
+    teamLink = p4.locator('a', { hasText: /create a new team/i });
+    await expect(teamLink).toBeVisible();
+    await teamLink.click({ timeout: 5000 });
+    await expect(p4).toHaveURL('/team/create');
+});
+
+test('regular users cannot access host endpoints', async ({ browser }) => {
+    const page = await getUserPage(browser, 'player_two');
+    // go to /host/choice
+    await page.goto('/host/choice');
+    // should be back on /team
+    await expect(page).toHaveURL('/team');
 });
