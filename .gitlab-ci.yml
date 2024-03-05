@@ -2,6 +2,7 @@
 # keyword reference: https://docs.gitlab.com/16.2/ee/ci/yaml/index.html
 
 stages:
+  - test
   - deploy
   - release
 
@@ -17,6 +18,26 @@ stages:
     # restart services
     - sudo systemctl restart tm-trivia.service
     - sudo systemctl restart tm-trivia-api.service
+
+test-job:
+  tags:
+    -tm_staging
+  stage: test
+  when: manual
+  variables:
+    # tell svelte to use .env files from the main project
+    ENV_PATH: '/opt/tm-trivia'
+  script:
+    - echo 'running test job'
+    - mkdir playwright/.auth -p
+    - npm i
+    - npx playwright install
+    - npm run test:build
+    # skip python tests for now
+    # - pip install pipenv
+    # - pipenv install
+    # - cd server
+    # - pipenv run python manage.py test
 
 staging-deploy-job:
   tags:
