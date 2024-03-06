@@ -3,6 +3,7 @@
         "username": "host_user",
         "password": "abc123",
         "email": "host_user@no.no",
+        "home_location_index": 1,
         "is_staff": true,
         "auth_storage_path": "playwright/.auth/host_user.json"
     },

@@ -20,6 +20,9 @@ with open(DATA_DIR / "users.json") as f:
 with open(DATA_DIR / "trivia_events.json") as f:
     trivia_events = json.load(f)
 
+with open(DATA_DIR / "locations.json") as f:
+    locations = json.load(f)
+
 ## games, users, etc from this file will not be deleted on db reset
 try:
     with open(DATA_DIR / "exclude.json") as f:
@@ -54,8 +57,8 @@ class Command(BaseCommand):
 
         if options.get("all"):
             call_command("loaddata", "game/fixtures/gamedata.json")
+            self.create_locations()
             self.create_users()
-            # self.create_games()
             self.create_trivia_events()
 
     def reset(self):
@@ -63,8 +66,15 @@ class Command(BaseCommand):
         User.objects.exclude(username__in=excluded_users).delete()
         Team.objects.all().delete()
         Game.objects.all().delete()
+        Location.objects.all().delete()
         Question.objects.all().delete()
         QuestionAnswer.objects.all().delete()
+
+    def create_locations(self):
+        logger.info(f"creating {len(locations)} locations")
+
+        created_locations = [Location(**loc_data) for loc_data in locations]
+        Location.objects.bulk_create(created_locations)
 
     def create_users(self):
         logger.info(f"creating {len(user_data)} user(s)")
@@ -94,10 +104,27 @@ class Command(BaseCommand):
 
             active_team = teams[0] if len(teams) > 0 else None
             is_staff = u.get("is_staff", False)
-            u = User.objects.create_user(
-                **u, is_superuser=is_staff, active_team=active_team
+
+            # try to get a home location for the user
+            home_loc_index = u.pop("home_location_index", None)
+            home_location = None
+            if home_loc_index:
+                try:
+                    home_location = Location.objects.get(
+                        name=locations[home_loc_index].get("name")
+                    )
+                except Location.DoesNotExist:
+                    logger.warning(
+                        f"could not set home location for user {u.get('username')}"
+                    )
+
+            user = User.objects.create_user(
+                **u,
+                is_superuser=is_staff,
+                active_team=active_team,
+                home_location=home_location,
             )
-            u.teams.set(teams)
+            user.teams.set(teams)
 
     def create_trivia_events(self):
         logger.info(f"creating {len(trivia_events)} trivia events")

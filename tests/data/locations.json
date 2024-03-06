@@ -1,0 +1,6 @@
+[
+    {"name": "loc c", "use_sound": true, "active": true},
+    {"name": "host home", "use_sound": false, "active": true},
+    {"name": "loc a", "use_sound": true, "active": true},
+    {"name": "loc b", "use_sound": true, "active": false}
+]
