@@ -6,5 +6,10 @@
     "players_joining": {
         "joincode": "2222",
         "player_limit": true
+    },
+    "answer_submissions": {
+        "joincode": "3333",
+        "teams": ["hello world", "for all the marbles"],
+        "players": ["player_one", "player_two", "player_three"]
     }
 }

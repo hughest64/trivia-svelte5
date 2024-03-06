@@ -31,7 +31,7 @@
         "username": "player_two",
         "password": "abc123",
         "email": "player_two@no.no",
-        "auto_reval_questions": true,
+        "auto_reveal_questions": true,
         "team_names": ["hello world"],
         "auth_storage_path": "playwright/.auth/player_two.json"
     },

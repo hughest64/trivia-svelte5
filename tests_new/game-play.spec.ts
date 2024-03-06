@@ -1,21 +1,37 @@
 import { expect, test } from '@playwright/test';
-import { locations, getUserPage, userAuthConfigs } from './config.js';
+import { asyncTimeout, getUserPage, triva_events, userAuthConfigs } from './config.js';
 
 // 2 events
 // 3 teams (all 3 teams on 1 event, 2 and p3 on a second event)
 // 1 host
 
 test('answer submissions are isolated per team', async ({ browser }) => {
-    // const host = await getUserPage(browser, 'host_user');
+    const eventData = triva_events.answer_submissions;
+    const eventPage = `game/${eventData.joincode}`;
     // teammates
     const p1 = await getUserPage(browser, 'player_one');
+
+    await p1.goto(eventPage);
+    await expect(p1.locator('h4', { hasText: '1.1' })).toBeVisible();
+
     const p2 = await getUserPage(browser, 'player_two');
+    await p2.goto(eventPage);
+    await expect(p2.locator('h4', { hasText: '1.1' })).toBeVisible();
+
     // playing solo
     const p3 = await getUserPage(browser, 'player_three');
+    await p3.goto(eventPage);
+    await expect(p1.locator('h4', { hasText: '1.1' })).toBeVisible();
 
-    // all players on the same game
+    const p1Input = p1.locator('input[name="response_text"]');
+    await expect(p1Input).toBeEnabled();
     // p1 submits
+    await p1Input.fill('the answer');
+    await p1.locator('button', { hasText: /submit/i }).click({ timeout: 5000 });
+    await asyncTimeout(500);
     // p2 sees it
+    const p2Input = p2.locator('input[name="response_text"]');
+    await expect(p2Input).toHaveValue('the answer');
     // p3 doesn't
     // p2 updates the resp
     // p1 sees it

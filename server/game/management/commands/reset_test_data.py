@@ -1,5 +1,6 @@
 import logging
 import json
+import random
 
 from django.core.management.base import BaseCommand, CommandParser
 from django.core.management import call_command
@@ -75,8 +76,8 @@ class Command(BaseCommand):
         excluded_users = excludes.get("users", [])
         User.objects.exclude(username__in=excluded_users).delete()
         Team.objects.all().delete()
-        Game.objects.all().delete()
         Location.objects.all().delete()
+        Game.objects.all().delete()
         Question.objects.all().delete()
         QuestionAnswer.objects.all().delete()
 
@@ -148,6 +149,30 @@ class Command(BaseCommand):
         for event in trivia_events.values():
             event_creator = TriviaEventCreator(
                 joincode=event.get("joincode"),
-                game=games.first(),  # TODO: use a .get with a fallback to .first() (or random)?
+                # NOTE this would need work to use an actual game, (like the id or some other sepcific data)
+                # look for a specific game or use a random one,
+                game=event.get("game", games[random.randint(0, len(games) - 1)]),
                 player_limit=event.get("player_limit", False),
             )
+            teams = event.get("teams", [])
+            players = event.get("players", [])
+            event_creator.event.event_teams.set(Team.objects.filter(name__in=teams))
+            event_creator.event.players.set(User.objects.filter(username__in=players))
+
+            leaderboard_entries = []
+            fetched_teams = Team.objects.filter(name__in=teams)
+            for team in fetched_teams:
+                host_lb = LeaderboardEntry(
+                    team=team,
+                    event=event_creator.event,
+                    leaderboard_type=LEADERBOARD_TYPE_HOST,
+                )
+                public_lb = LeaderboardEntry(
+                    team=team,
+                    event=event_creator.event,
+                    leaderboard_type=LEADERBOARD_TYPE_PUBLIC,
+                )
+                leaderboard_entries.extend([host_lb, public_lb])
+
+            if leaderboard_entries:
+                LeaderboardEntry.objects.bulk_create(leaderboard_entries)
