@@ -44,9 +44,9 @@ test('only one team member can join a single device game', async ({ browser }) =
     await expect(p4).toHaveURL('/team/create');
 });
 
-test('a player is requried to verify the event before joining', async ({ browser }) => {
+test('a player is required to verify the event before joining', async ({ browser }) => {
     const userTeams = userAuthConfigs.player_three.team_names || [];
-    const joincode = triva_events.player_limit_test.joincode;
+    const joincode = triva_events.players_joining.joincode;
 
     const page = await getUserPage(browser, 'player_three');
 
@@ -69,6 +69,36 @@ test('a player is requried to verify the event before joining', async ({ browser
 
     // check that a leaderboard entry was created and loaded
     await page.locator('a', { hasText: /leaderboard/i }).click({ timeout: 5000 });
+    const lbe = page.locator('a').locator('div.team-name').locator('h3.team-name-display', { hasText: userTeams[0] });
+    await expect(lbe).toBeVisible();
+});
+
+test('a player is not joined automatically when navigating directly to an event', async ({ browser }) => {
+    const joincode = triva_events.players_joining.joincode;
+    const userTeams = userAuthConfigs.player_two.team_names || [];
+    const page = await getUserPage(browser, 'player_two');
+    await page.goto('/');
+    await expect(page).toHaveURL('/team');
+
+    await page.goto(`/game/${joincode}`);
+
+    await expect(page.locator('a', { hasText: /leaderboard/i })).toBeVisible();
+
+    // asked to join the game
+    const joinButton = page.locator('button[type="submit"]', { hasText: /click here/i });
+    await expect(joinButton).toBeVisible();
+    // cannot submit responses
+    await expect(page.locator('button', { hasText: /submit/i })).toBeDisabled();
+
+    await joinButton.click({ timeout: 5000 });
+
+    await asyncTimeout(500);
+    await expect(joinButton).not.toBeVisible();
+    await expect(page.locator('button', { hasText: /submit/i })).toBeEnabled();
+
+    // check that a leaderboard entry was created and loaded
+    await page.locator('a', { hasText: /leaderboard/i }).click({ timeout: 5000 });
+    await page.goto(`/game/${joincode}/leaderboard`);
     const lbe = page.locator('a').locator('div.team-name').locator('h3.team-name-display', { hasText: userTeams[0] });
     await expect(lbe).toBeVisible();
 });

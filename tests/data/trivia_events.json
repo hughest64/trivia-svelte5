@@ -2,5 +2,9 @@
     "player_limit_test": {
         "joincode": "1111",
         "player_limit": true
+    },
+    "players_joining": {
+        "joincode": "2222",
+        "player_limit": true
     }
 }
