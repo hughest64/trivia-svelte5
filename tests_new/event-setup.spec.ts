@@ -57,3 +57,21 @@ test('host setup options', async ({ browser }) => {
     // only one theme blcok
     await expect(blockSelectOptions).toHaveCount(1);
 });
+
+test('a host can create an event', async ({ browser }) => {
+    const page = await getUserPage(browser, 'host_user');
+    await page.goto('/host/event-setup');
+
+    const selectedGame = (await page.locator('p#selected-game').textContent()) as string;
+    await page.locator('button', { hasText: /begin trivia/i }).click({ timeout: 5000 });
+    await expect(page).toHaveURL(/host\/\d+/);
+    // the selected game is the game created
+    await expect(page.locator('#event-details')).toHaveText(new RegExp(selectedGame));
+
+    // TODO: just hitting back doesn't change the button text (we haven't received updated data from the api)
+    // is htat problematic?
+    // the button should now say "join"
+    await page.goBack();
+    await page.reload();
+    await expect(page.locator('button', { hasText: /join trivia/i })).toBeVisible();
+});
