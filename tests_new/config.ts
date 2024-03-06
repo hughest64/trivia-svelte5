@@ -17,6 +17,7 @@ export interface UserAuthConfig {
     username: string;
     password: string;
     email: string;
+    auto_reval_questions?: boolean;
     // the index in the location names list to be used as the host's home location
     home_location_index?: number;
     // an array of team names, the first team is always considered the user's active team
