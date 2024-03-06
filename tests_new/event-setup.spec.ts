@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { asyncTimeout, locations, getUserPage, triva_events, userAuthConfigs } from './config.js';
+import { locations, getUserPage, userAuthConfigs } from './config.js';
 
 test("a host's home lcoation is the default selection", async ({ browser }) => {
     const userData = userAuthConfigs.host_user;
