@@ -1,6 +1,13 @@
 import { expect, test } from '@playwright/test';
 import { locations, getUserPage, userAuthConfigs } from './config.js';
 
+/**
+ * TODO:
+ * - test for recent events link
+ * - test for creating a single device event
+ *   (we don't currently have a ui way to know if an event is single device)
+ */
+
 test("a host's home lcoation is the default selection", async ({ browser }) => {
     const userData = userAuthConfigs.host_user;
     const homeLocation = locations[userData.home_location_index as number];
