@@ -4,6 +4,7 @@ import json
 from django.core.management.base import BaseCommand, CommandParser
 from django.core.management import call_command
 from django.conf import settings
+from django.utils import timezone
 
 from game.models import *
 from game.processors import TriviaEventCreator
@@ -41,7 +42,7 @@ class Command(BaseCommand):
             help="pass this arg to run all set up commands",
         )
         parser.add_argument(
-            "-g", "--games", action="store_true", help="create games but not users"
+            "-g", "--games", action="store_true", help="load game data   only"
         )
         parser.add_argument("-t", "--team", action="store_true")
 
@@ -53,15 +54,24 @@ class Command(BaseCommand):
             )
             return
         logger.info("Resetting Test Data")
-        self.reset()
 
+        # the all option takes precedence over all other options
         if options.get("all"):
+            self.reset()
             call_command("loaddata", "game/fixtures/gamedata.json")
             self.create_locations()
             self.create_users()
+            self.update_game_dates()
             self.create_trivia_events()
 
+        else:
+            if options.get("games"):
+                print(Game.objects.all())
+
     def reset(self):
+        # NOTE, potentially useful if we feel that id's for test data are getting out of hand:
+        # python manage.py sqlsequencereset game | python manage.py dbshell
+        # this would obviously cause issues with any data exclued from deletion
         excluded_users = excludes.get("users", [])
         User.objects.exclude(username__in=excluded_users).delete()
         Team.objects.all().delete()
@@ -125,6 +135,10 @@ class Command(BaseCommand):
                 home_location=home_location,
             )
             user.teams.set(teams)
+
+    def update_game_dates(self):
+        games = Game.objects.all()
+        games.update(active_through=timezone.now())
 
     def create_trivia_events(self):
         logger.info(f"creating {len(trivia_events)} trivia events")
