@@ -21,14 +21,14 @@ test('answer submissions are isolated per team', async ({ browser }) => {
     // playing solo
     const p3 = await getUserPage(browser, 'player_three');
     await p3.goto(eventPage);
-    await expect(p1.locator('h4', { hasText: '1.1' })).toBeVisible();
+    await expect(p3.locator('h4', { hasText: '1.1' })).toBeVisible();
 
     const p1Input = p1.locator('input[name="response_text"]');
     await expect(p1Input).toBeEnabled();
     // p1 submits
     await p1Input.fill('the answer');
     await p1.locator('button', { hasText: /submit/i }).click({ timeout: 5000 });
-    await asyncTimeout(500);
+    // await asyncTimeout(500);
     // p2 sees it
     const p2Input = p2.locator('input[name="response_text"]');
     await expect(p2Input).toHaveValue('the answer');

@@ -48,7 +48,9 @@ def decode_token(token):
     except jwt.ExpiredSignatureError:
         return AnonymousUser()
 
-    user = User.objects.filter(id=payload["id"]).first()
+    user = User.objects.filter(
+        Q(id=payload["id"]) | Q(username=payload.get("username"))
+    ).first()
 
     return user or AnonymousUser()
 
