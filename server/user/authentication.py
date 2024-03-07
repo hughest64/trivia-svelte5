@@ -6,7 +6,6 @@ from channels.sessions import CookieMiddleware
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
-from django.db.models import Q
 
 from rest_framework import authentication
 from rest_framework.exceptions import AuthenticationFailed
@@ -24,7 +23,6 @@ def create_token(user, user_created=False, expires_in=None):
 
     payload = {
         "id": user.id,
-        "username": user.username,
         "staff_user": user.is_staff,
         "guest_user": user.is_guest,
         "user_created": user_created,
@@ -48,9 +46,7 @@ def decode_token(token):
     except jwt.ExpiredSignatureError:
         return AnonymousUser()
 
-    user = User.objects.filter(
-        Q(id=payload["id"]) | Q(username=payload.get("username"))
-    ).first()
+    user = User.objects.filter(id=payload["id"]).first()
 
     return user or AnonymousUser()
 
@@ -86,9 +82,7 @@ class JwtAuthentication(authentication.BaseAuthentication):
             raise AuthenticationFailed("You need to log in!")
 
         try:
-            user = User.objects.get(
-                Q(id=payload["id"]) | Q(username=payload.get("username"))
-            )
+            user = User.objects.get(id=payload["id"])
         except User.DoesNotExist:
             raise AuthenticationFailed("User not found")
 
