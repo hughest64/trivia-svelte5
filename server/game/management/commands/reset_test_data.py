@@ -96,14 +96,18 @@ class Command(BaseCommand):
         Question.objects.all().delete()
         QuestionAnswer.objects.all().delete()
 
+        # TODO: skipping this for now as:
+        # 1. it shouldn't cause a problem
+        # 2. this doesn't work, chaning the primary key attempst to make a new instance
+        #    - using User.objects.filter(username=name).update(id=i) may be a workaround if nceccesary
         # reset the id of excluded objects so they come first (could be moved to bulk update if neccessary)
-        for i, name in enumerate(excluded_users, start=1):
-            try:
-                user = User.objects.get(username=name)
-                user.id = i
-                user.save()
-            except User.DoesNotExist:
-                pass
+        # for i, name in enumerate(excluded_users, start=1):
+        #     try:
+        #         user = User.objects.get(username=name)
+        #         user.id = i
+        #         user.save()
+        #     except User.DoesNotExist:
+        #         pass
 
         self.data_removed = True
 
