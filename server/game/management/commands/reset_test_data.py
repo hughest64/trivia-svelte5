@@ -1,3 +1,4 @@
+import io
 import logging
 import json
 import random
@@ -35,6 +36,8 @@ except Exception as e:
 
 
 class Command(BaseCommand):
+    data_removed = False
+
     def add_arguments(self, parser: CommandParser) -> None:
         parser.add_argument(
             "-a",
@@ -43,9 +46,16 @@ class Command(BaseCommand):
             help="pass this arg to run all set up commands",
         )
         parser.add_argument(
-            "-g", "--games", action="store_true", help="load game data   only"
+            "-g", "--games", action="store_true", help="load game data only"
         )
-        parser.add_argument("-t", "--team", action="store_true")
+        parser.add_argument("-t", "--team", action="store_true"),
+        parser.add_argument(
+            "-e",
+            "--erase",
+            action="store_true",
+            help="delete exisiting data but do not load new data",
+        ),
+        parser.add_argument("-r", "--reset_indicies", action="store_true")
 
     def handle(self, *args, **options) -> str | None:
         logger.info(f"Using settings file {settings.SETTINGS_FILE_NAME}")
@@ -58,7 +68,8 @@ class Command(BaseCommand):
 
         # the all option takes precedence over all other options
         if options.get("all"):
-            self.reset()
+            self.reset_data()
+            self.reset_indicies()
             call_command("loaddata", "game/fixtures/gamedata.json")
             self.create_locations()
             self.create_users()
@@ -69,10 +80,14 @@ class Command(BaseCommand):
             if options.get("games"):
                 print(Game.objects.all())
 
-    def reset(self):
-        # NOTE, potentially useful if we feel that id's for test data are getting out of hand:
-        # python manage.py sqlsequencereset game | python manage.py dbshell
-        # this would obviously cause issues with any data exclued from deletion
+            if options.get("erase"):
+                logger.info("removing existing data")
+                self.reset_data()
+
+            if options.get("reset_indicies"):
+                self.reset_indicies()
+
+    def reset_data(self):
         excluded_users = excludes.get("users", [])
         User.objects.exclude(username__in=excluded_users).delete()
         Team.objects.all().delete()
@@ -80,6 +95,32 @@ class Command(BaseCommand):
         Game.objects.all().delete()
         Question.objects.all().delete()
         QuestionAnswer.objects.all().delete()
+
+        # reset the id of excluded objects so they come first (could be moved to bulk update if neccessary)
+        for i, name in enumerate(excluded_users, start=1):
+            try:
+                user = User.objects.get(username=name)
+                user.id = i
+                user.save()
+            except User.DoesNotExist:
+                pass
+
+        self.data_removed = True
+
+    def reset_indicies(self):
+        """
+        Ensure we get a fresh set of table ids on each run.
+        First use sqlsequencereset to produce the required sql to maniupulate the id index for all tables.
+        Then modify the sql so all tables reset to use 1 as the first available id.
+        Finally, use the dbshell command to update the test database.
+        """
+        if not self.data_removed:
+            raise Exception("cannot reset db indicies before removing data")
+
+        iodata = io.StringIO()
+        call_command("sqlsequencereset", "game", "user", no_color=True, stdout=iodata)
+        stringdata = iodata.getvalue().replace('coalesce(max("id"), 1)', "1")
+        call_command("dbshell", "--", "-c", stringdata)
 
     def create_locations(self):
         logger.info(f"creating {len(locations)} locations")
