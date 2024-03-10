@@ -1,23 +1,31 @@
 <script lang="ts">
-    import { onDestroy, setContext } from 'svelte';
+    import { onDestroy, getContext, setContext } from 'svelte';
     import { browser } from '$app/environment';
     import { goto } from '$app/navigation';
     import { page } from '$app/stores';
     import { PUBLIC_WEBSOCKET_HOST } from '$env/static/public';
-    import type { MessageHandler, SocketMessage } from '$lib/types';
+    import type { MessageHandler, RoundState, SocketMessage } from '$lib/types';
+    import type { GameState } from './stores.svelte';
 
-    export let is_reconnect = false;
-    export let socketUrl = `${PUBLIC_WEBSOCKET_HOST}/ws/host/${$page.params.joincode}/`;
-    export let maxRetries = 50;
-    export let retryInterval = 1000;
+    let is_reconnect = false;
+    let socketUrl = `${PUBLIC_WEBSOCKET_HOST}/ws/host/${$page.params.joincode}/`;
+    let maxRetries = 50;
+    let retryInterval = 1000;
 
     let interval: ReturnType<typeof setTimeout>;
     let retries = 0;
+
+    let gameState = getContext<GameState>('gameState');
+
+    // $inspect(gameState.locked_rounds);
 
     const handlers: MessageHandler = {
         connected: () => {
             // TODO in the case of reconnect, the may contain game data in the future
             console.log('connected!');
+        },
+        roundlock_s5: (msg: RoundState) => {
+            gameState.updateRoundStates(msg);
         }
     };
 

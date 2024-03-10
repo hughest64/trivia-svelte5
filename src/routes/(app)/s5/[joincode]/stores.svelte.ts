@@ -13,4 +13,10 @@ export class GameState {
         this.round_states = round_states;
         this.question_states = question_states;
     }
+
+    updateRoundStates(roundState: RoundState) {
+        const rsIndex = this.round_states.findIndex((rs) => rs.round_number === roundState.round_number);
+
+        rsIndex > -1 && (this.round_states[rsIndex].locked = true);
+    }
 }
