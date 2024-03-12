@@ -104,7 +104,7 @@
         </select>
 
         <h2>You've Selected</h2>
-        <p>{selectedGame?.game_title || 'No Matching Game'}</p>
+        <p id="selected-game">{selectedGame?.game_title || 'No Matching Game'}</p>
         <input class="selected-game" type="hidden" name="game_select" id="game_select" value={selectedGame?.game_id} />
 
         <button class="button button-primary" type="submit" name="submit" id="submit" disabled={!selectedGame?.game_id}>

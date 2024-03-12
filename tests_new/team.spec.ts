@@ -40,7 +40,13 @@ test('a player can join a team with a password', async ({ browser }) => {
     await page.goto('/team');
     await page.locator('a', { hasText: /join an existing team/i }).click({ timeout: 5000 });
 
-    await page.locator('input[name="team_password"]').fill(password || '');
+    // expect the input to be empty
+    await expect(page.locator('input[name="team_password"]')).toBeEmpty();
+    await page.goto(`/team/join?password=${password}`);
+    // expect the team name to be filled in and members populated
+    await expect(page.locator('input[name="team_password"]')).toHaveValue(password);
+    await expect(page.locator('h2', { hasText: `Team: ${name}` })).toBeVisible();
+
     await page.locator('button', { hasText: /join team/i }).click({ timeout: 5000 });
     await expect(page).toHaveURL('/game/join');
     // expect the team name to be visible

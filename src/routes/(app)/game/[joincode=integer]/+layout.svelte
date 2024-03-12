@@ -14,7 +14,7 @@
 </script>
 
 <svelte:head>
-    <title>Trivia Mafia Event {joincode}</title>
+    <title>Trivia Mafia | Event {joincode}</title>
 </svelte:head>
 
 <main class="short">

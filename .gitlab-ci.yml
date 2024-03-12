@@ -32,9 +32,9 @@ test-job:
     - mkdir playwright/.auth -p
     - npm i
     - npx playwright install
-    - npm run test:build
     - pip install pipenv
     - pipenv install
+    - npm run test:build
     # skip python tests for now
     # - cd server
     # - pipenv run python manage.py test
