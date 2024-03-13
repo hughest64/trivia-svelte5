@@ -114,9 +114,9 @@ class Xfer:
             team_dict.setdefault(
                 team_id,
                 {
-                    "team_name": team_name
-                    if len(team_name) <= 100
-                    else team_name[:97] + "...",
+                    "team_name": (
+                        team_name if len(team_name) <= 100 else team_name[:97] + "..."
+                    ),
                     "password": password,
                     "members": set(),
                 },
@@ -190,6 +190,8 @@ class Xfer:
                         "screen_name": screen_name,
                         "is_staff": is_staff,
                         "is_superuser": is_superuser,
+                        # default ported playes to auto reveal as that is what they are acustomed to
+                        "auto_reveal_questions": True,
                     },
                 )
                 users_created += int(created)

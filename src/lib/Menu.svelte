@@ -41,8 +41,6 @@
         <li><a href={adminLink} rel="external" on:click>Trivia Mafia Administration</a></li>
     {/if}
 
-    <li><a href={feedbackLink} target="_blank" on:click>Submit App Feedback</a></li>
-
     <li>
         <a href={isGameEndpoint ? '/game/join' : '/host/event-setup'} data-sveltekit-reload on:click>
             Join a Different Game
@@ -56,7 +54,7 @@
             </a>
         </li>
     {/if} -->
-    <li><a href={feedbackLink} target="_blank">Submit App Feedback</a></li>
+    <li><a href={feedbackLink} target="_blank" on:click>Submit App Feedback</a></li>
 
     <li><a rel="external" href="/user/logout">Logout</a></li>
     <button on:click>X</button>

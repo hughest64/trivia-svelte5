@@ -64,11 +64,11 @@
         : 'Please Wait for the Host to Reveal This Question'}
 </p>
 
-{#if hasImage && activeQuestion?.question_url}
+{#if hasImage && activeQuestion?.question_url && questionState?.question_displayed}
     <a href="/game/{joincode}/img?key={activeQuestion.key}" class="button-image">
         <img src={activeQuestion?.question_url} alt="img round" />
     </a>
-{:else if hasImage}
+{:else if hasImage && questionState?.question_displayed}
     <p>Image Missing</p>
 {/if}
 
