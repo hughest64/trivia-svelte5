@@ -7,7 +7,7 @@
     import EventMeta from './EventMeta.svelte';
 
     const joincode = $page.params.joincode;
-    const prev = $page.url.pathname;
+    const prev = `?prev=${$page.url.pathname}`;
 
     const userData = getStore('userData');
 
@@ -24,18 +24,18 @@
         <li><EventMeta /></li>
     {/if}
 
-    {#if isGameEndpoint && joincode}
-        <li>
-            <form action="" class="auto-advance-form" on:submit|preventDefault>
-                <span>Auto-Advance Questions</span>
-                <AutoRevealToggle />
-            </form>
-        </li>
-        <li><a href="/team/manage?prev={prev}" on:click data-sveltekit-reload>Team Page</a></li>
-    {/if}
+    <!-- {#if isGameEndpoint && joincode} -->
+    <li>
+        <form action="" class="auto-advance-form" on:submit|preventDefault>
+            <span>Auto-Advance Questions</span>
+            <AutoRevealToggle />
+        </form>
+    </li>
+    <!-- {/if} -->
+    <li><a href="/team/manage{prev}" on:click data-sveltekit-reload>Team Page</a></li>
 
-    <li><a href="/user/settings?prev={prev}" on:click data-sveltekit-reload>Manage Profile</a></li>
-    <li><a href="/rules?prev={prev}" on:click data-sveltekit-reload>Rules and FAQ</a></li>
+    <li><a href="/user/settings{prev}" on:click data-sveltekit-reload>Manage Profile</a></li>
+    <li><a href="/rules?{prev}" on:click data-sveltekit-reload>Rules and FAQ</a></li>
 
     {#if isHost}
         <li><a href={adminLink} rel="external" on:click>Trivia Mafia Administration</a></li>
