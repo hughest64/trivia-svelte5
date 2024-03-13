@@ -25,16 +25,14 @@
     $: scoringQuestion = roundQuestions.find((q) => q.question_number === scoringQuestionNumber);
     $: scoringResponses = ($responses && $responses.filter((r) => r.key === $activeEventData.activeQuestionKey)) || [];
 
-    // TODO: move  reveal button back to the leaderboard
     $: lockedRounds = $roundStates.filter((rs) => rs.locked);
-    $: lockedRoundNumbers = lockedRounds.map((r) => r.round_number);
-    $: lockedQuestions = $allQuestions.filter((q) => lockedRoundNumbers.includes(q.round_number));
-    $: lockedQuestionNumbers = lockedQuestions.map((q) => Number(q.key));
-
-    $: revealed = lockedRounds.every((rd) => rd.revealed);
+    $: maxLockedRound = Math.max(...lockedRounds.map((r) => r.round_number));
+    $: lockedQuestions = $allQuestions.filter((q) => q.round_number === maxLockedRound);
 
     $: isFirstQuestion = Number($activeEventData.activeQuestionKey) === Math.min(...questionKeys);
-    $: isLastQuestion = Number($activeEventData.activeQuestionKey) === Math.max(...lockedQuestionNumbers);
+    $: isLastQuestion =
+        $activeEventData.activeRoundNumber === maxLockedRound &&
+        $activeEventData.activeQuestionNumber === Math.max(...lockedQuestions.map((q) => q.question_number));
 
     $: minUnscoredRound = Math.min(...$roundStates.filter((rs) => !rs.scored).map((rs) => rs.round_number));
     $: readAnswersLink = `/host/${joincode}?active-key=${minUnscoredRound}.1`;

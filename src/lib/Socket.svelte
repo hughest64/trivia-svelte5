@@ -258,14 +258,16 @@
             }
 
             // update team response if appropriate
-            if ($page.url.pathname.startsWith('/game')) {
+            if (!isHostEndpoint) {
                 responseStore.update((resps) => {
                     const newResps = [...resps];
-                    const respToUpdate = resps.find((resp) => resp.key === question_key) as Response;
+                    for (const respId of response_ids) {
+                        const respToUpdate = resps.find((resp) => resp.id === respId);
 
-                    if (respToUpdate) {
-                        respToUpdate.points_awarded = points_awarded;
-                        respToUpdate.funny = resolveBool(funny);
+                        if (respToUpdate) {
+                            respToUpdate.points_awarded = points_awarded;
+                            respToUpdate.funny = resolveBool(funny);
+                        }
                     }
 
                     return newResps;

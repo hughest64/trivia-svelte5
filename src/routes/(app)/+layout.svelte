@@ -37,10 +37,10 @@
         position: fixed;
         top: 0.5rem;
         right: 1rem;
+        z-index: 99;
         width: 2.5rem;
     }
     .menu-button {
-        z-index: 99;
         display: flex;
         justify-content: center;
         align-items: center;
