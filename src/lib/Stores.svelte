@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { setContext } from 'svelte';
     import { page } from '$app/stores';
     import { readable, writable } from 'svelte/store';
     import { createStore, groupChats } from '$lib/utils';
@@ -61,6 +62,10 @@
     $: player_megaround_responses = $responses.filter((resp) => resp.round_number === player_selected_megaround);
     $: player_used_mr_values = getMegaroundValues(player_megaround_responses);
     $: createStore('megaroundValues', megaRoundValueStore(player_used_mr_values));
+
+    // store a default swipe direction that can be used/updated in multiple components
+    // it helps keep the direction in sync when clicking round buttons
+    setContext('swipeDirection', writable('left'));
 </script>
 
 <slot />
