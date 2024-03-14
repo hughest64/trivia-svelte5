@@ -3,6 +3,7 @@
     import { slide } from 'svelte/transition';
     import { enhance, applyAction } from '$app/forms';
     import { getStore } from '$lib/utils';
+    import { getState } from '$lib/state/utils.svelte';
     import type { UserTeam } from '$lib/types';
     import type { Action, ActionResult } from '@sveltejs/kit';
 
@@ -10,14 +11,14 @@
 
     const prev = $page.url.searchParams.get('prev');
 
-    const userData = getStore('userData');
-    $: activeTeam = $userData.teams.find((t) => t.id === $userData.active_team_id) as UserTeam;
+    let userData = getState('userState');
+    // $: activeTeam = userData.teams.find((t) => t.id === userData.active_team_id) as UserTeam;
 
-    $: currentName = activeTeam?.name || '';
-    $: nameNotSubmitted = currentName && currentName !== activeTeam?.name;
+    $: currentName = userData.active_team?.name || '';
+    $: nameNotSubmitted = currentName && currentName !== userData.active_team?.name;
 
-    $: currentPassword = activeTeam?.password || '';
-    $: passwordNotSubmitted = currentPassword && currentPassword !== activeTeam?.password;
+    $: currentPassword = userData.active_team?.password || '';
+    $: passwordNotSubmitted = currentPassword && currentPassword !== userData.active_team?.password;
 
     const syncInputText = (e: Event) => {
         const target = <HTMLInputElement>e.target;
@@ -40,18 +41,12 @@
 
     const handleUpdate = (result: ActionResult, updateType: 'teamName' | 'password') => {
         if (result.type === 'success') {
-            userData.update((u) => {
-                const newData = { ...u };
-                const teamToUpdate = u.teams?.find((t) => t.id === $userData.active_team_id);
-
-                if (teamToUpdate && updateType === 'teamName') {
-                    teamToUpdate.name = currentName;
-                } else if (teamToUpdate && updateType === 'password') {
-                    teamToUpdate.password = currentPassword;
-                }
-
-                return newData;
-            });
+            const teamToUpdate = userData.teams?.find((t) => t.id === userData.active_team_id);
+            if (teamToUpdate && updateType === 'teamName') {
+                teamToUpdate.name = currentName;
+            } else if (teamToUpdate && updateType === 'password') {
+                teamToUpdate.password = currentPassword;
+            }
         }
         applyAction(result);
     };
@@ -60,10 +55,10 @@
 <svelte:head><title>Trivia Mafia | Manage Team</title></svelte:head>
 
 <main class="short">
-    {#if activeTeam}
-        <h1 class="name-header">{activeTeam.name}</h1>
+    {#if userData.active_team}
+        <h1 class="name-header">{userData.active_team.name}</h1>
 
-        <p>Password: {activeTeam.password}</p>
+        <p>Password: {userData.active_team.password}</p>
 
         <h3>Manage Your Team</h3>
 
@@ -89,10 +84,10 @@
             Team Members
         </button>
 
-        {#if membersDisplayed && activeTeam?.members?.length}
+        {#if membersDisplayed && userData.active_team?.members?.length}
             <form
                 transition:slide
-                action="?/remove-team-members&team_id={$userData.active_team_id}"
+                action="?/remove-team-members&team_id={userData.active_team_id}"
                 method="post"
                 use:enhance
             >
@@ -102,8 +97,8 @@
                         <strong>Member Name</strong>
                         <strong>Remove</strong>
                     </li>
-                    {#each activeTeam.members as member}
-                        {#if member !== $userData.username}
+                    {#each userData.active_team.members as member}
+                        {#if member !== userData.username}
                             <li class="member">
                                 <label for="team-member-{member}">{member}</label>
                                 <input type="checkbox" name={member} id="team-member-{member}" />
@@ -144,7 +139,7 @@
                         type="text"
                         name="team_name"
                         id="team-name"
-                        value={activeTeam.name}
+                        value={userData.active_team.name}
                         on:input={syncInputText}
                         required
                     />
@@ -173,7 +168,7 @@
                         type="text"
                         name="team_password"
                         id="team-password"
-                        value={activeTeam?.password || ''}
+                        value={userData.active_team?.password || ''}
                         on:input={syncInputText}
                         required
                     />
