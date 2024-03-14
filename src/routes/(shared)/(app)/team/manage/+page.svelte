@@ -10,9 +10,9 @@
 
     let userData = getState('userState');
 
+    // TODO: s5 these are no longer reactive, do we need the to be? (or need them at all?)
     $: currentName = userData.active_team?.name || '';
     $: nameNotSubmitted = currentName && currentName !== userData.active_team?.name;
-
     $: currentPassword = userData.active_team?.password || '';
     $: passwordNotSubmitted = currentPassword && currentPassword !== userData.active_team?.password;
 
