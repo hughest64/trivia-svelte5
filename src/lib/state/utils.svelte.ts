@@ -1,37 +1,48 @@
 import { getContext, setContext } from 'svelte';
 import { UserState } from './userState.svelte';
-import { GameState, type GameStateParams } from './gameState.svelte';
+import { GameState, type GameStateData } from './gameState.svelte';
 import type { UserData } from '$lib/types';
 
-interface StateTypes {
-    userState: UserState;
-    gameState: GameState;
-}
+// https://stackoverflow.com/questions/64527150/in-typescript-how-to-select-a-type-from-a-union-using-a-literal-type-property
 
-type ST = UserState | GameState;
-type DT = UserData | GameStateParams;
-
-interface DataTypes {
-    userState: UserData;
-    gameState: GameStateParams;
-}
-
-const stateMap = {
-    userState: (data: UserData) => new UserState(data),
-    gameState: (data: GameStateParams) => new GameState(data)
+type UserStateParams = {
+    type: 'userState';
+    input: UserData;
+    output: UserState;
 };
 
-class StateClass {
-    static userState(data: UserData) {
-        return new UserState(data);
-    }
-    static gameState(data: GameStateParams) {
-        return new GameState(data);
-    }
+type GameStateParams = {
+    type: 'gameState';
+    input: GameStateData;
+    output: GameState;
+};
+
+type StateOpts = UserStateParams | GameStateParams;
+
+// this results in UserData
+type Tizype = Extract<StateOpts, { type: 'userState' }>['input'];
+
+const sm = {
+    userState: (data: UserStateParams['input']) => new UserState(data),
+    gameState: (data: GameStateParams['input']) => new GameState(data)
+};
+
+export function stateSetter(
+    key: keyof typeof sm,
+    data: Extract<StateOpts, { type: 'userState' }>['input']
+): Extract<StateOpts, { type: 'userState' }>['output'] {
+    const retData = sm[key](data);
+    return retData;
 }
 
+////////////////////////////////////////////////////////////////
+const stateMap = {
+    userState: (data: UserData) => new UserState(data),
+    gameState: (data: GameStateData) => new GameState(data)
+};
+
 export function createState<K extends keyof typeof stateMap>(key: K, data?: any) {
-    const stateData = StateClass[key](data) as ReturnType<(typeof stateMap)[K]>;
+    const stateData = stateMap[key](data) as ReturnType<(typeof stateMap)[K]>;
 
     return setContext(key, stateData);
 }

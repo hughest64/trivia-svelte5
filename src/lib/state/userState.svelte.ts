@@ -8,8 +8,8 @@ export class UserState {
     auto_reveal_questions?: Boolean = $state();
     email?: string = $state();
     active_team_id?: number | null = $state();
-    active_team?: UserTeam = $state();
-    teams;
+    teams?: UserTeam[] = $state([]);
+    active_team?: UserTeam = $derived(this.teams?.find((team) => team.id === this.active_team_id));
     user_is_anonymous?: boolean = $state();
     home_location?: LocationSelectData = $state();
 
@@ -21,7 +21,6 @@ export class UserState {
         this.auto_reveal_questions = userData.auto_reveal_questions;
         this.email = userData.email;
         this.active_team_id = userData.active_team_id;
-        this.active_team = userData.active_team;
         this.teams = userData.teams;
         this.user_is_anonymous = userData.user_is_anonymous;
         this.home_location = this.home_location;
