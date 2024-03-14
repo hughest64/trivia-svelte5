@@ -3,13 +3,10 @@ import { UserState } from './userState.svelte';
 import { GameState, type GameStateData } from './gameState.svelte';
 import type { UserData } from '$lib/types';
 
-function getState<K extends keyof typeof stateManager>(key: K): ReturnType<(typeof stateManager)[K]> {
+export function getState<K extends keyof typeof createState>(key: K): ReturnType<(typeof createState)[K]> {
     return getContext(key);
 }
-const stateManager = {
+export const createState = {
     userState: (data?: UserData) => setContext('userState', data && new UserState(data)),
-    gameState: (data?: GameStateData) => setContext('gameState', data && new GameState(data)),
-    getState
+    gameState: (data?: GameStateData) => setContext('gameState', data && new GameState(data))
 };
-
-export default stateManager;
