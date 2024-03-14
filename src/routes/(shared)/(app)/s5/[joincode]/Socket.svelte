@@ -5,7 +5,7 @@
     import { page } from '$app/stores';
     import { PUBLIC_WEBSOCKET_HOST } from '$env/static/public';
     import type { MessageHandler, RoundState, SocketMessage } from '$lib/types';
-    import type { GameState } from './stores.svelte';
+    import type { GameState } from '$lib/state/gameState.svelte';
 
     let is_reconnect = false;
     let socketUrl = `${PUBLIC_WEBSOCKET_HOST}/ws/host/${$page.params.joincode}/`;

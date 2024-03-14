@@ -1,7 +1,7 @@
 <script lang="ts">
     import { getContext } from 'svelte';
     import { enhance } from '$app/forms';
-    import type { GameState } from './stores.svelte';
+    import type { GameState } from '$lib/state/gameState.svelte';
 
     let gs = getContext<GameState>('gameState');
     $inspect(gs.locked_rounds);

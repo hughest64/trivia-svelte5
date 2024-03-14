@@ -1,7 +1,7 @@
 <script lang="ts">
     import { setContext } from 'svelte';
     import Socket from './Socket.svelte';
-    import { GameState } from './stores.svelte';
+    import { GameState } from '$lib/state/gameState.svelte';
 
     export let data: App.PageData;
     const { round_states, question_states, current_event_data } = data;

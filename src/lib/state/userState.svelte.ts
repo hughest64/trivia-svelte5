@@ -1,4 +1,3 @@
-import { getContext, setContext } from 'svelte';
 import type { LocationSelectData, UserData, UserTeam } from '$lib/types';
 
 export class UserState {
@@ -27,24 +26,4 @@ export class UserState {
         this.user_is_anonymous = userData.user_is_anonymous;
         this.home_location = this.home_location;
     }
-}
-
-const stateMap = {
-    userState: (data?: UserData) => data && new UserState(data)
-};
-
-interface StateTypes {
-    userState?: UserState;
-}
-
-interface DataTypes {
-    userState?: UserData;
-}
-
-export function createState<K extends keyof typeof stateMap>(key: K, data: DataTypes[K]): StateTypes[K] {
-    return setContext(key, stateMap[key](data));
-}
-
-export function getState<K extends keyof typeof stateMap>(key: K): StateTypes[K] {
-    return getContext(key);
 }

@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { createState } from './stores.svelte';
+    import { createState } from '$lib/state/utils.svelte';
     const data = $page.data;
     const userState = createState('userState', data?.user_data);
 </script>
