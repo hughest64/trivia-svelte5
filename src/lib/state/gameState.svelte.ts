@@ -1,17 +1,23 @@
 import type { QuestionState, RoundState, CurrentEventData } from '$lib/types';
 
+export interface GameStateParams {
+    round_states?: RoundState[];
+    question_states?: QuestionState[];
+    current_event_data?: CurrentEventData;
+}
+
 export class GameState {
     current_event_data?: CurrentEventData = $state({} as CurrentEventData);
     round_states: RoundState[] = $state([]);
-    question_states?: QuestionState[] = $state([]);
+    question_states: QuestionState[] = $state([]);
 
     locked_rounds: number[] = $derived(this.round_states?.filter((rs) => rs.locked).map((rs) => rs.round_number));
     max_locked_round: number = $derived(Math.max(...this.locked_rounds) || 0);
 
-    constructor(round_states: RoundState[], question_states?: QuestionState[], current_event_data?: CurrentEventData) {
-        this.current_event_data = current_event_data;
-        this.round_states = round_states;
-        this.question_states = question_states;
+    constructor(data: GameStateParams) {
+        this.current_event_data = data.current_event_data;
+        this.round_states = data.round_states || [];
+        this.question_states = data.question_states || [];
     }
 
     updateRoundStates(roundState: RoundState) {

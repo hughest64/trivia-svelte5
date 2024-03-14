@@ -1,8 +1,12 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { createState } from '$lib/state/utils.svelte';
+    import { createState, getState } from '$lib/state/utils.svelte';
+    // import type { UserData } from '$lib/types';
     const data = $page.data;
-    const userState = createState('userState', data?.user_data);
+    console.log(data.user_data);
+    const ud = createState('userState', data.user_data);
+    const userState = getState('userState');
+    $inspect(userState);
 </script>
 
 <slot />
