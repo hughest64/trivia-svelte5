@@ -2,17 +2,13 @@
     import { page } from '$app/stores';
     import { slide } from 'svelte/transition';
     import { enhance, applyAction } from '$app/forms';
-    import { getStore } from '$lib/utils';
     import { getState } from '$lib/state/utils.svelte';
-    import type { UserTeam } from '$lib/types';
-    import type { Action, ActionResult } from '@sveltejs/kit';
+    import type { ActionResult } from '@sveltejs/kit';
 
     const qrCode = $page.data.team_qr || '<p>Not Found</p>';
-
     const prev = $page.url.searchParams.get('prev');
 
     let userData = getState('userState');
-    // $: activeTeam = userData.teams.find((t) => t.id === userData.active_team_id) as UserTeam;
 
     $: currentName = userData.active_team?.name || '';
     $: nameNotSubmitted = currentName && currentName !== userData.active_team?.name;
