@@ -1,11 +1,10 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { getState, createState } from '$lib/state/utils.svelte';
+    import { createState } from '$lib/state/utils.svelte';
+    import type { UserData } from '$lib/types';
     const data = $page.data;
 
-    const hset = createState.userState(data.user_data);
-    const hget = getState('userState');
-    // $inspect(hset?.active_team);
+    let userData = createState.userState(data.user_data || ({} as UserData));
 </script>
 
 <slot />

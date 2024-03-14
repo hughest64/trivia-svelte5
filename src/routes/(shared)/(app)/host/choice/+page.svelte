@@ -1,13 +1,13 @@
 <script lang="ts">
-    import { getStore } from '$lib/utils';
+    import { getState } from '$lib/state/utils.svelte';
 
-    $: userData = getStore('userData');
+    const userData = getState('userState');
 </script>
 
 <svelte:head><title>Trivia Mafia | Host or Play</title></svelte:head>
 
 <main class="short">
-    <h1>Greetings {$userData?.username || ''}</h1>
+    <h1>Greetings {userData?.username || ''}</h1>
 
     <h3>Do you want to:</h3>
 

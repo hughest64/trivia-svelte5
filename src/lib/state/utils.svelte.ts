@@ -7,6 +7,6 @@ export function getState<K extends keyof typeof createState>(key: K): ReturnType
     return getContext(key);
 }
 export const createState = {
-    userState: (data?: UserData) => setContext('userState', data && new UserState(data)),
+    userState: (data: UserData) => setContext('userState', new UserState(data)),
     gameState: (data?: GameStateData) => setContext('gameState', data && new GameState(data))
 };

@@ -3,13 +3,13 @@
     import { page } from '$app/stores';
     import { enhance } from '$app/forms';
 
-    $: form = $page.form;
-    $: teamName = form?.team_name;
-    $: teamPass = form?.team_password;
-    $: qr = form?.qr;
+    let { form } = $props();
+    let teamName = $derived(form?.team_name);
+    let teamPass = $derived(form?.team_password);
+    let qr = $derived(form?.qr);
 
-    $: next = $page.url.searchParams.get('next');
-    $: qp = next ? `&next=${next}` : '';
+    const next = $page.url.searchParams.get('next');
+    const qp = next ? `&next=${next}` : '';
 </script>
 
 <svelte:head><title>TriviaMafia | Create Team</title></svelte:head>

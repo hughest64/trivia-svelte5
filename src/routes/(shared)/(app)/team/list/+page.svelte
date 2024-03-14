@@ -1,19 +1,18 @@
 <script lang="ts">
-    import { enhance } from '$app/forms';
     import { page } from '$app/stores';
-    import { getStore } from '$lib/utils';
+    import { getState } from '$lib/state/utils.svelte';
 
-    $: form = $page.form;
+    let { form } = $props();
 
-    const userData = getStore('userData');
-    $: next = $page.url.searchParams.get('next');
-    $: qp = next ? `&next=${next}` : '';
+    let userData = getState('userState');
+    const next = $page.url.searchParams.get('next');
+    const qp = next ? `&next=${next}` : '';
 </script>
 
 <svelte:head><title>TriviaMafia | Team List</title></svelte:head>
 
 <main class="short">
-    {#if $userData?.teams?.length > 0}
+    {#if userData?.teams?.length > 0}
         <h1>Teams you've joined:</h1>
 
         <form action={'?/selectTeam' + qp} method="POST">
@@ -21,11 +20,11 @@
 
             <label class="select-label" for="team-select">Choose A Team</label>
             <select class="select" id="team-select" name="selectedteam">
-                {#each $userData.teams as team (team.id)}
+                {#each userData.teams as team (team.id)}
                     <option value={team.id}>{team.name}</option>
                 {/each}
             </select>
-            <input type="hidden" name="currentteam" value={$userData?.active_team_id} />
+            <input type="hidden" name="currentteam" value={userData?.active_team_id} />
 
             <a class="join-link" href="join">Join an existing team (password required)</a>
 

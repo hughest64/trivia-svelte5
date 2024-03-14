@@ -1,7 +1,7 @@
 <script lang="ts">
     import { page } from '$app/stores';
 
-    $: form = $page.form;
+    let { form } = $props();
     const paswordParam = $page.url.searchParams.get('password');
 
     const next = $page.url.searchParams.get('next');
