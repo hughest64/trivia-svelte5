@@ -136,10 +136,9 @@ export const respsByround = (
                 pts = String(existingResp.points_awarded);
             }
 
-            const show_answer = answer && ((isHost && rdState?.locked) || !isHost);
             const resp = {
                 key: `${rdNum}.${i}`,
-                recorded_answer: show_answer ? answer : '-',
+                recorded_answer: answer ? answer : '-',
                 points_awarded: pts
             };
 

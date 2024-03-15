@@ -29,6 +29,7 @@ utility.ipynb
 # testing
 playwright/.auth
 tests/data/exclude.json
+test-results/
 
 # database port data
 server/game/port_data/

@@ -10,11 +10,9 @@
 
 <Stores>
     <div class="menu-button-container">
-        <div class="menu-button-inner">
-            <button class="menu-button" on:click={() => (displayMenu = !displayMenu)}>
-                <MenuDots />
-            </button>
-        </div>
+        <button class="menu-button" on:click={() => (displayMenu = !displayMenu)}>
+            <MenuDots />
+        </button>
     </div>
 
     {#if displayMenu}
@@ -35,19 +33,14 @@
 
 <style lang="scss">
     .menu-button-container {
+        // outline: 1px dashed pink;
         position: fixed;
-        top: 0.25rem;
-        display: flex;
-        justify-content: center;
-        width: 100%;
-    }
-    .menu-button-inner {
-        width: min(100vw, var(--max-container-width));
-        display: flex;
-        justify-content: flex-end;
+        top: 0.5rem;
+        right: 1rem;
+        z-index: 99;
+        width: 2.5rem;
     }
     .menu-button {
-        z-index: 99;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -55,7 +48,6 @@
         height: 2.5rem;
         width: 2.5rem;
         margin: 0;
-        margin-right: 1rem;
         padding: 0;
         cursor: pointer;
         &:hover,

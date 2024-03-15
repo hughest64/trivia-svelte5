@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { onDestroy, setContext } from 'svelte';
+    import { getContext, onDestroy, setContext } from 'svelte';
     import { browser } from '$app/environment';
     import { goto } from '$app/navigation';
     import { page } from '$app/stores';
@@ -19,6 +19,7 @@
         TiebreakerResponse,
         TeamNote
     } from './types';
+    import type { Writable } from 'svelte/store';
     const path = $page.url.pathname;
 
     export let is_reconnect = false;
@@ -50,6 +51,7 @@
     const tiebreakerResponseStore = getStore('tiebreakerResponses');
     const chatStore = getStore('chatMessages');
     const teamNoteStore = getStore('teamNotes');
+    const swipeDirection = getContext<Writable<'left' | 'right'>>('swipeDirection');
 
     $: isHostEndpoint = $page.url.pathname.startsWith('/host');
 
@@ -220,6 +222,19 @@
                     question_key: createQuestionKey(message.round_number, message.question_number)
                 });
                 if ($userStore.auto_reveal_questions) {
+                    console.log('current swipe', $swipeDirection);
+
+                    let newSwipeDir = $swipeDirection;
+                    if (
+                        message.round_number > $activeEventStore.activeRoundNumber ||
+                        message.question_number > $activeEventStore.activeQuestionNumber
+                    ) {
+                        newSwipeDir = 'right';
+                    } else {
+                        newSwipeDir = 'left';
+                    }
+                    swipeDirection.set(newSwipeDir);
+
                     activeEventStore.set({
                         activeRoundNumber: message.round_number,
                         activeQuestionNumber: message.question_number,
@@ -243,14 +258,16 @@
             }
 
             // update team response if appropriate
-            if ($page.url.pathname.startsWith('/game')) {
+            if (!isHostEndpoint) {
                 responseStore.update((resps) => {
                     const newResps = [...resps];
-                    const respToUpdate = resps.find((resp) => resp.key === question_key) as Response;
+                    for (const respId of response_ids) {
+                        const respToUpdate = resps.find((resp) => resp.id === respId);
 
-                    if (respToUpdate) {
-                        respToUpdate.points_awarded = points_awarded;
-                        respToUpdate.funny = resolveBool(funny);
+                        if (respToUpdate) {
+                            respToUpdate.points_awarded = points_awarded;
+                            respToUpdate.funny = resolveBool(funny);
+                        }
                     }
 
                     return newResps;

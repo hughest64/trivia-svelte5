@@ -57,8 +57,8 @@
 
 <div class="host-container flex-column">
     <h1>Host Game</h1>
-    <h4>Event Join Code: <strong>{joincode}</strong></h4>
-    <h4>Details: <strong>{$eventData?.location}, {$eventData?.game_title}</strong></h4>
+    <h4 id="event-joincode">Event Join Code: <strong>{joincode}</strong></h4>
+    <h4 id="event-details">Details: <strong>{$eventData?.location}, {$eventData?.game_title}</strong></h4>
 
     <RoundSelector />
 

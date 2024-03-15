@@ -288,7 +288,7 @@ class QuestionRevealView(APIView):
             # use the first question state in the case of multiple state updates
             if reveal:
                 current_event_data.update(
-                    self.set_current_question(event, updated_states[-1])
+                    self.set_current_question(event, updated_states[0])
                 )
 
             SendEventMessage(

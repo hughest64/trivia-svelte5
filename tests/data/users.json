@@ -3,6 +3,7 @@
         "username": "host_user",
         "password": "abc123",
         "email": "host_user@no.no",
+        "home_location_index": 1,
         "is_staff": true,
         "auth_storage_path": "playwright/.auth/host_user.json"
     },
@@ -30,6 +31,7 @@
         "username": "player_two",
         "password": "abc123",
         "email": "player_two@no.no",
+        "auto_reveal_questions": true,
         "team_names": ["hello world"],
         "auth_storage_path": "playwright/.auth/player_two.json"
     },

@@ -8,6 +8,8 @@ from django.contrib.auth.models import AnonymousUser
 
 from user.authentication import get_user
 
+from websockets.exceptions import ConnectionClosedError
+
 from game.utils.socket_classes import (
     get_event_group,
     get_team_group,
@@ -106,7 +108,12 @@ class SocketConsumer(AsyncJsonWebsocketConsumer):
 
     async def connect(self):
         await self.accept()
-        await self._set_connection()
+        try:
+            await self._set_connection()
+        # NOTE this typically occurs when a client closes abruptly without a proper close message
+        # it's not problmeatic, we're just suppressing the error stack
+        except ConnectionClosedError:
+            logger.info("connection closed early")
 
     async def disconnect(self, close_code):
         if self.event_group:
