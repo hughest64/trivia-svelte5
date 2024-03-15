@@ -5,8 +5,12 @@
     import { getState } from '$lib/state/utils.svelte';
     import type { ActionResult } from '@sveltejs/kit';
 
+    // TODO: s5 - data should probably come from $props()
     const qrCode = $page.data.team_qr || '<p>Not Found</p>';
     const prev = $page.url.searchParams.get('prev');
+
+    // TDOO: s5 figure out typing here
+    let { form }: Record<string, any> = $props();
 
     let userData = getState('userState');
 
@@ -25,23 +29,16 @@
         }
     };
 
-    let membersDisplayed = false;
-    let teamNameDisplayed = false;
-    let passwordDisplayed = false;
-    let qrCodeDisplayed = false;
-
-    $: form = $page.form;
+    let membersDisplayed = $state(false);
+    let teamNameDisplayed = $state(false);
+    let passwordDisplayed = $state(false);
+    let qrCodeDisplayed = $state(false);
 
     const prevRoute = $page.url.searchParams.get('prev') || '/team';
 
-    const handleUpdate = (result: ActionResult, updateType: 'teamName' | 'password') => {
+    const handleUpdate = (result: ActionResult, updateType: 'name' | 'password') => {
         if (result.type === 'success') {
-            const teamToUpdate = userData.teams?.find((t) => t.id === userData.active_team_id);
-            if (teamToUpdate && updateType === 'teamName') {
-                teamToUpdate.name = currentName;
-            } else if (teamToUpdate && updateType === 'password') {
-                teamToUpdate.password = currentPassword;
-            }
+            userData.updateActiveTeamData(updateType, updateType === 'name' ? currentName : currentPassword);
         }
         applyAction(result);
     };
@@ -125,7 +122,7 @@
                 method="post"
                 use:enhance={() =>
                     ({ result }) =>
-                        handleUpdate(result, 'teamName')}
+                        handleUpdate(result, 'name')}
             >
                 {#if form?.error?.teamname}<p class="error">{form.error.teamname}</p>{/if}
                 {#if form?.success?.teamname}<p>{form?.success?.teamname}</p>{/if}

@@ -25,4 +25,8 @@ export class UserState {
         this.user_is_anonymous = userData.user_is_anonymous;
         this.home_location = userData.home_location;
     }
+
+    updateActiveTeamData(type: 'name' | 'password', value: string) {
+        this.active_team && (this.active_team[type] = value);
+    }
 }
