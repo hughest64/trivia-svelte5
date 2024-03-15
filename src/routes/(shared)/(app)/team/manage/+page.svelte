@@ -10,11 +10,10 @@
 
     let userData = getState('userState');
 
-    // TODO: s5 these are no longer reactive, do we need the to be? (or need them at all?)
-    $: currentName = userData.active_team?.name || '';
-    $: nameNotSubmitted = currentName && currentName !== userData.active_team?.name;
-    $: currentPassword = userData.active_team?.password || '';
-    $: passwordNotSubmitted = currentPassword && currentPassword !== userData.active_team?.password;
+    let currentName = userData.active_team?.name || '';
+    let nameNotSubmitted = currentName && currentName !== userData.active_team?.name;
+    let currentPassword = userData.active_team?.password || '';
+    let passwordNotSubmitted = currentPassword && currentPassword !== userData.active_team?.password;
 
     const syncInputText = (e: Event) => {
         const target = <HTMLInputElement>e.target;

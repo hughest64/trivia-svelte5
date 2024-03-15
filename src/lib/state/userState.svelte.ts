@@ -5,13 +5,13 @@ export class UserState {
     username;
     is_staff;
     is_guest;
-    auto_reveal_questions?: Boolean = $state();
-    email?: string = $state();
-    active_team_id?: number | null = $state();
-    teams: UserTeam[] = $state([]);
-    active_team?: UserTeam = $derived(this.teams?.find((team) => team.id === this.active_team_id));
-    user_is_anonymous?: boolean = $state();
-    home_location?: LocationSelectData = $state();
+    auto_reveal_questions = $state<boolean>();
+    email = $state<string>();
+    active_team_id = $state<number | null>();
+    teams = $state<UserTeam[]>([]);
+    active_team = $derived<UserTeam | undefined>(this.teams?.find((team) => team.id === this.active_team_id));
+    user_is_anonymous = $state<boolean>();
+    home_location = $state<LocationSelectData>();
 
     constructor(userData: UserData) {
         this.id = userData.id;
@@ -23,6 +23,6 @@ export class UserState {
         this.active_team_id = userData.active_team_id;
         this.teams = userData.teams;
         this.user_is_anonymous = userData.user_is_anonymous;
-        this.home_location = this.home_location;
+        this.home_location = userData.home_location;
     }
 }
