@@ -12,7 +12,7 @@
     // TDOO: s5 figure out typing here
     let { form }: Record<string, any> = $props();
 
-    let userData = getState('userState');
+    const userData = getState('userState');
 
     // bind form values that will be synced upon successful form submission
     let visibleTeamName = $state(userData.active_team?.name || '');
@@ -32,7 +32,6 @@
 
     const handleUpdate = (result: ActionResult, updateType: 'name' | 'password') => {
         if (result.type == 'success') {
-            console.log(updateType, 'updating');
             userData.updateActiveTeamData(updateType, updateType === 'name' ? visibleTeamName : visiblePassword);
         }
         applyAction(result);
