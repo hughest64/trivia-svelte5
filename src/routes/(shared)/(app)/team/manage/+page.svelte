@@ -14,31 +14,26 @@
 
     let userData = getState('userState');
 
-    let currentName = userData.active_team?.name || '';
-    let nameNotSubmitted = currentName && currentName !== userData.active_team?.name;
-    let currentPassword = userData.active_team?.password || '';
-    let passwordNotSubmitted = currentPassword && currentPassword !== userData.active_team?.password;
+    // bind form values that will be synced upon successful form submission
+    let visibleTeamName = $state(userData.active_team?.name || '');
+    let visiblePassword = $state(userData.active_team?.password || '');
 
-    const syncInputText = (e: Event) => {
-        const target = <HTMLInputElement>e.target;
-        const inputName = target.name;
-        if (inputName === 'team_name') {
-            currentName = target.value;
-        } else if (inputName === 'team_password') {
-            currentPassword = target.value;
-        }
-    };
+    // apply a red border to inputs when the value doesn't match the state value
+    let nameNotSubmitted = $derived(visibleTeamName && visibleTeamName !== userData.active_team?.name);
+    let passwordNotSubmitted = $derived(visiblePassword && visiblePassword !== userData.active_team?.password);
 
+    // controls for which form is visible
     let membersDisplayed = $state(false);
-    let teamNameDisplayed = $state(false);
+    let teamNameDisplayed = $state(true);
     let passwordDisplayed = $state(false);
     let qrCodeDisplayed = $state(false);
 
     const prevRoute = $page.url.searchParams.get('prev') || '/team';
 
     const handleUpdate = (result: ActionResult, updateType: 'name' | 'password') => {
-        if (result.type === 'success') {
-            userData.updateActiveTeamData(updateType, updateType === 'name' ? currentName : currentPassword);
+        if (result.type == 'success') {
+            console.log(updateType, 'updating');
+            userData.updateActiveTeamData(updateType, updateType === 'name' ? visibleTeamName : visiblePassword);
         }
         applyAction(result);
     };
@@ -127,14 +122,7 @@
                 {#if form?.error?.teamname}<p class="error">{form.error.teamname}</p>{/if}
                 {#if form?.success?.teamname}<p>{form?.success?.teamname}</p>{/if}
                 <div class="input-container" class:notsubmitted={nameNotSubmitted}>
-                    <input
-                        type="text"
-                        name="team_name"
-                        id="team-name"
-                        value={userData.active_team.name}
-                        on:input={syncInputText}
-                        required
-                    />
+                    <input type="text" name="team_name" id="team-name" bind:value={visibleTeamName} required />
                     <label for="team-name">Team Name</label>
                 </div>
                 <button class="button button-tertiary">Update</button>
@@ -156,14 +144,7 @@
                 {#if form?.error?.password}<p class="error">{form.error.password}</p>{/if}
                 {#if form?.success?.password}<p>{form.success.password}</p>{/if}
                 <div class="input-container" class:notsubmitted={passwordNotSubmitted}>
-                    <input
-                        type="text"
-                        name="team_password"
-                        id="team-password"
-                        value={userData.active_team?.password || ''}
-                        on:input={syncInputText}
-                        required
-                    />
+                    <input type="text" name="team_password" id="team-password" bind:value={visiblePassword} required />
                     <label for="team-password">Team Password</label>
                 </div>
                 <button class="button button-tertiary">Update</button>
