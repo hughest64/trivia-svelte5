@@ -1,39 +1,12 @@
 <script lang="ts">
     import '$lib/styles/host.scss';
     import { page } from '$app/stores';
+    import { EventSetupManager } from './event-manager.svelte';
 
-    $: form = $page.form;
-    const gameSelectData = $page.data?.game_select_data || [];
-    const locationSelectData = $page.data?.location_select_data || [];
-    const gameBlocks = ($page.data?.game_block_data || []).sort();
-    const nonThemeBlocks = gameBlocks.filter((b) => ['a', 'b', 'c', 'd'].includes(b.toLocaleLowerCase()));
-    const themeBlocks = gameBlocks.filter((b) => !['a', 'b', 'c', 'd'].includes(b.toLocaleLowerCase()));
-
-    const todaysEvents = $page.data?.todays_events || [];
-
-    let useSound = !!locationSelectData[0]?.use_sound;
-    let selectedLocation = locationSelectData[0]?.location_id;
-    let playerLimit = false;
-    let useThemeNight = false;
-
-    let selectedBlock = useThemeNight ? themeBlocks[0] : nonThemeBlocks[0];
-
-    $: selectedGame = gameSelectData.filter((g) => g.block === selectedBlock && g.use_sound === useSound)[0];
-    $: selectedEventExists = !!todaysEvents.find(
-        (e) => e.location_id === selectedLocation && e.game_id === selectedGame?.game_id
-    );
-    $: buttontext = selectedEventExists ? 'Join Trivia Event' : 'Begin Trivia Event';
-
-    const handleLocationChange = (event: Event) => {
-        const target = event.target as HTMLSelectElement;
-        const newloc = locationSelectData.find((l) => String(l.location_id) === target.value);
-        useSound = newloc?.use_sound === false ? false : true;
-    };
-
-    const handleUseThemeNight = () => {
-        useThemeNight = !useThemeNight;
-        selectedBlock = useThemeNight ? themeBlocks[0] : nonThemeBlocks[0];
-    };
+    let { form } = $props();
+    const evm = new EventSetupManager($page.data);
+    $inspect(evm.selectedLocation);
+    let buttontext = $derived(evm.selectedEventExists ? 'Join Trivia Event' : 'Begin Trivia Event');
 </script>
 
 <svelte:head><title>Trivia Mafia | Event Setup</title></svelte:head>
@@ -47,12 +20,12 @@
         <div class="switch-container">
             <h4>Use Sound Round?</h4>
             <label for="sound-choice" class="switch">
-                <input type="checkbox" bind:checked={useSound} name="sound-choice" />
+                <input type="checkbox" bind:checked={evm.useSound} name="sound-choice" />
                 <button
                     id="sound-btn"
                     class="slider round"
-                    class:revealed={useSound}
-                    on:click|preventDefault={() => (useSound = !useSound)}
+                    class:revealed={evm.useSound}
+                    on:click|preventDefault={() => evm.toggleUseSound()}
                 />
             </label>
         </div>
@@ -60,12 +33,12 @@
         <div class="switch-container">
             <h4>Theme Night?</h4>
             <label for="event_type" class="switch">
-                <input type="checkbox" bind:checked={useThemeNight} name="event_type" />
+                <input type="checkbox" bind:checked={evm.useThemeNight} name="event_type" />
                 <button
                     id="event-type-btn"
                     class="slider round"
-                    class:revealed={useThemeNight}
-                    on:click|preventDefault={handleUseThemeNight}
+                    class:revealed={evm.useThemeNight}
+                    on:click|preventDefault={() => evm.toggleUseThemeNight()}
                 />
             </label>
         </div>
@@ -73,41 +46,47 @@
         <div class="switch-container">
             <h4>Limit Teams to Single Device?</h4>
             <label for="player_limit" class="switch">
-                <input type="checkbox" bind:checked={playerLimit} name="player_limit" />
+                <input type="checkbox" bind:checked={evm.playerLimit} name="player_limit" />
                 <button
                     id="player-limit-btn"
                     class="slider round"
-                    class:revealed={playerLimit}
-                    on:click|preventDefault={() => (playerLimit = !playerLimit)}
+                    class:revealed={evm.playerLimit}
+                    on:click|preventDefault={() => evm.togglePlayerLimit()}
                 />
             </label>
         </div>
 
         <label class="select-label" for="block-select">Choose A Block</label>
-        <select class="select" name="block-select" id="block-select" bind:value={selectedBlock}>
-            {#each useThemeNight ? themeBlocks : nonThemeBlocks as block}
+        <select class="select" name="block-select" id="block-select" bind:value={evm.selectedBlock}>
+            {#each evm.visbleBlocks as block}
                 <option value={block}>{block}</option>
             {/each}
         </select>
 
         <label for="location_select" class="select-label">Choose your Venue</label>
-        <select
-            class="select"
-            name="location_select"
-            id="location_select"
-            bind:value={selectedLocation}
-            on:change={handleLocationChange}
-        >
-            {#each locationSelectData as location (location.location_id)}
-                <option value={location.location_id}>{location.location_name}</option>
+        <select class="select" name="location_select" id="location_select" bind:value={evm.selectedLocation}>
+            {#each evm.location_select_data as location (location.location_id)}
+                <option value={location}>{location.location_name}</option>
             {/each}
         </select>
 
         <h2>You've Selected</h2>
-        <p id="selected-game">{selectedGame?.game_title || 'No Matching Game'}</p>
-        <input class="selected-game" type="hidden" name="game_select" id="game_select" value={selectedGame?.game_id} />
+        <p id="selected-game">{evm.selectedGame?.game_title || 'No Matching Game'}</p>
+        <input
+            class="selected-game"
+            type="hidden"
+            name="game_select"
+            id="game_select"
+            value={evm.selectedGame?.game_id}
+        />
 
-        <button class="button button-primary" type="submit" name="submit" id="submit" disabled={!selectedGame?.game_id}>
+        <button
+            class="button button-primary"
+            type="submit"
+            name="submit"
+            id="submit"
+            disabled={!evm.selectedGame?.game_id}
+        >
             {buttontext}
         </button>
     </form>
