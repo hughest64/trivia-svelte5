@@ -13,8 +13,8 @@
     const userData = createStore('userData', writable(data?.user_data || ({} as UserData)));
     $: data?.user_data && userData.set(data.user_data);
 
-    $: createStore('eventData', readable(data?.event_data || ({} as EventData)));
-    $: createStore('rounds', readable($page.data.rounds || []));
+    $: createStore('eventData', readable(data?.event_data || ({} as EventData))); // PORTED
+    $: createStore('rounds', readable($page.data.rounds || [])); // PORTED
     $: createStore('questions', readable($page.data.questions || []));
     $: createStore('popupData', writable({ is_displayed: false, popup_type: '' }));
     $: createStore('tiebreakerResponses', writable($page.data.tiebreaker_responses || []));
@@ -26,6 +26,7 @@
     $: createStore('playerJoined', writable(data.player_joined || false));
 
     $: createStore(
+        // PORTED
         'currentEventData',
         writable({
             round_number: data?.current_event_data?.round_number || 1,
@@ -35,6 +36,7 @@
     );
 
     $: createStore(
+        // PORTED
         'activeEventData',
         writable({
             activeQuestionNumber: data?.activeQuestionNumber || data.current_event_data?.question_number || 1,
@@ -43,8 +45,8 @@
         })
     );
 
-    $: createStore('roundStates', writable(data?.round_states || []));
-    $: createStore('questionStates', writable(data?.question_states || []));
+    $: createStore('roundStates', writable(data?.round_states || [])); // PORTED
+    $: createStore('questionStates', writable(data?.question_states || [])); // PORTED
     // responses grouped for scoring
     $: createStore('hostResponseData', writable(data?.host_response_data || []));
 
