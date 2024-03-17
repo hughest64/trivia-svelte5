@@ -9,8 +9,6 @@ export const load: PageServerLoad = async (loadEvent) => {
 
 const fetchEventData: Action = async ({ fetch, request }) => {
     const data = Object.fromEntries(await request.formData());
-    console.log(data);
-    return;
 
     const apiHost = PUBLIC_API_HOST;
     const response = await fetch(`${apiHost}/host/event-setup/`, {

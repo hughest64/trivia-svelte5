@@ -3,10 +3,15 @@
     import { EventSetupManager } from './event-manager.svelte';
 
     let { form, data } = $props();
+    const todaysEvents = data.todays_events || [];
 
     let evm = new EventSetupManager(data);
-    // $inspect(evm.selectedBlock);
-    let buttontext = $derived(evm.selectedEventExists ? 'Join Trivia Event' : 'Begin Trivia Event');
+    let buttontext = $derived.by(() => {
+        const exists = !!todaysEvents.find(
+            (e) => e.game_id === evm.selectedGame?.game_id && e.location_id === evm.selectedLocation
+        );
+        return exists ? 'Join Trivia Event' : 'Begin Trivia Event';
+    });
 </script>
 
 <svelte:head><title>Trivia Mafia | Event Setup</title></svelte:head>
