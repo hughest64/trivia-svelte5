@@ -4,7 +4,7 @@
     import { getStore } from '$lib/utils';
     import type { GameRound } from '$lib/types';
 
-    export let activeRound: GameRound;
+    export let activeRound: GameRound | undefined;
 
     let error: string;
     const questions = getStore('questions');
