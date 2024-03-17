@@ -1,7 +1,5 @@
-import type { GameSelectData, LocationSelectData, TodaysEventsData, GameBlockData } from '$lib/types';
-
-export interface EventSetupData
-    extends Pick<App.PageData, 'game_select_data' | 'location_select_data' | 'game_block_data'> {}
+import type { PageData } from './$types';
+import type { GameSelectData } from '$lib/types';
 
 export class EventSetupManager {
     game_select_data;
@@ -16,7 +14,7 @@ export class EventSetupManager {
     selectedBlock = $state<string>();
     selectedGame = $derived.by<GameSelectData>(() => this.setSelectedGame());
 
-    constructor(data: EventSetupData) {
+    constructor(data: PageData) {
         this.game_select_data = data.game_select_data || [];
         this.game_block_data = data.game_block_data || [];
         this.location_select_data = data.location_select_data || [];
