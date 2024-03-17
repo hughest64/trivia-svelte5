@@ -49,6 +49,11 @@ export class EventSetupManager {
         this.selectedBlock = this.visibleBlocks[index];
     }
 
+    setUseSound(value: Event | string) {
+        const newLoc = this.location_select_data.find((l) => l.location_id === Number(value));
+        this.useSound = newLoc?.use_sound;
+    }
+
     setSelectedGame() {
         const game = this.game_select_data.filter(
             (g) => g.block === this.selectedBlock && g.use_sound === this.useSound

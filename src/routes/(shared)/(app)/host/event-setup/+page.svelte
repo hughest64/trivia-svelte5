@@ -64,7 +64,13 @@
         </select>
 
         <label for="location_select" class="select-label">Choose your Venue</label>
-        <select class="select" name="location_select" id="location_select" bind:value={evm.selectedLocation}>
+        <select
+            class="select"
+            name="location_select"
+            id="location_select"
+            bind:value={evm.selectedLocation}
+            on:input={(e) => evm.setUseSound(e.target?.value)}
+        >
             {#each evm.location_select_data as location (location.location_id)}
                 <option value={location.location_id}>{location.location_name}</option>
             {/each}
