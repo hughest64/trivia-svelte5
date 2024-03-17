@@ -228,6 +228,13 @@ export interface GameBlockData {
     is_theme_block: boolean;
 }
 
+export interface RecentEvent {
+    id: string;
+    location: string;
+    game_title: string;
+    joincode: string;
+}
+
 export interface StoreTypes {
     userData: Writable<UserData>;
     eventData: Readable<EventData>;

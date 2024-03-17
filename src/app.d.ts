@@ -35,6 +35,7 @@ declare global {
             team_qr?: string;
             team_to_join?: types.UserTeam;
             points_adjustment_reasons?: Array<types.PointsAdjustmentReson>;
+            recent_events?: Array<types.RecentEvent>;
         }
         // interface Platform {}
         interface Error {

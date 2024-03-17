@@ -1,13 +1,7 @@
 <script lang="ts">
-    import { page } from '$app/stores';
+    let { data } = $props();
 
-    interface RecentEvent {
-        id: string;
-        location: string;
-        game_title: string;
-        joincode: string;
-    }
-    const recentEvents: RecentEvent[] = $page.data.recent_events;
+    const recentEvents = data.recent_events || [];
 </script>
 
 <svelte:head><title>Trivia Mafia | Recent Games</title></svelte:head>
