@@ -1,13 +1,11 @@
 <script lang="ts">
     import '$lib/styles/host.scss';
-    import { page } from '$app/stores';
     import { EventSetupManager } from './event-manager.svelte';
 
     let { form, data } = $props();
-    // $inspect('data', data);
 
     let evm = new EventSetupManager(data);
-    // $inspect(evm.visbleBlocks);
+    // $inspect(evm.selectedLocation);
     let buttontext = $derived(evm.selectedEventExists ? 'Join Trivia Event' : 'Begin Trivia Event');
 </script>
 
