@@ -69,7 +69,7 @@
             name="location_select"
             id="location_select"
             bind:value={evm.selectedLocation}
-            on:input={(e) => evm.setUseSound(e.target?.value)}
+            on:input={(e) => evm.setUseSound(e)}
         >
             {#each evm.location_select_data as location (location.location_id)}
                 <option value={location.location_id}>{location.location_name}</option>

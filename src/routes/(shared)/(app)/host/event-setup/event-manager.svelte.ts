@@ -3,8 +3,6 @@ import type { GameSelectData, LocationSelectData, TodaysEventsData, GameBlockDat
 export interface EventSetupData
     extends Pick<App.PageData, 'game_select_data' | 'location_select_data' | 'game_block_data' | 'todays_events'> {}
 
-const BLOCK_LETTERS = ['a', 'b', 'c', 'd'];
-
 export class EventSetupManager {
     game_select_data = $state<GameSelectData[]>([]);
     game_block_data = $state<GameBlockData[]>([]);
@@ -49,8 +47,10 @@ export class EventSetupManager {
         this.selectedBlock = this.visibleBlocks[index];
     }
 
-    setUseSound(value: Event | string) {
-        const newLoc = this.location_select_data.find((l) => l.location_id === Number(value));
+    setUseSound(e: Event) {
+        const target = e.target as HTMLSelectElement;
+        const newLoc = this.location_select_data.find((l) => l.location_id === Number(target.value));
+
         this.useSound = newLoc?.use_sound;
     }
 
