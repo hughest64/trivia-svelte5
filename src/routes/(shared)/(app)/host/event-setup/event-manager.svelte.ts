@@ -4,9 +4,9 @@ export interface EventSetupData
     extends Pick<App.PageData, 'game_select_data' | 'location_select_data' | 'game_block_data'> {}
 
 export class EventSetupManager {
-    game_select_data = $state<GameSelectData[]>([]);
-    game_block_data = $state<GameBlockData[]>([]);
-    location_select_data = $state<LocationSelectData[]>([]);
+    game_select_data;
+    game_block_data;
+    location_select_data;
 
     selectedLocation = $state<number>();
     useSound = $state<boolean>();

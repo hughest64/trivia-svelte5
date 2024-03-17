@@ -4,7 +4,6 @@
 
     let { form, data } = $props();
     const todaysEvents = data.todays_events || [];
-
     let evm = new EventSetupManager(data);
     let buttontext = $derived.by(() => {
         const exists = !!todaysEvents.find(
