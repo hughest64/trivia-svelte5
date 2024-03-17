@@ -5,7 +5,7 @@
     let { form, data } = $props();
 
     let evm = new EventSetupManager(data);
-    // $inspect(evm.selectedLocation);
+    // $inspect(evm.selectedBlock);
     let buttontext = $derived(evm.selectedEventExists ? 'Join Trivia Event' : 'Begin Trivia Event');
 </script>
 

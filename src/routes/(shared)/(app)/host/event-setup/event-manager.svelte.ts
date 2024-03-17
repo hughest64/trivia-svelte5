@@ -15,11 +15,10 @@ export class EventSetupManager {
     useSound = $state<boolean>();
     playerLimit = $state(false);
     useThemeNight = $state(false);
-
     visibleBlocks = $state<string[]>([]);
+    selectedBlock = $state<string>();
 
-    selectedBlock = $state<string>(this.visibleBlocks[0]);
-    selectedGame = $state<GameSelectData>();
+    selectedGame = $derived.by<GameSelectData>(() => this.setSelectedGame());
 
     selectedEventExists = $derived(
         !!this.todays_events.find(
@@ -35,7 +34,6 @@ export class EventSetupManager {
         // set some things
         this.useSound = this.location_select_data[0].use_sound;
         this.setVisibleBlocks();
-        this.setSelectedGame();
     }
 
     setVisibleBlocks() {
@@ -44,25 +42,27 @@ export class EventSetupManager {
             return show;
         });
         this.visibleBlocks = visbleBlockData.map((b) => b.block).sort();
-        this.selectedBlock = this.visibleBlocks[0];
+        this.setSelectedBlock(0);
+    }
+
+    setSelectedBlock(index: number) {
+        this.selectedBlock = this.visibleBlocks[index];
     }
 
     setSelectedGame() {
         const game = this.game_select_data.filter(
             (g) => g.block === this.selectedBlock && g.use_sound === this.useSound
         )[0];
-        this.selectedGame = game;
+        return game;
     }
 
     toggleUseSound() {
         this.useSound = !this.useSound;
-        this.setSelectedGame();
     }
 
     toggleUseThemeNight() {
         this.useThemeNight = !this.useThemeNight;
         this.setVisibleBlocks();
-        this.setSelectedGame();
     }
 
     togglePlayerLimit() {
