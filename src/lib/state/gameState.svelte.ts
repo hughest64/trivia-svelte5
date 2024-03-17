@@ -7,12 +7,12 @@ export interface GameStateData {
 }
 
 export class GameState {
-    current_event_data?: CurrentEventData = $state({} as CurrentEventData);
-    round_states: RoundState[] = $state([]);
-    question_states: QuestionState[] = $state([]);
+    current_event_data= $state<CurrentEventData>();
+    round_states= $state<RoundState[]>([]);
+    question_states = $state<QuestionState[]>();
 
-    locked_rounds: number[] = $derived(this.round_states?.filter((rs) => rs.locked).map((rs) => rs.round_number));
-    max_locked_round: number = $derived(Math.max(...this.locked_rounds) || 0);
+    locked_rounds = $derived(this.round_states?.filter((rs) => rs.locked).map((rs) => rs.round_number));
+    max_locked_round = $derived(Math.max(...this.locked_rounds) || 0);
 
     constructor(data: GameStateData) {
         this.current_event_data = data.current_event_data;

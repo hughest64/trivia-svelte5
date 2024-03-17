@@ -5,6 +5,7 @@
     const data = $page.data;
 
     let userData = createState.userState(data.user_data || ({} as UserData));
+    createState.eventHandler(data);
 </script>
 
 <slot />

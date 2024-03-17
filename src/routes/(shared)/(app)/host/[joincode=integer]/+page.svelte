@@ -6,6 +6,10 @@
     import RoundSelector from './RoundSelector.svelte';
     import type { GameRound } from '$lib/types';
 
+    import { getState } from '$lib/state/utils.svelte';
+    const eventHandler = getState('eventHandler');
+    $: console.log(eventHandler);
+
     const eventData = getStore('eventData');
     const rounds = getStore('rounds');
     const popupData = getStore('popupData');

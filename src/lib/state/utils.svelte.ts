@@ -1,6 +1,7 @@
 import { getContext, setContext } from 'svelte';
 import { UserState } from './userState.svelte';
 import { GameState, type GameStateData } from './gameState.svelte';
+import { EventHandler } from './eventStatic.svelte';
 import type { UserData } from '$lib/types';
 
 export function getState<K extends keyof typeof createState>(key: K): ReturnType<(typeof createState)[K]> {
@@ -8,5 +9,6 @@ export function getState<K extends keyof typeof createState>(key: K): ReturnType
 }
 export const createState = {
     userState: (data: UserData) => setContext('userState', new UserState(data)),
-    gameState: (data?: GameStateData) => setContext('gameState', data && new GameState(data))
+    gameState: (data?: GameStateData) => setContext('gameState', data && new GameState(data)),
+    eventHandler: (data: App.PageData) => setContext('eventHandler', new EventHandler(data))
 };
