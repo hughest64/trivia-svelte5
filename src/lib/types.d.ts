@@ -223,6 +223,11 @@ export interface SocketMessage {
     message: any;
 }
 
+export interface GameBlockData {
+    block: string;
+    is_theme_block: boolean;
+}
+
 export interface StoreTypes {
     userData: Writable<UserData>;
     eventData: Readable<EventData>;

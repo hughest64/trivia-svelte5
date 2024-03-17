@@ -3,9 +3,11 @@
     import { page } from '$app/stores';
     import { EventSetupManager } from './event-manager.svelte';
 
-    let { form } = $props();
-    const evm = new EventSetupManager($page.data);
-    $inspect(evm.selectedLocation);
+    let { form, data } = $props();
+    // $inspect('data', data);
+
+    let evm = new EventSetupManager(data);
+    // $inspect(evm.visbleBlocks);
     let buttontext = $derived(evm.selectedEventExists ? 'Join Trivia Event' : 'Begin Trivia Event');
 </script>
 
@@ -58,7 +60,7 @@
 
         <label class="select-label" for="block-select">Choose A Block</label>
         <select class="select" name="block-select" id="block-select" bind:value={evm.selectedBlock}>
-            {#each evm.visbleBlocks as block}
+            {#each evm.visibleBlocks as block}
                 <option value={block}>{block}</option>
             {/each}
         </select>
@@ -66,7 +68,7 @@
         <label for="location_select" class="select-label">Choose your Venue</label>
         <select class="select" name="location_select" id="location_select" bind:value={evm.selectedLocation}>
             {#each evm.location_select_data as location (location.location_id)}
-                <option value={location}>{location.location_name}</option>
+                <option value={location.location_id}>{location.location_name}</option>
             {/each}
         </select>
 

@@ -30,7 +30,7 @@ declare global {
             question_states?: Array<types.EventQuestion>;
             location_select_data?: Array<types.LocationSelectData>;
             game_select_data?: Array<types.GameSelectData>;
-            game_block_data?: string[];
+            game_block_data?: Array<types.GameBlockData>;
             player_joined?: boolean;
             team_qr?: string;
             team_to_join?: types.UserTeam;
