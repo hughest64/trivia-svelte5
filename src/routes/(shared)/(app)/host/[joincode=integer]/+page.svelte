@@ -16,27 +16,27 @@
     let error = $state<string>();
     const handleLockRound = async () => {
         error = '';
-        if (locked) {
-            // TODO: s5 - we need an updated popupHandler
-            // $popupData = {
-            //     popup_type: 'round_unlock',
-            //     is_displayed: true,
-            //     data: { roundNumber: activeRound?.round_number }
-            // };
-        } else {
+        // if (locked) {
+        //     TODO: s5 - we need an updated popupHandler
+        //     $popupData = {
+        //         popup_type: 'round_unlock',
+        //         is_displayed: true,
+        //         data: { roundNumber: activeRound?.round_number }
+        //     };
+        // } else {
+        locked = !locked;
+
+        const data = new FormData();
+        data.set('round_number', String(evh.activeRound?.round_number));
+        data.set('locked', locked ? 'true' : 'false');
+
+        const response = await fetch('?/lock', { method: 'post', body: data });
+        const result = deserialize(await response.text());
+        if (result.type === 'failure') {
+            error = (result.data?.error as string) || 'An Error Occured';
             locked = !locked;
-
-            const data = new FormData();
-            data.set('round_number', String(evh.activeRound?.round_number));
-            data.set('locked', locked ? 'true' : 'false');
-
-            const response = await fetch('?/lock', { method: 'post', body: data });
-            const result = deserialize(await response.text());
-            if (result.type === 'failure') {
-                error = (result.data?.error as string) || 'An Error Occured';
-                // locked = !locked;
-            }
         }
+        // }
     };
     // TDOO: perhaps set to this round if button text says "edit"
     // otherwise use the min if unscored (revealed?) rounds
