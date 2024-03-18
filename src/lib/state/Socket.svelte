@@ -1,7 +1,7 @@
 <script lang="ts">
     import { getContext } from 'svelte';
     import { getState } from './utils.svelte';
-    import type { MessageHandler, SocketMessage } from '$lib/types';
+    import type { MessageHandler, RoundState, SocketMessage } from '$lib/types';
 
     const evh = getState('eventHandler');
 
@@ -11,10 +11,9 @@
         connected: () => {
             console.log('connected via svelte 5!');
         },
-        round_update: (msg: any) => {
-            console.log(msg);
-            // add a method to the event handler and call it with msg!
-            // it should be that easy
+        // TODO: reponses and response_summary are also in this payload
+        round_update: (msg: Record<string, RoundState>) => {
+            evh.updateRoundState(msg.round_state);
         }
     };
 

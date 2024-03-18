@@ -1,7 +1,7 @@
 import { getContext, setContext } from 'svelte';
 import { UserState } from './userState.svelte';
 import { GameState, type GameStateData } from './gameState.svelte';
-import { EventHandler } from './eventStatic.svelte';
+import { EventHandler } from './eventHandler.svelte';
 import type { UserData } from '$lib/types';
 
 export function getState<K extends keyof typeof createState>(key: K): ReturnType<(typeof createState)[K]> {

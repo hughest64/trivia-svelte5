@@ -58,4 +58,8 @@ export class EventHandler {
     }
 
     setActiveDataCookes() {}
+
+    updateRoundState(roundState: RoundState) {
+        console.log('handle round', roundState);
+    }
 }
