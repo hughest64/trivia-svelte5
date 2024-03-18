@@ -22,8 +22,12 @@
 
     const activeEventData = getStore('activeEventData');
     const roundStates = getStore('roundStates');
-    $: minUnscoredRound = Math.min(...$roundStates.filter((rs) => !rs.scored).map((rs) => rs.round_number));
     const setActiveQuestion = () => {
+        // if all rounds are scored, do nothing
+        const allRoundsAreScored = $roundStates.every((rs) => rs.locked);
+        if (allRoundsAreScored) return;
+
+        const minUnscoredRound = Math.min(...$roundStates.filter((rs) => !rs.scored).map((rs) => rs.round_number));
         $activeEventData = {
             activeRoundNumber: minUnscoredRound,
             activeQuestionNumber: 1,
