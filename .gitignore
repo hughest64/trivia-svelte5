@@ -23,6 +23,7 @@ server/server/settings_prod.py
 server/server/settings_xfer.py
 # pre release settings
 server/server/settings_pre.py
+server/server/settings_staging_db.py
 # a file that changes frequently and is only used for development
 utility.ipynb
 
