@@ -61,10 +61,10 @@
     }
 
     const handlers: MessageHandler = {
-        connected: () => {
-            // TODO in the case of reconnect, the may contain game data in the future
-            console.log('connected!');
-        },
+        // connected: () => {
+        //     // TODO in the case of reconnect, the may contain game data in the future
+        //     console.log('connected!');
+        // },
         leaderboard_join: (message: LeaderboardEntry) => {
             leaderboardStore.update((lb) => {
                 const newLB = { ...lb };
