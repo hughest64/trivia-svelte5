@@ -53,13 +53,13 @@
     <ul id="nav-links" class:justify-nav={!isEventRoute}>
         {#if isEventRoute}
             <li class:active={setActive(joinCode)}>
-                <a data-sveltekit-preload-code="tap" href={`/${routeId}/${joinCode}`}>
+                <a href={`/${routeId}/${joinCode}`}>
                     <GameIcon cls="svg" />
                     <p>Game</p>
                 </a>
             </li>
             <li class:active={setActive('leaderboard')}>
-                <a data-sveltekit-preload-code="tap" href={`/${routeId}/${joinCode}/leaderboard`}>
+                <a href={`/${routeId}/${joinCode}/leaderboard`}>
                     <LeaderboardIcon cls="svg" />
                     <p>Leaderboard</p>
                 </a>
@@ -67,41 +67,32 @@
         {/if}
         {#if routeId === 'game' && isEventRoute}
             <li class:active={setActive('chat')}>
-                <a data-sveltekit-preload-code="tap" href={`/${routeId}/${joinCode}/chat`}>
+                <a href={`/${routeId}/${joinCode}/chat`}>
                     <ChatIcon cls="svg" />
                     <p>Chat</p>
                 </a>
             </li>
             <li class:active={setActive('megaround')}>
-                <a data-sveltekit-preload-code="tap" href={`/game/${joinCode}/megaround`}>
+                <a href={`/game/${joinCode}/megaround`}>
                     <MegaroundIcon cls="svg" />
                     <p>Mega Round</p>
                 </a>
             </li>
             <li class:active={setActive('score')}>
-                <a
-                    data-sveltekit-preload-code="tap"
-                    data-sveltekit-reload
-                    href="/team/manage?prev={$page.url.pathname}"
-                >
+                <a data-sveltekit-reload href="/team/manage?prev={$page.url.pathname}">
                     <TeamIcon cls="svg" />
                     <p>Team</p>
                 </a>
             </li>
         {:else if routeId === 'host' && isEventRoute}
             <li class:active={setActive('controlboard')}>
-                <a data-sveltekit-preload-code="tap" href={`/${routeId}/${joinCode}/controlboard`}>
+                <a href={`/${routeId}/${joinCode}/controlboard`}>
                     <ControlIcon cls="svg" />
                     <p>Controls</p>
                 </a>
             </li>
             <li class:active={setActive('score')}>
-                <a
-                    data-sveltekit-preload-code="tap"
-                    data-sveltekit-reload
-                    href={`/host/${joinCode}/score`}
-                    on:click={setActiveQuestion}
-                >
+                <a data-sveltekit-reload href={`/host/${joinCode}/score`} on:click={setActiveQuestion}>
                     <ScoringIcon cls="svg" />
                     <p>Scoring</p>
                 </a>
