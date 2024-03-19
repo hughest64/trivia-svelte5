@@ -13,7 +13,9 @@
     $: activeResponseSummary = $responseSummary[activeQuestion.key];
 
     $: totalResponses =
-        (activeResponseSummary?.total || 0) + (activeResponseSummary.half || 0) + (activeResponseSummary.missing || 0);
+        (activeResponseSummary?.total || 0) +
+        (activeResponseSummary?.half || 0) +
+        (activeResponseSummary?.missing || 0);
     $: correctResponses = activeResponseSummary?.correct || 0;
 
     $: correct_width = correctResponses > 0 ? (correctResponses / totalResponses) * 100 : 0;
