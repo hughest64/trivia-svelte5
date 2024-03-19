@@ -44,8 +44,8 @@
 <style lang="scss">
     svg {
         overflow: visible;
-        width: 5.5rem;
-        height: 5.5rem;
+        width: 5rem;
+        height: 5rem;
         margin-bottom: -5px;
     }
     textPath {
