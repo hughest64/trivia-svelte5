@@ -75,30 +75,30 @@
 
 {#if activeRoundState?.revealed}
     <AnswerSummary {activeQuestion} {activeResponse} />
+{:else}
+    <form on:submit|preventDefault={handleSubmitResponse}>
+        <div id="response-container" class="input-container" class:notsubmitted>
+            <input
+                {disabled}
+                required
+                name="response_text"
+                type="text"
+                autocapitalize="none"
+                autocorrect="off"
+                autocomplete="off"
+                spellcheck="false"
+                data-type="response-input"
+                value={activeResponse?.recorded_answer || ''}
+                on:input={syncInputText}
+            />
+            <label for="response_text">{disabled ? '' : labelText}</label>
+        </div>
+
+        {#if form?.error}<p>{form.error}</p>{/if}
+
+        <button class:disabled class="button {submitBtnColorClass} response-btn" {disabled}> {submitText} </button>
+    </form>
 {/if}
-
-<form on:submit|preventDefault={handleSubmitResponse}>
-    <div id="response-container" class="input-container" class:notsubmitted>
-        <input
-            {disabled}
-            required
-            name="response_text"
-            type="text"
-            autocapitalize="none"
-            autocorrect="off"
-            autocomplete="off"
-            spellcheck="false"
-            data-type="response-input"
-            value={activeResponse?.recorded_answer || ''}
-            on:input={syncInputText}
-        />
-        <label for="response_text">{disabled ? '' : labelText}</label>
-    </div>
-
-    {#if form?.error}<p>{form.error}</p>{/if}
-
-    <button class:disabled class="button {submitBtnColorClass} response-btn" {disabled}> {submitText} </button>
-</form>
 
 <style lang="scss">
     .response-btn {
