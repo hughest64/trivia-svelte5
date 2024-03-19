@@ -51,6 +51,7 @@
 
 <style lang="scss">
     .question-key-container {
+        // outline: 1px dashed purple;
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -60,8 +61,8 @@
             width: 5.5rem;
         }
         .go-to-current {
-            height: 5.5rem;
-            width: 5.5rem;
+            margin: 0;
+            padding: 0;
         }
     }
 </style>

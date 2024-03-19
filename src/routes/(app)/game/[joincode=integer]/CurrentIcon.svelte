@@ -2,7 +2,7 @@
     export let questionKey: string;
 </script>
 
-<svg width="80" height="80" viewBox="0 0 43 43" version="1.1">
+<svg viewBox="0 0 43 43" version="1.1">
     <g id="layer1">
         <g id="g10">
             <path
@@ -42,6 +42,12 @@
 </svg>
 
 <style lang="scss">
+    svg {
+        overflow: visible;
+        width: 5.5rem;
+        height: 5.5rem;
+        margin-bottom: -5px;
+    }
     textPath {
         font-weight: bold;
         fill: var(--color-secondary);
