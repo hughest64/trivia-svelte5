@@ -1,5 +1,8 @@
 <script lang="ts">
     import { getStore } from '$lib/utils';
+    import HalfCredit from '$lib/leaderboards/icons/HalfCredit.svelte';
+    import Correct from '$lib/leaderboards/icons/Correct.svelte';
+    import Wrong from '$lib/leaderboards/icons/Wrong.svelte';
     import type { GameQuestion, Response } from '$lib/types';
 
     export let activeQuestion: GameQuestion;
@@ -24,7 +27,17 @@
     {/if}
 
     <p><strong>You Answered:</strong></p>
-    <p>{activeResponse?.recorded_answer || '-'}</p>
+    <span class="team-answer-container">
+        <p class="grow">{activeResponse?.recorded_answer || '-'}</p>
+        {#if points === 1}
+            <Correct mt="0" width="1.5rem" height="1.5rem" />
+        {:else if points === 0}
+            <Wrong mt="0" width="1.5rem" height="1.5rem" />
+        {:else}
+            <HalfCredit mt="0" width="1.5rem" height="1.5rem" />
+        {/if}
+        <p class="team-points">{points} point{points === 0 ? 's' : ''}</p>
+    </span>
     <p><strong>{correctResponses + halfCorrectResponses}/{totalResponses} Teams Received Points</strong></p>
 
     <div class="resultbar" style:background-size="{correct_width}%, {half_width}%, {wrong_width}%" />
@@ -34,15 +47,24 @@
     .answer-summary {
         width: calc(100% - 2rem);
         max-width: var(--max-element-width);
+        margin-bottom: 1rem;
         .correct-answer {
             text-align: center;
         }
+        .team-answer-container {
+            display: flex;
+            align-items: center;
+            .team-points {
+                margin-left: 0.75rem;
+            }
+        }
     }
+
     .resultbar {
         height: 1.5rem;
-        background-image: linear-gradient(var(--color-primary), var(--color-primary)),
-            linear-gradient(var(--color-secondary), var(--color-secondary)),
-            linear-gradient(var(--color-disabled), var(--color-disabled));
+        background-image: linear-gradient(var(--color-current), var(--color-current)),
+            linear-gradient(var(--color-current), var(--color-current)),
+            linear-gradient(var(--color-primary), var(--color-primary));
         background-repeat: no-repeat;
     }
 </style>

@@ -37,17 +37,17 @@
     };
 </script>
 
-{#if showGoToCurrent && $activeEventData.activeQuestionKey !== $currentEventData.question_key}
-    <div class="question-key-container">
-        <span class="spacer" />
-        <h4 id={`${questionKey}-key`} class="question-key">{questionKey}</h4>
+<div class="question-key-container">
+    <span class="spacer" />
+    <h4 id={`${questionKey}-key`} class="question-key">{questionKey}</h4>
+    {#if showGoToCurrent && $activeEventData.activeQuestionKey !== $currentEventData.question_key}
         <button class="go-to-current" on:click={handleGoToCurrent}>
             <CurrentIcon questionKey={$currentEventData.question_key} />
         </button>
-    </div>
-{:else}
-    <h4 id={`${questionKey}-key`} class="question-key">{questionKey}</h4>
-{/if}
+    {:else}
+        <span class="spacer" />
+    {/if}
+</div>
 
 <style lang="scss">
     .question-key-container {
