@@ -102,10 +102,13 @@ class QuestionResponse(models.Model):
     @staticmethod
     def summarize(event):
         all_resps = QuestionResponse.objects.filter(event=event)
+        total_teams = event.event_teams.count()
         summarized = {}
         for resp in all_resps:
             key = resp.game_question.key
-            summarized.setdefault(key, {"correct": 0, "half": 0, "total": 0})
+            summarized.setdefault(
+                key, {"correct": 0, "half": 0, "total": 0, "missing": 0}
+            )
             values = summarized[key]
             if resp.points_awarded == 1:
                 values["correct"] += 1
@@ -113,6 +116,10 @@ class QuestionResponse(models.Model):
                 values["half"] += 1
 
             values["total"] += 1
+
+        # note teams that did not respond
+        for summary in summarized.values():
+            summary["missing"] = max(total_teams - summary["total"], 0)
 
         return summarized
 

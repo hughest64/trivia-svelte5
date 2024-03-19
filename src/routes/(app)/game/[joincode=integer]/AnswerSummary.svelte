@@ -11,13 +11,13 @@
 
     const responseSummary = getStore('responseSummary');
     $: activeResponseSummary = $responseSummary[activeQuestion.key];
-    $: totalResponses = 10; // activeResponseSummary?.total || 0;
-    $: correctResponses = 6; // activeResponseSummary?.correct || 0;
-    $: halfCorrectResponses = 1; //activeResponseSummary?.half || 0;
+
+    $: totalResponses =
+        (activeResponseSummary?.total || 0) + (activeResponseSummary.half || 0) + (activeResponseSummary.missing || 0);
+    $: correctResponses = activeResponseSummary?.correct || 0;
 
     $: correct_width = correctResponses > 0 ? (correctResponses / totalResponses) * 100 : 0;
-    $: half_width = halfCorrectResponses > 0 ? (halfCorrectResponses / totalResponses) * 100 + correct_width : 0;
-    const wrong_width = 100;
+    $: wrong_width = 100 - correct_width;
 </script>
 
 <div class="answer-summary">
@@ -38,9 +38,24 @@
         {/if}
         <p class="team-points">{points} point{points === 0 ? 's' : ''}</p>
     </span>
-    <p><strong>{correctResponses + halfCorrectResponses}/{totalResponses} Teams Received Points</strong></p>
+    <p><strong>{correctResponses}/{totalResponses} Teams Received Points</strong></p>
 
-    <div class="resultbar" style:background-size="{correct_width}%, {half_width}%, {wrong_width}%" />
+    <span class="result-bar">
+        {#if correctResponses > 0}
+            <div
+                class="correct"
+                class:player-group={activeResponse?.points_awarded || 0 === 0}
+                style:width="{correct_width}%"
+            />
+        {/if}
+        {#if totalResponses !== correctResponses}
+            <div
+                class="wrong"
+                class:player-group={activeResponse?.points_awarded || 0 > 0}
+                style:width="{wrong_width}%"
+            />
+        {/if}
+    </span>
 </div>
 
 <style lang="scss">
@@ -60,11 +75,25 @@
         }
     }
 
-    .resultbar {
-        height: 1.5rem;
-        background-image: linear-gradient(var(--color-current), var(--color-current)),
-            linear-gradient(var(--color-current), var(--color-current)),
-            linear-gradient(var(--color-primary), var(--color-primary));
-        background-repeat: no-repeat;
+    .result-bar {
+        // outline: 1px dashed purple;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        justify-content: space-between;
+        // align-items: center;
+        height: 2rem;
+        width: 100%;
+        .correct {
+            outline: 1px solid var(--color-secondary);
+            background-color: var(--color-current);
+        }
+        .wrong {
+            outline: 1px solid var(--color-secondary);
+            background-color: var(--color-primary);
+        }
+        .player-group {
+            margin: 0.2rem 0;
+        }
     }
 </style>
