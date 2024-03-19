@@ -1,10 +1,12 @@
 <script lang="ts">
-    import { slide } from 'svelte/transition';
+    import { getContext } from 'svelte';
     import { page } from '$app/stores';
     import { getStore, setEventCookie } from '$lib/utils';
     import CurrentIcon from './CurrentIcon.svelte';
+    import type { Writable } from 'svelte/store';
 
     const userData = getStore('userData');
+    const questions = getStore('questions');
     const roundStates = getStore('roundStates');
     const questionStates = getStore('questionStates');
     const currentEventData = getStore('currentEventData');
@@ -17,9 +19,15 @@
     $: unlockedRevealedQuestions = $questionStates.filter(
         (qs) => !lockedRoundNumbers.includes(qs.round_number) && qs.question_displayed
     );
-
     $: showGoToCurrent = !$userData.auto_reveal_questions && unlockedRevealedQuestions.length > 0;
+
+    const swipeDirection = getContext<Writable<'left' | 'right'>>('swipeDirection');
+    const questionKeys = $questions.map((q) => q.key);
+    const viewingKeyIndex = questionKeys.findIndex((qk) => qk === questionKey);
+    const currentKeyIndex = questionKeys.findIndex((qk) => qk === $currentEventData.question_key);
+
     const handleGoToCurrent = () => {
+        swipeDirection.set(viewingKeyIndex > currentKeyIndex ? 'left' : 'right');
         $activeEventData = {
             activeRoundNumber: $currentEventData.round_number,
             activeQuestionNumber: $currentEventData.round_number,
@@ -33,7 +41,7 @@
     <div class="question-key-container">
         <span class="spacer" />
         <h4 id={`${questionKey}-key`} class="question-key">{questionKey}</h4>
-        <button class="go-to-current" transition:slide on:click={handleGoToCurrent}>
+        <button class="go-to-current" on:click={handleGoToCurrent}>
             <CurrentIcon questionKey={$currentEventData.question_key} />
         </button>
     </div>
