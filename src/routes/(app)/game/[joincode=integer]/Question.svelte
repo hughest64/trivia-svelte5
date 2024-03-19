@@ -2,6 +2,7 @@
     import { page } from '$app/stores';
     import { getStore } from '$lib/utils';
     import AnswerSummary from './AnswerSummary.svelte';
+    import QuestionHeader from './QuestionHeader.svelte';
     import type { GameQuestion, Response } from '$lib/types';
 
     const joincode = $page.params.joincode;
@@ -56,7 +57,7 @@
     };
 </script>
 
-<h4 id={`${activeQuestion?.key}-key`} class="question-key">{activeQuestion?.key}</h4>
+<QuestionHeader questionKey={activeQuestion.key} />
 
 <p id={`${activeQuestion?.key}-text`} class="question-text">
     {questionState?.question_displayed

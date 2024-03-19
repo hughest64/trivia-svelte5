@@ -33,10 +33,9 @@
 
 <style lang="scss">
     .menu-button-container {
-        // outline: 1px dashed pink;
         position: fixed;
         top: 0.5rem;
-        right: 1rem;
+        right: max(1rem, calc(50vw - 36rem));
         z-index: 99;
         width: 2.5rem;
     }
