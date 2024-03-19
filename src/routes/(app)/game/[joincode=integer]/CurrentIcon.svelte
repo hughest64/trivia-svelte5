@@ -46,7 +46,6 @@
         overflow: visible;
         width: 5rem;
         height: 5rem;
-        margin-bottom: -5px;
     }
     textPath {
         font-weight: bold;
