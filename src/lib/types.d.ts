@@ -192,6 +192,7 @@ export interface ResponseSummaryValues {
     correct: number;
     half: number;
     total: number;
+    missing: number;
 }
 export interface ResponseSummary {
     [k: string]: ResponseSummaryValues;

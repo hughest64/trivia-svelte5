@@ -41,7 +41,10 @@
     }
     .switch {
         .slider {
-            background-color: var(--color-secondary);
+            background-color: var(--color-tertiary);
+            &:before {
+                background-color: var(--color-alt-black);
+            }
         }
         input:checked + .slider {
             background-color: var(--color-current);

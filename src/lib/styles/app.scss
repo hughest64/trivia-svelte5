@@ -338,8 +338,9 @@ button {
             height: 26px;
             width: 26px;
             left: 4.5px;
+            top: 4.25px;
             bottom: 4.25px;
-            background-color: white;
+            background-color: var(--color-tertiary);
             -webkit-transition: 0.4s;
             transition: 0.4s;
         }

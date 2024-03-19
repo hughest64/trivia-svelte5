@@ -1,4 +1,10 @@
-<svg viewBox="0 0 33.073 33.073" xmlns="http://www.w3.org/2000/svg">
+<script lang="ts">
+    export let mt = '0.3rem';
+    export let width = '1rem';
+    export let height = '1rem';
+</script>
+
+<svg {width} {height} viewBox="0 0 33.073 33.073" xmlns="http://www.w3.org/2000/svg" style:margin-top={mt}>
     <path
         d="M-77.373 46.615l-3.729 11.56-12.146-.027 9.842 7.118-3.779 11.544 9.812-7.16 9.811 7.16-3.779-11.544 9.843-7.118-12.147.027zm0 3.074l3.024 9.379 9.855-.022-7.985 5.775 3.065 9.365-7.96-5.81-7.959 5.81 3.066-9.365-7.985-5.775 9.854.022zM-14.06-28.073h30.596v12.198H-14.06zM16.536-28.073h30.596v12.198H16.536zM16.536 1.439l-3.728 11.56-12.147-.027 9.843 7.118-3.779 11.544 9.811-7.16V1.438z"
     />
@@ -9,9 +15,6 @@
 
 <style lang="scss">
     svg {
-        margin-top: 0.3rem;
-        width: 1rem;
-        height: 1rem;
         path {
             fill: #f0a83d;
         }
