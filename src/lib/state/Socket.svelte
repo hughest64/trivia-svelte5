@@ -11,7 +11,7 @@
         connected: () => {
             console.log('connected via svelte 5!');
         },
-        // TODO: reponses and response_summary are also in this payload
+        // TODO: s5 responses and response_summary are also in this payload
         round_update: (msg: Record<string, RoundState>) => {
             evh.updateRoundState(msg.round_state);
         }

@@ -20,7 +20,7 @@ export class EventHandler {
     );
 
     locked_rounds = $derived(this.round_states?.filter((rs) => rs.locked).map((rs) => rs.round_number));
-    max_locked_round = $derived(Math.max(...this.locked_rounds) || 0);
+    max_locked_round = $derived(this.locked_rounds.length > 0 ? Math.max(...this.locked_rounds) : 0);
 
     constructor(data: App.PageData & App.Locals) {
         this.event_data = data.event_data;
@@ -59,7 +59,9 @@ export class EventHandler {
 
     setActiveDataCookes() {}
 
+    // find the existing round state an replace it entirely or append it to the array
     updateRoundState(roundState: RoundState) {
-        console.log('handle round', roundState);
+        const rsIndex = this.round_states.findIndex((rs) => rs.round_number === roundState.round_number);
+        rsIndex > -1 ? (this.round_states[rsIndex] = roundState) : this.round_states.push(roundState);
     }
 }
