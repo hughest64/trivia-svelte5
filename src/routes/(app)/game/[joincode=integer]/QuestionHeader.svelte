@@ -58,7 +58,7 @@
         width: var(--max-element-width);
         max-width: calc(100% - 1rem);
         .spacer {
-            width: 5.5rem;
+            width: 5rem;
         }
         .go-to-current {
             margin: 0;
