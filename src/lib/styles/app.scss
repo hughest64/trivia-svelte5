@@ -325,6 +325,8 @@ button {
     .slider {
         position: absolute;
         cursor: pointer;
+        margin: 0;
+        padding: 0;
         top: 0;
         left: 0;
         right: 0;
@@ -339,7 +341,7 @@ button {
             width: 26px;
             left: 4.5px;
             bottom: 4.25px;
-            background-color: white;
+            background-color: var(--color-tertiary);
             -webkit-transition: 0.4s;
             transition: 0.4s;
         }

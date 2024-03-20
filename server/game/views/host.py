@@ -133,7 +133,9 @@ class RecentEventView(APIView):
     permission_classes = [IsAdminUser]
 
     def get(self, request):
-        recent_hosted_events = TriviaEvent.objects.filter(host=request.user)[:5]
+        recent_hosted_events = TriviaEvent.objects.filter(host=request.user).order_by(
+            "-created_at"
+        )[:5]
         return Response(
             {
                 "recent_events": [e.game_json() for e in recent_hosted_events],
