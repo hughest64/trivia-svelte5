@@ -24,14 +24,6 @@ urlpatterns = [
     #     host.EventHostView.as_view(),
     #     name="team_responses",
     # ),
-    ###########################
-    # TODO: for playing with Svelte 5 only, delete, delete, delete!
-    re_path(
-        r"^host/(?P<joincode>\d+)/s5/lock?$",
-        host.S5RoundLockView.as_view(),
-        name="round_lock",
-    ),
-    ###########################
     re_path(
         r"^host/(?P<joincode>\d+)/lock/?$",
         host.RoundLockView.as_view(),

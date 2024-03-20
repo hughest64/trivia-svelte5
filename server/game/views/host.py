@@ -50,35 +50,6 @@ from game.views.validation.exceptions import LeaderboardEntryNotFound
 logger = logging.getLogger(__name__)
 
 
-class S5RoundLockView(APIView):
-    authentication_classes = [JwtAuthentication]
-    permission_classes = [IsAdminUser]
-
-    # @method_decorator(csrf_protect)
-    def post(self, request, joincode):
-        data = DataCleaner(request.data)
-        round_number = data.as_int("round_to_lock")
-        event = get_event_or_404(joincode)
-
-        round_state, _ = EventRoundState.objects.get_or_create(
-            event=event,
-            round_number=round_number,
-            # defaults={"locked": locked},
-        )
-        round_state.locked = not round_state.locked
-        # round_state.save()
-
-        SendHostMessage(
-            joincode,
-            {
-                "msg_type": "roundlock_s5",
-                "message": round_state.to_json(),
-            },
-        )
-
-        return Response({"success": True})
-
-
 class EventHostView(APIView):
     authentication_classes = [JwtAuthentication]
     permission_classes = [IsAdminUser]
