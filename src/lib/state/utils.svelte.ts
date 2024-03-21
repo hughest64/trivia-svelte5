@@ -8,5 +8,5 @@ export function getState<K extends keyof typeof createState>(key: K): ReturnType
 }
 export const createState = {
     userState: (data: UserData) => setContext('userState', new UserState(data)),
-    eventHandler: (data: App.PageData) => setContext('eventHandler', new EventHandler(data))
+    eventHandler: (data: App.PageData & App.Locals) => setContext('eventHandler', new EventHandler(data))
 };

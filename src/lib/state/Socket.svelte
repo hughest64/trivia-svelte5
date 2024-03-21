@@ -14,6 +14,9 @@
         // TODO: s5 responses and response_summary are also in this payload
         round_update: (msg: Record<string, RoundState>) => {
             evh.updateRoundState(msg.round_state);
+            // responses are updated only if the statis locked
+            // unsure why only if locked, or if we event care about resps being locked?
+            // responseSummaryStore also gets set
         }
     };
 
